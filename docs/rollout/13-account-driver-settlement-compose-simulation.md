@@ -1,7 +1,11 @@
 # 13. Account / Driver / Settlement Compose Simulation
 
 ## 문서 목적
-이 문서는 `Account / Auth`, `Driver Profile HR`, `Settlement Payroll`, `Organization Master` 경계를 로컬 `docker compose` 환경에서 실제로 시뮬레이션하는 현재 기준을 정리한다.
+이 문서는 `Account / Auth`, `Driver Profile HR`, `Settlement Payroll`, `Settlement Operations View`, `Organization Master` 경계를 로컬 `docker compose` 환경에서 settlement split 관점으로 시뮬레이션하는 현재 기준을 정리한다.
+
+전체 local-stack inventory와 최종 compose 정본은 아래 문서를 따른다.
+- `../../development/integration-local-stack/README.md`
+- `../../development/integration-local-stack/docker-compose.account-driver-settlement.yml`
 
 ## 시뮬레이션 목표
 - 서비스별 데이터베이스 분리가 유지되는지 확인한다.
@@ -10,7 +14,7 @@
 - `seed-runner`가 서비스별 내부 `management command`만 호출하는지 확인한다.
 - 이벤트 브로커 없이도 `JWT + Redis + CRUD + front/admin-front` 흐름이 성립하는지 확인한다.
 
-## 현재 포함 서비스
+## settlement split 검증에 직접 관련된 서비스
 - `front`
 - `admin-front`
 - `gateway`
@@ -54,18 +58,19 @@
 - `/api/settlement-ops/` -> `settlement-ops-api`
 - `/api/org/` -> `organization-master-api`
 
-## seed-runner 순서
-1. `account-auth` health 확인
-2. `organization-master` health 확인
-3. `driver-profile` health 확인
-4. `settlement-payroll` health 확인
-5. `account-auth` migrate + `seed_accounts`
-6. `organization-master` migrate + `seed_organization`
-7. `driver-profile` migrate + `seed_drivers`
-8. `settlement-payroll` migrate + `seed_settlements`
+## seed-runner에서 settlement split과 직접 관련된 순서
+전체 순서는 `integration-local-stack/infra/docker/seed-runner/run-seed.sh`를 따른다.
+
+관련 구간만 적으면 아래와 같다.
+1. `organization-master` health 확인
+2. `driver-profile` health 확인
+3. `settlement-payroll` health 확인
+4. `organization-master` migrate + `seed_organization`
+5. `driver-profile` migrate + `seed_drivers`
+6. `settlement-payroll` migrate + `seed_settlements`
 
 ## 상태
-- 현재 문서는 실제 구현된 로컬 Compose 부트스트랩 구조를 설명한다.
+- 현재 문서는 전체 local-stack inventory가 아니라 settlement split 검증에 직접 관련된 현재 slice를 설명한다.
 - 프런트 2개와 백엔드 5개가 모두 컨테이너로 포함된다.
 - settlement는 write/read 서비스가 분리되어 있지만 DB는 아직 `settlement-db` 하나만 공유한다.
 - `settlement-ops-api`는 sqlite-only runtime으로 동작한다.
