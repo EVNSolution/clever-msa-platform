@@ -23,7 +23,7 @@ services:
       - telemetry-dead-letter-api
       - vehicle-ops-api
       - dispatch-ops-api
-      - driver-360-api
+      - driver-ops-api
     ports:
       - "8080:8080"
 
@@ -223,11 +223,11 @@ services:
     expose:
       - "8000"
 
-  driver-360-api:
+  driver-ops-api:
     build:
       context: ../service-driver-operations-view
     env_file:
-      - ./infra/env/driver-360.env.example
+      - ./infra/env/driver-ops.env.example
     depends_on:
       - account-auth-api
       - driver-profile-api
@@ -373,5 +373,5 @@ services:
       - terminal-registry-api
       - telemetry-hub-api
       - telemetry-dead-letter-api
-      - driver-360-api
+      - driver-ops-api
     command: ["/usr/local/bin/run-seed.sh"]

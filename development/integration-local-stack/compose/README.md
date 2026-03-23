@@ -24,7 +24,7 @@
 - `driver-vehicle-assignment-api`
 - `vehicle-ops-api`
 - `dispatch-ops-api`
-- `driver-360-api`
+- `driver-ops-api`
 - `account-db`
 - `driver-db`
 - `settlement-db`
@@ -61,7 +61,7 @@
 - projection 전용 저장소는 이번 스코프에서 제외한다.
 - 범용 이벤트 브로커/비동기 워커 확장은 제외하지만, telemetry ingress 검증용 `mqtt-broker`와 `telemetry-listener`는 포함한다.
 - 로컬 broker는 deterministic smoke를 위해 고정 listener 계정으로만 publish/subscribe를 허용한다.
-- `Driver 360`은 projection DB 대신 bounded fan-out query service로 시작한다.
+- `Driver Ops`는 projection DB 대신 bounded fan-out query service로 시작한다.
 
 ## 서비스별 현재 범위
 
@@ -94,7 +94,7 @@
 - upstream write owner `settlement-payroll-api`를 `SETTLEMENT_PAYROLL_BASE_URL`로 읽는다.
 - gateway 외부 prefix는 `/api/settlement-ops/`다.
 
-### `driver-360-api`
+### `driver-ops-api`
 - 기사 단건 운영 화면용 summary query만 제공한다.
 - 내부적으로 `driver-profile`, `organization-master`, `account-auth`, `settlement-ops`를 조회해서 하나의 summary payload로 합친다.
 - settlement read consumer env 이름은 `SETTLEMENT_OPS_BASE_URL`이다.
@@ -166,7 +166,7 @@
 - `/api/driver-vehicle-assignments/` -> `driver-vehicle-assignment-api`
 - `/api/vehicle-ops/` -> `vehicle-ops-api`
 - `/api/dispatch-ops/` -> `dispatch-ops-api`
-- `/api/driver-360/` -> `driver-360-api`
+- `/api/driver-ops/` -> `driver-ops-api`
 
 gateway는 서비스 prefix를 strip해서 upstream으로 전달한다. 예를 들면 `/api/auth/login/ -> /login/`, `/api/org/companies/ -> /companies/`, `/api/driver-vehicle-assignments/assignments/ -> /assignments/`, `/api/vehicle-ops/vehicles/ -> /vehicles/`, `/api/dispatch-ops/board/ -> /board/`, `/api/telemetry/vehicles/{vehicle_id}/latest-location/ -> /vehicles/{vehicle_id}/latest-location/`처럼 동작한다.
 

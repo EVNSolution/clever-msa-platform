@@ -1,9 +1,9 @@
 # service-driver-operations-view
 
-이 repo는 배송원 운영 조회 `operations-view`를 소유한다.
+이 repo는 배송원 운영 조회 `driver ops` operations-view를 소유한다.
 
 현재 역할:
-- driver summary와 detail 조회
+- driver ops summary와 detail 조회
 - profile, account, settlement-ops scoped latest-settlement summary, assignment 정보를 조합한 운영 view
 - 쓰기 없는 read-only query service
 

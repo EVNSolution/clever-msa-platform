@@ -13,6 +13,7 @@
 - `service-terminal-registry`는 active runtime repo로 compose에 편입됐다
 - `service-dispatch-registry`는 active runtime repo로 compose에 편입됐다
 - `service-dispatch-operations-view`는 active runtime repo로 compose에 편입됐다
+- `service-driver-operations-view`는 driver ops read runtime으로 compose에 편입됐다
 - `service-settlement-payroll`는 settlement write owner runtime으로 compose에 편입됐다
 - `service-settlement-operations-view`는 settlement read fan-out runtime으로 compose에 편입됐다
 - `service-telemetry-hub`는 active runtime repo로 compose에 편입됐다
