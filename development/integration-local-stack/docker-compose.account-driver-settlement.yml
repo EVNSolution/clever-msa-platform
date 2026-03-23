@@ -350,8 +350,8 @@ services:
 
   seed-runner:
     build:
-      context: ../../..
-      dockerfile: ./clever-msa-platform/development/integration-local-stack/infra/docker/seed-runner/Dockerfile
+      context: ../..
+      dockerfile: ./development/integration-local-stack/infra/docker/seed-runner/Dockerfile
     depends_on:
       - account-db
       - driver-db

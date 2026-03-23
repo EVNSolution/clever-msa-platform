@@ -32,5 +32,5 @@
 ## Current Scope Notes
 
 - Active runtime repos live as siblings under `../`.
-- Settlement placeholder runtime currently lives in `../service-settlement-operations-view/`.
+- Settlement local wiring is split across `../service-settlement-payroll/` and `../service-settlement-operations-view/`.
 - `service-terminal-registry` and `service-telemetry-hub` are active runtime repos. Keep compose wiring aligned with their approved boundary specs and do not push unrelated logic into this repo.
