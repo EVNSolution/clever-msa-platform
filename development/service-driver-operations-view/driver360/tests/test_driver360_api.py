@@ -1,0 +1,84 @@
+from unittest.mock import patch
+from datetime import datetime, timedelta, timezone
+from uuid import uuid4
+
+import jwt
+from django.conf import settings
+from django.test import TestCase
+from rest_framework.exceptions import NotFound
+from rest_framework.test import APIClient
+
+
+class Driver360ApiTests(TestCase):
+    def setUp(self) -> None:
+        self.client = APIClient()
+        self.token = self._issue_token()
+        self.summary = {
+            "driver_id": "10000000-0000-0000-0000-000000000001",
+            "driver_name": "Kim Driver",
+            "ev_id": "EV-001",
+            "phone_number": "010-1234-5678",
+            "address": "Seoul",
+            "company_id": "20000000-0000-0000-0000-000000000001",
+            "company_name": "EVN Company",
+            "fleet_id": "30000000-0000-0000-0000-000000000001",
+            "fleet_name": "Central Fleet",
+            "account_id": "40000000-0000-0000-0000-000000000001",
+            "account_email": "driver@example.com",
+            "account_role": "user",
+            "account_is_active": True,
+            "latest_settlement_run_id": "50000000-0000-0000-0000-000000000001",
+            "latest_settlement_period_start": "2026-03-01",
+            "latest_settlement_period_end": "2026-03-31",
+            "latest_settlement_status": "closed",
+            "latest_payout_status": "paid",
+            "latest_settlement_amount": "125000.50",
+            "warnings": [],
+        }
+
+    def _issue_token(self) -> str:
+        now = datetime.now(timezone.utc)
+        payload = {
+            "sub": str(uuid4()),
+            "email": "user@example.com",
+            "role": "user",
+            "iss": settings.JWT_ISSUER,
+            "aud": settings.JWT_AUDIENCE,
+            "iat": int(now.timestamp()),
+            "exp": int((now + timedelta(hours=1)).timestamp()),
+            "jti": str(uuid4()),
+            "type": "access",
+        }
+        return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+
+    def test_health_endpoint_responds(self):
+        response = self.client.get("/health/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["status"], "ok")
+
+    @patch("driver360.views.DriverSummaryService.build_summary")
+    def test_detail_endpoint_returns_summary_contract(self, mock_build_summary):
+        mock_build_summary.return_value = self.summary
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.token}")
+
+        driver_id = uuid4()
+        response = self.client.get(f"/drivers/{driver_id}/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["driver_name"], "Kim Driver")
+        self.assertEqual(response.data["company_name"], "EVN Company")
+        self.assertEqual(response.data["latest_settlement_amount"], "125000.50")
+        mock_build_summary.assert_called_once_with(
+            driver_id=str(driver_id),
+            authorization=f"Bearer {self.token}",
+        )
+
+    @patch("driver360.views.DriverSummaryService.build_summary", side_effect=NotFound("Driver not found."))
+    def test_detail_endpoint_returns_404_shape_when_driver_missing(self, _mock_build_summary):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.token}")
+
+        response = self.client.get(f"/drivers/{uuid4()}/")
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
