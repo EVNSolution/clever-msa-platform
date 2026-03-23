@@ -19,7 +19,13 @@ class SettlementRun(models.Model):
 
 class SettlementItem(models.Model):
     settlement_item_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    settlement_run_id = models.UUIDField()
+    settlement_run = models.ForeignKey(
+        SettlementRun,
+        db_column="settlement_run_id",
+        on_delete=models.CASCADE,
+        related_name="items",
+        to_field="settlement_run_id",
+    )
     driver_id = models.UUIDField()
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     payout_status = models.CharField(max_length=32)

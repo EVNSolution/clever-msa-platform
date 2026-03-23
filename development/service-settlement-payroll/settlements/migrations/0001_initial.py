@@ -1,4 +1,5 @@
 from django.db import migrations, models
+import django.db.models.deletion
 import uuid
 
 
@@ -40,7 +41,16 @@ class Migration(migrations.Migration):
                         serialize=False,
                     ),
                 ),
-                ("settlement_run_id", models.UUIDField()),
+                (
+                    "settlement_run",
+                    models.ForeignKey(
+                        db_column="settlement_run_id",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="items",
+                        to="settlements.settlementrun",
+                        to_field="settlement_run_id",
+                    ),
+                ),
                 ("driver_id", models.UUIDField()),
                 ("amount", models.DecimalField(max_digits=12, decimal_places=2)),
                 ("payout_status", models.CharField(max_length=32)),

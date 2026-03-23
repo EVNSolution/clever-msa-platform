@@ -1,4 +1,5 @@
 import json
+from urllib.error import URLError
 from datetime import date, datetime, timedelta, timezone
 from urllib.request import Request, urlopen
 from uuid import UUID
@@ -17,6 +18,7 @@ SAMPLE_FLEET_ID = UUID("40000000-0000-0000-0000-000000000001")
 SAMPLE_COMPANY_NAME = "Seed Company"
 SAMPLE_FLEET_NAME = "Seed Fleet"
 SAMPLE_DRIVER_ID = UUID("10000000-0000-0000-0000-000000000001")
+HTTP_TIMEOUT_SECONDS = 10
 
 
 def _build_bootstrap_authorization() -> str:
@@ -38,8 +40,13 @@ def _build_bootstrap_authorization() -> str:
 
 def _fetch_json(url: str, *, authorization: str):
     request = Request(url, headers={"Authorization": authorization, "Accept": "application/json"})
-    with urlopen(request) as response:
-        return json.loads(response.read().decode("utf-8"))
+    try:
+        with urlopen(request, timeout=HTTP_TIMEOUT_SECONDS) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except (TimeoutError, URLError) as exc:
+        raise CommandError(
+            f"Failed to fetch settlement seed data from {url} within {HTTP_TIMEOUT_SECONDS} seconds."
+        ) from exc
 
 
 def _pick_seeded_record(records, *, kind: str, field_name: str, expected_value):

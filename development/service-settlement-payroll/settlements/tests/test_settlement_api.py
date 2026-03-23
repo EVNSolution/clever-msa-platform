@@ -3,7 +3,8 @@ from uuid import uuid4
 
 import jwt
 from django.conf import settings
-from django.test import TestCase
+from django.db import IntegrityError
+from django.test import TestCase, TransactionTestCase
 from rest_framework.test import APIClient
 
 
@@ -138,3 +139,18 @@ class SettlementApiTests(TestCase):
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
+
+
+class SettlementItemDatabaseConstraintTests(TransactionTestCase):
+    reset_sequences = True
+
+    def test_settlement_item_requires_an_existing_settlement_run_at_the_database_layer(self):
+        with self.assertRaises(IntegrityError):
+            from settlements.models import SettlementItem
+
+            SettlementItem.objects.create(
+                settlement_run_id=uuid4(),
+                driver_id=uuid4(),
+                amount="125000.50",
+                payout_status="pending",
+            )

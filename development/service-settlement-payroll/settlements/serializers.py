@@ -19,6 +19,12 @@ class SettlementRunSerializer(serializers.ModelSerializer):
 
 
 class SettlementItemSerializer(serializers.ModelSerializer):
+    settlement_run_id = serializers.PrimaryKeyRelatedField(
+        source="settlement_run",
+        queryset=SettlementRun.objects.all(),
+        pk_field=serializers.UUIDField(),
+    )
+
     class Meta:
         model = SettlementItem
         fields = (
@@ -28,8 +34,3 @@ class SettlementItemSerializer(serializers.ModelSerializer):
             "amount",
             "payout_status",
         )
-
-    def validate_settlement_run_id(self, value):
-        if not SettlementRun.objects.filter(settlement_run_id=value).exists():
-            raise serializers.ValidationError("Referenced settlement run does not exist.")
-        return value

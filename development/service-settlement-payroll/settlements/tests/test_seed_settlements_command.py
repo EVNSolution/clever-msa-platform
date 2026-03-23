@@ -69,6 +69,7 @@ class SeedSettlementsCommandTests(TestCase):
         requested_auth_headers = [
             call.args[0].headers.get("Authorization") for call in mock_urlopen.call_args_list
         ]
+        requested_timeouts = [call.kwargs.get("timeout") for call in mock_urlopen.call_args_list]
 
         self.assertEqual(
             requested_urls,
@@ -79,6 +80,7 @@ class SeedSettlementsCommandTests(TestCase):
             ],
         )
         self.assertTrue(all(header and header.startswith("Bearer ") for header in requested_auth_headers))
+        self.assertTrue(all(timeout == 10 for timeout in requested_timeouts))
 
         mock_run_update_or_create.assert_called_once_with(
             settlement_run_id=ANY,
