@@ -1,8 +1,11 @@
 from unittest import TestCase
+from unittest.mock import patch
 
+from django.test import override_settings
 from rest_framework.exceptions import NotFound
 
 from driver360.services.driver_summary_service import DriverSummaryService
+from driver360.services.source_clients import SourceClients
 
 
 class FakeSourceClients:
@@ -183,3 +186,27 @@ class DriverSummaryServiceTests(TestCase):
                 driver_id="10000000-0000-0000-0000-000000000001",
                 authorization="Bearer token",
             )
+
+    @override_settings(SETTLEMENT_OPS_BASE_URL="http://settlement-ops-api:8000")
+    @patch("driver360.services.source_clients.urlopen")
+    def test_settlement_sources_use_ops_base_url(self, mock_urlopen):
+        class FakeResponse:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return False
+
+            def read(self):
+                return b"[]"
+
+        mock_urlopen.return_value = FakeResponse()
+
+        clients = SourceClients()
+
+        clients.list_settlement_runs(authorization="Bearer token")
+        clients.list_settlement_items(authorization="Bearer token")
+
+        self.assertEqual(mock_urlopen.call_count, 2)
+        self.assertEqual(mock_urlopen.call_args_list[0].args[0].full_url, "http://settlement-ops-api:8000/runs/")
+        self.assertEqual(mock_urlopen.call_args_list[1].args[0].full_url, "http://settlement-ops-api:8000/items/")

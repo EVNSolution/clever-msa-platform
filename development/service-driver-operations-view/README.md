@@ -4,7 +4,7 @@
 
 현재 역할:
 - driver summary와 detail 조회
-- profile, account, settlement, assignment 정보를 조합한 운영 view
+- profile, account, settlement-ops, assignment 정보를 조합한 운영 view
 - 쓰기 없는 read-only query service
 
 포함:
