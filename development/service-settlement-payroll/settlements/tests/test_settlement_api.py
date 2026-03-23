@@ -91,6 +91,18 @@ class SettlementApiTests(TestCase):
         self.assertEqual(self.client.delete(f"/items/{settlement_item_id}/").status_code, 204)
         self.assertEqual(self.client.delete(f"/runs/{settlement_run_id}/").status_code, 204)
 
+    def test_admin_cannot_create_settlement_run_with_invalid_status(self):
+        self._authenticate(self.admin_token)
+
+        payload = self._run_payload()
+        payload["status"] = "processing"
+
+        response = self.client.post("/runs/", payload, format="json")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
+        self.assertIn("status", response.data["details"])
+
     def test_user_can_read_settlement_resources(self):
         self._authenticate(self.admin_token)
         self.assertEqual(self.client.post("/runs/", self._run_payload(), format="json").status_code, 201)

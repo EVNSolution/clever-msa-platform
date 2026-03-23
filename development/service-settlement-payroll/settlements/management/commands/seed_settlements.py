@@ -1,4 +1,5 @@
 import json
+from json import JSONDecodeError
 from urllib.error import URLError
 from datetime import date, datetime, timedelta, timezone
 from urllib.request import Request, urlopen
@@ -43,6 +44,10 @@ def _fetch_json(url: str, *, authorization: str):
     try:
         with urlopen(request, timeout=HTTP_TIMEOUT_SECONDS) as response:
             return json.loads(response.read().decode("utf-8"))
+    except JSONDecodeError as exc:
+        raise CommandError(
+            f"Failed to parse settlement seed data from {url}: invalid JSON payload."
+        ) from exc
     except (TimeoutError, URLError) as exc:
         raise CommandError(
             f"Failed to fetch settlement seed data from {url} within {HTTP_TIMEOUT_SECONDS} seconds."
