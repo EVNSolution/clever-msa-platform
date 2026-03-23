@@ -22,10 +22,20 @@
 - `seed-runner`
 - `account-db`
 - `driver-db`
-- `settlement-payroll-db`
-- `settlement-ops-db`
+- `settlement-db`
 - `org-db`
 - `redis`
+
+## 현재 DB 토폴로지
+- `account-auth-api`는 `account-db`를 사용한다.
+- `driver-profile-api`는 `driver-db`를 사용한다.
+- `settlement-payroll-api`는 `settlement-db`를 사용한다.
+- `settlement-ops-api`는 sqlite-only runtime이다.
+- `org-db`와 `redis`는 그대로 사용한다.
+
+미래 분리 대상:
+- settlement payroll 전용 DB를 따로 두는 구조
+- settlement ops 전용 DB를 따로 두는 구조
 
 ## 현재 원칙
 1. 서비스별 DB는 분리한다.
@@ -57,4 +67,5 @@
 ## 상태
 - 현재 문서는 실제 구현된 로컬 Compose 부트스트랩 구조를 설명한다.
 - 프런트 2개와 백엔드 4개가 모두 컨테이너로 포함된다.
-- 이후 repo 분리 시에도 같은 구조를 디렉토리 단위로 이동할 수 있게 되어 있다.
+- settlement는 write/read 서비스가 분리되어 있지만 DB는 아직 `settlement-db` 하나만 공유한다.
+- `settlement-ops-api`는 sqlite-only runtime으로 동작한다.
