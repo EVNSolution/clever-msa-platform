@@ -162,7 +162,9 @@
 6. `development/integration-local-stack/compose/README.md`
 7. `docs/rollout/13-account-driver-settlement-compose-simulation.md`
 8. `docs/contracts/04-driver-360-read-model.md`의 runtime naming 설명
-9. `docs/rollout/plans/` 아래에서 `driver-360-api`와 `/api/driver-360/`를 runtime 현재형으로 설명하는 문서들
+9. archive가 아닌 living docs 중 `driver-360-api`와 `/api/driver-360/`를 현재 runtime 식별자로 설명하는 문서들
+
+historical implementation plan이나 과거 migration 기록처럼 당시 상태를 설명하는 문서는 소급 수정하지 않는다.
 
 ## 검증 원칙
 
