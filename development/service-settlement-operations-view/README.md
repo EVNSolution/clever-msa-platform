@@ -1,23 +1,25 @@
 # service-settlement-operations-view
 
-이 repo는 정산 placeholder runtime과 운영 조회 `operations-view`를 임시로 소유한다.
+이 repo는 정산 운영 조회 `operations-view`를 소유하는 Django read-only fan-out repo다.
 
 현재 역할:
-- `SettlementRun`, `SettlementItem` placeholder CRUD
-- 정산 health, serializer, admin write / authenticated read
-- seed 대상 bootstrap settlement runtime
+- 외부 read API `health/`, `runs/`, `items/` 제공
+- gateway 외부 prefix `/api/settlement-ops/` 뒤에서 payroll read fan-out 수행
+- authenticated read 전용 settlement run / item 조회
 
-미래 역할:
-- 정산 결과와 운영 조회 중심 read model
-- 현재 placeholder write는 점진적으로 축소
+업스트림 write owner:
+- `service-settlement-payroll`
+- 이 repo는 정산 write ownership, migration, seed runtime을 가지지 않음
 
 포함:
 - Django/DRF runtime
-- settlement migration
-- settlement test
-- service-local seed command
+- payroll source client
+- read-only settlement API test
 
 포함하지 않음:
+- 로컬 settlement table ownership
+- write endpoint (`POST`, `PATCH`, `DELETE`)
+- 정산 seed command
 - 정산 정책/기준표 정본
 - 배송 원천 기록 정본
 - 계산 엔진 구현
