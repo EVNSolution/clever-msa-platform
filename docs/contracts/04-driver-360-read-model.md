@@ -56,7 +56,7 @@ Driver 360은 우선 `summary-only` consumer domain으로 시작하고, timeline
 - company_name
 - fleet_name
 
-### Settlement Payroll
+### Settlement Operations View
 
 - latest_settlement_run_id
 - latest_settlement_period_start
@@ -86,10 +86,11 @@ Driver 360은 우선 `summary-only` consumer domain으로 시작하고, timeline
 | Driver Profile HR | 기사 기본정보, 소속, 계정 연결 참조 | 정본 유지 |
 | Identity Access | 계정 요약, 로그인 가능 여부 | 정본 유지 |
 | Organization Master | 회사명, 플릿명 | 정본 유지 |
-| Settlement Payroll | 최근 정산 요약 placeholder | 정본 유지 |
+| Settlement Operations View | 기사별 scoped latest settlement summary | read-only query 유지 |
 
 Driver 360은 어떤 원본 데이터도 직접 수정하지 않는다.
 이번 bootstrap 1차에서는 source service들을 bounded fan-out으로 읽는 query service로 구현한다.
+정산 영역에서는 `Settlement Payroll` collection을 직접 읽지 않고, `Settlement Operations View`의 `GET /drivers/<driver_id>/latest-settlement/` scoped contract만 사용한다.
 
 ## 포함하지 않을 것
 
