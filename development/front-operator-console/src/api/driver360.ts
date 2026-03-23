@@ -3,5 +3,5 @@ import type { HttpClient } from './http';
 
 
 export function getDriver360(client: HttpClient, driverId: string) {
-  return client.request<Driver360Summary>(`/driver-360/drivers/${driverId}/`);
+  return client.request<Driver360Summary>(`/driver-ops/drivers/${driverId}/`);
 }
