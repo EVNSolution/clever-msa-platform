@@ -100,6 +100,7 @@ clever-msa-platform/
 - `service-telemetry-dead-letter`
 - `service-settlement-registry`
 - `service-delivery-record`
+- `service-settlement-payroll`
 - `service-settlement-operations-view`
 
 ## Additional Planned Domain Units
@@ -153,7 +154,8 @@ clever-msa-platform/
 - `service-vehicle-assignment`는 target 위치로 이동 완료
 - `service-vehicle-operations-view`는 target 위치로 이동 완료
 - `service-driver-operations-view`는 target 위치로 이동 완료
-- `service-settlement-operations-view`는 target 위치로 이동 완료
+- `service-settlement-payroll`는 runtime 구현 완료, settlement write owner로 target repo가 활성화됐다
+- `service-settlement-operations-view`는 read-only runtime으로 target repo가 활성화됐다
 - `service-settlement-registry`, `service-delivery-record`는 empty shell 생성 완료
 - `service-terminal-registry`는 runtime 구현 완료, target repo가 활성화됐다
 - `service-telemetry-hub`는 runtime 구현 완료, target repo가 활성화됐다

@@ -41,7 +41,8 @@
 | `service-telemetry-dead-letter` | service | failed telemetry payload append-only storage와 admin read runtime | append-only dead-letter 저장, admin read, 수동 재처리 출발점 | `development/service-telemetry-dead-letter/` | `migrated-target` |
 | `service-settlement-registry` | service | 현재는 empty shell | 정산 기준, 정책, 버전, 적용기간 registry | `development/service-settlement-registry/` | `empty-shell` |
 | `service-delivery-record` | service | 현재는 empty shell | 배송원별 원천 기록과 집계 입력 | `development/service-delivery-record/` | `empty-shell` |
-| `service-settlement-operations-view` | service | placeholder settlement CRUD와 조회를 임시 수용 | 정산 결과와 운영 조회용 read model | `development/service-settlement-operations-view/` | `migrated-target` |
+| `service-settlement-payroll` | service | 정산 write owner runtime, `SettlementRun` / `SettlementItem` write | 정산 결과 write owner, `deduction` / `incentive` / `payout_status` 정본 | `development/service-settlement-payroll/` | `migrated-target` |
+| `service-settlement-operations-view` | service | 정산 read-only operations-view runtime | 정산 결과와 운영 조회용 read model | `development/service-settlement-operations-view/` | `migrated-target` |
 | `service-dispatch-registry` | service | `dispatch_plan`, `vehicle_schedule`, `dispatch_assignment` 1차 runtime 구현 완료 | 배차 정본, 물량 계획, 회차/플릿 기준 배차 입력 | `development/service-dispatch-registry/` | `migrated-target` |
 | `service-dispatch-operations-view` | service | 배차 운영 조회 read model runtime | 배차 운영 조회와 계획 상황판 | `development/service-dispatch-operations-view/` | `migrated-target` |
 | `service-personnel-document-registry` | service | shell 디렉토리와 README만 존재 | 계약/증빙/계좌/사업자/소속 문서 정본 | `development/service-personnel-document-registry/` | `empty-shell` |
@@ -73,6 +74,11 @@
 - 배차 계획과 현재 배정 truth를 비교하는 read-model runtime이다.
 - 배차 정본 쓰기나 현재 배정 정본 쓰기를 소유하지 않는다.
 
+### `service-settlement-payroll`
+- 정산 결과 write owner다.
+- `SettlementRun`, `SettlementItem`, `deduction`, `incentive`, `payout_status`를 소유한다.
+- 정산 정책 registry와 delivery source input truth는 소유하지 않는다.
+
 ### `service-telemetry-listener`
 - MQTT ingress worker만 소유한다.
 - telemetry DB 쓰기, 정규화, snapshot/diagnostic 저장은 `service-telemetry-hub`에 남긴다.
@@ -82,9 +88,11 @@
 - append-only 저장, internal write, admin read만 가진다.
 - 자동 replay/status workflow는 아직 들이지 않는다.
 
-### settlement 3축
-- placeholder CRUD는 현재 `service-settlement-operations-view`가 임시 수용한다.
-- `service-settlement-registry`, `service-delivery-record`는 shell만 먼저 고정한다.
+### settlement 4축
+- `service-settlement-registry`는 규칙과 기준만 소유한다.
+- `service-delivery-record`는 source input만 소유한다.
+- `service-settlement-payroll`는 result write owner다.
+- `service-settlement-operations-view`는 read-only view다.
 - 하나의 settlement repo 이름으로 다시 합치지 않는다.
 
 ## Docs Of Truth
@@ -125,7 +133,8 @@
    - `service-vehicle-operations-view` 이동 완료
    - `service-driver-operations-view` 이동 완료
 5. settlement 분해
-   - `service-settlement-operations-view` 이동 완료
+   - `service-settlement-payroll` runtime 구현 완료, target repo 활성화 완료
+   - `service-settlement-operations-view` read-only runtime으로 target repo 활성화 완료
    - `service-settlement-registry` empty shell 생성 완료
    - `service-delivery-record` empty shell 생성 완료
 6. future/runtime repo 기동

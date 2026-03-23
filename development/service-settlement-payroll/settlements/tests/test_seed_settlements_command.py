@@ -2,11 +2,33 @@ import json
 from datetime import date
 from unittest.mock import ANY, Mock, patch
 
+from django.core.management.base import CommandError
 from django.core.management import call_command
 from django.test import TestCase, override_settings
 
 
 class SeedSettlementsCommandTests(TestCase):
+    @override_settings(
+        SETTLEMENT_ORG_BASE_URL="http://organization-master-api:8000",
+        SETTLEMENT_DRIVER_BASE_URL="http://driver-profile-api:8000",
+    )
+    @patch("settlements.management.commands.seed_settlements.urlopen")
+    def test_seed_command_raises_command_error_for_malformed_upstream_json(self, mock_urlopen):
+        class Response:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return False
+
+            def read(self):
+                return b""
+
+        mock_urlopen.return_value = Response()
+
+        with self.assertRaises(CommandError):
+            call_command("seed_settlements", stdout=Mock())
+
     @override_settings(
         SETTLEMENT_ORG_BASE_URL="http://organization-master-api:8000",
         SETTLEMENT_DRIVER_BASE_URL="http://driver-profile-api:8000",
@@ -69,6 +91,7 @@ class SeedSettlementsCommandTests(TestCase):
         requested_auth_headers = [
             call.args[0].headers.get("Authorization") for call in mock_urlopen.call_args_list
         ]
+        requested_timeouts = [call.kwargs.get("timeout") for call in mock_urlopen.call_args_list]
 
         self.assertEqual(
             requested_urls,
@@ -79,6 +102,7 @@ class SeedSettlementsCommandTests(TestCase):
             ],
         )
         self.assertTrue(all(header and header.startswith("Bearer ") for header in requested_auth_headers))
+        self.assertTrue(all(timeout == 10 for timeout in requested_timeouts))
 
         mock_run_update_or_create.assert_called_once_with(
             settlement_run_id=ANY,

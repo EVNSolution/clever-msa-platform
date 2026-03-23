@@ -1,4 +1,3 @@
-from rest_framework.exceptions import APIException
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler as drf_exception_handler
@@ -9,30 +8,8 @@ _ERROR_CODE_MAP = {
     status.HTTP_401_UNAUTHORIZED: "authentication_failed",
     status.HTTP_403_FORBIDDEN: "permission_denied",
     status.HTTP_404_NOT_FOUND: "not_found",
-    status.HTTP_502_BAD_GATEWAY: "upstream_invalid_response",
-    status.HTTP_503_SERVICE_UNAVAILABLE: "upstream_service_unavailable",
     status.HTTP_500_INTERNAL_SERVER_ERROR: "server_error",
 }
-
-
-class UpstreamServiceUnavailable(APIException):
-    status_code = status.HTTP_503_SERVICE_UNAVAILABLE
-    default_detail = "Settlement payroll service is unavailable."
-    default_code = "upstream_service_unavailable"
-
-
-class UpstreamInvalidResponse(APIException):
-    status_code = status.HTTP_502_BAD_GATEWAY
-    default_detail = "Settlement payroll service returned an invalid response."
-    default_code = "upstream_invalid_response"
-
-    def __init__(self, *, errors):
-        super().__init__(
-            detail={
-                "detail": self.default_detail,
-                "upstream_errors": errors,
-            }
-        )
 
 
 def _extract_message(detail):

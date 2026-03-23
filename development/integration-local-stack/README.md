@@ -13,6 +13,8 @@
 - `service-terminal-registry`는 active runtime repo로 compose에 편입됐다
 - `service-dispatch-registry`는 active runtime repo로 compose에 편입됐다
 - `service-dispatch-operations-view`는 active runtime repo로 compose에 편입됐다
+- `service-settlement-payroll`는 settlement write owner runtime으로 compose에 편입됐다
+- `service-settlement-operations-view`는 settlement read fan-out runtime으로 compose에 편입됐다
 - `service-telemetry-hub`는 active runtime repo로 compose에 편입됐다
 - `service-telemetry-listener`는 active runtime repo로 compose에 편입됐다
 - `service-telemetry-dead-letter`는 active runtime repo로 compose에 편입됐다
@@ -36,6 +38,12 @@
 현재 local stack에는 `dispatch-ops-api`가 포함된다.
 - `service-dispatch-registry`, `service-vehicle-assignment`, `service-vehicle-registry`, `service-driver-profile`를 fan-out read 하는 read-model runtime이다.
 - sqlite-only runtime이며 dedicated Postgres container를 추가하지 않는다.
+
+현재 local stack의 settlement는 `settlement-payroll-api`와 `settlement-ops-api`로 분리된다.
+- `/api/settlements/`는 write owner `settlement-payroll-api`로 연결된다.
+- `/api/settlement-ops/`는 read-only fan-out `settlement-ops-api`로 연결된다.
+- read consumer env는 `SETTLEMENT_OPS_BASE_URL`를 사용한다.
+- settlement Postgres는 `settlement-payroll-api`만 사용하고 `settlement-ops-api`는 sqlite-only runtime이다.
 
 실행 문서:
 - compose 시뮬레이션 설명은 [compose/README.md](./compose/README.md)

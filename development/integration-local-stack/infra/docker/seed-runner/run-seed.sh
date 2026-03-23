@@ -56,7 +56,7 @@ wait_for_health "vehicle-asset" "http://vehicle-asset-api:8000/health/"
 wait_for_health "dispatch-registry" "http://dispatch-registry-api:8000/health/"
 wait_for_health "terminal-registry" "http://terminal-registry-api:8000/health/"
 wait_for_health "telemetry-hub" "http://telemetry-hub-api:8000/health/"
-wait_for_health "settlement" "http://settlement-api:8000/health/"
+wait_for_health "settlement-payroll" "http://settlement-payroll-api:8000/health/"
 wait_for_health "account-auth" "http://account-auth-api:8000/health/"
 
 run_manage "services/organization-master" "infra/env/organization-master.env.example" migrate --noinput
@@ -80,8 +80,8 @@ run_manage "services/telemetry-hub" "infra/env/telemetry-hub.env.example" seed_t
 run_manage "services/driver-vehicle-assignment" "infra/env/driver-vehicle-assignment.env.example" migrate --noinput
 run_manage "services/driver-vehicle-assignment" "infra/env/driver-vehicle-assignment.env.example" seed_assignments
 
-run_manage "services/settlement" "infra/env/settlement.env.example" migrate --noinput
-run_manage "services/settlement" "infra/env/settlement.env.example" seed_settlements
+run_manage "services/settlement-payroll" "infra/env/settlement-payroll.env.example" migrate --noinput
+run_manage "services/settlement-payroll" "infra/env/settlement-payroll.env.example" seed_settlements
 
 run_manage "services/account-auth" "infra/env/account-auth.env.example" migrate --noinput
 run_manage "services/account-auth" "infra/env/account-auth.env.example" seed_accounts

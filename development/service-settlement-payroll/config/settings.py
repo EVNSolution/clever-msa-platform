@@ -37,8 +37,12 @@ ASGI_APPLICATION = "config.asgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("POSTGRES_DB", "settlement_payroll"),
+        "USER": os.environ.get("POSTGRES_USER", "settlement_payroll"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "settlement_payroll"),
+        "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
+        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
     }
 }
 
@@ -65,7 +69,7 @@ REST_FRAMEWORK = {
         "settlements.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
-        "settlements.permissions.AuthenticatedReadOnly",
+        "rest_framework.permissions.IsAuthenticated",
     ),
     "EXCEPTION_HANDLER": "settlements.exceptions.api_exception_handler",
 }
@@ -75,7 +79,11 @@ JWT_ISSUER = os.environ.get("JWT_ISSUER", "msa-server")
 JWT_AUDIENCE = os.environ.get("JWT_AUDIENCE", "msa-server")
 JWT_ALGORITHM = os.environ.get("JWT_ALGORITHM", "HS256")
 
-SETTLEMENT_PAYROLL_BASE_URL = os.environ.get(
-    "SETTLEMENT_PAYROLL_BASE_URL",
-    "http://settlement-payroll-api:8000",
+SETTLEMENT_ORG_BASE_URL = os.environ.get(
+    "SETTLEMENT_ORG_BASE_URL",
+    "http://organization-master-api:8000",
+)
+SETTLEMENT_DRIVER_BASE_URL = os.environ.get(
+    "SETTLEMENT_DRIVER_BASE_URL",
+    "http://driver-profile-api:8000",
 )
