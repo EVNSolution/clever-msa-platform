@@ -5,17 +5,15 @@ from django.test import override_settings
 from rest_framework.exceptions import NotFound
 
 from driver360.services.driver_summary_service import DriverSummaryService
-from driver360.services.source_clients import SourceClients
 
 
 class FakeSourceClients:
-    def __init__(self, *, driver=None, companies=None, fleets=None, account=None, runs=None, items=None):
+    def __init__(self, *, driver=None, companies=None, fleets=None, account=None, latest_settlement=None):
         self.driver = driver
         self.companies = companies if companies is not None else []
         self.fleets = fleets if fleets is not None else []
         self.account = account
-        self.runs = runs if runs is not None else []
-        self.items = items if items is not None else []
+        self.latest_settlement = latest_settlement
 
     def get_driver(self, *, driver_id, authorization):
         return self.driver
@@ -29,11 +27,8 @@ class FakeSourceClients:
     def get_account(self, *, account_id, authorization):
         return self.account
 
-    def list_settlement_runs(self, *, authorization):
-        return self.runs
-
-    def list_settlement_items(self, *, authorization):
-        return self.items
+    def get_latest_settlement(self, *, driver_id, authorization):
+        return self.latest_settlement
 
 
 class DriverSummaryServiceTests(TestCase):
@@ -64,40 +59,17 @@ class DriverSummaryServiceTests(TestCase):
             "role": "user",
             "is_active": True,
         }
-        self.runs = [
-            {
-                "settlement_run_id": "50000000-0000-0000-0000-000000000001",
-                "company_id": "20000000-0000-0000-0000-000000000001",
-                "fleet_id": "30000000-0000-0000-0000-000000000001",
-                "period_start": "2026-02-01",
-                "period_end": "2026-02-29",
-                "status": "closed",
-            },
-            {
+        self.latest_settlement = {
+            "driver_id": "10000000-0000-0000-0000-000000000001",
+            "latest_settlement": {
                 "settlement_run_id": "50000000-0000-0000-0000-000000000002",
-                "company_id": "20000000-0000-0000-0000-000000000001",
-                "fleet_id": "30000000-0000-0000-0000-000000000001",
                 "period_start": "2026-03-01",
                 "period_end": "2026-03-31",
                 "status": "closed",
-            },
-        ]
-        self.items = [
-            {
-                "settlement_item_id": "60000000-0000-0000-0000-000000000001",
-                "settlement_run_id": "50000000-0000-0000-0000-000000000001",
-                "driver_id": "10000000-0000-0000-0000-000000000001",
-                "amount": "100000.00",
-                "payout_status": "paid",
-            },
-            {
-                "settlement_item_id": "60000000-0000-0000-0000-000000000002",
-                "settlement_run_id": "50000000-0000-0000-0000-000000000002",
-                "driver_id": "10000000-0000-0000-0000-000000000001",
-                "amount": "125000.50",
                 "payout_status": "pending",
+                "amount": "125000.50",
             },
-        ]
+        }
 
     def test_build_summary_with_linked_account_and_latest_settlement(self):
         service = DriverSummaryService(
@@ -106,8 +78,7 @@ class DriverSummaryServiceTests(TestCase):
                 companies=self.companies,
                 fleets=self.fleets,
                 account=self.account,
-                runs=self.runs,
-                items=self.items,
+                latest_settlement=self.latest_settlement,
             )
         )
 
@@ -133,8 +104,10 @@ class DriverSummaryServiceTests(TestCase):
                 companies=self.companies,
                 fleets=self.fleets,
                 account=None,
-                runs=self.runs,
-                items=[],
+                latest_settlement={
+                    "driver_id": driver["driver_id"],
+                    "latest_settlement": None,
+                },
             )
         )
 
@@ -156,8 +129,10 @@ class DriverSummaryServiceTests(TestCase):
                 companies=[],
                 fleets=[],
                 account=None,
-                runs=[],
-                items=[],
+                latest_settlement={
+                    "driver_id": self.driver["driver_id"],
+                    "latest_settlement": None,
+                },
             )
         )
 
@@ -186,27 +161,3 @@ class DriverSummaryServiceTests(TestCase):
                 driver_id="10000000-0000-0000-0000-000000000001",
                 authorization="Bearer token",
             )
-
-    @override_settings(SETTLEMENT_OPS_BASE_URL="http://settlement-ops-api:8000")
-    @patch("driver360.services.source_clients.urlopen")
-    def test_settlement_sources_use_ops_base_url(self, mock_urlopen):
-        class FakeResponse:
-            def __enter__(self):
-                return self
-
-            def __exit__(self, exc_type, exc, tb):
-                return False
-
-            def read(self):
-                return b"[]"
-
-        mock_urlopen.return_value = FakeResponse()
-
-        clients = SourceClients()
-
-        clients.list_settlement_runs(authorization="Bearer token")
-        clients.list_settlement_items(authorization="Bearer token")
-
-        self.assertEqual(mock_urlopen.call_count, 2)
-        self.assertEqual(mock_urlopen.call_args_list[0].args[0].full_url, "http://settlement-ops-api:8000/runs/")
-        self.assertEqual(mock_urlopen.call_args_list[1].args[0].full_url, "http://settlement-ops-api:8000/items/")

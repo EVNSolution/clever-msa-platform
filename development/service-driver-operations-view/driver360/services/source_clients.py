@@ -62,14 +62,14 @@ class SourceClients:
             allow_not_found=True,
         )
 
-    def list_settlement_runs(self, *, authorization: str):
-        return self._request_json(
-            url=self._build_url(settings.SETTLEMENT_OPS_BASE_URL, "/runs/"),
+    def get_latest_settlement(self, *, driver_id: str, authorization: str):
+        payload = self._request_json(
+            url=self._build_url(
+                settings.SETTLEMENT_OPS_BASE_URL,
+                f"/drivers/{driver_id}/latest-settlement/",
+            ),
             authorization=authorization,
         )
-
-    def list_settlement_items(self, *, authorization: str):
-        return self._request_json(
-            url=self._build_url(settings.SETTLEMENT_OPS_BASE_URL, "/items/"),
-            authorization=authorization,
-        )
+        if not isinstance(payload, dict):
+            raise SourceServiceError("Upstream request failed: malformed latest settlement payload.")
+        return payload
