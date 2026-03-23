@@ -82,7 +82,7 @@
 - `check-ev-id` 중복검사 endpoint를 제공한다.
 
 ### `settlement-payroll-api`
-- `SettlementRun`, `SettlementItem` write owner placeholder CRUD를 제공한다.
+- `SettlementRun`, `SettlementItem` write owner CRUD를 제공한다.
 - local compose에서 settlement Postgres를 직접 사용한다.
 - seed-runner는 이 서비스의 `migrate`, `seed_settlements`만 호출한다.
 - 실제 payroll calculation engine, policy/config/rate, daily/monthly settlement clone은 구현하지 않는다.

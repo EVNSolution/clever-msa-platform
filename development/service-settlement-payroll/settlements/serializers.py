@@ -1,4 +1,4 @@
-"""Serializers for the settlement placeholder scaffold."""
+"""Serializers for settlement payroll resources."""
 
 from rest_framework import serializers
 

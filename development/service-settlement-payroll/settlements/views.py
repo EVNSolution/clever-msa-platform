@@ -1,4 +1,4 @@
-"""Read/write endpoints for placeholder settlement runs and items."""
+"""Read/write endpoints for settlement payroll runs and items."""
 
 from rest_framework import permissions, viewsets
 from rest_framework.response import Response

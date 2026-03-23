@@ -1,4 +1,4 @@
-"""Placeholder settlement models kept for bootstrap reads and writes only."""
+"""Settlement payroll models used for local bootstrap and contract tests."""
 
 import uuid
 

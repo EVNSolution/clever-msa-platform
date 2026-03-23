@@ -1,5 +1,6 @@
 import json
 from datetime import date
+from io import StringIO
 from unittest.mock import ANY, Mock, patch
 
 from django.core.management.base import CommandError
@@ -207,3 +208,65 @@ class SeedSettlementsCommandTests(TestCase):
                 "payout_status": "pending",
             },
         )
+
+    @override_settings(
+        SETTLEMENT_ORG_BASE_URL="http://organization-master-api:8000",
+        SETTLEMENT_DRIVER_BASE_URL="http://driver-profile-api:8000",
+    )
+    @patch("settlements.management.commands.seed_settlements.SettlementItem.objects.update_or_create")
+    @patch("settlements.management.commands.seed_settlements.SettlementRun.objects.update_or_create")
+    @patch("settlements.management.commands.seed_settlements.urlopen")
+    def test_seed_command_reports_payroll_bootstrap_message(
+        self,
+        mock_urlopen,
+        mock_run_update_or_create,
+        mock_item_update_or_create,
+    ):
+        class Response:
+            def __init__(self, payload):
+                self.status = 200
+                self._payload = payload
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return False
+
+            def read(self):
+                return json.dumps(self._payload).encode("utf-8")
+
+        mock_urlopen.side_effect = [
+            Response(
+                [
+                    {"company_id": "30000000-0000-0000-0000-000000000001", "name": "Seed Company"},
+                ]
+            ),
+            Response(
+                [
+                    {
+                        "fleet_id": "40000000-0000-0000-0000-000000000001",
+                        "company_id": "30000000-0000-0000-0000-000000000001",
+                        "name": "Seed Fleet",
+                    }
+                ]
+            ),
+            Response(
+                [
+                    {
+                        "driver_id": "10000000-0000-0000-0000-000000000001",
+                        "company_id": "30000000-0000-0000-0000-000000000001",
+                        "fleet_id": "40000000-0000-0000-0000-000000000001",
+                        "name": "Seed Driver",
+                    }
+                ]
+            ),
+        ]
+        mock_run_update_or_create.return_value = (Mock(), True)
+        mock_item_update_or_create.return_value = (Mock(), True)
+        stdout = StringIO()
+
+        call_command("seed_settlements", stdout=stdout)
+
+        self.assertIn("Seeded settlement payroll bootstrap data.", stdout.getvalue())
+        self.assertNotIn("placeholder", stdout.getvalue())

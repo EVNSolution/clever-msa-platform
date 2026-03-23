@@ -1,4 +1,4 @@
-x-bootstrap-placeholder-command: &bootstrap_placeholder_command
+x-bootstrap-command: &bootstrap_command
   - sh
   - -c
   - while true; do sleep 3600; done

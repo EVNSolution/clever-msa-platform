@@ -126,7 +126,7 @@ class SettlementApiTests(TestCase):
         self.assertEqual(item_response.status_code, 403)
         self.assertEqual(set(item_response.data.keys()), {"code", "message", "details"})
 
-    def test_placeholder_routes_do_not_expose_legacy_settlement_engine_endpoints(self):
+    def test_payroll_routes_do_not_expose_legacy_settlement_engine_endpoints(self):
         self._authenticate(self.admin_token)
 
         for path in (

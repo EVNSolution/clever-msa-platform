@@ -64,7 +64,7 @@ def _pick_seeded_record(records, *, kind: str, field_name: str, expected_value):
 
 
 class Command(BaseCommand):
-    help = "Create or update placeholder settlement bootstrap data."
+    help = "Create or update settlement payroll bootstrap data."
 
     def handle(self, *args, **options):
         authorization = _build_bootstrap_authorization()
@@ -125,4 +125,4 @@ class Command(BaseCommand):
                 "payout_status": "pending",
             },
         )
-        self.stdout.write(self.style.SUCCESS("Seeded placeholder settlement data."))
+        self.stdout.write(self.style.SUCCESS("Seeded settlement payroll bootstrap data."))
