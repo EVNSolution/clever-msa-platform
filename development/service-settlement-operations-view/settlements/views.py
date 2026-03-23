@@ -5,8 +5,17 @@ from rest_framework.views import APIView
 
 from settlements.exceptions import UpstreamInvalidResponse, UpstreamServiceUnavailable
 from settlements.permissions import AuthenticatedReadOnly
-from settlements.serializers import SettlementItemSerializer, SettlementRunSerializer
-from settlements.services import SourceClients, SourceNotFoundError, SourceServiceError
+from settlements.serializers import (
+    DriverLatestSettlementSerializer,
+    SettlementItemSerializer,
+    SettlementRunSerializer,
+)
+from settlements.services import (
+    LatestSettlementSummaryService,
+    SourceClients,
+    SourceNotFoundError,
+    SourceServiceError,
+)
 
 
 def _serialize_upstream_payload(serializer_class, payload, *, many: bool):
@@ -98,5 +107,28 @@ class SettlementItemDetailView(APIView):
 
         return Response(
             _serialize_upstream_payload(SettlementItemSerializer, item, many=False),
+            status=status.HTTP_200_OK,
+        )
+
+
+class DriverLatestSettlementView(APIView):
+    http_method_names = ["get", "head", "options"]
+    permission_classes = [AuthenticatedReadOnly]
+
+    def get(self, request, driver_id):
+        try:
+            latest_settlement = LatestSettlementSummaryService().build_summary(
+                driver_id=str(driver_id),
+                authorization=request.META.get("HTTP_AUTHORIZATION", ""),
+            )
+        except SourceServiceError as exc:
+            raise UpstreamServiceUnavailable() from exc
+
+        payload = {
+            "driver_id": str(driver_id),
+            "latest_settlement": latest_settlement,
+        }
+        return Response(
+            _serialize_upstream_payload(DriverLatestSettlementSerializer, payload, many=False),
             status=status.HTTP_200_OK,
         )

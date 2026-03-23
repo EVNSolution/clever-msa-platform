@@ -105,6 +105,52 @@ class SettlementApiTests(TestCase):
         self.assertEqual(run_patch_response.status_code, 405)
         self.assertEqual(item_delete_response.status_code, 405)
 
+    @patch("settlements.views.LatestSettlementSummaryService")
+    def test_user_can_read_latest_settlement_for_driver(self, mock_service):
+        self._authenticate(self.user_token)
+        driver_id = "10000000-0000-0000-0000-000000000001"
+        mock_service.return_value.build_summary.return_value = {
+            "settlement_run_id": "50000000-0000-0000-0000-000000000002",
+            "period_start": "2026-03-01",
+            "period_end": "2026-03-31",
+            "status": "closed",
+            "payout_status": "pending",
+            "amount": "125000.50",
+        }
+
+        response = self.client.get(f"/drivers/{driver_id}/latest-settlement/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["driver_id"], driver_id)
+        self.assertEqual(response.data["latest_settlement"]["amount"], "125000.50")
+        self.assertEqual(
+            mock_service.return_value.build_summary.call_args.kwargs["authorization"],
+            f"Bearer {self.user_token}",
+        )
+
+    @patch("settlements.views.LatestSettlementSummaryService")
+    def test_driver_with_no_settlement_returns_null_summary(self, mock_service):
+        self._authenticate(self.user_token)
+        driver_id = "10000000-0000-0000-0000-000000000099"
+        mock_service.return_value.build_summary.return_value = None
+
+        response = self.client.get(f"/drivers/{driver_id}/latest-settlement/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["driver_id"], driver_id)
+        self.assertIsNone(response.data["latest_settlement"])
+
+    @patch("settlements.views.LatestSettlementSummaryService")
+    def test_latest_settlement_outage_returns_503_shape(self, mock_service):
+        self._authenticate(self.user_token)
+        mock_service.return_value.build_summary.side_effect = SourceServiceError("unavailable")
+
+        response = self.client.get("/drivers/10000000-0000-0000-0000-000000000001/latest-settlement/")
+
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.data["code"], "upstream_service_unavailable")
+        self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
+
     def test_placeholder_routes_do_not_expose_legacy_settlement_engine_endpoints(self):
         self._authenticate(self.user_token)
 

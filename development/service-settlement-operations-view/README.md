@@ -3,9 +3,10 @@
 이 repo는 정산 운영 조회 `operations-view`를 소유하는 Django read-only fan-out repo다.
 
 현재 역할:
-- 외부 read API `health/`, `runs/`, `items/` 제공
+- 외부 read API `health/`, `runs/`, `items/`, `drivers/<driver_id>/latest-settlement/` 제공
 - gateway 외부 prefix `/api/settlement-ops/` 뒤에서 payroll read fan-out 수행
 - authenticated read 전용 settlement run / item 조회
+- driver 단위 latest settlement summary read 조립
 
 업스트림 write owner:
 - `service-settlement-payroll`
