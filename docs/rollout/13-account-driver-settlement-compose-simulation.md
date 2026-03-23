@@ -23,7 +23,7 @@
 - `driver-profile-api`
 - `settlement-payroll-api`
 - `settlement-ops-api`
-- `driver-360-api`
+- `driver-ops-api`
 - `seed-runner`
 - `account-db`
 - `driver-db`
@@ -57,7 +57,7 @@
 - `/api/drivers/` -> `driver-profile-api`
 - `/api/settlements/` -> `settlement-payroll-api`
 - `/api/settlement-ops/` -> `settlement-ops-api`
-- `/api/driver-360/` -> `driver-360-api`
+- `/api/driver-ops/` -> `driver-ops-api`
 - `/api/org/` -> `organization-master-api`
 
 ## seed-runner에서 settlement split과 직접 관련된 순서
@@ -80,4 +80,4 @@
 ## settlement scoped read smoke
 - `GET /api/settlement-ops/drivers/<driver_id>/latest-settlement/`는 `driver_id`와 `latest_settlement` wrapper를 반환해야 한다.
 - settlement 이력이 없는 `driver_id`는 `200`과 `latest_settlement: null`을 반환해야 한다.
-- `GET /api/driver-360/drivers/<driver_id>/`는 계속 같은 outer summary contract를 유지해야 하며, latest settlement 필드는 scoped settlement read contract에서 채워져야 한다.
+- `GET /api/driver-ops/drivers/<driver_id>/`는 계속 같은 outer summary contract를 유지해야 하며, latest settlement 필드는 scoped settlement read contract에서 채워져야 한다.

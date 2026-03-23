@@ -5,6 +5,7 @@
 이 문서는 배송원 상세 운영 화면을 위한 통합 읽기 모델 정의서다.
 
 목표는 여러 정본 서비스를 front가 직접 조합하지 않고도 배송원 한 명의 현재 스냅샷을 한 화면에서 볼 수 있게 만드는 것이다.
+이 읽기 모델의 런타임 provider는 `service-driver-operations-view`이며, compose/gateway/runtime naming은 `driver-ops-api`를 따른다.
 
 ## 이 읽기 모델이 답해야 하는 질문
 
@@ -90,6 +91,7 @@ Driver 360은 우선 `summary-only` consumer domain으로 시작하고, timeline
 
 Driver 360은 어떤 원본 데이터도 직접 수정하지 않는다.
 이번 bootstrap 1차에서는 source service들을 bounded fan-out으로 읽는 query service로 구현한다.
+runtime container and gateway naming은 `driver-ops-api` / `/api/driver-ops/`를 사용하지만, 화면과 읽기 모델의 이름은 계속 `Driver 360`으로 유지한다.
 정산 영역에서는 `Settlement Payroll` collection을 직접 읽지 않고, `Settlement Operations View`의 `GET /drivers/<driver_id>/latest-settlement/` scoped contract만 사용한다.
 
 ## 포함하지 않을 것
