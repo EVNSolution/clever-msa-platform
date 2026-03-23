@@ -17,11 +17,13 @@
 - `organization-master-api`
 - `account-auth-api`
 - `driver-profile-api`
-- `settlement-api`
+- `settlement-payroll-api`
+- `settlement-ops-api`
 - `seed-runner`
 - `account-db`
 - `driver-db`
-- `settlement-db`
+- `settlement-payroll-db`
+- `settlement-ops-db`
 - `org-db`
 - `redis`
 
@@ -38,18 +40,19 @@
 - `/admin/` -> `admin-front`
 - `/api/auth/` -> `account-auth-api`
 - `/api/drivers/` -> `driver-profile-api`
-- `/api/settlements/` -> `settlement-api`
+- `/api/settlements/` -> `settlement-payroll-api`
+- `/api/settlement-ops/` -> `settlement-ops-api`
 - `/api/org/` -> `organization-master-api`
 
 ## seed-runner 순서
 1. `account-auth` health 확인
 2. `organization-master` health 확인
 3. `driver-profile` health 확인
-4. `settlement` health 확인
+4. `settlement-payroll` health 확인
 5. `account-auth` migrate + `seed_accounts`
 6. `organization-master` migrate + `seed_organization`
 7. `driver-profile` migrate + `seed_drivers`
-8. `settlement` migrate + `seed_settlements`
+8. `settlement-payroll` migrate + `seed_settlements`
 
 ## 상태
 - 현재 문서는 실제 구현된 로컬 Compose 부트스트랩 구조를 설명한다.

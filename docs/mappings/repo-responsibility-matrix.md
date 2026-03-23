@@ -25,9 +25,10 @@
 | `service-telemetry-hub` | raw ingest API, normalization, latest snapshot, diagnostic/fault flow | MQTT broker subscribe worker, terminal registry lifecycle, vehicle master mutation, assignment workflow | `service-terminal-registry`, `service-vehicle-registry` |
 | `service-telemetry-listener` | MQTT ingress worker, topic subscribe, payload forwarding, retry/drop classification | telemetry DB writes, normalization, latest snapshot persistence, terminal/vehicle master mutation | `service-telemetry-hub`, `mqtt-broker` in `integration-local-stack` |
 | `service-telemetry-dead-letter` | failed telemetry payload append-only storage, producer-key-auth internal ingest, admin read | telemetry raw/timeseries/snapshot truth, automatic replay workflow, vehicle/terminal master mutation | `service-telemetry-listener`, `service-telemetry-hub` later |
-| `service-settlement-registry` | settlement policy, standard, version, period rules | delivery source input, settlement view composition | `service-account-access`, `service-driver-profile` later |
-| `service-delivery-record` | source delivery record, aggregation input | settlement policy truth, final operations view | `service-driver-profile`, `service-vehicle-assignment` later |
-| `service-settlement-operations-view` | settlement result view and operational read model | policy truth, source record ownership | settlement registry and delivery record later |
+| `service-settlement-registry` | settlement policy, standard, version, period rules | settlement run/item writes, delivery source input, payout/result truth | `service-account-access`, `service-driver-profile` later |
+| `service-delivery-record` | source delivery record, aggregation input | settlement run/item writes, payout/result truth, final operations view | `service-driver-profile`, `service-vehicle-assignment` later |
+| `service-settlement-payroll` | settlement run/item writes, deduction, incentive, payout_status, result truth | settlement policy registry, delivery source truth, read-only operations view | `service-delivery-record`, `service-settlement-registry`, `service-driver-profile` |
+| `service-settlement-operations-view` | settlement result read model and operational read API | settlement run/item writes, payout/result truth, source truth ownership | `service-settlement-payroll`, `service-delivery-record` later |
 | `service-dispatch-registry` | `dispatch_plan`, `vehicle_schedule`, `dispatch_assignment`, volume plan, shift/fleet/date planning truth | current assignment truth, telemetry, terminal lifecycle | `service-driver-profile`, `service-vehicle-registry`, organization/personnel document services later |
 | `service-dispatch-operations-view` | dispatch read model, planning status summary, planned-vs-current dispatch board runtime | dispatch truth writes, assignment writes, dedicated projection DB ownership | `service-dispatch-registry`, `service-vehicle-assignment`, `service-vehicle-registry`, `service-driver-profile` |
 | `service-personnel-document-registry` | personnel documents, contract/proof/account/business-registration file aggregates | basic driver profile truth, approval workflow truth | organization, account, driver profile later |
@@ -59,12 +60,12 @@
 
 - 새 repo를 만들 때 먼저 이 문서에 한 줄을 추가한다.
 - 한 repo가 다른 repo 역할까지 먹기 시작하면, 이 문서를 먼저 수정하고 나서 설계를 다시 본다.
-- `settlement`는 이 문서에서도 단일 repo가 아니라 3축으로 유지한다.
+- `settlement`는 이 문서에서도 4축으로 유지한다.
 
 ## Review Checklist
 
 - repo 이름만 보고도 category가 드러나는가
 - `owns`와 `does not own`가 겹치지 않는가
 - read model repo가 write responsibility를 갖지 않는가
-- `settlement`가 단일 repo로 되돌아가지 않았는가
+- `settlement`가 4축으로 분리되어 있는가
 - `vehicle registry`가 telemetry나 assignment를 먹지 않았는가

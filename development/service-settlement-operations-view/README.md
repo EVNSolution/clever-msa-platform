@@ -11,6 +11,11 @@
 - `service-settlement-payroll`
 - 이 repo는 정산 write ownership, migration, seed runtime을 가지지 않음
 
+이 repo는 절대 소유하지 않음:
+- `SettlementRun`, `SettlementItem` write
+- payout/result truth
+- settlement seed runtime
+
 포함:
 - Django/DRF runtime
 - payroll source client

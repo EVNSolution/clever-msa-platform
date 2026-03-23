@@ -1,10 +1,10 @@
 # service-settlement-payroll
 
-이 repo는 settlement write owner다.
+이 repo는 settlement write owner runtime이다.
 
 현재 ownership:
 - `SettlementRun`, `SettlementItem` write
-- later phase에서 `deduction`, `incentive`, `payout_status` 계열 write 상태 관리
+- `deduction`, `incentive`, `payout_status` write 상태 관리
 - local bootstrap seed command
 
 이 repo가 소유하지 않는 것:
@@ -13,9 +13,9 @@
 - read-model only settlement consumers
 - gateway, compose, or platform glue
 
-현재 코드는 placeholder settlement write behavior를 유지하는 bootstrap 단계다.
-정산 결과 read model은 다른 repo 경계로 분리한다.
+정산 결과 read model은 `service-settlement-operations-view`가 읽는다.
 
 아키텍처 정본:
-- `../../docs/decisions/`
+- `../../docs/decisions/specs/2026-03-23-settlement-phase-2-decomposition-design.md`
+- `../../docs/rollout/plans/2026-03-23-settlement-phase-2-decomposition-implementation-plan.md`
 - `../../docs/mappings/`

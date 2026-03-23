@@ -39,6 +39,7 @@
 | `docker-compose.account-driver-settlement.yml` | `development/integration-local-stack/docker-compose.account-driver-settlement.yml` | integration repo | `direct-move` | 로컬 통합 실행 진입점 |
 | `services/settlement/` | `development/service-settlement-registry/` | runtime repo | `decompose-first` | empty shell 생성 완료, runtime 분해는 후속 |
 | `services/settlement/` | `development/service-delivery-record/` | runtime repo | `decompose-first` | empty shell 생성 완료, runtime 분해는 후속 |
+| `services/settlement/` | `development/service-settlement-payroll/` | runtime repo | `decompose-first` | phase 2 write owner split, `SettlementRun` / `SettlementItem` ownership 이동 |
 | `services/settlement/` | `development/service-settlement-operations-view/` | runtime repo | `decompose-first` | 이동 완료, 현재 active source는 target repo |
 | 없음 | `development/service-terminal-registry/` | runtime repo | `direct-move` | target repo가 active runtime source이며 terminal registry 구현 완료 |
 | 없음 | `development/service-telemetry-hub/` | runtime repo | `direct-move` | target repo가 active runtime source이며 telemetry hub 구현 완료 |

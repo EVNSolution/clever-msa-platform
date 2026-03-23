@@ -6,6 +6,12 @@
 - empty shell
 - 경계와 이름만 고정
 
+이 repo는 절대 소유하지 않음:
+- `SettlementRun`
+- `SettlementItem`
+- payout/result truth
+- settlement read-model API
+
 미래 역할:
 - 배송원 원천 기록, 집계 입력, 계산 전 입력 정본
 
