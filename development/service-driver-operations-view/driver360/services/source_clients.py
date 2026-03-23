@@ -64,12 +64,12 @@ class SourceClients:
 
     def list_settlement_runs(self, *, authorization: str):
         return self._request_json(
-            url=self._build_url(settings.SETTLEMENT_BASE_URL, "/runs/"),
+            url=self._build_url(settings.SETTLEMENT_OPS_BASE_URL, "/runs/"),
             authorization=authorization,
         )
 
     def list_settlement_items(self, *, authorization: str):
         return self._request_json(
-            url=self._build_url(settings.SETTLEMENT_BASE_URL, "/items/"),
+            url=self._build_url(settings.SETTLEMENT_OPS_BASE_URL, "/items/"),
             authorization=authorization,
         )
