@@ -11,7 +11,8 @@
 - `admin-front`
 - `account-auth-api`
 - `driver-profile-api`
-- `settlement-api`
+- `settlement-payroll-api`
+- `settlement-ops-api`
 - `organization-master-api`
 - `vehicle-asset-api`
 - `dispatch-registry-api`
@@ -80,14 +81,23 @@
 - `account_id(optional)`, `company_id`, `fleet_id`, `name`, `ev_id`, `phone_number`, `address`만 사용한다.
 - `check-ev-id` 중복검사 endpoint를 제공한다.
 
-### `settlement-api`
-- `SettlementRun`, `SettlementItem` placeholder CRUD만 제공한다.
+### `settlement-payroll-api`
+- `SettlementRun`, `SettlementItem` write owner placeholder CRUD를 제공한다.
+- local compose에서 settlement Postgres를 직접 사용한다.
+- seed-runner는 이 서비스의 `migrate`, `seed_settlements`만 호출한다.
 - 실제 payroll calculation engine, policy/config/rate, daily/monthly settlement clone은 구현하지 않는다.
 - 관련 참고는 [06-settlement-process-note.md](../../../docs/decisions/06-settlement-process-note.md)에 둔다.
 
+### `settlement-ops-api`
+- settlement 운영 조회용 read-only fan-out runtime을 제공한다.
+- dedicated Postgres container 없이 sqlite-only runtime으로 동작한다.
+- upstream write owner `settlement-payroll-api`를 `SETTLEMENT_PAYROLL_BASE_URL`로 읽는다.
+- gateway 외부 prefix는 `/api/settlement-ops/`다.
+
 ### `driver-360-api`
 - 기사 단건 운영 화면용 summary query만 제공한다.
-- 내부적으로 `driver-profile`, `organization-master`, `account-auth`, `settlement`를 조회해서 하나의 summary payload로 합친다.
+- 내부적으로 `driver-profile`, `organization-master`, `account-auth`, `settlement-ops`를 조회해서 하나의 summary payload로 합친다.
+- settlement read consumer env 이름은 `SETTLEMENT_OPS_BASE_URL`이다.
 - 이번 단계에서는 materialized projection 저장소를 두지 않는다.
 
 ### `vehicle-asset-api`
@@ -143,7 +153,8 @@
 - `/admin/` -> `admin-front`
 - `/api/auth/` -> `account-auth-api`
 - `/api/drivers/` -> `driver-profile-api`
-- `/api/settlements/` -> `settlement-api`
+- `/api/settlements/` -> `settlement-payroll-api`
+- `/api/settlement-ops/` -> `settlement-ops-api`
 - `/api/org/` -> `organization-master-api`
 - `/api/vehicles/` -> `vehicle-asset-api`
 - `/api/dispatch/` -> `dispatch-registry-api`
@@ -173,7 +184,7 @@ dead-letter는 예외적으로 admin-read 경로만 명시 route로 노출한다
 6. `terminal-registry` migrate + `seed_terminals`
 7. `telemetry-hub` migrate + `seed_telemetry`
 8. `driver-vehicle-assignment` migrate + `seed_assignments`
-9. `settlement` migrate + `seed_settlements`
+9. `settlement-payroll` migrate + `seed_settlements`
 10. `account-auth` migrate + `seed_accounts`
 
 모든 단계는 재실행 가능하도록 idempotent하게 작성돼 있다.

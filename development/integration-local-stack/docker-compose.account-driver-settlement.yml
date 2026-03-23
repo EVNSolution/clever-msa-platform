@@ -12,7 +12,8 @@ services:
       - admin-front
       - account-auth-api
       - driver-profile-api
-      - settlement-api
+      - settlement-payroll-api
+      - settlement-ops-api
       - organization-master-api
       - vehicle-asset-api
       - dispatch-registry-api
@@ -63,13 +64,23 @@ services:
     expose:
       - "8000"
 
-  settlement-api:
+  settlement-payroll-api:
+    build:
+      context: ../service-settlement-payroll
+    env_file:
+      - ./infra/env/settlement-payroll.env.example
+    depends_on:
+      - settlement-db
+    expose:
+      - "8000"
+
+  settlement-ops-api:
     build:
       context: ../service-settlement-operations-view
     env_file:
-      - ./infra/env/settlement.env.example
+      - ./infra/env/settlement-ops.env.example
     depends_on:
-      - settlement-db
+      - settlement-payroll-api
     expose:
       - "8000"
 
@@ -220,7 +231,7 @@ services:
     depends_on:
       - account-auth-api
       - driver-profile-api
-      - settlement-api
+      - settlement-ops-api
       - organization-master-api
     expose:
       - "8000"
@@ -355,7 +366,7 @@ services:
       - redis
       - account-auth-api
       - driver-profile-api
-      - settlement-api
+      - settlement-payroll-api
       - organization-master-api
       - vehicle-asset-api
       - dispatch-registry-api
