@@ -13,7 +13,7 @@
 ## 현재 포함 서비스
 - `front`
 - `admin-front`
-- `api-gateway`
+- `gateway`
 - `organization-master-api`
 - `account-auth-api`
 - `driver-profile-api`
@@ -66,6 +66,6 @@
 
 ## 상태
 - 현재 문서는 실제 구현된 로컬 Compose 부트스트랩 구조를 설명한다.
-- 프런트 2개와 백엔드 4개가 모두 컨테이너로 포함된다.
+- 프런트 2개와 백엔드 5개가 모두 컨테이너로 포함된다.
 - settlement는 write/read 서비스가 분리되어 있지만 DB는 아직 `settlement-db` 하나만 공유한다.
 - `settlement-ops-api`는 sqlite-only runtime으로 동작한다.
