@@ -7,7 +7,7 @@ from django.conf import settings
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from settlements.services import SourceNotFoundError
+from settlements.services import SourceNotFoundError, SourceServiceError
 
 
 class SettlementApiTests(TestCase):
@@ -131,4 +131,35 @@ class SettlementApiTests(TestCase):
             response = self.client.get(f"/runs/{uuid4()}/")
 
         self.assertEqual(response.status_code, 404)
+        self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
+
+    def test_upstream_payroll_outage_returns_503_dependency_error_shape(self):
+        self._authenticate(self.user_token)
+
+        with patch("settlements.views.SourceClients") as mock_source_clients:
+            mock_source_clients.return_value.list_settlement_runs.side_effect = SourceServiceError("unavailable")
+            response = self.client.get("/runs/")
+
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.data["code"], "upstream_service_unavailable")
+        self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
+
+    def test_malformed_upstream_payload_returns_502_dependency_error_shape(self):
+        self._authenticate(self.user_token)
+
+        with patch("settlements.views.SourceClients") as mock_source_clients:
+            mock_source_clients.return_value.list_settlement_runs.return_value = [
+                {
+                    "settlement_run_id": str(uuid4()),
+                    "company_id": "not-a-uuid",
+                    "fleet_id": str(uuid4()),
+                    "period_start": "2026-03-01",
+                    "period_end": "2026-03-31",
+                    "status": "draft",
+                }
+            ]
+            response = self.client.get("/runs/")
+
+        self.assertEqual(response.status_code, 502)
+        self.assertEqual(response.data["code"], "upstream_invalid_response")
         self.assertEqual(set(response.data.keys()), {"code", "message", "details"})

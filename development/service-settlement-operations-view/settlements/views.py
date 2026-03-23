@@ -1,11 +1,19 @@
 from rest_framework import permissions, status
-from rest_framework.exceptions import APIException, NotFound
+from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from settlements.exceptions import UpstreamInvalidResponse, UpstreamServiceUnavailable
 from settlements.permissions import AuthenticatedReadOnly
 from settlements.serializers import SettlementItemSerializer, SettlementRunSerializer
 from settlements.services import SourceClients, SourceNotFoundError, SourceServiceError
+
+
+def _serialize_upstream_payload(serializer_class, payload, *, many: bool):
+    serializer = serializer_class(data=payload, many=many)
+    if not serializer.is_valid():
+        raise UpstreamInvalidResponse(errors=serializer.errors)
+    return serializer.data
 
 
 class HealthView(APIView):
@@ -26,10 +34,12 @@ class SettlementRunListView(APIView):
                 authorization=request.META.get("HTTP_AUTHORIZATION", ""),
             )
         except SourceServiceError as exc:
-            raise APIException("Settlement payroll service is unavailable.") from exc
+            raise UpstreamServiceUnavailable() from exc
 
-        serializer = SettlementRunSerializer(runs, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(
+            _serialize_upstream_payload(SettlementRunSerializer, runs, many=True),
+            status=status.HTTP_200_OK,
+        )
 
 
 class SettlementRunDetailView(APIView):
@@ -45,10 +55,12 @@ class SettlementRunDetailView(APIView):
         except SourceNotFoundError as exc:
             raise NotFound("Settlement run not found.") from exc
         except SourceServiceError as exc:
-            raise APIException("Settlement payroll service is unavailable.") from exc
+            raise UpstreamServiceUnavailable() from exc
 
-        serializer = SettlementRunSerializer(run)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(
+            _serialize_upstream_payload(SettlementRunSerializer, run, many=False),
+            status=status.HTTP_200_OK,
+        )
 
 
 class SettlementItemListView(APIView):
@@ -61,10 +73,12 @@ class SettlementItemListView(APIView):
                 authorization=request.META.get("HTTP_AUTHORIZATION", ""),
             )
         except SourceServiceError as exc:
-            raise APIException("Settlement payroll service is unavailable.") from exc
+            raise UpstreamServiceUnavailable() from exc
 
-        serializer = SettlementItemSerializer(items, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(
+            _serialize_upstream_payload(SettlementItemSerializer, items, many=True),
+            status=status.HTTP_200_OK,
+        )
 
 
 class SettlementItemDetailView(APIView):
@@ -80,7 +94,9 @@ class SettlementItemDetailView(APIView):
         except SourceNotFoundError as exc:
             raise NotFound("Settlement item not found.") from exc
         except SourceServiceError as exc:
-            raise APIException("Settlement payroll service is unavailable.") from exc
+            raise UpstreamServiceUnavailable() from exc
 
-        serializer = SettlementItemSerializer(item)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(
+            _serialize_upstream_payload(SettlementItemSerializer, item, many=False),
+            status=status.HTTP_200_OK,
+        )
