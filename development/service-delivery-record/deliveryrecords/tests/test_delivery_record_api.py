@@ -94,11 +94,9 @@ class DeliveryRecordApiTests(TestCase):
             client.get("/records/"),
             client.post("/records/", self._record_payload(), format="json"),
             client.patch(f"/records/{record_id}/", {"delivery_count": 99}, format="json"),
-            client.delete(f"/records/{record_id}/"),
             client.get("/daily-snapshots/"),
             client.post("/daily-snapshots/", self._snapshot_payload(), format="json"),
             client.patch(f"/daily-snapshots/{snapshot_id}/", {"delivery_count": 99}, format="json"),
-            client.delete(f"/daily-snapshots/{snapshot_id}/"),
         )
 
         self.assertTrue(all(response.status_code == 403 for response in responses))
@@ -145,12 +143,9 @@ class DeliveryRecordApiTests(TestCase):
                 format="json",
             )
 
-        delete_response = self._admin_client().delete(f"/records/{record_id}/")
-
         self.assertEqual(list_response.status_code, 200)
         self.assertEqual(detail_response.status_code, 200)
         self.assertEqual(update_response.status_code, 200)
-        self.assertEqual(delete_response.status_code, 204)
 
     def test_admin_can_crud_daily_snapshots(self) -> None:
         with patch(
@@ -184,12 +179,36 @@ class DeliveryRecordApiTests(TestCase):
                 format="json",
             )
 
-        delete_response = self._admin_client().delete(f"/daily-snapshots/{snapshot_id}/")
-
         self.assertEqual(list_response.status_code, 200)
         self.assertEqual(detail_response.status_code, 200)
         self.assertEqual(update_response.status_code, 200)
-        self.assertEqual(delete_response.status_code, 204)
+
+    def test_put_and_delete_are_not_allowed_for_detail_routes(self) -> None:
+        with patch(
+            "deliveryrecords.services.source_clients.SourceClients.validate_company_fleet_scope",
+            return_value=None,
+        ), patch(
+            "deliveryrecords.services.source_clients.SourceClients.validate_driver_exists",
+            return_value=None,
+        ):
+            record_response = self._admin_client().post("/records/", self._record_payload(), format="json")
+            snapshot_response = self._admin_client().post(
+                "/daily-snapshots/",
+                self._snapshot_payload(),
+                format="json",
+            )
+
+        record_id = record_response.data["delivery_record_id"]
+        snapshot_id = snapshot_response.data["daily_delivery_input_snapshot_id"]
+
+        responses = (
+            self._admin_client().put(f"/records/{record_id}/", self._record_payload(), format="json"),
+            self._admin_client().delete(f"/records/{record_id}/"),
+            self._admin_client().put(f"/daily-snapshots/{snapshot_id}/", self._snapshot_payload(), format="json"),
+            self._admin_client().delete(f"/daily-snapshots/{snapshot_id}/"),
+        )
+
+        self.assertTrue(all(response.status_code == 405 for response in responses))
 
     def test_create_is_rejected_when_company_fleet_or_driver_is_missing(self) -> None:
         missing_cases = (
@@ -220,6 +239,12 @@ class DeliveryRecordApiTests(TestCase):
             ),
         )
 
+        expected_contracts = {
+            "company_id": ("company_id", "Referenced company does not exist."),
+            "fleet_id": ("fleet_id", "Referenced fleet does not exist."),
+            "driver_id": ("driver_id", "Referenced driver does not exist."),
+        }
+
         for field, side_effect in missing_cases:
             with self.subTest(field=field), patch(
                 "deliveryrecords.services.source_clients.urlopen",
@@ -228,6 +253,36 @@ class DeliveryRecordApiTests(TestCase):
                 response = self._admin_client().post("/records/", self._record_payload(), format="json")
 
             self.assertEqual(response.status_code, 400)
+            expected_field, expected_message = expected_contracts[field]
+            self.assertEqual(response.data["code"], "validation_error")
+            self.assertEqual(response.data["details"][expected_field][0], expected_message)
+
+    def test_patch_validates_source_scope_changes(self) -> None:
+        with patch(
+            "deliveryrecords.services.source_clients.SourceClients.validate_company_fleet_scope",
+            return_value=None,
+        ), patch(
+            "deliveryrecords.services.source_clients.SourceClients.validate_driver_exists",
+            return_value=None,
+        ):
+            create_response = self._admin_client().post("/records/", self._record_payload(), format="json")
+
+        record_id = create_response.data["delivery_record_id"]
+        missing_company_id = str(uuid4())
+
+        with patch(
+            "deliveryrecords.services.source_clients.urlopen",
+            side_effect=[HTTPError(f"http://organization-master-api:8000/companies/{missing_company_id}/", 404, "Not Found", None, None)],
+        ):
+            response = self._admin_client().patch(
+                f"/records/{record_id}/",
+                {"company_id": missing_company_id},
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data["code"], "validation_error")
+        self.assertEqual(response.data["details"]["company_id"][0], "Referenced company does not exist.")
 
     def test_duplicate_active_snapshot_is_rejected(self) -> None:
         with patch(

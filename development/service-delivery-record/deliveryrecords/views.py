@@ -24,6 +24,7 @@ class DeliveryRecordViewSet(viewsets.ModelViewSet):
     serializer_class = DeliveryRecordSerializer
     lookup_field = "delivery_record_id"
     permission_classes = [AdminOnlyAccess]
+    http_method_names = ["get", "post", "patch", "head", "options"]
 
 
 class DailyDeliveryInputSnapshotViewSet(viewsets.ModelViewSet):
@@ -31,3 +32,4 @@ class DailyDeliveryInputSnapshotViewSet(viewsets.ModelViewSet):
     serializer_class = DailyDeliveryInputSnapshotSerializer
     lookup_field = "daily_delivery_input_snapshot_id"
     permission_classes = [AdminOnlyAccess]
+    http_method_names = ["get", "post", "patch", "head", "options"]
