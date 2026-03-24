@@ -26,7 +26,11 @@ class JWTAuthentication(BaseAuthentication):
         return "Bearer"
 
     def authenticate(self, request):
-        header = get_authorization_header(request).decode("utf-8")
+        try:
+            header = get_authorization_header(request).decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise AuthenticationFailed("Invalid authorization header.") from exc
+
         if not header:
             return None
 
@@ -48,8 +52,12 @@ class JWTAuthentication(BaseAuthentication):
         if payload.get("type") != "access":
             raise AuthenticationFailed("Invalid token type.")
 
+        subject = payload.get("sub")
+        if not subject:
+            raise AuthenticationFailed("Invalid token payload.")
+
         principal = AuthenticatedPrincipal(
-            account_id=payload["sub"],
+            account_id=subject,
             email=payload.get("email", ""),
             role=payload.get("role", "user"),
         )

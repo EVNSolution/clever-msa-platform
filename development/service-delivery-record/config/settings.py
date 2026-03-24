@@ -86,8 +86,3 @@ JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "change-me-local-jwt-secret-ke
 JWT_ISSUER = os.environ.get("JWT_ISSUER", "msa-server")
 JWT_AUDIENCE = os.environ.get("JWT_AUDIENCE", "msa-server")
 JWT_ALGORITHM = os.environ.get("JWT_ALGORITHM", "HS256")
-
-DELIVERY_RECORD_SOURCE_BASE_URL = os.environ.get(
-    "DELIVERY_RECORD_SOURCE_BASE_URL",
-    "http://delivery-record-source-api:8000",
-)
