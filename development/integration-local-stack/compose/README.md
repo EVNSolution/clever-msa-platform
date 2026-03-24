@@ -1,6 +1,6 @@
 # Compose Simulation
 
-이 디렉토리의 목적은 `계정 / 조직 / 기사 / 배송원천기록 / 정산 / 차량 / 배차 / 단말 / 텔레메트리` 경계를 로컬 Docker Compose 환경에서 실제로 띄워 보는 것이다. 더 이상 boundary skeleton만 있는 상태가 아니라, 현재는 독립 Django 서비스들, telemetry ingress용 Python worker 1개, local MQTT broker 1개, React/Vite 앱 2개까지 포함한 실행형 부트스트랩 구조를 가진다.
+이 디렉토리의 목적은 `계정 / 조직 / 기사 / 인사문서 / 배송원천기록 / 정산 / 차량 / 배차 / 단말 / 텔레메트리` 경계를 로컬 Docker Compose 환경에서 실제로 띄워 보는 것이다. 더 이상 boundary skeleton만 있는 상태가 아니라, 현재는 독립 Django 서비스들, telemetry ingress용 Python worker 1개, local MQTT broker 1개, React/Vite 앱 2개까지 포함한 실행형 부트스트랩 구조를 가진다.
 
 현재 compose 파일 위치는 상위 [docker-compose.account-driver-settlement.yml](../docker-compose.account-driver-settlement.yml)이다.
 현재 runtime source는 sibling target repo만 참조한다.
@@ -11,6 +11,7 @@
 - `admin-front`
 - `account-auth-api`
 - `driver-profile-api`
+- `personnel-document-registry-api`
 - `settlement-payroll-api`
 - `settlement-registry-api`
 - `delivery-record-api`
@@ -29,6 +30,7 @@
 - `driver-ops-api`
 - `account-db`
 - `driver-db`
+- `personnel-document-db`
 - `settlement-db`
 - `settlement-registry-db`
 - `delivery-record-db`
@@ -84,6 +86,12 @@
 - 기사 기본정보 CRUD만 제공한다.
 - `account_id(optional)`, `company_id`, `fleet_id`, `name`, `ev_id`, `phone_number`, `address`만 사용한다.
 - `check-ev-id` 중복검사 endpoint를 제공한다.
+
+### `personnel-document-registry-api`
+- 기사 인사문서 메타데이터 CRUD를 제공한다.
+- `driver_id`는 `driver-profile-api` reference key로만 검증한다.
+- 파일 바이너리나 approval workflow는 소유하지 않는다.
+- gateway 외부 prefix는 `/api/personnel-documents/`다.
 
 ### `settlement-payroll-api`
 - `SettlementRun`, `SettlementItem` write owner CRUD를 제공한다.
@@ -171,6 +179,7 @@
 - `/admin/` -> `admin-front`
 - `/api/auth/` -> `account-auth-api`
 - `/api/drivers/` -> `driver-profile-api`
+- `/api/personnel-documents/` -> `personnel-document-registry-api`
 - `/api/settlements/` -> `settlement-payroll-api`
 - `/api/settlement-registry/` -> `settlement-registry-api`
 - `/api/delivery-record/` -> `delivery-record-api`
@@ -200,14 +209,15 @@ dead-letter는 예외적으로 admin-read 경로만 명시 route로 노출한다
 2. `organization-master` migrate + `seed_organization`
 3. `settlement-registry` migrate + `seed_settlement_registry`
 4. `driver-profile` migrate + `seed_drivers`
-5. `delivery-record` migrate + `seed_delivery_records`
-6. `vehicle-asset` migrate + `seed_vehicles`
-7. `dispatch-registry` migrate + `seed_dispatch`
-8. `terminal-registry` migrate + `seed_terminals`
-9. `telemetry-hub` migrate + `seed_telemetry`
-10. `driver-vehicle-assignment` migrate + `seed_assignments`
-11. `settlement-payroll` migrate + `seed_settlements`
-12. `account-auth` migrate + `seed_accounts`
+5. `personnel-document-registry` migrate + `seed_personnel_documents`
+6. `delivery-record` migrate + `seed_delivery_records`
+7. `vehicle-asset` migrate + `seed_vehicles`
+8. `dispatch-registry` migrate + `seed_dispatch`
+9. `terminal-registry` migrate + `seed_terminals`
+10. `telemetry-hub` migrate + `seed_telemetry`
+11. `driver-vehicle-assignment` migrate + `seed_assignments`
+12. `settlement-payroll` migrate + `seed_settlements`
+13. `account-auth` migrate + `seed_accounts`
 
 모든 단계는 재실행 가능하도록 idempotent하게 작성돼 있다.
 
@@ -217,6 +227,7 @@ dead-letter는 예외적으로 admin-read 경로만 명시 route로 노출한다
 - company: `Seed Company`
 - fleet: `Seed Fleet`
 - driver: `Seed Driver`
+- personnel documents: `contract 1건 + business_registration 1건`
 - delivery record: seeded 1건 + active daily snapshot 1건
 - vehicle: `12가3456`
 - dispatch schedule: `2026-03-24 / shift A`
