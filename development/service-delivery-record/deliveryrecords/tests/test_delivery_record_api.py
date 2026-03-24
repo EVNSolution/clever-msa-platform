@@ -115,6 +115,28 @@ class DeliveryRecordApiTests(TestCase):
         self.assertEqual(response.data["source_reference"], "record-001")
         self.assertEqual(response.data["status"], DeliveryRecord.Status.CONFIRMED)
 
+    @patch("deliveryrecords.services.source_clients.urlopen")
+    def test_admin_can_post_records_through_live_source_validation_contract(self, mocked_urlopen) -> None:
+        mocked_urlopen.side_effect = [
+            self._build_json_response(
+                f'{{"company_id":"{self.company_id}","name":"Seed Company"}}'
+            ),
+            self._build_json_response(
+                f'{{"fleet_id":"{self.fleet_id}","company_id":"{self.company_id}","name":"Seed Fleet"}}'
+            ),
+            self._build_json_response(
+                f'{{"driver_id":"{self.driver_id}","company_id":"{self.company_id}","fleet_id":"{self.fleet_id}"}}'
+            ),
+        ]
+
+        response = self._admin_client().post("/records/", self._record_payload(), format="json")
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(
+            mocked_urlopen.call_args_list[2].args[0].full_url,
+            f"http://driver-profile-api:8000/{self.driver_id}/",
+        )
+
     def test_admin_can_crud_records(self) -> None:
         with patch(
             "deliveryrecords.services.source_clients.SourceClients.validate_company_fleet_scope",

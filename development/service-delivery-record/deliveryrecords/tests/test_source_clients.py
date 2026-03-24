@@ -141,6 +141,10 @@ class SourceClientsTests(TestCase):
         )
 
         self.assertEqual(mocked_urlopen.call_args_list[0].args[0].get_header("Authorization"), self.authorization)
+        self.assertEqual(
+            mocked_urlopen.call_args_list[0].args[0].full_url,
+            f"http://driver-profile-api:8000/{self.driver_id}/",
+        )
 
         with self.assertRaises(SourceValidationError) as context:
             SourceClients().validate_driver_exists(

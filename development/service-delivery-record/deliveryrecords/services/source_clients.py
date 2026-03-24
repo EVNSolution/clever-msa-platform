@@ -89,7 +89,7 @@ class SourceClients:
 
     def validate_driver_exists(self, *, driver_id: str, authorization: str) -> None:
         driver_payload = self._request_or_validation_error(
-            url=self._build_url(settings.DRIVER_PROFILE_BASE_URL, f"/drivers/{driver_id}/"),
+            url=self._build_url(settings.DRIVER_PROFILE_BASE_URL, f"/{driver_id}/"),
             authorization=authorization,
             field="driver_id",
             message="Referenced driver does not exist.",
@@ -97,4 +97,3 @@ class SourceClients:
 
         if str(driver_payload.get("driver_id")) != driver_id:
             raise SourceServiceError("Upstream request failed: malformed driver payload.")
-
