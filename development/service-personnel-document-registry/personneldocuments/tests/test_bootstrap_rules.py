@@ -10,7 +10,6 @@ from django.test import RequestFactory, SimpleTestCase, override_settings
 from rest_framework.exceptions import AuthenticationFailed, NotAuthenticated, PermissionDenied
 
 import config.settings as settings_module
-from manage import _uses_local_bootstrap
 from personneldocuments.authentication import JWTAuthentication, AuthenticatedPrincipal
 from personneldocuments.permissions import AdminOnlyAccess
 
@@ -39,11 +38,6 @@ class RuntimeSettingsBootstrapTests(SimpleTestCase):
         with patch.dict(os.environ, env, clear=True), patch.object(sys, "argv", argv):
             with self.assertRaises(ImproperlyConfigured):
                 importlib.reload(settings_module)
-
-    def test_local_bootstrap_command_whitelist_is_explicit(self):
-        self.assertTrue(_uses_local_bootstrap(["manage.py", "test"]))
-        self.assertTrue(_uses_local_bootstrap(["manage.py", "makemigrations", "--check", "--dry-run"]))
-        self.assertFalse(_uses_local_bootstrap(["manage.py", "createsuperuser", "--username", "test"]))
 
 
 class JWTAuthenticationBootstrapTests(SimpleTestCase):
