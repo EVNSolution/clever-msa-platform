@@ -159,7 +159,7 @@ clever-msa-platform/
 - `service-settlement-payroll`는 runtime 구현 완료, settlement write owner로 target repo가 활성화됐다
 - `service-settlement-operations-view`는 read-only runtime으로 target repo가 활성화됐다
 - `service-settlement-registry`는 runtime 구현 완료, target repo가 활성화됐다
-- `service-delivery-record`는 empty shell 생성 완료
+- `service-delivery-record`는 runtime 구현 완료, target repo가 활성화됐다
 - `service-terminal-registry`는 runtime 구현 완료, target repo가 활성화됐다
 - `service-telemetry-hub`는 runtime 구현 완료, target repo가 활성화됐다
 - `service-telemetry-listener`는 MQTT ingress worker runtime 구현 완료, target repo가 활성화됐다

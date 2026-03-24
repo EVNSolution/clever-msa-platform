@@ -14,6 +14,7 @@ services:
       - driver-profile-api
       - settlement-payroll-api
       - settlement-registry-api
+      - delivery-record-api
       - settlement-ops-api
       - organization-master-api
       - vehicle-asset-api
@@ -83,6 +84,18 @@ services:
     depends_on:
       - settlement-registry-db
       - organization-master-api
+    expose:
+      - "8000"
+
+  delivery-record-api:
+    build:
+      context: ../service-delivery-record
+    env_file:
+      - ./infra/env/delivery-record.env.example
+    depends_on:
+      - delivery-record-db
+      - organization-master-api
+      - driver-profile-api
     expose:
       - "8000"
 
@@ -290,6 +303,15 @@ services:
     expose:
       - "5432"
 
+  delivery-record-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: delivery_record
+      POSTGRES_USER: delivery_record
+      POSTGRES_PASSWORD: delivery_record
+    expose:
+      - "5432"
+
   org-db:
     image: postgres:16-alpine
     environment:
@@ -378,6 +400,7 @@ services:
       - driver-db
       - settlement-db
       - settlement-registry-db
+      - delivery-record-db
       - org-db
       - vehicle-db
       - dispatch-registry-db
@@ -390,6 +413,7 @@ services:
       - driver-profile-api
       - settlement-payroll-api
       - settlement-registry-api
+      - delivery-record-api
       - organization-master-api
       - vehicle-asset-api
       - dispatch-registry-api

@@ -12,6 +12,7 @@ RUN apt-get update \
 COPY development/service-account-access/requirements.txt /tmp/account-auth-requirements.txt
 COPY development/service-driver-profile/requirements.txt /tmp/driver-profile-requirements.txt
 COPY development/service-organization-registry/requirements.txt /tmp/organization-master-requirements.txt
+COPY development/service-delivery-record/requirements.txt /tmp/delivery-record-requirements.txt
 COPY development/service-settlement-registry/requirements.txt /tmp/settlement-registry-requirements.txt
 COPY development/service-settlement-payroll/requirements.txt /tmp/settlement-payroll-requirements.txt
 COPY development/service-terminal-registry/requirements.txt /tmp/terminal-registry-requirements.txt
@@ -22,6 +23,7 @@ RUN pip install --no-cache-dir \
     -r /tmp/account-auth-requirements.txt \
     -r /tmp/driver-profile-requirements.txt \
     -r /tmp/organization-master-requirements.txt \
+    -r /tmp/delivery-record-requirements.txt \
     -r /tmp/settlement-registry-requirements.txt \
     -r /tmp/settlement-payroll-requirements.txt \
     -r /tmp/dispatch-registry-requirements.txt \
@@ -31,6 +33,7 @@ RUN pip install --no-cache-dir \
 COPY development/service-account-access /workspace/services/account-auth
 COPY development/service-driver-profile /workspace/services/driver-profile
 COPY development/service-organization-registry /workspace/services/organization-master
+COPY development/service-delivery-record /workspace/services/delivery-record
 COPY development/service-settlement-registry /workspace/services/settlement-registry
 COPY development/service-vehicle-registry /workspace/services/vehicle-asset
 COPY development/service-dispatch-registry /workspace/services/dispatch-registry
