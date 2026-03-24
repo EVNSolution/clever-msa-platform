@@ -52,6 +52,7 @@ run_manage() {
 
 wait_for_health "organization-master" "http://organization-master-api:8000/health/"
 wait_for_health "driver-profile" "http://driver-profile-api:8000/health/"
+wait_for_health "personnel-document-registry" "http://personnel-document-registry-api:8000/health/"
 wait_for_health "delivery-record" "http://delivery-record-api:8000/health/"
 wait_for_health "vehicle-asset" "http://vehicle-asset-api:8000/health/"
 wait_for_health "dispatch-registry" "http://dispatch-registry-api:8000/health/"
@@ -69,6 +70,9 @@ run_manage "services/settlement-registry" "infra/env/settlement-registry.env.exa
 
 run_manage "services/driver-profile" "infra/env/driver-profile.env.example" migrate --noinput
 run_manage "services/driver-profile" "infra/env/driver-profile.env.example" seed_drivers
+
+run_manage "services/personnel-document-registry" "infra/env/personnel-document-registry.env.example" migrate --noinput
+run_manage "services/personnel-document-registry" "infra/env/personnel-document-registry.env.example" seed_personnel_documents
 
 run_manage "services/delivery-record" "infra/env/delivery-record.env.example" migrate --noinput
 run_manage "services/delivery-record" "infra/env/delivery-record.env.example" seed_delivery_records

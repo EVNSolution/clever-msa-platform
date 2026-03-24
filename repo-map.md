@@ -45,7 +45,7 @@
 | `service-settlement-operations-view` | service | 정산 read-only operations-view runtime | 정산 결과와 운영 조회용 read model | `development/service-settlement-operations-view/` | `migrated-target` |
 | `service-dispatch-registry` | service | `dispatch_plan`, `vehicle_schedule`, `dispatch_assignment` 1차 runtime 구현 완료 | 배차 정본, 물량 계획, 회차/플릿 기준 배차 입력 | `development/service-dispatch-registry/` | `migrated-target` |
 | `service-dispatch-operations-view` | service | 배차 운영 조회 read model runtime | 배차 운영 조회와 계획 상황판 | `development/service-dispatch-operations-view/` | `migrated-target` |
-| `service-personnel-document-registry` | service | shell 디렉토리와 README만 존재 | 계약/증빙/계좌/사업자/소속 문서 정본 | `development/service-personnel-document-registry/` | `empty-shell` |
+| `service-personnel-document-registry` | service | 기사 인사문서 메타데이터 runtime, admin CRUD와 seed 구현 완료 | 계약/증빙/계좌/사업자/소속 문서 메타데이터 정본 | `development/service-personnel-document-registry/` | `migrated-target` |
 | `service-region-registry` | service | shell 디렉토리와 README만 존재 | 권역 polygon, 난이도, 권역 기준 마스터 | `development/service-region-registry/` | `empty-shell` |
 | `service-region-analytics` | service | shell 디렉토리와 README만 존재 | 권역별 배송 통계와 권역 성과 분석 | `development/service-region-analytics/` | `empty-shell` |
 | `service-notification-hub` | service | shell 디렉토리와 README만 존재 | 푸시 토큰, 발송, 발송 로그, 일반 알림함 | `development/service-notification-hub/` | `empty-shell` |

@@ -129,7 +129,7 @@ clever-msa-platform/
 - `service-announcement-registry`
 - `service-support-registry`
 
-이 이름들은 현재 대부분 `empty-shell` 상태다. 다만 `service-dispatch-registry`, `service-dispatch-operations-view`는 active runtime repo로 승격됐고, 나머지는 shell 디렉토리와 README만 있는 상태다.
+이 이름들은 현재 대부분 `empty-shell` 상태다. 다만 `service-dispatch-registry`, `service-dispatch-operations-view`, `service-personnel-document-registry`는 active runtime repo로 승격됐고, 나머지는 shell 디렉토리와 README만 있는 상태다.
 
 ## Working Rules
 
