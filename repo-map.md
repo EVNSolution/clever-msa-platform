@@ -101,12 +101,14 @@
 
 - `docs/mappings/`
   - 현재 폴더와 target repo의 이동 근거
+- `docs/mappings/current-runtime-inventory.md`
+  - 현재 active runtime repo, compose service, gateway prefix 정본
 - `docs/boundaries/`
   - 각 서비스가 무엇을 소유하는지
 - `docs/contracts/`
   - cross-service ID, 상태, read model contract
 - `docs/rollout/`
-  - 실제 이행 순서
+  - living rollout docs와 active plan only 영역
 - `docs/decisions/specs/2026-03-23-additional-business-domain-units-design.md`
   - active repo set 바깥에서 추가 계획 중인 큰 업무 단위
 - `docs/decisions/specs/2026-03-23-planned-business-domain-skeleton-targets-design.md`
@@ -157,3 +159,9 @@
   - 검토 후 버린 구조안
 
 archive는 문서 전용이고, repo 후보나 runtime 코드를 보관하는 장소가 아니다.
+
+추가 규칙:
+
+1. `docs/rollout/plans/`는 active plan only다.
+2. 완료된 implementation plan, checklist, handoff는 `docs/archive/historical/rollout/`로 이동한다.
+3. current runtime naming과 route truth는 archived rollout plan이 아니라 `docs/mappings/current-runtime-inventory.md`에서 확인한다.

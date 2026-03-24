@@ -37,15 +37,15 @@ clever-msa-platform/
 - `boundaries/`
   - 서비스 경계, 소유 데이터, join risk
 - `mappings/`
-  - 현재 구조에서 목표 구조로 가는 이동표, legacy cut map, source index
+  - 현재 구조에서 목표 구조로 가는 이동표, legacy cut map, source index, current runtime inventory
 - `contracts/`
   - ID, 상태, read model contract, integration rule
 - `decisions/`
   - 왜 이런 경계를 택했는지에 대한 결정 기록과 spec
 - `rollout/`
-  - 이행 순서, 구현 계획, handoff, checklist
+  - living rollout docs와 active plan only 영역
 - `archive/`
-  - 더 이상 정본이 아닌 문서만 보관
+  - 더 이상 정본이 아닌 문서만 보관, completed rollout artifact 포함
 
 `docs/`에는 실행 코드, compose, env, seed script를 두지 않는다.
 
@@ -137,8 +137,10 @@ clever-msa-platform/
 2. `development/` repo 안의 README는 repo 사용법만 담고, 아키텍처 정본은 `docs/`를 가리킨다.
 3. 로컬 통합 실행 자산은 `development/integration-local-stack/`만 소유한다.
 4. `settlement`처럼 아직 덜 분해된 영역은 기존 폴더를 그대로 승격하지 않는다.
-5. archive는 문서 전용이다. 코드와 runtime 자산은 archive로 보내지 않는다.
-6. repo-local `AGENTS.md`는 예외 규칙이 많은 repo에만 둔다. 현재 허용 범위는 플랫폼 루트, `development/integration-local-stack/`, `development/edge-api-gateway/`까지다.
+5. 현재 runtime naming, compose service, gateway prefix는 `docs/mappings/current-runtime-inventory.md`를 먼저 본다.
+6. `docs/rollout/plans/`는 active plan only다. 완료된 rollout artifact는 `docs/archive/historical/rollout/`로 이동한다.
+7. archive는 문서 전용이다. 코드와 runtime 자산은 archive로 보내지 않는다.
+8. repo-local `AGENTS.md`는 예외 규칙이 많은 repo에만 둔다. 현재 허용 범위는 플랫폼 루트, `development/integration-local-stack/`, `development/edge-api-gateway/`까지다.
 
 ## Current Migration State
 
