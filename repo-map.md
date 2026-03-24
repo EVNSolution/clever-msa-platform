@@ -39,7 +39,7 @@
 | `service-telemetry-hub` | service | raw ingest API, normalized timeseries, latest snapshot, latest diagnostic runtime | raw ingest, 정규화, snapshot, diagnostic 중심 축 | `development/service-telemetry-hub/` | `migrated-target` |
 | `service-telemetry-listener` | service | MQTT ingress worker runtime | MQTT subscribe, payload forwarding, retry/dead-letter 확장 ingress worker | `development/service-telemetry-listener/` | `migrated-target` |
 | `service-telemetry-dead-letter` | service | failed telemetry payload append-only storage와 admin read runtime | append-only dead-letter 저장, admin read, 수동 재처리 출발점 | `development/service-telemetry-dead-letter/` | `migrated-target` |
-| `service-settlement-registry` | service | 현재는 empty shell | 정산 기준, 정책, 버전, 적용기간 registry | `development/service-settlement-registry/` | `empty-shell` |
+| `service-settlement-registry` | service | 정산 정책, 버전, assignment registry runtime | 정산 기준, 정책, 버전, 적용기간 registry | `development/service-settlement-registry/` | `migrated-target` |
 | `service-delivery-record` | service | 현재는 empty shell | 배송원별 원천 기록과 집계 입력 | `development/service-delivery-record/` | `empty-shell` |
 | `service-settlement-payroll` | service | 정산 write owner runtime, `SettlementRun` / `SettlementItem` write | 정산 결과 write owner, `deduction` / `incentive` / `payout_status` 정본 | `development/service-settlement-payroll/` | `migrated-target` |
 | `service-settlement-operations-view` | service | 정산 read-only operations-view runtime | 정산 결과와 운영 조회용 read model | `development/service-settlement-operations-view/` | `migrated-target` |
@@ -137,7 +137,7 @@
 5. settlement 분해
    - `service-settlement-payroll` runtime 구현 완료, target repo 활성화 완료
    - `service-settlement-operations-view` read-only runtime으로 target repo 활성화 완료
-   - `service-settlement-registry` empty shell 생성 완료
+   - `service-settlement-registry` runtime 구현 완료, target repo 활성화 완료
    - `service-delivery-record` empty shell 생성 완료
 6. future/runtime repo 기동
    - `service-dispatch-registry` runtime 구현 완료, target repo 활성화 완료
