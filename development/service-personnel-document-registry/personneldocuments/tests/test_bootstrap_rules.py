@@ -29,6 +29,16 @@ class RuntimeSettingsBootstrapTests(SimpleTestCase):
             with self.assertRaises(ImproperlyConfigured):
                 importlib.reload(settings_module)
 
+    def test_settings_does_not_treat_non_test_commands_with_test_argument_as_test_mode(self):
+        env = {
+            "DJANGO_SECRET_KEY": "test-secret",
+            "JWT_SECRET_KEY": "test-jwt-secret",
+        }
+        argv = ["manage.py", "createsuperuser", "--username", "test"]
+        with patch.dict(os.environ, env, clear=True), patch.object(sys, "argv", argv):
+            with self.assertRaises(ImproperlyConfigured):
+                importlib.reload(settings_module)
+
 
 class JWTAuthenticationBootstrapTests(SimpleTestCase):
     def setUp(self):

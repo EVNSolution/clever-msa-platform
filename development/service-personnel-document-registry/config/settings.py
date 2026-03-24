@@ -1,5 +1,4 @@
 import os
-import sys
 from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
@@ -45,7 +44,7 @@ TEMPLATES = []
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-if "test" in sys.argv:
+if os.environ.get("PERSONNEL_DOCUMENT_TEST_MODE") == "1":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
