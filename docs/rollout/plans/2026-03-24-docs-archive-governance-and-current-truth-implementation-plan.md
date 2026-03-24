@@ -179,14 +179,16 @@ Edit `docs/mappings/2026-03-20-docs-reclassification-map.md` so the moved rollou
 Run:
 
 ```bash
-rg -n "docs/rollout/plans/(2026-03-19-account-driver-settlement-implementation-handoff|2026-03-19-account-driver-settlement-msa-master-plan|2026-03-19-driver-360-bootstrap-implementation-plan|2026-03-20-platform-restructure-and-repo-migration-plan|2026-03-23-settlement-phase-2-decomposition-implementation-plan|2026-03-24-driver-ops-runtime-naming-hard-cut-implementation-plan)" \
-  docs development -g '!docs/archive/historical/rollout/*' -g 'development/*/README.md'
+rg -n "docs/rollout/plans/(2026-03-19-account-driver-settlement-implementation-handoff|2026-03-19-account-driver-settlement-msa-master-plan|2026-03-19-driver-360-bootstrap-implementation-plan|2026-03-19-local-django-msa-bootstrap-implementation-plan|2026-03-19-trimmed-bootstrap-refactor-plan|2026-03-20-platform-restructure-and-repo-migration-plan|2026-03-20-settlement-phase-1-decomposition-implementation-plan|2026-03-20-telemetry-hub-implementation-plan|2026-03-20-terminal-registry-implementation-plan|2026-03-20-vehicle-asset-bootstrap-implementation-plan|2026-03-20-vehicle-asset-refactor-and-driver-vehicle-assignment-implementation-plan|2026-03-20-vehicle-ops-phase-1-implementation-plan|2026-03-21-telemetry-dead-letter-implementation-plan|2026-03-21-telemetry-listener-implementation-plan|2026-03-23-dispatch-operations-view-implementation-plan|2026-03-23-dispatch-registry-implementation-plan|2026-03-23-planned-business-domain-skeleton-shell-creation-plan|2026-03-23-settlement-phase-2-decomposition-implementation-plan|2026-03-23-settlement-scoped-driver-read-contract-implementation-plan|2026-03-24-driver-ops-runtime-naming-hard-cut-implementation-plan)" \
+  docs development/service-*/README.md \
+  -g '!docs/archive/historical/rollout/*' \
+  -g '!docs/rollout/plans/2026-03-24-docs-archive-governance-and-current-truth-implementation-plan.md'
 ```
 
 Expected:
 
-- any remaining references are old active-path `docs/rollout/plans/...` links in active docs or `development/*/README.md`
-- archived-path references under `docs/archive/historical/rollout/` should not match this check
+- no matches
+- if any match appears, update it to the archive path or remove it from active docs / `development/*/README.md`
 
 - [ ] **Step 5: Commit the archive moves and path-map update**
 
