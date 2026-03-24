@@ -86,3 +86,5 @@ JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "change-me-local-jwt-secret-ke
 JWT_ISSUER = os.environ.get("JWT_ISSUER", "msa-server")
 JWT_AUDIENCE = os.environ.get("JWT_AUDIENCE", "msa-server")
 JWT_ALGORITHM = os.environ.get("JWT_ALGORITHM", "HS256")
+ORGANIZATION_MASTER_BASE_URL = os.environ.get("ORGANIZATION_MASTER_BASE_URL", "http://organization-master-api:8000")
+DRIVER_PROFILE_BASE_URL = os.environ.get("DRIVER_PROFILE_BASE_URL", "http://driver-profile-api:8000")
