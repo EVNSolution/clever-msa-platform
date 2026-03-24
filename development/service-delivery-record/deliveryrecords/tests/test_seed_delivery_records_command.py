@@ -1,5 +1,7 @@
 from importlib import import_module
 from io import StringIO
+from unittest.mock import patch
+from uuid import uuid4
 
 from django.core.management import call_command
 from django.test import TestCase
@@ -65,3 +67,67 @@ class SeedDeliveryRecordsCommandTests(TestCase):
             ).pk,
             first_snapshot.pk,
         )
+
+    def test_seed_command_reconciles_dirty_stack_rows_by_business_identity(self):
+        seed_module = _load_seed_module(self)
+        existing_record = DeliveryRecord.objects.create(
+            delivery_record_id=uuid4(),
+            company_id=seed_module.SAMPLE_COMPANY_ID,
+            fleet_id=seed_module.SAMPLE_FLEET_ID,
+            driver_id=seed_module.SAMPLE_DRIVER_ID,
+            service_date=seed_module.SAMPLE_SERVICE_DATE,
+            source_reference="seed-record-001",
+            delivery_count=1,
+            distance_km="1.00",
+            base_amount="1000.00",
+            status=DeliveryRecord.Status.DRAFT,
+            payload={"source": "dirty"},
+        )
+        existing_snapshot = DailyDeliveryInputSnapshot.objects.create(
+            daily_delivery_input_snapshot_id=uuid4(),
+            company_id=seed_module.SAMPLE_COMPANY_ID,
+            fleet_id=seed_module.SAMPLE_FLEET_ID,
+            driver_id=seed_module.SAMPLE_DRIVER_ID,
+            service_date=seed_module.SAMPLE_SERVICE_DATE,
+            delivery_count=1,
+            total_distance_km="1.00",
+            total_base_amount="1000.00",
+            source_record_count=99,
+            status=DailyDeliveryInputSnapshot.Status.ACTIVE,
+        )
+
+        call_command("seed_delivery_records", stdout=StringIO())
+
+        self.assertEqual(DeliveryRecord.objects.count(), 1)
+        self.assertEqual(DailyDeliveryInputSnapshot.objects.count(), 1)
+        self.assertEqual(
+            DeliveryRecord.objects.get(
+                company_id=seed_module.SAMPLE_COMPANY_ID,
+                fleet_id=seed_module.SAMPLE_FLEET_ID,
+                driver_id=seed_module.SAMPLE_DRIVER_ID,
+                service_date=seed_module.SAMPLE_SERVICE_DATE,
+                source_reference="seed-record-001",
+            ).pk,
+            existing_record.pk,
+        )
+        self.assertEqual(
+            DailyDeliveryInputSnapshot.objects.get(
+                company_id=seed_module.SAMPLE_COMPANY_ID,
+                fleet_id=seed_module.SAMPLE_FLEET_ID,
+                driver_id=seed_module.SAMPLE_DRIVER_ID,
+                service_date=seed_module.SAMPLE_SERVICE_DATE,
+                status=DailyDeliveryInputSnapshot.Status.ACTIVE,
+            ).pk,
+            existing_snapshot.pk,
+        )
+
+    def test_seed_command_rolls_back_if_snapshot_write_fails(self):
+        with patch(
+            "deliveryrecords.management.commands.seed_delivery_records.Command._seed_daily_snapshot",
+            side_effect=RuntimeError("boom"),
+        ):
+            with self.assertRaises(RuntimeError):
+                call_command("seed_delivery_records", stdout=StringIO())
+
+        self.assertEqual(DeliveryRecord.objects.count(), 0)
+        self.assertEqual(DailyDeliveryInputSnapshot.objects.count(), 0)

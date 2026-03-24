@@ -3,6 +3,7 @@ from decimal import Decimal
 from uuid import UUID
 
 from django.core.management.base import BaseCommand
+from django.db import transaction
 
 from deliveryrecords.models import DailyDeliveryInputSnapshot, DeliveryRecord
 
@@ -18,14 +19,20 @@ class Command(BaseCommand):
     help = "Seed deterministic delivery record bootstrap data."
 
     def handle(self, *args, **options):
-        DeliveryRecord.objects.update_or_create(
-            delivery_record_id=SAMPLE_DELIVERY_RECORD_ID,
+        with transaction.atomic():
+            self._seed_delivery_record()
+            self._seed_daily_snapshot()
+        self.stdout.write(self.style.SUCCESS("Seeded delivery record bootstrap data."))
+
+    def _seed_delivery_record(self):
+        record, created = DeliveryRecord.objects.get_or_create(
+            company_id=SAMPLE_COMPANY_ID,
+            fleet_id=SAMPLE_FLEET_ID,
+            driver_id=SAMPLE_DRIVER_ID,
+            service_date=SAMPLE_SERVICE_DATE,
+            source_reference="seed-record-001",
             defaults={
-                "company_id": SAMPLE_COMPANY_ID,
-                "fleet_id": SAMPLE_FLEET_ID,
-                "driver_id": SAMPLE_DRIVER_ID,
-                "service_date": SAMPLE_SERVICE_DATE,
-                "source_reference": "seed-record-001",
+                "delivery_record_id": SAMPLE_DELIVERY_RECORD_ID,
                 "delivery_count": 8,
                 "distance_km": Decimal("18.40"),
                 "base_amount": Decimal("72000.00"),
@@ -36,18 +43,56 @@ class Command(BaseCommand):
                 },
             },
         )
-        DailyDeliveryInputSnapshot.objects.update_or_create(
-            daily_delivery_input_snapshot_id=SAMPLE_DAILY_SNAPSHOT_ID,
+        if created:
+            return record
+
+        record.delivery_count = 8
+        record.distance_km = Decimal("18.40")
+        record.base_amount = Decimal("72000.00")
+        record.status = DeliveryRecord.Status.CONFIRMED
+        record.payload = {
+            "source": "bootstrap",
+            "note": "Seed delivery record for local stack.",
+        }
+        record.save(
+            update_fields=[
+                "delivery_count",
+                "distance_km",
+                "base_amount",
+                "status",
+                "payload",
+            ]
+        )
+        return record
+
+    def _seed_daily_snapshot(self):
+        snapshot, created = DailyDeliveryInputSnapshot.objects.get_or_create(
+            company_id=SAMPLE_COMPANY_ID,
+            fleet_id=SAMPLE_FLEET_ID,
+            driver_id=SAMPLE_DRIVER_ID,
+            service_date=SAMPLE_SERVICE_DATE,
+            status=DailyDeliveryInputSnapshot.Status.ACTIVE,
             defaults={
-                "company_id": SAMPLE_COMPANY_ID,
-                "fleet_id": SAMPLE_FLEET_ID,
-                "driver_id": SAMPLE_DRIVER_ID,
-                "service_date": SAMPLE_SERVICE_DATE,
+                "daily_delivery_input_snapshot_id": SAMPLE_DAILY_SNAPSHOT_ID,
                 "delivery_count": 8,
                 "total_distance_km": Decimal("18.40"),
                 "total_base_amount": Decimal("72000.00"),
                 "source_record_count": 1,
-                "status": DailyDeliveryInputSnapshot.Status.ACTIVE,
             },
         )
-        self.stdout.write(self.style.SUCCESS("Seeded delivery record bootstrap data."))
+        if created:
+            return snapshot
+
+        snapshot.delivery_count = 8
+        snapshot.total_distance_km = Decimal("18.40")
+        snapshot.total_base_amount = Decimal("72000.00")
+        snapshot.source_record_count = 1
+        snapshot.save(
+            update_fields=[
+                "delivery_count",
+                "total_distance_km",
+                "total_base_amount",
+                "source_record_count",
+            ]
+        )
+        return snapshot
