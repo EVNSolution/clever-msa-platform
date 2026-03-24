@@ -25,6 +25,8 @@ Dependency:
 Entry point:
 - `entrypoint.sh` -> `python -m telemetry_listener.main`
 
-Architecture source of truth:
+Current truth:
 - `../../docs/decisions/specs/2026-03-21-telemetry-listener-design.md`
+
+Historical context:
 - `../../docs/archive/historical/rollout/2026-03-21-telemetry-listener-implementation-plan.md`

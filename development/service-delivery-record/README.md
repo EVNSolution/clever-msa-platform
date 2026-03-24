@@ -21,6 +21,8 @@
 - API
 - seed command
 
-아키텍처 정본:
+현재 정본:
 - `../../docs/mappings/`
+
+이력 / 컨텍스트:
 - `../../docs/archive/historical/rollout/2026-03-20-settlement-phase-1-decomposition-implementation-plan.md`
