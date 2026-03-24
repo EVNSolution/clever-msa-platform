@@ -12,6 +12,7 @@ services:
       - admin-front
       - account-auth-api
       - driver-profile-api
+      - personnel-document-registry-api
       - settlement-payroll-api
       - settlement-registry-api
       - delivery-record-api
@@ -63,6 +64,17 @@ services:
       - ./infra/env/driver-profile.env.example
     depends_on:
       - driver-db
+    expose:
+      - "8000"
+
+  personnel-document-registry-api:
+    build:
+      context: ../service-personnel-document-registry
+    env_file:
+      - ./infra/env/personnel-document-registry.env.example
+    depends_on:
+      - personnel-document-db
+      - driver-profile-api
     expose:
       - "8000"
 
@@ -285,6 +297,15 @@ services:
     expose:
       - "5432"
 
+  personnel-document-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: personnel_document_registry
+      POSTGRES_USER: personnel_document_registry
+      POSTGRES_PASSWORD: personnel_document_registry
+    expose:
+      - "5432"
+
   settlement-db:
     image: postgres:16-alpine
     environment:
@@ -398,6 +419,7 @@ services:
     depends_on:
       - account-db
       - driver-db
+      - personnel-document-db
       - settlement-db
       - settlement-registry-db
       - delivery-record-db
@@ -411,6 +433,7 @@ services:
       - redis
       - account-auth-api
       - driver-profile-api
+      - personnel-document-registry-api
       - settlement-payroll-api
       - settlement-registry-api
       - delivery-record-api

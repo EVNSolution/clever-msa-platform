@@ -96,8 +96,8 @@ class AdminOnlyAccessBootstrapTests(SimpleTestCase):
             self.permission.has_permission(request, None)
 
 
-class ReservedPathBootstrapTests(SimpleTestCase):
-    def test_documents_prefix_is_reserved_without_crud_endpoints(self):
+class DocumentsPathBoundaryTests(SimpleTestCase):
+    def test_documents_prefix_requires_authentication_once_crud_is_enabled(self):
         response = self.client.get("/documents/")
 
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 401)
