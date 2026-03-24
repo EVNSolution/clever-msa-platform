@@ -90,6 +90,33 @@ class SourceClientsTests(TestCase):
 
         self.assertEqual(context.exception.field, "fleet_id")
 
+    @override_settings(ORGANIZATION_MASTER_BASE_URL="http://organization-master-api:8000")
+    @patch("deliveryrecords.services.source_clients.urlopen")
+    def test_validate_company_fleet_scope_rejects_unknown_fleet(self, mocked_urlopen):
+        from deliveryrecords.services.source_clients import SourceClients, SourceValidationError
+
+        mocked_urlopen.side_effect = [
+            self._build_response(
+                f'{{"company_id":"{self.company_id}","name":"Seed Company"}}'
+            ),
+            HTTPError(
+                url="http://organization-master-api:8000/fleets/missing/",
+                code=404,
+                msg="Not Found",
+                hdrs=None,
+                fp=None,
+            ),
+        ]
+
+        with self.assertRaises(SourceValidationError) as context:
+            SourceClients().validate_company_fleet_scope(
+                company_id=self.company_id,
+                fleet_id="40000000-0000-0000-0000-000000000099",
+                authorization=self.authorization,
+            )
+
+        self.assertEqual(context.exception.field, "fleet_id")
+
     @override_settings(DRIVER_PROFILE_BASE_URL="http://driver-profile-api:8000")
     @patch("deliveryrecords.services.source_clients.urlopen")
     def test_validate_driver_exists_forwards_caller_token_and_rejects_missing_driver(self, mocked_urlopen):
@@ -122,4 +149,3 @@ class SourceClientsTests(TestCase):
             )
 
         self.assertEqual(context.exception.field, "driver_id")
-

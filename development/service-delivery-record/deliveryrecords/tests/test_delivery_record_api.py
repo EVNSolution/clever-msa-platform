@@ -86,9 +86,22 @@ class DeliveryRecordApiTests(TestCase):
         self.assertEqual(response.json(), {"status": "ok"})
 
     def test_non_admin_access_is_rejected_for_records_crud(self) -> None:
-        response = self._user_client().get("/records/")
+        client = self._user_client()
+        record_id = str(uuid4())
+        snapshot_id = str(uuid4())
 
-        self.assertEqual(response.status_code, 403)
+        responses = (
+            client.get("/records/"),
+            client.post("/records/", self._record_payload(), format="json"),
+            client.patch(f"/records/{record_id}/", {"delivery_count": 99}, format="json"),
+            client.delete(f"/records/{record_id}/"),
+            client.get("/daily-snapshots/"),
+            client.post("/daily-snapshots/", self._snapshot_payload(), format="json"),
+            client.patch(f"/daily-snapshots/{snapshot_id}/", {"delivery_count": 99}, format="json"),
+            client.delete(f"/daily-snapshots/{snapshot_id}/"),
+        )
+
+        self.assertTrue(all(response.status_code == 403 for response in responses))
 
     def test_admin_can_post_records_and_get_201(self) -> None:
         with patch(
