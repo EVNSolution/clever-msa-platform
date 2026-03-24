@@ -584,7 +584,7 @@ Run:
 ```bash
 ADMIN_TOKEN=$(curl -sS -X POST http://localhost:8080/api/auth/login/ \
   -H 'Content-Type: application/json' \
-  -d '{"email":"admin@example.com","password":"change-me"}' | python3 -c 'import json,sys; print(json.load(sys.stdin)["access"])')
+  -d '{"email":"admin@example.com","password":"change-me"}' | python3 -c 'import json,sys; print(json.load(sys.stdin)["access_token"])')
 
 curl -i -sS http://localhost:8080/api/delivery-record/health/
 curl -i -sS http://localhost:8080/api/delivery-record/records/ \
