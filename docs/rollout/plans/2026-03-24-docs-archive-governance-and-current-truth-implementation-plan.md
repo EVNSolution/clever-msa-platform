@@ -180,13 +180,13 @@ Run:
 
 ```bash
 rg -n "2026-03-19-account-driver-settlement-implementation-handoff|2026-03-19-account-driver-settlement-msa-master-plan|2026-03-19-driver-360-bootstrap-implementation-plan|2026-03-20-platform-restructure-and-repo-migration-plan|2026-03-23-settlement-phase-2-decomposition-implementation-plan|2026-03-24-driver-ops-runtime-naming-hard-cut-implementation-plan" \
-  docs -g '!docs/archive/historical/rollout/*'
+  docs development -g '!docs/archive/historical/rollout/*' -g 'development/*/README.md'
 ```
 
 Expected:
 
-- any remaining references are either updated to the archive path or intentionally absent from active docs
-- no living docs still point to the old `docs/rollout/plans/` locations for the moved files
+- any remaining references are either updated to the archive path or intentionally absent from active docs and `development/*/README.md`
+- no active docs or development READMEs still point to the old `docs/rollout/plans/` locations for the moved files
 
 - [ ] **Step 5: Commit the archive moves and path-map update**
 
