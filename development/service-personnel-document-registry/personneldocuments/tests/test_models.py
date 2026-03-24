@@ -1,6 +1,5 @@
 from datetime import date
 from importlib import import_module
-from pathlib import Path
 from uuid import UUID
 
 from django.core.exceptions import ValidationError
@@ -16,11 +15,6 @@ def _load_models_module(test_case: TestCase):
 
 
 class PersonnelDocumentModelTests(TestCase):
-    def test_initial_migration_file_exists(self):
-        migration_path = Path(__file__).resolve().parents[1] / "migrations" / "0001_initial.py"
-
-        self.assertTrue(migration_path.exists())
-
     def test_personnel_document_can_be_created_and_loaded(self):
         models_module = _load_models_module(self)
         document = models_module.PersonnelDocument.objects.create(
@@ -89,6 +83,19 @@ class PersonnelDocumentModelTests(TestCase):
 
         self.assertIn("expires_on", context.exception.message_dict)
 
+    def test_invalid_date_range_is_rejected_at_database_level(self):
+        models_module = _load_models_module(self)
+
+        with self.assertRaises(IntegrityError):
+            models_module.PersonnelDocument.objects.create(
+                driver_id=UUID("10000000-0000-0000-0000-000000000004"),
+                document_type=models_module.PersonnelDocument.DocumentType.BANK_ACCOUNT_PROOF,
+                status=models_module.PersonnelDocument.DocumentStatus.DRAFT,
+                title="Invalid Bank Proof",
+                issued_on=date(2026, 3, 24),
+                expires_on=date(2026, 3, 23),
+            )
+
     def test_duplicate_document_number_is_rejected_per_driver_and_type(self):
         models_module = _load_models_module(self)
         models_module.PersonnelDocument.objects.create(
@@ -138,4 +145,63 @@ class PersonnelDocumentModelTests(TestCase):
                 document_number="",
             ).count(),
             2,
+        )
+
+    def test_none_document_number_does_not_trigger_unique_constraint(self):
+        models_module = _load_models_module(self)
+        driver_id = UUID("10000000-0000-0000-0000-000000000007")
+
+        models_module.PersonnelDocument.objects.create(
+            driver_id=driver_id,
+            document_type=models_module.PersonnelDocument.DocumentType.LICENSE_OR_CERTIFICATE,
+            status=models_module.PersonnelDocument.DocumentStatus.ACTIVE,
+            title="Primary Certificate",
+            document_number=None,
+        )
+        models_module.PersonnelDocument.objects.create(
+            driver_id=driver_id,
+            document_type=models_module.PersonnelDocument.DocumentType.LICENSE_OR_CERTIFICATE,
+            status=models_module.PersonnelDocument.DocumentStatus.DRAFT,
+            title="Secondary Certificate",
+            document_number=None,
+        )
+
+        self.assertEqual(
+            models_module.PersonnelDocument.objects.filter(
+                driver_id=driver_id,
+                document_type=models_module.PersonnelDocument.DocumentType.LICENSE_OR_CERTIFICATE,
+                document_number__isnull=True,
+            ).count(),
+            2,
+        )
+
+    def test_same_document_number_is_allowed_across_different_driver_or_type(self):
+        models_module = _load_models_module(self)
+        document_number = "SHARED-2026-001"
+
+        models_module.PersonnelDocument.objects.create(
+            driver_id=UUID("10000000-0000-0000-0000-000000000008"),
+            document_type=models_module.PersonnelDocument.DocumentType.CONTRACT,
+            status=models_module.PersonnelDocument.DocumentStatus.ACTIVE,
+            title="Driver 8 Contract",
+            document_number=document_number,
+        )
+        models_module.PersonnelDocument.objects.create(
+            driver_id=UUID("10000000-0000-0000-0000-000000000009"),
+            document_type=models_module.PersonnelDocument.DocumentType.CONTRACT,
+            status=models_module.PersonnelDocument.DocumentStatus.ACTIVE,
+            title="Driver 9 Contract",
+            document_number=document_number,
+        )
+        models_module.PersonnelDocument.objects.create(
+            driver_id=UUID("10000000-0000-0000-0000-000000000008"),
+            document_type=models_module.PersonnelDocument.DocumentType.BUSINESS_REGISTRATION,
+            status=models_module.PersonnelDocument.DocumentStatus.ACTIVE,
+            title="Driver 8 Business Registration",
+            document_number=document_number,
+        )
+
+        self.assertEqual(
+            models_module.PersonnelDocument.objects.filter(document_number=document_number).count(),
+            3,
         )

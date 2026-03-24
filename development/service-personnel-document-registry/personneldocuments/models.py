@@ -2,7 +2,7 @@ import uuid
 
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Q
+from django.db.models import F, Q
 
 
 class PersonnelDocument(models.Model):
@@ -34,6 +34,12 @@ class PersonnelDocument(models.Model):
     class Meta:
         ordering = ("personnel_document_id",)
         constraints = [
+            models.CheckConstraint(
+                condition=Q(issued_on__isnull=True)
+                | Q(expires_on__isnull=True)
+                | Q(expires_on__gte=F("issued_on")),
+                name="personnel_documents_valid_date_range",
+            ),
             models.UniqueConstraint(
                 fields=("driver_id", "document_type", "document_number"),
                 condition=Q(document_number__isnull=False) & ~Q(document_number=""),
