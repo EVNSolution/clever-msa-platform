@@ -1,9 +1,19 @@
 import os
+import sys
 from pathlib import Path
+
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "change-me")
+def _required_env(name: str) -> str:
+    value = os.environ.get(name)
+    if value:
+        return value
+    raise ImproperlyConfigured(f"{name} must be set for personnel-document-registry.")
+
+
+SECRET_KEY = _required_env("DJANGO_SECRET_KEY")
 DEBUG = os.environ.get("DJANGO_DEBUG", "0") in {"1", "true", "True"}
 ALLOWED_HOSTS = [host for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",") if host]
 if not ALLOWED_HOSTS:
@@ -35,22 +45,27 @@ TEMPLATES = []
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-if os.environ.get("POSTGRES_DB"):
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.environ.get("POSTGRES_DB", "personnel_document_registry"),
-            "USER": os.environ.get("POSTGRES_USER", "personnel_document_registry"),
-            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "personnel_document_registry"),
-            "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
-            "PORT": os.environ.get("POSTGRES_PORT", "5432"),
-        }
-    }
-else:
+if "test" in sys.argv:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+else:
+    postgres_db = _required_env("POSTGRES_DB")
+    postgres_user = _required_env("POSTGRES_USER")
+    postgres_password = _required_env("POSTGRES_PASSWORD")
+    postgres_host = _required_env("POSTGRES_HOST")
+    postgres_port = _required_env("POSTGRES_PORT")
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": postgres_db,
+            "USER": postgres_user,
+            "PASSWORD": postgres_password,
+            "HOST": postgres_host,
+            "PORT": postgres_port,
         }
     }
 
@@ -82,11 +97,7 @@ REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "personneldocuments.exceptions.api_exception_handler",
 }
 
-JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "change-me-local-jwt-secret-key-32chars")
+JWT_SECRET_KEY = _required_env("JWT_SECRET_KEY")
 JWT_ISSUER = os.environ.get("JWT_ISSUER", "msa-server")
 JWT_AUDIENCE = os.environ.get("JWT_AUDIENCE", "msa-server")
 JWT_ALGORITHM = os.environ.get("JWT_ALGORITHM", "HS256")
-PERSONNEL_DOCUMENT_SERVICE_BASE_URL = os.environ.get(
-    "PERSONNEL_DOCUMENT_SERVICE_BASE_URL",
-    "http://personnel-document-registry:8000",
-)
