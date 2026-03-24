@@ -179,14 +179,14 @@ Edit `docs/mappings/2026-03-20-docs-reclassification-map.md` so the moved rollou
 Run:
 
 ```bash
-rg -n "2026-03-19-account-driver-settlement-implementation-handoff|2026-03-19-account-driver-settlement-msa-master-plan|2026-03-19-driver-360-bootstrap-implementation-plan|2026-03-20-platform-restructure-and-repo-migration-plan|2026-03-23-settlement-phase-2-decomposition-implementation-plan|2026-03-24-driver-ops-runtime-naming-hard-cut-implementation-plan" \
+rg -n "docs/rollout/plans/(2026-03-19-account-driver-settlement-implementation-handoff|2026-03-19-account-driver-settlement-msa-master-plan|2026-03-19-driver-360-bootstrap-implementation-plan|2026-03-20-platform-restructure-and-repo-migration-plan|2026-03-23-settlement-phase-2-decomposition-implementation-plan|2026-03-24-driver-ops-runtime-naming-hard-cut-implementation-plan)" \
   docs development -g '!docs/archive/historical/rollout/*' -g 'development/*/README.md'
 ```
 
 Expected:
 
-- any remaining references are either updated to the archive path or intentionally absent from active docs and `development/*/README.md`
-- no active docs or development READMEs still point to the old `docs/rollout/plans/` locations for the moved files
+- any remaining references are old active-path `docs/rollout/plans/...` links in active docs or `development/*/README.md`
+- archived-path references under `docs/archive/historical/rollout/` should not match this check
 
 - [ ] **Step 5: Commit the archive moves and path-map update**
 
