@@ -17,5 +17,5 @@
 
 아키텍처 정본:
 - `../../docs/decisions/specs/2026-03-23-settlement-phase-2-decomposition-design.md`
-- `../../docs/rollout/plans/2026-03-23-settlement-phase-2-decomposition-implementation-plan.md`
+- `../../docs/archive/historical/rollout/2026-03-23-settlement-phase-2-decomposition-implementation-plan.md`
 - `../../docs/mappings/`

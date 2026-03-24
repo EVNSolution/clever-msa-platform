@@ -27,4 +27,4 @@ Entry point:
 
 Architecture source of truth:
 - `../../docs/decisions/specs/2026-03-21-telemetry-listener-design.md`
-- `../../docs/rollout/plans/2026-03-21-telemetry-listener-implementation-plan.md`
+- `../../docs/archive/historical/rollout/2026-03-21-telemetry-listener-implementation-plan.md`

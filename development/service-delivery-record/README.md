@@ -23,4 +23,4 @@
 
 아키텍처 정본:
 - `../../docs/mappings/`
-- `../../docs/rollout/plans/2026-03-20-settlement-phase-1-decomposition-implementation-plan.md`
+- `../../docs/archive/historical/rollout/2026-03-20-settlement-phase-1-decomposition-implementation-plan.md`
