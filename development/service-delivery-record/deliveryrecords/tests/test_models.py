@@ -5,6 +5,7 @@ from importlib import import_module
 from uuid import uuid4
 
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from django.test import TestCase
 
 
@@ -87,6 +88,13 @@ class DeliveryRecordModelTests(TestCase):
 
         with self.assertRaises(ValidationError):
             duplicate.full_clean()
+
+    def test_delivery_record_duplicate_insert_is_rejected_by_the_database(self):
+        models_module = _load_models_module(self)
+        self._create_delivery_record(models_module)
+
+        with self.assertRaises(IntegrityError):
+            self._create_delivery_record(models_module)
 
     def test_delivery_record_rejects_negative_numeric_fields(self):
         models_module = _load_models_module(self)
@@ -187,6 +195,38 @@ class DailyDeliveryInputSnapshotModelTests(TestCase):
 
                 with self.assertRaises(ValidationError):
                     snapshot.full_clean()
+
+    def test_superseded_snapshots_can_repeat_for_same_scope_and_service_date(self):
+        models_module = _load_models_module(self)
+
+        first_snapshot = self._create_snapshot(
+            models_module,
+            status=models_module.DailyDeliveryInputSnapshot.Status.SUPERSEDED,
+        )
+        second_snapshot = self._create_snapshot(
+            models_module,
+            source_record_count=11,
+            status=models_module.DailyDeliveryInputSnapshot.Status.SUPERSEDED,
+        )
+
+        self.assertNotEqual(first_snapshot.pk, second_snapshot.pk)
+        self.assertEqual(
+            models_module.DailyDeliveryInputSnapshot.objects.filter(
+                company_id=self.company_id,
+                fleet_id=self.fleet_id,
+                driver_id=self.driver_id,
+                service_date=self.service_date,
+                status=models_module.DailyDeliveryInputSnapshot.Status.SUPERSEDED,
+            ).count(),
+            2,
+        )
+
+    def test_active_snapshot_duplicate_insert_is_rejected_by_the_database(self):
+        models_module = _load_models_module(self)
+        self._create_snapshot(models_module)
+
+        with self.assertRaises(IntegrityError):
+            self._create_snapshot(models_module)
 
     def test_active_snapshot_is_unique_per_scope_and_service_date(self):
         models_module = _load_models_module(self)
