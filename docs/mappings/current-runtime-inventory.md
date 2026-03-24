@@ -19,6 +19,7 @@
 | `service-account-access` | `account-auth-api` | `/api/auth/` | `active runtime` | 계정, 로그인, 토큰, 접근 제어 |
 | `service-organization-registry` | `organization-master-api` | `/api/org/` | `active runtime` | 회사와 플릿 마스터 |
 | `service-driver-profile` | `driver-profile-api` | `/api/drivers/` | `active runtime` | 기사 기본 프로필 정본 |
+| `service-delivery-record` | `delivery-record-api` | `/api/delivery-record/` | `active runtime` | 배송 원천 기록과 일별 집계 입력 snapshot 정본 |
 | `service-settlement-payroll` | `settlement-payroll-api` | `/api/settlements/` | `active runtime` | 정산 결과 write owner |
 | `service-settlement-registry` | `settlement-registry-api` | `/api/settlement-registry/` | `active runtime` | 정산 정책, 버전, assignment registry |
 | `service-settlement-operations-view` | `settlement-ops-api` | `/api/settlement-ops/` | `active runtime` | 정산 read-only operations view |
@@ -37,7 +38,6 @@
 
 | Target repo | Compose service | Gateway prefix | Status | Role summary |
 | --- | --- | --- | --- | --- |
-| `service-delivery-record` | none | none | `empty shell` | 배송원별 원천 기록과 집계 입력 |
 | `service-personnel-document-registry` | none | none | `empty shell` | 계약, 증빙, 계좌, 소속 문서 정본 |
 | `service-region-registry` | none | none | `empty shell` | 권역 기준 마스터 |
 | `service-region-analytics` | none | none | `empty shell` | 권역별 통계와 성과 분석 |
