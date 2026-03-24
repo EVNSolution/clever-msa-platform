@@ -121,6 +121,61 @@ class SeedDeliveryRecordsCommandTests(TestCase):
             existing_snapshot.pk,
         )
 
+    def test_seed_command_reconciles_seed_record_uuid_collision(self):
+        seed_module = _load_seed_module(self)
+
+        DeliveryRecord.objects.create(
+            delivery_record_id=seed_module.SAMPLE_DELIVERY_RECORD_ID,
+            company_id=uuid4(),
+            fleet_id=uuid4(),
+            driver_id=uuid4(),
+            service_date=seed_module.SAMPLE_SERVICE_DATE,
+            source_reference="dirty-record",
+            delivery_count=2,
+            distance_km="2.00",
+            base_amount="2000.00",
+            status=DeliveryRecord.Status.DRAFT,
+            payload={"source": "dirty"},
+        )
+
+        call_command("seed_delivery_records", stdout=StringIO())
+
+        self.assertEqual(DeliveryRecord.objects.count(), 1)
+        record = DeliveryRecord.objects.get(
+            delivery_record_id=seed_module.SAMPLE_DELIVERY_RECORD_ID
+        )
+        self.assertEqual(record.company_id, seed_module.SAMPLE_COMPANY_ID)
+        self.assertEqual(record.fleet_id, seed_module.SAMPLE_FLEET_ID)
+        self.assertEqual(record.driver_id, seed_module.SAMPLE_DRIVER_ID)
+        self.assertEqual(record.source_reference, "seed-record-001")
+
+    def test_seed_command_reconciles_seed_snapshot_uuid_collision(self):
+        seed_module = _load_seed_module(self)
+
+        DailyDeliveryInputSnapshot.objects.create(
+            daily_delivery_input_snapshot_id=seed_module.SAMPLE_DAILY_SNAPSHOT_ID,
+            company_id=uuid4(),
+            fleet_id=uuid4(),
+            driver_id=uuid4(),
+            service_date=seed_module.SAMPLE_SERVICE_DATE,
+            delivery_count=2,
+            total_distance_km="2.00",
+            total_base_amount="2000.00",
+            source_record_count=2,
+            status=DailyDeliveryInputSnapshot.Status.ACTIVE,
+        )
+
+        call_command("seed_delivery_records", stdout=StringIO())
+
+        self.assertEqual(DailyDeliveryInputSnapshot.objects.count(), 1)
+        snapshot = DailyDeliveryInputSnapshot.objects.get(
+            daily_delivery_input_snapshot_id=seed_module.SAMPLE_DAILY_SNAPSHOT_ID
+        )
+        self.assertEqual(snapshot.company_id, seed_module.SAMPLE_COMPANY_ID)
+        self.assertEqual(snapshot.fleet_id, seed_module.SAMPLE_FLEET_ID)
+        self.assertEqual(snapshot.driver_id, seed_module.SAMPLE_DRIVER_ID)
+        self.assertEqual(snapshot.status, DailyDeliveryInputSnapshot.Status.ACTIVE)
+
     def test_seed_command_rolls_back_if_snapshot_write_fails(self):
         with patch(
             "deliveryrecords.management.commands.seed_delivery_records.Command._seed_daily_snapshot",
