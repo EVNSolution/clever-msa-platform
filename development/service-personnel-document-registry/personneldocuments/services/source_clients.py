@@ -1,0 +1,2 @@
+class SourceClientError(RuntimeError):
+    pass
