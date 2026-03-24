@@ -153,6 +153,20 @@
 3. `driver_id` override는 넣지 않는다.
 4. 같은 `company_id + fleet_id` 조합에 대해 같은 기간의 active assignment 중복은 금지한다.
 
+조직 참조 규칙:
+
+1. `company_id`와 `fleet_id`는 `service-organization-registry`가 소유하는 reference key다.
+2. `service-settlement-registry`는 조직 정본을 복제하거나 소유하지 않는다.
+3. assignment 생성/수정 시 대상 `company_id`, `fleet_id`의 존재 여부와 소속 관계는 `service-organization-registry` 기준으로 검증한다.
+
+assignment invariant:
+
+1. assignment는 `published` 상태의 `SettlementPolicyVersion`만 가리킬 수 있다.
+2. `effective_end_date`는 nullable open-ended를 허용한다.
+3. 기간 규칙은 `effective_start_date <= target_date < effective_end_date` 반열린 구간으로 해석한다.
+4. `effective_end_date`가 null이면 종료 없는 active assignment로 본다.
+5. 같은 `company_id + fleet_id` 조합에 대해 같은 시점에 유효한 active assignment는 하나만 허용한다.
+
 ## API / Service Naming
 
 1차 naming은 아래로 고정한다.
@@ -226,16 +240,24 @@
 
 1. `WORKSPACE.md`
 2. `repo-map.md`
+3. `docs/mappings/current-to-target-repo-map.md`
 3. `docs/mappings/current-runtime-inventory.md`
 4. `docs/mappings/repo-responsibility-matrix.md`
 5. `development/service-settlement-registry/README.md`
 6. compose / gateway 관련 local stack 문서
+
+`docs/mappings/current-to-target-repo-map.md` 반영 기준:
+
+1. `service-settlement-registry`의 current source 설명에서 empty shell 문구를 제거한다.
+2. status는 runtime 활성화 이후 상태로 갱신한다.
+3. settlement 4축 안에서 정책 registry runtime이 올라왔음을 명시한다.
 
 핵심 반영 내용:
 
 1. `service-settlement-registry`는 더 이상 empty shell이 아니다.
 2. 정책/기준/버전/적용기간 registry라는 경계를 유지한다.
 3. 결과 write owner는 여전히 `service-settlement-payroll`이다.
+4. `company_id`, `fleet_id` 참조는 `service-organization-registry` 정본을 따른다.
 
 ## 검증 기준
 
