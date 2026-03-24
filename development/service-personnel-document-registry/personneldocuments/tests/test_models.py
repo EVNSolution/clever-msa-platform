@@ -96,6 +96,60 @@ class PersonnelDocumentModelTests(TestCase):
                 expires_on=date(2026, 3, 23),
             )
 
+    def test_date_range_allows_equal_dates_and_null_boundaries(self):
+        models_module = _load_models_module(self)
+
+        same_day = models_module.PersonnelDocument.objects.create(
+            driver_id=UUID("10000000-0000-0000-0000-000000000004"),
+            document_type=models_module.PersonnelDocument.DocumentType.BANK_ACCOUNT_PROOF,
+            status=models_module.PersonnelDocument.DocumentStatus.ACTIVE,
+            title="Same Day Bank Proof",
+            issued_on=date(2026, 3, 24),
+            expires_on=date(2026, 3, 24),
+        )
+        issued_only = models_module.PersonnelDocument.objects.create(
+            driver_id=UUID("10000000-0000-0000-0000-000000000014"),
+            document_type=models_module.PersonnelDocument.DocumentType.CONTRACT,
+            status=models_module.PersonnelDocument.DocumentStatus.ACTIVE,
+            title="Issued Only Contract",
+            issued_on=date(2026, 3, 24),
+            expires_on=None,
+        )
+        expires_only = models_module.PersonnelDocument.objects.create(
+            driver_id=UUID("10000000-0000-0000-0000-000000000015"),
+            document_type=models_module.PersonnelDocument.DocumentType.CONTRACT,
+            status=models_module.PersonnelDocument.DocumentStatus.ACTIVE,
+            title="Expires Only Contract",
+            issued_on=None,
+            expires_on=date(2026, 3, 24),
+        )
+
+        self.assertEqual(same_day.expires_on, same_day.issued_on)
+        self.assertIsNone(issued_only.expires_on)
+        self.assertIsNone(expires_only.issued_on)
+
+    def test_invalid_document_type_is_rejected_at_database_level(self):
+        models_module = _load_models_module(self)
+
+        with self.assertRaises(IntegrityError):
+            models_module.PersonnelDocument.objects.create(
+                driver_id=UUID("10000000-0000-0000-0000-000000000016"),
+                document_type="passport",
+                status=models_module.PersonnelDocument.DocumentStatus.ACTIVE,
+                title="Unsupported Document Type",
+            )
+
+    def test_invalid_status_is_rejected_at_database_level(self):
+        models_module = _load_models_module(self)
+
+        with self.assertRaises(IntegrityError):
+            models_module.PersonnelDocument.objects.create(
+                driver_id=UUID("10000000-0000-0000-0000-000000000017"),
+                document_type=models_module.PersonnelDocument.DocumentType.CONTRACT,
+                status="pending",
+                title="Unsupported Status",
+            )
+
     def test_duplicate_document_number_is_rejected_per_driver_and_type(self):
         models_module = _load_models_module(self)
         models_module.PersonnelDocument.objects.create(

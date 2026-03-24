@@ -71,17 +71,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name="personneldocument",
-            constraint=models.CheckConstraint(
-                condition=Q(issued_on__isnull=True)
-                | Q(expires_on__isnull=True)
-                | Q(expires_on__gte=models.F("issued_on")),
-                name="personnel_documents_valid_date_range",
-            ),
-        ),
-        migrations.AddConstraint(
-            model_name="personneldocument",
             constraint=models.UniqueConstraint(
-                condition=Q(document_number__isnull=False) & ~Q(document_number=""),
+                condition=Q(document_number__isnull=False),
                 fields=("driver_id", "document_type", "document_number"),
                 name="personnel_documents_unique_driver_type_number",
             ),
