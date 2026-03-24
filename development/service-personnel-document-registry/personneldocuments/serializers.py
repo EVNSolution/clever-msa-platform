@@ -1,10 +1,13 @@
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
+from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 
 from personneldocuments.exceptions import ServiceUnavailableError
 from personneldocuments.models import PersonnelDocument
 from personneldocuments.services.source_clients import (
+    SourceAuthenticationError,
     SourceClients,
+    SourcePermissionError,
     SourceServiceError,
     SourceValidationError,
 )
@@ -55,6 +58,10 @@ class PersonnelDocumentSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(getattr(exc, "message_dict", exc.messages)) from exc
         except SourceValidationError as exc:
             raise serializers.ValidationError({exc.field: [exc.message]}) from exc
+        except SourceAuthenticationError as exc:
+            raise NotAuthenticated(str(exc)) from exc
+        except SourcePermissionError as exc:
+            raise PermissionDenied(str(exc)) from exc
         except SourceServiceError as exc:
             raise ServiceUnavailableError(str(exc)) from exc
 

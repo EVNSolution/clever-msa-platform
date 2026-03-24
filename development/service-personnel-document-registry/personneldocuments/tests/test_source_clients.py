@@ -54,3 +54,41 @@ class SourceClientsTests(TestCase):
 
         self.assertEqual(context.exception.field, "driver_id")
         self.assertEqual(str(context.exception), "Referenced driver does not exist.")
+
+    @override_settings(DRIVER_PROFILE_BASE_URL="http://driver-profile-api:8000")
+    @patch("personneldocuments.services.source_clients.urlopen")
+    def test_validate_driver_exists_maps_401_to_authentication_error(self, mocked_urlopen) -> None:
+        from personneldocuments.services.source_clients import SourceAuthenticationError, SourceClients
+
+        mocked_urlopen.side_effect = HTTPError(
+            url=f"http://driver-profile-api:8000/{self.driver_id}/",
+            code=401,
+            msg="Unauthorized",
+            hdrs=None,
+            fp=None,
+        )
+
+        with self.assertRaises(SourceAuthenticationError):
+            SourceClients().validate_driver_exists(
+                driver_id=self.driver_id,
+                authorization=self.authorization,
+            )
+
+    @override_settings(DRIVER_PROFILE_BASE_URL="http://driver-profile-api:8000")
+    @patch("personneldocuments.services.source_clients.urlopen")
+    def test_validate_driver_exists_maps_403_to_permission_error(self, mocked_urlopen) -> None:
+        from personneldocuments.services.source_clients import SourceClients, SourcePermissionError
+
+        mocked_urlopen.side_effect = HTTPError(
+            url=f"http://driver-profile-api:8000/{self.driver_id}/",
+            code=403,
+            msg="Forbidden",
+            hdrs=None,
+            fp=None,
+        )
+
+        with self.assertRaises(SourcePermissionError):
+            SourceClients().validate_driver_exists(
+                driver_id=self.driver_id,
+                authorization=self.authorization,
+            )

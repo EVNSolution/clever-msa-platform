@@ -23,6 +23,14 @@ class SourceServiceError(SourceClientError):
     pass
 
 
+class SourceAuthenticationError(SourceClientError):
+    pass
+
+
+class SourcePermissionError(SourceClientError):
+    pass
+
+
 class SourceClients:
     def _build_url(self, base_url: str, path: str) -> str:
         return f"{base_url.rstrip('/')}{path}"
@@ -39,6 +47,10 @@ class SourceClients:
         except HTTPError as exc:
             if exc.code == 404:
                 raise SourceValidationError(field="", message="Not found.") from exc
+            if exc.code == 401:
+                raise SourceAuthenticationError("Upstream authentication failed.") from exc
+            if exc.code == 403:
+                raise SourcePermissionError("Upstream permission denied.") from exc
             raise SourceServiceError(f"Upstream request failed: {url}") from exc
         except (URLError, UnicodeDecodeError, json.JSONDecodeError) as exc:
             raise SourceServiceError(f"Upstream request failed: {url}") from exc

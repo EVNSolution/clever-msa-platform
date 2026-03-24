@@ -8,7 +8,11 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 
 from personneldocuments.models import PersonnelDocument
-from personneldocuments.services.source_clients import SourceValidationError
+from personneldocuments.services.source_clients import (
+    SourceAuthenticationError,
+    SourcePermissionError,
+    SourceValidationError,
+)
 
 
 class PersonnelDocumentApiTests(TestCase):
@@ -161,3 +165,23 @@ class PersonnelDocumentApiTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data["code"], "validation_error")
         self.assertEqual(response.data["details"]["driver_id"][0], "Referenced driver does not exist.")
+
+    @patch(
+        "personneldocuments.services.source_clients.SourceClients.validate_driver_exists",
+        side_effect=SourceAuthenticationError("Upstream authentication failed."),
+    )
+    def test_create_surfaces_upstream_authentication_failure_as_401(self, _mock_validate_driver) -> None:
+        response = self._admin_client().post("/documents/", self._document_payload(), format="json")
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data["code"], "authentication_failed")
+
+    @patch(
+        "personneldocuments.services.source_clients.SourceClients.validate_driver_exists",
+        side_effect=SourcePermissionError("Upstream permission denied."),
+    )
+    def test_create_surfaces_upstream_permission_failure_as_403(self, _mock_validate_driver) -> None:
+        response = self._admin_client().post("/documents/", self._document_payload(), format="json")
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data["code"], "permission_denied")
