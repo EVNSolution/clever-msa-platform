@@ -13,6 +13,7 @@ services:
       - account-auth-api
       - driver-profile-api
       - settlement-payroll-api
+      - settlement-registry-api
       - settlement-ops-api
       - organization-master-api
       - vehicle-asset-api
@@ -71,6 +72,17 @@ services:
       - ./infra/env/settlement-payroll.env.example
     depends_on:
       - settlement-db
+    expose:
+      - "8000"
+
+  settlement-registry-api:
+    build:
+      context: ../service-settlement-registry
+    env_file:
+      - ./infra/env/settlement-registry.env.example
+    depends_on:
+      - settlement-registry-db
+      - organization-master-api
     expose:
       - "8000"
 
@@ -269,6 +281,15 @@ services:
     expose:
       - "5432"
 
+  settlement-registry-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: settlement_registry
+      POSTGRES_USER: settlement_registry
+      POSTGRES_PASSWORD: settlement_registry
+    expose:
+      - "5432"
+
   org-db:
     image: postgres:16-alpine
     environment:
@@ -356,6 +377,7 @@ services:
       - account-db
       - driver-db
       - settlement-db
+      - settlement-registry-db
       - org-db
       - vehicle-db
       - dispatch-registry-db
@@ -367,6 +389,7 @@ services:
       - account-auth-api
       - driver-profile-api
       - settlement-payroll-api
+      - settlement-registry-api
       - organization-master-api
       - vehicle-asset-api
       - dispatch-registry-api

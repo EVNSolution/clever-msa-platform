@@ -12,6 +12,7 @@
 - `account-auth-api`
 - `driver-profile-api`
 - `settlement-payroll-api`
+- `settlement-registry-api`
 - `settlement-ops-api`
 - `organization-master-api`
 - `vehicle-asset-api`
@@ -28,6 +29,7 @@
 - `account-db`
 - `driver-db`
 - `settlement-db`
+- `settlement-registry-db`
 - `org-db`
 - `vehicle-db`
 - `dispatch-registry-db`
@@ -87,6 +89,13 @@
 - seed-runner는 이 서비스의 `migrate`, `seed_settlements`만 호출한다.
 - 실제 payroll calculation engine, policy/config/rate, daily/monthly settlement clone은 구현하지 않는다.
 - 관련 참고는 [06-settlement-process-note.md](../../../docs/decisions/06-settlement-process-note.md)에 둔다.
+
+### `settlement-registry-api`
+- settlement policy, policy version, policy assignment registry CRUD를 제공한다.
+- local compose에서 dedicated `settlement-registry-db` Postgres를 직접 사용한다.
+- `company_id`, `fleet_id`는 `organization-master-api` reference key로만 검증한다.
+- CRUD endpoint는 전부 admin-only management API이고, `health`만 공개한다.
+- gateway 외부 prefix는 `/api/settlement-registry/`다.
 
 ### `settlement-ops-api`
 - settlement 운영 조회용 read-only fan-out runtime을 제공한다.
@@ -154,6 +163,7 @@
 - `/api/auth/` -> `account-auth-api`
 - `/api/drivers/` -> `driver-profile-api`
 - `/api/settlements/` -> `settlement-payroll-api`
+- `/api/settlement-registry/` -> `settlement-registry-api`
 - `/api/settlement-ops/` -> `settlement-ops-api`
 - `/api/org/` -> `organization-master-api`
 - `/api/vehicles/` -> `vehicle-asset-api`
@@ -178,14 +188,15 @@ dead-letter는 예외적으로 admin-read 경로만 명시 route로 노출한다
 `seed-runner`는 아래 순서로 동작한다.
 1. seed-managed 백엔드 `health` 대기
 2. `organization-master` migrate + `seed_organization`
-3. `driver-profile` migrate + `seed_drivers`
-4. `vehicle-asset` migrate + `seed_vehicles`
-5. `dispatch-registry` migrate + `seed_dispatch`
-6. `terminal-registry` migrate + `seed_terminals`
-7. `telemetry-hub` migrate + `seed_telemetry`
-8. `driver-vehicle-assignment` migrate + `seed_assignments`
-9. `settlement-payroll` migrate + `seed_settlements`
-10. `account-auth` migrate + `seed_accounts`
+3. `settlement-registry` migrate + `seed_settlement_registry`
+4. `driver-profile` migrate + `seed_drivers`
+5. `vehicle-asset` migrate + `seed_vehicles`
+6. `dispatch-registry` migrate + `seed_dispatch`
+7. `terminal-registry` migrate + `seed_terminals`
+8. `telemetry-hub` migrate + `seed_telemetry`
+9. `driver-vehicle-assignment` migrate + `seed_assignments`
+10. `settlement-payroll` migrate + `seed_settlements`
+11. `account-auth` migrate + `seed_accounts`
 
 모든 단계는 재실행 가능하도록 idempotent하게 작성돼 있다.
 

@@ -57,10 +57,14 @@ wait_for_health "dispatch-registry" "http://dispatch-registry-api:8000/health/"
 wait_for_health "terminal-registry" "http://terminal-registry-api:8000/health/"
 wait_for_health "telemetry-hub" "http://telemetry-hub-api:8000/health/"
 wait_for_health "settlement-payroll" "http://settlement-payroll-api:8000/health/"
+wait_for_health "settlement-registry" "http://settlement-registry-api:8000/health/"
 wait_for_health "account-auth" "http://account-auth-api:8000/health/"
 
 run_manage "services/organization-master" "infra/env/organization-master.env.example" migrate --noinput
 run_manage "services/organization-master" "infra/env/organization-master.env.example" seed_organization
+
+run_manage "services/settlement-registry" "infra/env/settlement-registry.env.example" migrate --noinput
+run_manage "services/settlement-registry" "infra/env/settlement-registry.env.example" seed_settlement_registry
 
 run_manage "services/driver-profile" "infra/env/driver-profile.env.example" migrate --noinput
 run_manage "services/driver-profile" "infra/env/driver-profile.env.example" seed_drivers
