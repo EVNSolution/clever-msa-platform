@@ -22,26 +22,26 @@
 - Modify: `WORKSPACE.md`
 - Modify: `repo-map.md`
 - Modify: `docs/mappings/2026-03-20-docs-reclassification-map.md`
-- Move: `docs/rollout/plans/2026-03-19-account-driver-settlement-implementation-handoff.md`
-- Move: `docs/rollout/plans/2026-03-19-account-driver-settlement-msa-master-plan.md`
-- Move: `docs/rollout/plans/2026-03-19-driver-360-bootstrap-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-19-local-django-msa-bootstrap-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-19-trimmed-bootstrap-refactor-plan.md`
-- Move: `docs/rollout/plans/2026-03-20-platform-restructure-and-repo-migration-plan.md`
-- Move: `docs/rollout/plans/2026-03-20-settlement-phase-1-decomposition-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-20-telemetry-hub-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-20-terminal-registry-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-20-vehicle-asset-bootstrap-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-20-vehicle-asset-refactor-and-driver-vehicle-assignment-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-20-vehicle-ops-phase-1-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-21-telemetry-dead-letter-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-21-telemetry-listener-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-23-dispatch-operations-view-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-23-dispatch-registry-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-23-planned-business-domain-skeleton-shell-creation-plan.md`
-- Move: `docs/rollout/plans/2026-03-23-settlement-phase-2-decomposition-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-23-settlement-scoped-driver-read-contract-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-24-driver-ops-runtime-naming-hard-cut-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-19-account-driver-settlement-implementation-handoff.md`
+- Move: `docs/archive/historical/rollout/2026-03-19-account-driver-settlement-msa-master-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-19-driver-360-bootstrap-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-19-local-django-msa-bootstrap-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-19-trimmed-bootstrap-refactor-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-20-platform-restructure-and-repo-migration-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-20-settlement-phase-1-decomposition-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-20-telemetry-hub-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-20-terminal-registry-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-20-vehicle-asset-bootstrap-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-20-vehicle-asset-refactor-and-driver-vehicle-assignment-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-20-vehicle-ops-phase-1-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-21-telemetry-dead-letter-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-21-telemetry-listener-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-23-dispatch-operations-view-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-23-dispatch-registry-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-23-planned-business-domain-skeleton-shell-creation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-23-settlement-phase-2-decomposition-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-23-settlement-scoped-driver-read-contract-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-24-driver-ops-runtime-naming-hard-cut-implementation-plan.md`
 - Move: `docs/rollout/plans/2026-03-24-docs-archive-governance-and-current-truth-implementation-plan.md`
 
 ### Task 1: Add Living Docs And Governance Entry Points
@@ -110,26 +110,26 @@ git commit -m "docs: clarify living docs and archive rules"
 **Files:**
 - Create: `docs/archive/historical/rollout/`
 - Modify: `docs/mappings/2026-03-20-docs-reclassification-map.md`
-- Move: `docs/rollout/plans/2026-03-19-account-driver-settlement-implementation-handoff.md`
-- Move: `docs/rollout/plans/2026-03-19-account-driver-settlement-msa-master-plan.md`
-- Move: `docs/rollout/plans/2026-03-19-driver-360-bootstrap-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-19-local-django-msa-bootstrap-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-19-trimmed-bootstrap-refactor-plan.md`
-- Move: `docs/rollout/plans/2026-03-20-platform-restructure-and-repo-migration-plan.md`
-- Move: `docs/rollout/plans/2026-03-20-settlement-phase-1-decomposition-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-20-telemetry-hub-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-20-terminal-registry-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-20-vehicle-asset-bootstrap-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-20-vehicle-asset-refactor-and-driver-vehicle-assignment-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-20-vehicle-ops-phase-1-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-21-telemetry-dead-letter-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-21-telemetry-listener-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-23-dispatch-operations-view-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-23-dispatch-registry-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-23-planned-business-domain-skeleton-shell-creation-plan.md`
-- Move: `docs/rollout/plans/2026-03-23-settlement-phase-2-decomposition-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-23-settlement-scoped-driver-read-contract-implementation-plan.md`
-- Move: `docs/rollout/plans/2026-03-24-driver-ops-runtime-naming-hard-cut-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-19-account-driver-settlement-implementation-handoff.md`
+- Move: `docs/archive/historical/rollout/2026-03-19-account-driver-settlement-msa-master-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-19-driver-360-bootstrap-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-19-local-django-msa-bootstrap-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-19-trimmed-bootstrap-refactor-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-20-platform-restructure-and-repo-migration-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-20-settlement-phase-1-decomposition-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-20-telemetry-hub-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-20-terminal-registry-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-20-vehicle-asset-bootstrap-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-20-vehicle-asset-refactor-and-driver-vehicle-assignment-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-20-vehicle-ops-phase-1-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-21-telemetry-dead-letter-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-21-telemetry-listener-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-23-dispatch-operations-view-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-23-dispatch-registry-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-23-planned-business-domain-skeleton-shell-creation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-23-settlement-phase-2-decomposition-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-23-settlement-scoped-driver-read-contract-implementation-plan.md`
+- Move: `docs/archive/historical/rollout/2026-03-24-driver-ops-runtime-naming-hard-cut-implementation-plan.md`
 
 - [ ] **Step 1: Create the historical rollout archive directory**
 
@@ -143,32 +143,7 @@ Expected: the directory exists and is ready to receive moved files.
 
 - [ ] **Step 2: Move the completed rollout files with git-aware renames**
 
-Run:
-
-```bash
-git mv docs/rollout/plans/2026-03-19-account-driver-settlement-implementation-handoff.md docs/archive/historical/rollout/
-git mv docs/rollout/plans/2026-03-19-account-driver-settlement-msa-master-plan.md docs/archive/historical/rollout/
-git mv docs/rollout/plans/2026-03-19-driver-360-bootstrap-implementation-plan.md docs/archive/historical/rollout/
-git mv docs/rollout/plans/2026-03-19-local-django-msa-bootstrap-implementation-plan.md docs/archive/historical/rollout/
-git mv docs/rollout/plans/2026-03-19-trimmed-bootstrap-refactor-plan.md docs/archive/historical/rollout/
-git mv docs/rollout/plans/2026-03-20-platform-restructure-and-repo-migration-plan.md docs/archive/historical/rollout/
-git mv docs/rollout/plans/2026-03-20-settlement-phase-1-decomposition-implementation-plan.md docs/archive/historical/rollout/
-git mv docs/rollout/plans/2026-03-20-telemetry-hub-implementation-plan.md docs/archive/historical/rollout/
-git mv docs/rollout/plans/2026-03-20-terminal-registry-implementation-plan.md docs/archive/historical/rollout/
-git mv docs/rollout/plans/2026-03-20-vehicle-asset-bootstrap-implementation-plan.md docs/archive/historical/rollout/
-git mv docs/rollout/plans/2026-03-20-vehicle-asset-refactor-and-driver-vehicle-assignment-implementation-plan.md docs/archive/historical/rollout/
-git mv docs/rollout/plans/2026-03-20-vehicle-ops-phase-1-implementation-plan.md docs/archive/historical/rollout/
-git mv docs/rollout/plans/2026-03-21-telemetry-dead-letter-implementation-plan.md docs/archive/historical/rollout/
-git mv docs/rollout/plans/2026-03-21-telemetry-listener-implementation-plan.md docs/archive/historical/rollout/
-git mv docs/rollout/plans/2026-03-23-dispatch-operations-view-implementation-plan.md docs/archive/historical/rollout/
-git mv docs/rollout/plans/2026-03-23-dispatch-registry-implementation-plan.md docs/archive/historical/rollout/
-git mv docs/rollout/plans/2026-03-23-planned-business-domain-skeleton-shell-creation-plan.md docs/archive/historical/rollout/
-git mv docs/rollout/plans/2026-03-23-settlement-phase-2-decomposition-implementation-plan.md docs/archive/historical/rollout/
-git mv docs/rollout/plans/2026-03-23-settlement-scoped-driver-read-contract-implementation-plan.md docs/archive/historical/rollout/
-git mv docs/rollout/plans/2026-03-24-driver-ops-runtime-naming-hard-cut-implementation-plan.md docs/archive/historical/rollout/
-```
-
-Expected: the files disappear from `docs/rollout/plans/` and appear under `docs/archive/historical/rollout/`.
+These files now live under `docs/archive/historical/rollout/`.
 
 - [ ] **Step 3: Update the docs reclassification map to the new historical paths**
 

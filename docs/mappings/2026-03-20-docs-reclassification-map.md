@@ -54,15 +54,15 @@
 | `docs/superpowers/specs/2026-03-20-vehicle-asset-design.md` | `docs/decisions/specs/2026-03-20-vehicle-asset-design.md` | decisions | validated design spec |
 | `docs/superpowers/specs/2026-03-20-vehicle-ops-phase-1-design.md` | `docs/decisions/specs/2026-03-20-vehicle-ops-phase-1-design.md` | decisions | validated design spec |
 | `docs/superpowers/specs/2026-03-20-vehicle-ownership-and-assignment-design.md` | `docs/decisions/specs/2026-03-20-vehicle-ownership-and-assignment-design.md` | decisions | validated design spec |
-| `docs/superpowers/plans/2026-03-19-account-driver-settlement-implementation-handoff.md` | `docs/rollout/plans/2026-03-19-account-driver-settlement-implementation-handoff.md` | rollout | implementation handoff |
-| `docs/superpowers/plans/2026-03-19-account-driver-settlement-msa-master-plan.md` | `docs/rollout/plans/2026-03-19-account-driver-settlement-msa-master-plan.md` | rollout | staged execution plan |
-| `docs/superpowers/plans/2026-03-19-driver-360-bootstrap-implementation-plan.md` | `docs/rollout/plans/2026-03-19-driver-360-bootstrap-implementation-plan.md` | rollout | implementation plan |
-| `docs/superpowers/plans/2026-03-19-local-django-msa-bootstrap-implementation-plan.md` | `docs/rollout/plans/2026-03-19-local-django-msa-bootstrap-implementation-plan.md` | rollout | implementation plan |
-| `docs/superpowers/plans/2026-03-19-trimmed-bootstrap-refactor-plan.md` | `docs/rollout/plans/2026-03-19-trimmed-bootstrap-refactor-plan.md` | rollout | refactor rollout plan |
-| `docs/superpowers/plans/2026-03-20-platform-restructure-and-repo-migration-plan.md` | `docs/rollout/plans/2026-03-20-platform-restructure-and-repo-migration-plan.md` | rollout | platform migration checklist |
-| `docs/superpowers/plans/2026-03-20-vehicle-asset-bootstrap-implementation-plan.md` | `docs/rollout/plans/2026-03-20-vehicle-asset-bootstrap-implementation-plan.md` | rollout | implementation plan |
-| `docs/superpowers/plans/2026-03-20-vehicle-asset-refactor-and-driver-vehicle-assignment-implementation-plan.md` | `docs/rollout/plans/2026-03-20-vehicle-asset-refactor-and-driver-vehicle-assignment-implementation-plan.md` | rollout | implementation plan |
-| `docs/superpowers/plans/2026-03-20-vehicle-ops-phase-1-implementation-plan.md` | `docs/rollout/plans/2026-03-20-vehicle-ops-phase-1-implementation-plan.md` | rollout | implementation plan |
+| `docs/superpowers/plans/2026-03-19-account-driver-settlement-implementation-handoff.md` | `docs/archive/historical/rollout/2026-03-19-account-driver-settlement-implementation-handoff.md` | historical rollout archive | implementation handoff |
+| `docs/superpowers/plans/2026-03-19-account-driver-settlement-msa-master-plan.md` | `docs/archive/historical/rollout/2026-03-19-account-driver-settlement-msa-master-plan.md` | historical rollout archive | staged execution plan |
+| `docs/superpowers/plans/2026-03-19-driver-360-bootstrap-implementation-plan.md` | `docs/archive/historical/rollout/2026-03-19-driver-360-bootstrap-implementation-plan.md` | historical rollout archive | implementation plan |
+| `docs/superpowers/plans/2026-03-19-local-django-msa-bootstrap-implementation-plan.md` | `docs/archive/historical/rollout/2026-03-19-local-django-msa-bootstrap-implementation-plan.md` | historical rollout archive | implementation plan |
+| `docs/superpowers/plans/2026-03-19-trimmed-bootstrap-refactor-plan.md` | `docs/archive/historical/rollout/2026-03-19-trimmed-bootstrap-refactor-plan.md` | historical rollout archive | refactor rollout plan |
+| `docs/superpowers/plans/2026-03-20-platform-restructure-and-repo-migration-plan.md` | `docs/archive/historical/rollout/2026-03-20-platform-restructure-and-repo-migration-plan.md` | historical rollout archive | platform migration checklist |
+| `docs/superpowers/plans/2026-03-20-vehicle-asset-bootstrap-implementation-plan.md` | `docs/archive/historical/rollout/2026-03-20-vehicle-asset-bootstrap-implementation-plan.md` | historical rollout archive | implementation plan |
+| `docs/superpowers/plans/2026-03-20-vehicle-asset-refactor-and-driver-vehicle-assignment-implementation-plan.md` | `docs/archive/historical/rollout/2026-03-20-vehicle-asset-refactor-and-driver-vehicle-assignment-implementation-plan.md` | historical rollout archive | implementation plan |
+| `docs/superpowers/plans/2026-03-20-vehicle-ops-phase-1-implementation-plan.md` | `docs/archive/historical/rollout/2026-03-20-vehicle-ops-phase-1-implementation-plan.md` | historical rollout archive | implementation plan |
 | `docs/superpowers/plans/2026-03-20-docs-reclassification-map.md` | `docs/mappings/2026-03-20-docs-reclassification-map.md` | mappings | this file becomes the new docs migration truth |
 
 ## Folder Notes
