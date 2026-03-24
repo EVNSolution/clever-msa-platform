@@ -85,4 +85,41 @@ class Migration(migrations.Migration):
                 ],
             },
         ),
+        migrations.CreateModel(
+            name="SettlementPolicyAssignment",
+            fields=[
+                (
+                    "assignment_id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("company_id", models.UUIDField()),
+                ("fleet_id", models.UUIDField()),
+                ("effective_start_date", models.DateField()),
+                ("effective_end_date", models.DateField(blank=True, null=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("active", "active"), ("inactive", "inactive")],
+                        max_length=32,
+                    ),
+                ),
+                (
+                    "policy_version",
+                    models.ForeignKey(
+                        db_column="policy_version_id",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="assignments",
+                        to="settlementregistry.settlementpolicyversion",
+                    ),
+                ),
+            ],
+            options={
+                "ordering": ("assignment_id",),
+            },
+        ),
     ]
