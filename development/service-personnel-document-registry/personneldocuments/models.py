@@ -36,7 +36,7 @@ class PersonnelDocument(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=("driver_id", "document_type", "document_number"),
-                condition=Q(document_number__isnull=False),
+                condition=Q(document_number__isnull=False) & ~Q(document_number=""),
                 name="personnel_documents_unique_driver_type_number",
             ),
         ]

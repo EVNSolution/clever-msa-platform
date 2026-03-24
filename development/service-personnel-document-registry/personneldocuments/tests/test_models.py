@@ -107,3 +107,35 @@ class PersonnelDocumentModelTests(TestCase):
                 title="Business Registration Copy",
                 document_number="BR-2026-001",
             )
+
+    def test_blank_document_number_does_not_trigger_unique_constraint(self):
+        models_module = _load_models_module(self)
+        driver_id = UUID("10000000-0000-0000-0000-000000000006")
+
+        models_module.PersonnelDocument.objects.create(
+            driver_id=driver_id,
+            document_type=models_module.PersonnelDocument.DocumentType.CONTRACT,
+            status=models_module.PersonnelDocument.DocumentStatus.ACTIVE,
+            title="Primary Contract",
+            document_number="",
+        )
+
+        duplicate_blank = models_module.PersonnelDocument(
+            driver_id=driver_id,
+            document_type=models_module.PersonnelDocument.DocumentType.CONTRACT,
+            status=models_module.PersonnelDocument.DocumentStatus.DRAFT,
+            title="Draft Contract",
+            document_number="",
+        )
+
+        duplicate_blank.full_clean()
+        duplicate_blank.save()
+
+        self.assertEqual(
+            models_module.PersonnelDocument.objects.filter(
+                driver_id=driver_id,
+                document_type=models_module.PersonnelDocument.DocumentType.CONTRACT,
+                document_number="",
+            ).count(),
+            2,
+        )

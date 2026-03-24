@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="personneldocument",
             constraint=models.UniqueConstraint(
-                condition=Q(document_number__isnull=False),
+                condition=Q(document_number__isnull=False) & ~Q(document_number=""),
                 fields=("driver_id", "document_type", "document_number"),
                 name="personnel_documents_unique_driver_type_number",
             ),
