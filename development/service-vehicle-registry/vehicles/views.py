@@ -1,5 +1,20 @@
 from uuid import UUID
 
+try:
+    from drf_spectacular.utils import extend_schema, extend_schema_view
+except ModuleNotFoundError:
+    def extend_schema(*args, **kwargs):
+        def decorator(target):
+            return target
+
+        return decorator
+
+    def extend_schema_view(**kwargs):
+        def decorator(target):
+            return target
+
+        return decorator
+
 from rest_framework import generics, mixins, permissions
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
@@ -7,13 +22,19 @@ from rest_framework.views import APIView
 
 from vehicles.models import VehicleMaster, VehicleOperatorAccess
 from vehicles.permissions import AuthenticatedReadAdminWrite
-from vehicles.serializers import VehicleMasterSerializer, VehicleOperatorAccessSerializer
+from vehicles.serializers import (
+    HealthSerializer,
+    VehicleMasterSerializer,
+    VehicleOperatorAccessFilterSerializer,
+    VehicleOperatorAccessSerializer,
+)
 
 
 class HealthView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(responses={200: HealthSerializer})
     def get(self, request):
         return Response({"status": "ok"})
 
@@ -42,6 +63,7 @@ class VehicleMasterDetailView(
         return self.partial_update(request, *args, **kwargs)
 
 
+@extend_schema_view(get=extend_schema(parameters=[VehicleOperatorAccessFilterSerializer]))
 class VehicleOperatorAccessListCreateView(generics.ListCreateAPIView):
     serializer_class = VehicleOperatorAccessSerializer
     permission_classes = [AuthenticatedReadAdminWrite]

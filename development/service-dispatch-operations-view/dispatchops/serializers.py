@@ -44,3 +44,7 @@ class DispatchOpsSummarySerializer(serializers.Serializer):
     not_started_count = serializers.IntegerField()
     dispatch_unit_changed_count = serializers.IntegerField()
     unplanned_current_count = serializers.IntegerField()
+
+
+class HealthSerializer(serializers.Serializer):
+    status = serializers.CharField()

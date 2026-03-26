@@ -93,3 +93,6 @@ class DailyDeliveryInputSnapshotSerializer(_SourceValidatedModelSerializer):
         self._validate_model(candidate)
         return attrs
 
+
+class HealthSerializer(serializers.Serializer):
+    status = serializers.CharField()

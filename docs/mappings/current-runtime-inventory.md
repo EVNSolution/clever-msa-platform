@@ -30,6 +30,10 @@
 | `service-vehicle-operations-view` | `vehicle-ops-api` | `/api/vehicle-ops/` | `active runtime` | 차량 운영 조회 read model |
 | `service-dispatch-registry` | `dispatch-registry-api` | `/api/dispatch/` | `active runtime` | 배차 계획 정본 |
 | `service-dispatch-operations-view` | `dispatch-ops-api` | `/api/dispatch-ops/` | `active runtime` | 배차 운영 상황판 read model |
+| `service-region-registry` | `region-registry-api` | `/api/regions/` | `active runtime` | 권역 기준 마스터와 polygon/difficulty registry |
+| `service-region-analytics` | `region-analytics-api` | `/api/region-analytics/` | `active runtime` | 권역 일별 통계와 성과 요약 snapshot |
+| `service-announcement-registry` | `announcement-registry-api` | `/api/announcements/` | `active runtime` | 공지 게시 정본과 publish/exposure registry |
+| `service-support-registry` | `support-registry-api` | `/api/ticket/` | `active runtime` | 문의, 티켓, 응답, 처리 상태 정본 |
 | `service-terminal-registry` | `terminal-registry-api` | `/api/terminals/` | `active runtime` | 단말 자산과 설치 관계 정본 |
 | `service-telemetry-hub` | `telemetry-hub-api` | `/api/telemetry/` | `active runtime` | raw ingest, latest snapshot, diagnostics |
 | `service-telemetry-dead-letter` | `telemetry-dead-letter-api` | `/api/telemetry-dead-letters/` | `active runtime` | 실패 텔레메트리 append-only 저장과 admin read |
@@ -39,11 +43,7 @@
 
 | Target repo | Compose service | Gateway prefix | Status | Role summary |
 | --- | --- | --- | --- | --- |
-| `service-region-registry` | none | none | `empty shell` | 권역 기준 마스터 |
-| `service-region-analytics` | none | none | `empty shell` | 권역별 통계와 성과 분석 |
 | `service-notification-hub` | none | none | `empty shell` | 푸시 발송과 일반 알림함 |
-| `service-announcement-registry` | none | none | `empty shell` | 공지 게시 정본 |
-| `service-support-registry` | none | none | `empty shell` | 문의와 티켓 정본 |
 
 ## Notes
 

@@ -1,3 +1,12 @@
+try:
+    from drf_spectacular.utils import extend_schema
+except ModuleNotFoundError:
+    def extend_schema(*args, **kwargs):
+        def decorator(target):
+            return target
+
+        return decorator
+
 from rest_framework import permissions, status
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
@@ -7,6 +16,7 @@ from settlements.exceptions import UpstreamInvalidResponse, UpstreamServiceUnava
 from settlements.permissions import AuthenticatedReadOnly
 from settlements.serializers import (
     DriverLatestSettlementSerializer,
+    HealthSerializer,
     SettlementItemSerializer,
     SettlementRunSerializer,
 )
@@ -29,6 +39,7 @@ class HealthView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(responses={200: HealthSerializer})
     def get(self, request):
         return Response({"status": "ok"}, status=status.HTTP_200_OK)
 
@@ -37,6 +48,7 @@ class SettlementRunListView(APIView):
     http_method_names = ["get", "head", "options"]
     permission_classes = [AuthenticatedReadOnly]
 
+    @extend_schema(responses={200: SettlementRunSerializer(many=True)})
     def get(self, request):
         try:
             runs = SourceClients().list_settlement_runs(
@@ -55,6 +67,7 @@ class SettlementRunDetailView(APIView):
     http_method_names = ["get", "head", "options"]
     permission_classes = [AuthenticatedReadOnly]
 
+    @extend_schema(responses={200: SettlementRunSerializer})
     def get(self, request, settlement_run_id):
         try:
             run = SourceClients().get_settlement_run(
@@ -76,6 +89,7 @@ class SettlementItemListView(APIView):
     http_method_names = ["get", "head", "options"]
     permission_classes = [AuthenticatedReadOnly]
 
+    @extend_schema(responses={200: SettlementItemSerializer(many=True)})
     def get(self, request):
         try:
             items = SourceClients().list_settlement_items(
@@ -94,6 +108,7 @@ class SettlementItemDetailView(APIView):
     http_method_names = ["get", "head", "options"]
     permission_classes = [AuthenticatedReadOnly]
 
+    @extend_schema(responses={200: SettlementItemSerializer})
     def get(self, request, settlement_item_id):
         try:
             item = SourceClients().get_settlement_item(
@@ -115,6 +130,7 @@ class DriverLatestSettlementView(APIView):
     http_method_names = ["get", "head", "options"]
     permission_classes = [AuthenticatedReadOnly]
 
+    @extend_schema(responses={200: DriverLatestSettlementSerializer})
     def get(self, request, driver_id):
         try:
             latest_settlement = LatestSettlementSummaryService().build_summary(

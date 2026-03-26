@@ -10,3 +10,9 @@
 - 문서 재분류표
 
 이 폴더는 “어디서 어디로 가는가”를 찾는 곳이다.
+
+current MSA API 문서를 읽을 때는 아래 문서를 먼저 본다.
+
+- `current-runtime-inventory.md`
+- `repo-responsibility-matrix.md`
+- `08-current-msa-api-docs-reading-guide.md`

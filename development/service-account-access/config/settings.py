@@ -1,8 +1,10 @@
+import importlib.util
 import os
 from datetime import timedelta
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+HAS_DRF_SPECTACULAR = importlib.util.find_spec("drf_spectacular") is not None
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "change-me")
 DEBUG = os.environ.get("DJANGO_DEBUG", "0") in {"1", "true", "True"}
@@ -20,6 +22,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "accounts",
 ]
+if HAS_DRF_SPECTACULAR:
+    INSTALLED_APPS.insert(-1, "drf_spectacular")
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -74,6 +78,16 @@ REST_FRAMEWORK = {
     ),
     "EXCEPTION_HANDLER": "accounts.exceptions.api_exception_handler",
 }
+if HAS_DRF_SPECTACULAR:
+    REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
+
+if HAS_DRF_SPECTACULAR:
+    SPECTACULAR_SETTINGS = {
+        "TITLE": "CLEVER Account Access API",
+        "DESCRIPTION": "Service-owned OpenAPI schema for service-account-access.",
+        "VERSION": "1.0.0",
+        "SERVE_INCLUDE_SCHEMA": False,
+    }
 
 JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "change-me")
 JWT_ISSUER = os.environ.get("JWT_ISSUER", "msa-server")

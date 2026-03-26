@@ -1,18 +1,34 @@
 # service-region-analytics
 
-권역 분석을 위한 empty shell repo다.
+이 repo는 권역 분석 runtime이다.
 
 현재 역할:
-- 권역별 배송 통계와 성과 분석 경계를 위한 자리
+- `RegionDailyStatistic` CRUD
+- `RegionPerformanceSummary` CRUD
+- admin-only analytics management API와 `health` endpoint
+- deterministic bootstrap seed command
 
-미래 역할:
-- 권역별 통계
-- 권역 비교 분석
-- 이후 지도 / 추천 기능과의 연결
+이 repo는 절대 소유하지 않음:
+- 권역 기준 마스터 쓰기
+- dispatch planning truth 쓰기
+- delivery source truth 쓰기
+- route recommendation
+- 지도 / 추천 기능
 
-상태:
-- runtime 미구현
-- 현재는 shell 디렉토리와 README만 존재
+현재 API:
+- internal path: `/health/`
+- internal path: `/daily-statistics/`
+- internal path: `/daily-statistics/<region_daily_statistic_id>/`
+- internal path: `/performance-summaries/`
+- internal path: `/performance-summaries/<region_performance_summary_id>/`
+- gateway prefix: `/api/region-analytics/`
 
-정본 문서:
-- 플랫폼 아키텍처 정본은 `../../docs/` 아래 문서를 따른다.
+아직 포함하지 않음:
+- region-registry fan-out validation
+- dispatch / delivery 기반 자동 집계
+- 권역 비교 ranking endpoint
+- 지도 / 추천 기능 연계
+
+현재 정본:
+- `../../docs/mappings/`
+- `../../docs/decisions/specs/2026-03-27-region-analytics-phase-1-activation-design.md`

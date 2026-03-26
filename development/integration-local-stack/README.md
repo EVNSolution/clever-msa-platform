@@ -49,6 +49,10 @@
 실행 문서:
 - compose 시뮬레이션 설명은 [compose/README.md](./compose/README.md)
 - 플랫폼 전체 경계는 [../../docs/](../../docs/README.md)
+- current MSA API 문서 entry는 [compose/api-docs/README.md](./compose/api-docs/README.md)
+- current MSA API 문서 재생성 helper는 `./scripts/refresh_api_docs.py`
+- current MSA API 문서 preview helper는 `./scripts/preview_api_docs.py`
+- root repo GitHub Actions entry는 `../../.github/workflows/refresh-api-docs.yml`
 
 ## Local Telemetry Smoke
 

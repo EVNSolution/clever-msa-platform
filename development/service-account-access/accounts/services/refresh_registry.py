@@ -1,14 +1,21 @@
 from datetime import datetime, timezone
 
-import redis
 from django.conf import settings
 
 from accounts.services.jwt_service import decode_token
 
 
+def build_redis_client():
+    try:
+        import redis
+    except ModuleNotFoundError as exc:
+        raise RuntimeError("redis package is required for refresh token registry operations.") from exc
+    return redis.Redis.from_url(settings.REDIS_URL, decode_responses=True)
+
+
 class RefreshRegistry:
     def __init__(self):
-        self.client = redis.Redis.from_url(settings.REDIS_URL, decode_responses=True)
+        self.client = build_redis_client()
 
     def _refresh_key(self, jti: str) -> str:
         return f"auth:refresh:{jti}"

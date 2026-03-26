@@ -46,11 +46,11 @@
 | `service-dispatch-registry` | service | `dispatch_plan`, `vehicle_schedule`, `dispatch_assignment` 1차 runtime 구현 완료 | 배차 정본, 물량 계획, 회차/플릿 기준 배차 입력 | `development/service-dispatch-registry/` | `migrated-target` |
 | `service-dispatch-operations-view` | service | 배차 운영 조회 read model runtime | 배차 운영 조회와 계획 상황판 | `development/service-dispatch-operations-view/` | `migrated-target` |
 | `service-personnel-document-registry` | service | 기사 인사문서 메타데이터 runtime, admin CRUD와 seed 구현 완료 | 계약/증빙/계좌/사업자/소속 문서 메타데이터 정본 | `development/service-personnel-document-registry/` | `migrated-target` |
-| `service-region-registry` | service | shell 디렉토리와 README만 존재 | 권역 polygon, 난이도, 권역 기준 마스터 | `development/service-region-registry/` | `empty-shell` |
-| `service-region-analytics` | service | shell 디렉토리와 README만 존재 | 권역별 배송 통계와 권역 성과 분석 | `development/service-region-analytics/` | `empty-shell` |
+| `service-region-registry` | service | 권역 기준 정본 runtime, polygon/difficulty CRUD와 seed 제공 | 권역 polygon, 난이도, 권역 기준 마스터 | `development/service-region-registry/` | `migrated-target` |
+| `service-region-analytics` | service | 권역 일별 통계와 성과 요약 runtime, admin CRUD와 seed 제공 | 권역별 배송 통계와 권역 성과 분석 | `development/service-region-analytics/` | `migrated-target` |
 | `service-notification-hub` | service | shell 디렉토리와 README만 존재 | 푸시 토큰, 발송, 발송 로그, 일반 알림함 | `development/service-notification-hub/` | `empty-shell` |
-| `service-announcement-registry` | service | shell 디렉토리와 README만 존재 | 공지 게시 정본 | `development/service-announcement-registry/` | `empty-shell` |
-| `service-support-registry` | service | shell 디렉토리와 README만 존재 | 문의, 티켓, 응답, 처리 상태 정본 | `development/service-support-registry/` | `empty-shell` |
+| `service-announcement-registry` | service | 공지 게시 정본 runtime, publish/exposure CRUD와 seed 제공 | 공지 게시 정본 | `development/service-announcement-registry/` | `migrated-target` |
+| `service-support-registry` | service | 지원 정본 runtime, ticket/response/status CRUD와 seed 제공 | 문의, 티켓, 응답, 처리 상태 정본 | `development/service-support-registry/` | `migrated-target` |
 
 ## Boundary Notes
 
@@ -142,6 +142,10 @@
 6. future/runtime repo 기동
    - `service-dispatch-registry` runtime 구현 완료, target repo 활성화 완료
    - `service-dispatch-operations-view` runtime 구현 완료, target repo 활성화 완료
+   - `service-region-registry` runtime 구현 완료, target repo 활성화 완료
+   - `service-region-analytics` runtime 구현 완료, target repo 활성화 완료
+   - `service-announcement-registry` runtime 구현 완료, target repo 활성화 완료
+   - `service-support-registry` runtime 구현 완료, target repo 활성화 완료
    - `service-terminal-registry` runtime 구현 완료, target repo 활성화 완료
    - `service-telemetry-hub` runtime 구현 완료, target repo 활성화 완료
    - `service-telemetry-listener` runtime 구현 완료, target repo 활성화 완료

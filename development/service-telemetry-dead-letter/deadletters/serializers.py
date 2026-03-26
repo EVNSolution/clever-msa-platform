@@ -45,3 +45,14 @@ class TelemetryDeadLetterSerializer(serializers.ModelSerializer):
                 f"payload_json exceeds max payload size of {settings.TELEMETRY_DEAD_LETTER_MAX_PAYLOAD_BYTES} bytes."
             )
         return value
+
+
+class HealthSerializer(serializers.Serializer):
+    status = serializers.CharField()
+
+
+class TelemetryDeadLetterFilterSerializer(serializers.Serializer):
+    failure_class = serializers.CharField(required=False)
+    source_service = serializers.CharField(required=False)
+    failed_at_from = serializers.DateTimeField(required=False)
+    failed_at_to = serializers.DateTimeField(required=False)

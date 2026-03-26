@@ -1,18 +1,28 @@
 """Read/write endpoints for settlement payroll runs and items."""
 
+try:
+    from drf_spectacular.utils import extend_schema
+except ModuleNotFoundError:
+    def extend_schema(*args, **kwargs):
+        def decorator(target):
+            return target
+
+        return decorator
+
 from rest_framework import permissions, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from settlements.models import SettlementItem, SettlementRun
 from settlements.permissions import AuthenticatedReadAdminWrite
-from settlements.serializers import SettlementItemSerializer, SettlementRunSerializer
+from settlements.serializers import HealthSerializer, SettlementItemSerializer, SettlementRunSerializer
 
 
 class HealthView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(responses={200: HealthSerializer})
     def get(self, request):
         return Response({"status": "ok"})
 

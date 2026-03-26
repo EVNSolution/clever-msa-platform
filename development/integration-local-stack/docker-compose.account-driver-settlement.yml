@@ -20,6 +20,10 @@ services:
       - organization-master-api
       - vehicle-asset-api
       - dispatch-registry-api
+      - region-registry-api
+      - region-analytics-api
+      - announcement-registry-api
+      - support-registry-api
       - terminal-registry-api
       - driver-vehicle-assignment-api
       - telemetry-hub-api
@@ -150,6 +154,46 @@ services:
       - dispatch-registry-db
       - vehicle-asset-api
       - driver-profile-api
+    expose:
+      - "8000"
+
+  region-registry-api:
+    build:
+      context: ../service-region-registry
+    env_file:
+      - ./infra/env/region-registry.env.example
+    depends_on:
+      - region-registry-db
+    expose:
+      - "8000"
+
+  region-analytics-api:
+    build:
+      context: ../service-region-analytics
+    env_file:
+      - ./infra/env/region-analytics.env.example
+    depends_on:
+      - region-analytics-db
+    expose:
+      - "8000"
+
+  announcement-registry-api:
+    build:
+      context: ../service-announcement-registry
+    env_file:
+      - ./infra/env/announcement-registry.env.example
+    depends_on:
+      - announcement-registry-db
+    expose:
+      - "8000"
+
+  support-registry-api:
+    build:
+      context: ../service-support-registry
+    env_file:
+      - ./infra/env/support-registry.env.example
+    depends_on:
+      - support-registry-db
     expose:
       - "8000"
 
@@ -360,6 +404,42 @@ services:
     expose:
       - "5432"
 
+  region-registry-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: region_registry
+      POSTGRES_USER: region_registry
+      POSTGRES_PASSWORD: region_registry
+    expose:
+      - "5432"
+
+  region-analytics-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: region_analytics
+      POSTGRES_USER: region_analytics
+      POSTGRES_PASSWORD: region_analytics
+    expose:
+      - "5432"
+
+  announcement-registry-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: announcement_registry
+      POSTGRES_USER: announcement_registry
+      POSTGRES_PASSWORD: announcement_registry
+    expose:
+      - "5432"
+
+  support-registry-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: support_registry
+      POSTGRES_USER: support_registry
+      POSTGRES_PASSWORD: support_registry
+    expose:
+      - "5432"
+
   assignment-db:
     image: postgres:16-alpine
     environment:
@@ -426,6 +506,10 @@ services:
       - org-db
       - vehicle-db
       - dispatch-registry-db
+      - region-registry-db
+      - region-analytics-db
+      - announcement-registry-db
+      - support-registry-db
       - terminal-db
       - telemetry-db
       - telemetry-dead-letter-db
@@ -440,6 +524,10 @@ services:
       - organization-master-api
       - vehicle-asset-api
       - dispatch-registry-api
+      - region-registry-api
+      - region-analytics-api
+      - announcement-registry-api
+      - support-registry-api
       - terminal-registry-api
       - telemetry-hub-api
       - telemetry-dead-letter-api

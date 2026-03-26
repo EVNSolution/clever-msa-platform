@@ -1,3 +1,18 @@
+try:
+    from drf_spectacular.utils import extend_schema, extend_schema_view
+except ModuleNotFoundError:
+    def extend_schema(*args, **kwargs):
+        def decorator(target):
+            return target
+
+        return decorator
+
+    def extend_schema_view(**kwargs):
+        def decorator(target):
+            return target
+
+        return decorator
+
 from django.utils.dateparse import parse_datetime
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
@@ -6,13 +21,18 @@ from rest_framework.views import APIView
 from deadletters.authentication import JWTAuthentication, ProducerKeyAuthentication
 from deadletters.models import TelemetryDeadLetter
 from deadletters.permissions import AdminReadPermission, ProducerIngestPermission
-from deadletters.serializers import TelemetryDeadLetterSerializer
+from deadletters.serializers import (
+    HealthSerializer,
+    TelemetryDeadLetterFilterSerializer,
+    TelemetryDeadLetterSerializer,
+)
 
 
 class HealthView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(responses={200: HealthSerializer})
     def get(self, request):
         return Response({"status": "ok"})
 
@@ -24,6 +44,7 @@ class TelemetryDeadLetterIngestView(generics.CreateAPIView):
     queryset = TelemetryDeadLetter.objects.all()
 
 
+@extend_schema_view(get=extend_schema(parameters=[TelemetryDeadLetterFilterSerializer]))
 class TelemetryDeadLetterListView(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [AdminReadPermission]

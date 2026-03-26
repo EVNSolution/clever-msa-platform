@@ -162,3 +162,16 @@ class TerminalInstallationSerializer(serializers.ModelSerializer):
                 )
 
         return attrs
+
+
+class HealthSerializer(serializers.Serializer):
+    status = serializers.CharField()
+
+
+class CheckImeiQuerySerializer(serializers.Serializer):
+    imei = serializers.CharField(required=False, allow_blank=True)
+
+
+class CheckImeiResultSerializer(serializers.Serializer):
+    imei = serializers.CharField(allow_blank=True)
+    exists = serializers.BooleanField()

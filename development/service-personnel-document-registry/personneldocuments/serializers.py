@@ -66,3 +66,7 @@ class PersonnelDocumentSerializer(serializers.ModelSerializer):
             raise ServiceUnavailableError(str(exc)) from exc
 
         return attrs
+
+
+class HealthSerializer(serializers.Serializer):
+    status = serializers.CharField()

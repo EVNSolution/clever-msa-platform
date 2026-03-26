@@ -103,3 +103,16 @@ class VehicleOperatorAccessSerializer(serializers.ModelSerializer):
                 }
             )
         return attrs
+
+
+class HealthSerializer(serializers.Serializer):
+    status = serializers.CharField()
+
+
+class VehicleOperatorAccessFilterSerializer(serializers.Serializer):
+    vehicle_id = serializers.UUIDField(required=False)
+    operator_company_id = serializers.UUIDField(required=False)
+    access_status = serializers.ChoiceField(
+        choices=VehicleOperatorAccess.AccessStatus.choices,
+        required=False,
+    )

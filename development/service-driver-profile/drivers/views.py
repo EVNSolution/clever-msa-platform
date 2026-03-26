@@ -2,15 +2,36 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+try:
+    from drf_spectacular.types import OpenApiTypes
+    from drf_spectacular.utils import OpenApiParameter, extend_schema
+except ModuleNotFoundError:
+    class OpenApiTypes:
+        UUID = "string"
+        STR = "string"
+
+    class OpenApiParameter:
+        QUERY = "query"
+
+        def __init__(self, *args, **kwargs):
+            pass
+
+    def extend_schema(*args, **kwargs):
+        def decorator(target):
+            return target
+
+        return decorator
+
 from drivers.models import DriverProfile
 from drivers.permissions import AuthenticatedReadWrite
-from drivers.serializers import DriverProfileSerializer
+from drivers.serializers import CheckEvIdResultSerializer, DriverProfileSerializer, HealthSerializer
 
 
 class HealthView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(responses={200: HealthSerializer})
     def get(self, request):
         return Response({"status": "ok"})
 
@@ -31,6 +52,13 @@ class DriverDetailView(generics.RetrieveUpdateDestroyAPIView):
 class CheckEvIdView(APIView):
     permission_classes = [AuthenticatedReadWrite]
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("company_id", OpenApiTypes.UUID, OpenApiParameter.QUERY, required=True),
+            OpenApiParameter("ev_id", OpenApiTypes.STR, OpenApiParameter.QUERY, required=True),
+        ],
+        responses={200: CheckEvIdResultSerializer},
+    )
     def get(self, request):
         company_id = request.query_params.get("company_id")
         ev_id = request.query_params.get("ev_id")

@@ -144,3 +144,7 @@ class DispatchAssignmentSerializer(serializers.ModelSerializer):
             if isinstance(exc, DjangoValidationError):
                 raise serializers.ValidationError(exc.message_dict) from exc
             raise
+
+
+class HealthSerializer(serializers.Serializer):
+    status = serializers.CharField()

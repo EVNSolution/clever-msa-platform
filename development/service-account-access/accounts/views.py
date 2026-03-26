@@ -4,15 +4,28 @@ from rest_framework.exceptions import APIException, AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+try:
+    from drf_spectacular.utils import extend_schema
+except ModuleNotFoundError:
+    def extend_schema(*args, **kwargs):
+        def decorator(target):
+            return target
+
+        return decorator
+
 from accounts.models import Account
 from accounts.permissions import IsAdminRole, IsAuthenticatedAccount
 from accounts.serializers import (
+    AccountDriverLinkResultSerializer,
     AccountDriverLinkSerializer,
     AccountSerializer,
+    AuthSessionSerializer,
     AccountWriteSerializer,
     ChangePasswordSerializer,
+    HealthSerializer,
     LoginSerializer,
     RegisterSerializer,
+    StatusMessageSerializer,
 )
 from accounts.services.driver_link_service import DriverLinkService
 from accounts.services.jwt_service import (
@@ -54,6 +67,7 @@ class RegisterView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(request=RegisterSerializer, responses={201: AccountSerializer})
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -65,6 +79,7 @@ class LoginView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(request=LoginSerializer, responses={200: AuthSessionSerializer})
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -99,6 +114,7 @@ class RefreshView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(responses={200: AuthSessionSerializer})
     def post(self, request):
         refresh_token = request.COOKIES.get(settings.REFRESH_COOKIE_NAME)
         if not refresh_token:
@@ -132,6 +148,7 @@ class LogoutView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(responses={204: None})
     def post(self, request):
         refresh_token = request.COOKIES.get(settings.REFRESH_COOKIE_NAME)
         if refresh_token:
@@ -147,6 +164,7 @@ class LogoutView(APIView):
 class MeView(APIView):
     permission_classes = [IsAuthenticatedAccount]
 
+    @extend_schema(responses={200: AccountSerializer})
     def get(self, request):
         return Response(AccountSerializer(request.user).data, status=status.HTTP_200_OK)
 
@@ -154,6 +172,7 @@ class MeView(APIView):
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticatedAccount]
 
+    @extend_schema(request=ChangePasswordSerializer, responses={200: StatusMessageSerializer})
     def post(self, request):
         serializer = ChangePasswordSerializer(
             data=request.data,
@@ -167,6 +186,10 @@ class ChangePasswordView(APIView):
 class AccountDriverLinkView(APIView):
     permission_classes = [IsAdminRole]
 
+    @extend_schema(
+        request=AccountDriverLinkSerializer,
+        responses={200: AccountDriverLinkResultSerializer},
+    )
     def post(self, request):
         serializer = AccountDriverLinkSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -222,5 +245,6 @@ class HealthView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(responses={200: HealthSerializer})
     def get(self, request):
         return Response({"status": "ok"}, status=status.HTTP_200_OK)

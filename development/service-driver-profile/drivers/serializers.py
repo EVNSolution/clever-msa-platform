@@ -3,6 +3,14 @@ from rest_framework import serializers
 from drivers.models import DriverProfile
 
 
+class HealthSerializer(serializers.Serializer):
+    status = serializers.CharField()
+
+
+class CheckEvIdResultSerializer(serializers.Serializer):
+    is_duplicate = serializers.BooleanField()
+
+
 class DriverProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = DriverProfile

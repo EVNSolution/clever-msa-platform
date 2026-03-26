@@ -34,3 +34,7 @@ class SettlementItemSerializer(serializers.ModelSerializer):
             "amount",
             "payout_status",
         )
+
+
+class HealthSerializer(serializers.Serializer):
+    status = serializers.CharField()

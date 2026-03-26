@@ -1,16 +1,32 @@
 # service-announcement-registry
 
-공지 정본을 위한 empty shell repo다.
+이 repo는 공지 게시 정본 runtime이다.
 
 현재 역할:
-- 공지 게시 정본 경계를 위한 자리
+- `Announcement` CRUD
+- 게시 상태, 게시 범위, 게시 시각 관리
+- admin-only management API와 `health` endpoint
+- deterministic bootstrap seed command
 
-미래 역할:
-- 공지 게시, 게시 상태, 게시 범위 관리
+이 repo는 절대 소유하지 않음:
+- push send
+- FCM token registry
+- inbox notifications
+- notification delivery log
+- support ticket workflow
 
-상태:
-- runtime 미구현
-- 현재는 shell 디렉토리와 README만 존재
+현재 API:
+- internal path: `/health/`
+- internal path: `/`
+- internal path: `/<announcement_id>/`
+- gateway prefix: `/api/announcements/`
 
-정본 문서:
-- 플랫폼 아키텍처 정본은 `../../docs/` 아래 문서를 따른다.
+아직 포함하지 않음:
+- public announcement feed
+- 읽음 처리
+- attachment metadata
+- support workflow merge
+
+현재 정본:
+- `../../docs/mappings/`
+- `../../docs/decisions/specs/2026-03-26-announcement-registry-phase-1-activation-design.md`

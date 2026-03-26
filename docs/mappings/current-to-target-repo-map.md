@@ -48,11 +48,11 @@
 | 없음 | `development/service-dispatch-registry/` | runtime repo | `direct-move` | target repo가 active runtime source이며 dispatch registry 1차 구현 완료 |
 | 없음 | `development/service-dispatch-operations-view/` | runtime repo | `direct-move` | target repo가 active runtime source이며 dispatch operations view 1차 구현 완료 |
 | 없음 | `development/service-personnel-document-registry/` | runtime repo | `direct-move` | target repo가 active runtime source이며 기사 인사문서 메타데이터 CRUD와 seed를 직접 소유 |
-| 없음 | `development/service-region-registry/` | runtime repo | `empty-shell` | shell 디렉토리와 README 생성 완료, runtime은 후속 |
-| 없음 | `development/service-region-analytics/` | runtime repo | `empty-shell` | shell 디렉토리와 README 생성 완료, runtime은 후속 |
+| 없음 | `development/service-region-registry/` | runtime repo | `direct-move` | target repo가 active runtime source이며 region registry 1차 구현 완료 |
+| 없음 | `development/service-region-analytics/` | runtime repo | `direct-move` | target repo가 active runtime source이며 region analytics 1차 구현 완료 |
 | 없음 | `development/service-notification-hub/` | runtime repo | `empty-shell` | shell 디렉토리와 README 생성 완료, runtime은 후속 |
-| 없음 | `development/service-announcement-registry/` | runtime repo | `empty-shell` | shell 디렉토리와 README 생성 완료, runtime은 후속 |
-| 없음 | `development/service-support-registry/` | runtime repo | `empty-shell` | shell 디렉토리와 README 생성 완료, runtime은 후속 |
+| 없음 | `development/service-announcement-registry/` | runtime repo | `direct-move` | target repo가 active runtime source이며 announcement registry 1차 구현 완료 |
+| 없음 | `development/service-support-registry/` | runtime repo | `direct-move` | target repo가 active runtime source이며 support registry 1차 구현 완료 |
 
 ## Docs Map
 

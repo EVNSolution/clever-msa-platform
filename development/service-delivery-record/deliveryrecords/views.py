@@ -1,3 +1,12 @@
+try:
+    from drf_spectacular.utils import extend_schema
+except ModuleNotFoundError:
+    def extend_schema(*args, **kwargs):
+        def decorator(target):
+            return target
+
+        return decorator
+
 from rest_framework import permissions
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -8,6 +17,7 @@ from deliveryrecords.permissions import AdminOnlyAccess
 from deliveryrecords.serializers import (
     DailyDeliveryInputSnapshotSerializer,
     DeliveryRecordSerializer,
+    HealthSerializer,
 )
 
 
@@ -15,6 +25,7 @@ class HealthView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(responses={200: HealthSerializer})
     def get(self, request):
         return Response({"status": "ok"})
 

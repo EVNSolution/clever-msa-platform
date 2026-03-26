@@ -11,6 +11,19 @@ class AccountSerializer(serializers.ModelSerializer):
         fields = ("account_id", "email", "role", "is_active")
 
 
+class HealthSerializer(serializers.Serializer):
+    status = serializers.CharField()
+
+
+class AuthSessionSerializer(serializers.Serializer):
+    access_token = serializers.CharField()
+    account = AccountSerializer()
+
+
+class StatusMessageSerializer(serializers.Serializer):
+    message = serializers.CharField()
+
+
 class RegisterSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True, min_length=8)
@@ -67,6 +80,11 @@ class AccountDriverLinkSerializer(serializers.Serializer):
         if not Account.objects.filter(account_id=value).exists():
             raise serializers.ValidationError("Account not found.")
         return value
+
+
+class AccountDriverLinkResultSerializer(serializers.Serializer):
+    account_id = serializers.UUIDField()
+    driver_id = serializers.UUIDField()
 
 
 class AccountWriteSerializer(serializers.Serializer):

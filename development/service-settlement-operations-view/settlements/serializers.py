@@ -30,3 +30,7 @@ class LatestSettlementSummarySerializer(serializers.Serializer):
 class DriverLatestSettlementSerializer(serializers.Serializer):
     driver_id = serializers.UUIDField()
     latest_settlement = LatestSettlementSummarySerializer(allow_null=True)
+
+
+class HealthSerializer(serializers.Serializer):
+    status = serializers.CharField()

@@ -19,6 +19,10 @@ COPY development/service-settlement-payroll/requirements.txt /tmp/settlement-pay
 COPY development/service-terminal-registry/requirements.txt /tmp/terminal-registry-requirements.txt
 COPY development/service-telemetry-hub/requirements.txt /tmp/telemetry-hub-requirements.txt
 COPY development/service-dispatch-registry/requirements.txt /tmp/dispatch-registry-requirements.txt
+COPY development/service-region-registry/requirements.txt /tmp/region-registry-requirements.txt
+COPY development/service-region-analytics/requirements.txt /tmp/region-analytics-requirements.txt
+COPY development/service-announcement-registry/requirements.txt /tmp/announcement-registry-requirements.txt
+COPY development/service-support-registry/requirements.txt /tmp/support-registry-requirements.txt
 
 RUN pip install --no-cache-dir \
     -r /tmp/account-auth-requirements.txt \
@@ -29,6 +33,10 @@ RUN pip install --no-cache-dir \
     -r /tmp/settlement-registry-requirements.txt \
     -r /tmp/settlement-payroll-requirements.txt \
     -r /tmp/dispatch-registry-requirements.txt \
+    -r /tmp/region-registry-requirements.txt \
+    -r /tmp/region-analytics-requirements.txt \
+    -r /tmp/announcement-registry-requirements.txt \
+    -r /tmp/support-registry-requirements.txt \
     -r /tmp/terminal-registry-requirements.txt \
     -r /tmp/telemetry-hub-requirements.txt
 
@@ -40,6 +48,10 @@ COPY development/service-delivery-record /workspace/services/delivery-record
 COPY development/service-settlement-registry /workspace/services/settlement-registry
 COPY development/service-vehicle-registry /workspace/services/vehicle-asset
 COPY development/service-dispatch-registry /workspace/services/dispatch-registry
+COPY development/service-region-registry /workspace/services/region-registry
+COPY development/service-region-analytics /workspace/services/region-analytics
+COPY development/service-announcement-registry /workspace/services/announcement-registry
+COPY development/service-support-registry /workspace/services/support-registry
 COPY development/service-terminal-registry /workspace/services/terminal-registry
 COPY development/service-telemetry-hub /workspace/services/telemetry-hub
 COPY development/service-vehicle-assignment /workspace/services/driver-vehicle-assignment

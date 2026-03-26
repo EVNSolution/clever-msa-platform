@@ -56,6 +56,10 @@ wait_for_health "personnel-document-registry" "http://personnel-document-registr
 wait_for_health "delivery-record" "http://delivery-record-api:8000/health/"
 wait_for_health "vehicle-asset" "http://vehicle-asset-api:8000/health/"
 wait_for_health "dispatch-registry" "http://dispatch-registry-api:8000/health/"
+wait_for_health "region-registry" "http://region-registry-api:8000/health/"
+wait_for_health "region-analytics" "http://region-analytics-api:8000/health/"
+wait_for_health "announcement-registry" "http://announcement-registry-api:8000/health/"
+wait_for_health "support-registry" "http://support-registry-api:8000/health/"
 wait_for_health "terminal-registry" "http://terminal-registry-api:8000/health/"
 wait_for_health "telemetry-hub" "http://telemetry-hub-api:8000/health/"
 wait_for_health "settlement-payroll" "http://settlement-payroll-api:8000/health/"
@@ -82,6 +86,18 @@ run_manage "services/vehicle-asset" "infra/env/vehicle-asset.env.example" seed_v
 
 run_manage "services/dispatch-registry" "infra/env/dispatch-registry.env.example" migrate --noinput
 run_manage "services/dispatch-registry" "infra/env/dispatch-registry.env.example" seed_dispatch
+
+run_manage "services/region-registry" "infra/env/region-registry.env.example" migrate --noinput
+run_manage "services/region-registry" "infra/env/region-registry.env.example" seed_regions
+
+run_manage "services/region-analytics" "infra/env/region-analytics.env.example" migrate --noinput
+run_manage "services/region-analytics" "infra/env/region-analytics.env.example" seed_region_analytics
+
+run_manage "services/announcement-registry" "infra/env/announcement-registry.env.example" migrate --noinput
+run_manage "services/announcement-registry" "infra/env/announcement-registry.env.example" seed_announcements
+
+run_manage "services/support-registry" "infra/env/support-registry.env.example" migrate --noinput
+run_manage "services/support-registry" "infra/env/support-registry.env.example" seed_support
 
 run_manage "services/terminal-registry" "infra/env/terminal-registry.env.example" migrate --noinput
 run_manage "services/terminal-registry" "infra/env/terminal-registry.env.example" seed_terminals

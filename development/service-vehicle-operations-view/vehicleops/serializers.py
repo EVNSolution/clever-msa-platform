@@ -89,3 +89,7 @@ class VehicleOpsSummarySerializer(serializers.Serializer):
 
 class VehicleOpsVehiclePathSerializer(serializers.Serializer):
     vehicle_id = serializers.UUIDField()
+
+
+class HealthSerializer(serializers.Serializer):
+    status = serializers.CharField()

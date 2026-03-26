@@ -56,3 +56,7 @@ class DriverVehicleAssignmentSerializer(serializers.ModelSerializer):
             )
         except AssignmentRuleViolation as exc:
             raise serializers.ValidationError(exc.details) from exc
+
+
+class HealthSerializer(serializers.Serializer):
+    status = serializers.CharField()

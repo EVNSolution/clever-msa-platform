@@ -22,3 +22,7 @@ class Driver360SummarySerializer(serializers.Serializer):
     latest_payout_status = serializers.CharField(allow_null=True)
     latest_settlement_amount = serializers.CharField(allow_null=True)
     warnings = serializers.ListField(child=serializers.CharField(), allow_empty=True)
+
+
+class HealthSerializer(serializers.Serializer):
+    status = serializers.CharField()

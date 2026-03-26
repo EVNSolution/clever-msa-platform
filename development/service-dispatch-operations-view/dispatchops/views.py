@@ -1,3 +1,12 @@
+try:
+    from drf_spectacular.utils import extend_schema
+except ModuleNotFoundError:
+    def extend_schema(*args, **kwargs):
+        def decorator(target):
+            return target
+
+        return decorator
+
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -7,6 +16,7 @@ from dispatchops.serializers import (
     DispatchOpsBoardRowSerializer,
     DispatchOpsQuerySerializer,
     DispatchOpsSummarySerializer,
+    HealthSerializer,
 )
 from dispatchops.services.dispatch_board_service import DispatchBoardService
 
@@ -40,6 +50,7 @@ class HealthView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(responses={200: HealthSerializer})
     def get(self, request):
         return Response({"status": "ok"}, status=status.HTTP_200_OK)
 
@@ -47,6 +58,10 @@ class HealthView(APIView):
 class BoardView(APIView):
     permission_classes = [AuthenticatedReadOnly]
 
+    @extend_schema(
+        parameters=[DispatchOpsQuerySerializer],
+        responses={200: DispatchOpsBoardRowSerializer(many=True)},
+    )
     def get(self, request):
         query_serializer = DispatchOpsQuerySerializer(data=request.query_params)
         query_serializer.is_valid(raise_exception=True)
@@ -63,6 +78,10 @@ class BoardView(APIView):
 class SummaryView(APIView):
     permission_classes = [AuthenticatedReadOnly]
 
+    @extend_schema(
+        parameters=[DispatchOpsQuerySerializer],
+        responses={200: DispatchOpsSummarySerializer},
+    )
     def get(self, request):
         query_serializer = DispatchOpsQuerySerializer(data=request.query_params)
         query_serializer.is_valid(raise_exception=True)

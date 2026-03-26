@@ -1,10 +1,17 @@
-import redis
 from django.conf import settings
+
+
+def build_redis_client():
+    try:
+        import redis
+    except ModuleNotFoundError as exc:
+        raise RuntimeError("redis package is required for account lockout operations.") from exc
+    return redis.Redis.from_url(settings.REDIS_URL, decode_responses=True)
 
 
 class LockoutService:
     def __init__(self):
-        self.client = redis.Redis.from_url(settings.REDIS_URL, decode_responses=True)
+        self.client = build_redis_client()
         self.threshold = settings.LOGIN_LOCKOUT_THRESHOLD
         self.ttl_seconds = settings.LOGIN_LOCKOUT_TTL_SECONDS
 

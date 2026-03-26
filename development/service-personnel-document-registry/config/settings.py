@@ -1,9 +1,11 @@
+import importlib.util
 import os
 from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+HAS_DRF_SPECTACULAR = importlib.util.find_spec("drf_spectacular") is not None
 
 def _required_env(name: str) -> str:
     value = os.environ.get(name)
@@ -28,6 +30,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "personneldocuments",
 ]
+if HAS_DRF_SPECTACULAR:
+    INSTALLED_APPS.insert(-1, "drf_spectacular")
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -95,6 +99,16 @@ REST_FRAMEWORK = {
     ),
     "EXCEPTION_HANDLER": "personneldocuments.exceptions.api_exception_handler",
 }
+if HAS_DRF_SPECTACULAR:
+    REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
+
+if HAS_DRF_SPECTACULAR:
+    SPECTACULAR_SETTINGS = {
+        "TITLE": "CLEVER Personnel Document Registry API",
+        "DESCRIPTION": "Service-owned OpenAPI schema for service-personnel-document-registry.",
+        "VERSION": "1.0.0",
+        "SERVE_INCLUDE_SCHEMA": False,
+    }
 
 JWT_SECRET_KEY = _required_env("JWT_SECRET_KEY")
 JWT_ISSUER = os.environ.get("JWT_ISSUER", "msa-server")

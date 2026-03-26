@@ -5,6 +5,10 @@ from rest_framework import serializers
 from telemetry.models import DiagnosticEvent, TelemetryRawIngest, VehicleLocationSnapshot
 
 
+class HealthSerializer(serializers.Serializer):
+    status = serializers.CharField()
+
+
 class RawIngestSerializer(serializers.Serializer):
     source_terminal_id = serializers.UUIDField(required=False, allow_null=True)
     source_vehicle_id = serializers.UUIDField(required=False, allow_null=True)
