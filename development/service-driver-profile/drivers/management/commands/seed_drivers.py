@@ -25,6 +25,8 @@ class Command(BaseCommand):
                 "ev_id": "EV-001",
                 "phone_number": "010-1234-5678",
                 "address": "Seoul",
+                "employment_status": DriverProfile.EmploymentStatus.ACTIVE,
+                "qualification_status": DriverProfile.QualificationStatus.QUALIFIED,
             },
         )
         self.stdout.write(self.style.SUCCESS("Seeded driver profiles."))

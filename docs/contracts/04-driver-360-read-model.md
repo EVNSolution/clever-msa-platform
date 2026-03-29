@@ -16,6 +16,7 @@
 5. 최근 정산 요약은 무엇인가
 6. 배송원 정리 현황은 어떤가
 7. 근태, 배송이력 규칙 현황은 어떤가
+8. 현재 재직 상태와 자격 상태는 무엇인가
 
 ## 조회 단위
 
@@ -46,6 +47,8 @@ Driver 360은 우선 `summary-only` consumer domain으로 시작하고, timeline
 - address
 - company_id
 - fleet_id
+- employment_status
+- qualification_status
 
 ### Identity Access
 
@@ -79,9 +82,8 @@ Driver 360은 우선 `summary-only` consumer domain으로 시작하고, timeline
 
 ## Future Dependency
 
-아래 항목은 현재 bootstrap source에 아직 정본이 없거나, placeholder-only인 도메인이라서 이번 1차 contract에 넣지 않는다.
+아래 항목은 현재 source truth가 아직 없거나, 별도 read-model 계산 규칙이 더 필요한 항목이라 현재 contract에 넣지 않는다.
 
-- employment_status
 - operational_status
 - today_shift_status
 - current_vehicle_id
@@ -107,6 +109,7 @@ runtime container and gateway naming은 `driver-ops-api` / `/api/driver-ops/`를
 정산 영역에서는 `Settlement Payroll` collection을 직접 읽지 않고, `Settlement Operations View`의 `GET /drivers/<driver_id>/latest-settlement/` scoped contract만 사용한다.
 배송원 정리 현황은 `Driver Profile HR + Identity Access + Organization Master + Personnel Document Registry`를 합쳐 계산한다.
 근태와 배송이력은 아직 정본 runtime이 없어 current contract에서 rule status만 노출한다.
+`employment_status`, `qualification_status`는 `Driver Profile HR` 정본을 그대로 노출한다.
 
 ## 포함하지 않을 것
 
@@ -125,7 +128,7 @@ runtime container and gateway naming은 `driver-ops-api` / `/api/driver-ops/`를
 - `ready`
   - 연결 계정, 회사/플릿 scope, 필수 인사문서가 모두 확인된 상태
 - `action_required`
-  - 연결 계정 누락, 회사/플릿 scope 누락, 필수 인사문서 누락 중 하나 이상이 있는 상태
+  - 연결 계정 누락, 회사/플릿 scope 누락, 필수 인사문서 누락, 비활성 재직 상태, 비정상 자격 상태 중 하나 이상이 있는 상태
 - `unavailable`
   - 인사문서 source를 현재 토큰으로 읽을 수 없거나 upstream이 불안정해 정리 현황을 판단할 수 없는 상태
 

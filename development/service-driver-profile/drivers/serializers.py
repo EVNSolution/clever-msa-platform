@@ -23,7 +23,13 @@ class DriverProfileSerializer(serializers.ModelSerializer):
             "ev_id",
             "phone_number",
             "address",
+            "employment_status",
+            "qualification_status",
         )
+        extra_kwargs = {
+            "employment_status": {"required": False},
+            "qualification_status": {"required": False},
+        }
 
     def validate(self, attrs):
         attrs = super().validate(attrs)

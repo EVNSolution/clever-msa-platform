@@ -11,6 +11,8 @@ class Driver360SummarySerializer(serializers.Serializer):
     company_name = serializers.CharField(allow_null=True)
     fleet_id = serializers.UUIDField()
     fleet_name = serializers.CharField(allow_null=True)
+    employment_status = serializers.CharField()
+    qualification_status = serializers.CharField()
     account_id = serializers.UUIDField(allow_null=True)
     account_email = serializers.EmailField(allow_null=True)
     account_role = serializers.CharField(allow_null=True)

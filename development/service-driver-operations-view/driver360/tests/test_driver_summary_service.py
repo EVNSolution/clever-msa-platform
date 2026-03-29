@@ -60,6 +60,8 @@ class DriverSummaryServiceTests(TestCase):
             "ev_id": "EV-001",
             "phone_number": "010-1234-5678",
             "address": "Seoul",
+            "employment_status": "active",
+            "qualification_status": "qualified",
         }
         self.companies = [
             {"company_id": "20000000-0000-0000-0000-000000000001", "name": "EVN Company"},
@@ -115,6 +117,8 @@ class DriverSummaryServiceTests(TestCase):
         self.assertEqual(summary["driver_name"], "Kim Driver")
         self.assertEqual(summary["company_name"], "EVN Company")
         self.assertEqual(summary["fleet_name"], "Central Fleet")
+        self.assertEqual(summary["employment_status"], "active")
+        self.assertEqual(summary["qualification_status"], "qualified")
         self.assertEqual(summary["account_email"], "driver@example.com")
         self.assertEqual(summary["latest_settlement_run_id"], "50000000-0000-0000-0000-000000000002")
         self.assertEqual(summary["latest_settlement_amount"], "125000.50")
@@ -193,6 +197,39 @@ class DriverSummaryServiceTests(TestCase):
             ],
         )
         self.assertEqual(summary["driver_cleanup_status"], "action_required")
+
+    def test_build_summary_marks_cleanup_action_required_when_hr_status_is_not_ready(self):
+        driver = {
+            **self.driver,
+            "employment_status": "leave",
+            "qualification_status": "restricted",
+        }
+        service = DriverSummaryService(
+            source_clients=FakeSourceClients(
+                driver=driver,
+                companies=self.companies,
+                fleets=self.fleets,
+                account=self.account,
+                personnel_documents=self.personnel_documents,
+                latest_settlement=self.latest_settlement,
+            )
+        )
+
+        summary = service.build_summary(
+            driver_id=driver["driver_id"],
+            authorization="Bearer token",
+        )
+
+        self.assertEqual(summary["employment_status"], "leave")
+        self.assertEqual(summary["qualification_status"], "restricted")
+        self.assertEqual(summary["driver_cleanup_status"], "action_required")
+        self.assertEqual(
+            summary["cleanup_blockers"],
+            [
+                "Employment status is leave.",
+                "Qualification status is restricted.",
+            ],
+        )
 
     def test_build_summary_marks_cleanup_unavailable_when_personnel_documents_cannot_be_read(self):
         service = DriverSummaryService(

@@ -40,6 +40,14 @@ class DriverSummaryService:
             authorization=authorization,
             warnings=warnings,
         )
+        if driver["employment_status"] != "active":
+            cleanup_blockers.append(
+                f"Employment status is {driver['employment_status']}."
+            )
+        if driver["qualification_status"] != "qualified":
+            cleanup_blockers.append(
+                f"Qualification status is {driver['qualification_status']}."
+            )
         if not driver.get("account_id"):
             cleanup_blockers.append("Linked account is missing.")
         elif account is None:
@@ -91,6 +99,8 @@ class DriverSummaryService:
             "company_name": company["name"] if company else None,
             "fleet_id": driver["fleet_id"],
             "fleet_name": fleet["name"] if fleet else None,
+            "employment_status": driver["employment_status"],
+            "qualification_status": driver["qualification_status"],
             "account_id": account["account_id"] if account else None,
             "account_email": account["email"] if account else None,
             "account_role": account["role"] if account else None,

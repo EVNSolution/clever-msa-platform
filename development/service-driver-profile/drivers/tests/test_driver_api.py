@@ -40,6 +40,8 @@ class DriverApiTests(TestCase):
             "ev_id": "EV-001",
             "phone_number": "010-1234-5678",
             "address": "Seoul",
+            "employment_status": "active",
+            "qualification_status": "qualified",
         }
 
     def test_health_endpoint_responds(self):
@@ -109,6 +111,18 @@ class DriverApiTests(TestCase):
         self.assertEqual(duplicate_response.data, {"is_duplicate": True})
         self.assertEqual(available_response.status_code, 200)
         self.assertEqual(available_response.data, {"is_duplicate": False})
+
+    def test_create_defaults_hr_statuses_when_not_provided(self):
+        self._authenticate(self.admin_token)
+        payload = self._payload()
+        payload.pop("employment_status")
+        payload.pop("qualification_status")
+
+        response = self.client.post("/", payload, format="json")
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["employment_status"], "active")
+        self.assertEqual(response.data["qualification_status"], "qualified")
 
     def test_missing_driver_returns_404_shape(self):
         self._authenticate(self.user_token)
