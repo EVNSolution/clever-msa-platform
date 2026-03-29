@@ -110,18 +110,24 @@ class SettlementApiTests(TestCase):
         self._authenticate(self.user_token)
         driver_id = "10000000-0000-0000-0000-000000000001"
         mock_service.return_value.build_summary.return_value = {
-            "settlement_run_id": "50000000-0000-0000-0000-000000000002",
-            "period_start": "2026-03-01",
-            "period_end": "2026-03-31",
-            "status": "closed",
-            "payout_status": "pending",
-            "amount": "125000.50",
+            "delivery_history_present": True,
+            "attendance_inferred_from_delivery_history": True,
+            "latest_settlement": {
+                "settlement_run_id": "50000000-0000-0000-0000-000000000002",
+                "period_start": "2026-03-01",
+                "period_end": "2026-03-31",
+                "status": "closed",
+                "payout_status": "pending",
+                "amount": "125000.50",
+            },
         }
 
         response = self.client.get(f"/drivers/{driver_id}/latest-settlement/")
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["driver_id"], driver_id)
+        self.assertTrue(response.data["delivery_history_present"])
+        self.assertTrue(response.data["attendance_inferred_from_delivery_history"])
         self.assertEqual(response.data["latest_settlement"]["amount"], "125000.50")
         self.assertEqual(
             mock_service.return_value.build_summary.call_args.kwargs["authorization"],
@@ -132,12 +138,18 @@ class SettlementApiTests(TestCase):
     def test_driver_with_no_settlement_returns_null_summary(self, mock_service):
         self._authenticate(self.user_token)
         driver_id = "10000000-0000-0000-0000-000000000099"
-        mock_service.return_value.build_summary.return_value = None
+        mock_service.return_value.build_summary.return_value = {
+            "delivery_history_present": False,
+            "attendance_inferred_from_delivery_history": False,
+            "latest_settlement": None,
+        }
 
         response = self.client.get(f"/drivers/{driver_id}/latest-settlement/")
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["driver_id"], driver_id)
+        self.assertFalse(response.data["delivery_history_present"])
+        self.assertFalse(response.data["attendance_inferred_from_delivery_history"])
         self.assertIsNone(response.data["latest_settlement"])
 
     @patch("settlements.views.LatestSettlementSummaryService")

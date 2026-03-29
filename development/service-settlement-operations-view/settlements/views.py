@@ -140,10 +140,7 @@ class DriverLatestSettlementView(APIView):
         except SourceServiceError as exc:
             raise UpstreamServiceUnavailable() from exc
 
-        payload = {
-            "driver_id": str(driver_id),
-            "latest_settlement": latest_settlement,
-        }
+        payload = {"driver_id": str(driver_id), **latest_settlement}
         return Response(
             _serialize_upstream_payload(DriverLatestSettlementSerializer, payload, many=False),
             status=status.HTTP_200_OK,

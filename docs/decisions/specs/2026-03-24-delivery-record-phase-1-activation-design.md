@@ -56,7 +56,8 @@
 2. 1차 엔티티는 `DeliveryRecord`, `DailyDeliveryInputSnapshot`으로 제한한다.
 3. 배송 단건 원천 기록과 정산 계산용 일별 입력 snapshot을 모두 이 repo가 직접 소유한다.
 4. `SettlementRun`, `SettlementItem`은 계속 `service-settlement-payroll`이 소유한다.
-5. 모든 write와 read API는 admin-authenticated management API로 시작한다.
+5. write API는 admin-authenticated management API로 시작한다.
+6. read API는 authenticated read를 허용하되 source truth ownership은 계속 `service-delivery-record`에 둔다.
 6. dispatch, telemetry, assignment 자동 fan-in은 이번 라운드에 포함하지 않는다.
 
 이 접근을 선택한 이유는 아래와 같다.
@@ -186,7 +187,8 @@ snapshot 원칙:
 1차 auth 기준은 아래와 같다.
 
 1. `health`만 공개
-2. CRUD API는 admin-authenticated management API
+2. write API는 admin-authenticated management API
+3. read API는 authenticated read를 허용하고 settlement read consumer가 driver scoped lookup에 사용할 수 있다
 3. payroll이나 ops-view를 위한 machine-auth는 이번 라운드에 포함하지 않는다
 
 선택 이유:

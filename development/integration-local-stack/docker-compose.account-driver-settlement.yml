@@ -123,6 +123,7 @@ services:
       - ./infra/env/settlement-ops.env.example
     depends_on:
       - settlement-payroll-api
+      - delivery-record-api
     expose:
       - "8000"
 

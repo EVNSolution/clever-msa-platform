@@ -6,6 +6,7 @@
 - `delivery-record-api` runtime
 - 배송 원천 기록 API
 - 일별 집계 입력 snapshot API
+- authenticated read / admin write gate
 
 이 repo는 절대 소유하지 않음:
 - `SettlementRun`

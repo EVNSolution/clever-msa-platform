@@ -29,6 +29,8 @@ class LatestSettlementSummarySerializer(serializers.Serializer):
 
 class DriverLatestSettlementSerializer(serializers.Serializer):
     driver_id = serializers.UUIDField()
+    delivery_history_present = serializers.BooleanField(allow_null=True)
+    attendance_inferred_from_delivery_history = serializers.BooleanField(allow_null=True)
     latest_settlement = LatestSettlementSummarySerializer(allow_null=True)
 
 

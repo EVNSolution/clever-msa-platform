@@ -1,5 +1,6 @@
 import json
 from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from django.conf import settings
@@ -66,6 +67,19 @@ class SourceClients:
         )
         if not isinstance(payload, list):
             raise SourceServiceError("Upstream request failed: malformed item list payload.")
+        return payload
+
+    def list_delivery_records(self, *, driver_id: str, status: str, authorization: str):
+        query_string = urlencode({"driver_id": driver_id, "status": status})
+        payload = self._request_json(
+            url=self._build_url(
+                settings.DELIVERY_RECORD_BASE_URL,
+                f"/records/?{query_string}",
+            ),
+            authorization=authorization,
+        )
+        if not isinstance(payload, list):
+            raise SourceServiceError("Upstream request failed: malformed delivery record payload.")
         return payload
 
     def get_settlement_item(self, *, settlement_item_id: str, authorization: str):

@@ -93,3 +93,7 @@ SETTLEMENT_PAYROLL_BASE_URL = os.environ.get(
     "SETTLEMENT_PAYROLL_BASE_URL",
     "http://settlement-payroll-api:8000",
 )
+DELIVERY_RECORD_BASE_URL = os.environ.get(
+    "DELIVERY_RECORD_BASE_URL",
+    "http://delivery-record-api:8000",
+)

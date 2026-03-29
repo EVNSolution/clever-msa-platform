@@ -5,6 +5,7 @@
 현재 역할:
 - 외부 read API `health/`, `runs/`, `items/`, `drivers/<driver_id>/latest-settlement/` 제공
 - gateway 외부 prefix `/api/settlement-ops/` 뒤에서 payroll read fan-out 수행
+- `latest-settlement` wrapper에서 delivery history 존재 여부와 current attendance inference를 read-only로 조립
 - authenticated read 전용 settlement run / item 조회
 - driver 단위 latest settlement summary read 조립
 
@@ -20,6 +21,7 @@
 포함:
 - Django/DRF runtime
 - payroll source client
+- delivery-record source client
 - read-only settlement API test
 
 포함하지 않음:

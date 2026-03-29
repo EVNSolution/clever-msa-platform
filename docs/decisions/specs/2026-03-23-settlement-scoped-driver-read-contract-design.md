@@ -112,6 +112,8 @@
 ```json
 {
   "driver_id": "10000000-0000-0000-0000-000000000001",
+  "delivery_history_present": true,
+  "attendance_inferred_from_delivery_history": true,
   "latest_settlement": {
     "settlement_run_id": "60000000-0000-0000-0000-000000000001",
     "period_start": "2026-03-01",
@@ -128,6 +130,8 @@
 ```json
 {
   "driver_id": "10000000-0000-0000-0000-000000000001",
+  "delivery_history_present": false,
+  "attendance_inferred_from_delivery_history": false,
   "latest_settlement": null
 }
 ```
@@ -137,6 +141,7 @@
 1. `null` 케이스를 명확히 표현할 수 있다.
 2. 이후 summary 필드가 늘어나도 top-level contract가 덜 흔들린다.
 3. consumer는 존재 여부를 wrapper 하나로 판단할 수 있다.
+4. delivery history 기반 임시 attendance 판단을 result truth와 분리해 read-only로 노출할 수 있다.
 
 ## Latest 선택 규칙
 
@@ -148,6 +153,26 @@ latest settlement는 아래 규칙으로 고정한다.
 4. `period_end`가 같으면 `settlement_run_id DESC`를 tie-breaker로 사용한다.
 
 이번 단계에서는 현재 구현과 동일한 latest semantics를 유지한다.
+
+## Delivery History 판정 규칙
+
+driver scoped endpoint는 latest settlement 외에 아래 read-only 판정도 같이 반환한다.
+
+1. `delivery_history_present`는 `service-delivery-record`의 `DeliveryRecord.status == confirmed` record 존재 여부로 판단한다.
+2. `attendance_inferred_from_delivery_history`는 current 개발 단계에서는 `delivery_history_present`와 같은 값을 가진다.
+3. 이 판단은 read-only convenience rule이다.
+4. 이 판단은 `service-settlement-payroll`이나 `service-delivery-record`에 저장하지 않는다.
+5. attendance 정본 runtime이 생기면 이 필드의 source만 교체할 수 있어야 한다.
+
+## Delivery Source Unavailable 규칙
+
+`service-delivery-record`를 읽을 수 없더라도 payroll latest summary는 계속 읽을 수 있어야 한다.
+
+규칙:
+
+1. payroll upstream이 불안정하면 기존처럼 endpoint 전체를 dependency error로 처리한다.
+2. delivery history source만 불안정하면 `delivery_history_present`와 `attendance_inferred_from_delivery_history`는 `null`을 반환한다.
+3. `latest_settlement`는 payroll latest summary가 있으면 계속 반환한다.
 
 ## Driver 존재 확인 규칙
 
@@ -171,12 +196,14 @@ latest settlement는 아래 규칙으로 고정한다.
 직접 책임:
 
 - `settlement-payroll` fan-out read
+- `delivery-record` fan-out read
 - latest settlement summary 조립
 - read-only contract validation
 
 직접 책임 아님:
 
 - driver profile 존재 확인
+- attendance truth ownership
 - settlement write
 - payout 상태 변경
 

@@ -90,16 +90,19 @@ class DeliveryRecordApiTests(TestCase):
         record_id = str(uuid4())
         snapshot_id = str(uuid4())
 
-        responses = (
+        read_responses = (
             client.get("/records/"),
+            client.get("/daily-snapshots/"),
+        )
+        write_responses = (
             client.post("/records/", self._record_payload(), format="json"),
             client.patch(f"/records/{record_id}/", {"delivery_count": 99}, format="json"),
-            client.get("/daily-snapshots/"),
             client.post("/daily-snapshots/", self._snapshot_payload(), format="json"),
             client.patch(f"/daily-snapshots/{snapshot_id}/", {"delivery_count": 99}, format="json"),
         )
 
-        self.assertTrue(all(response.status_code == 403 for response in responses))
+        self.assertTrue(all(response.status_code == 200 for response in read_responses))
+        self.assertTrue(all(response.status_code == 403 for response in write_responses))
 
     def test_admin_can_post_records_and_get_201(self) -> None:
         with patch(
@@ -168,6 +171,41 @@ class DeliveryRecordApiTests(TestCase):
         self.assertEqual(list_response.status_code, 200)
         self.assertEqual(detail_response.status_code, 200)
         self.assertEqual(update_response.status_code, 200)
+
+    def test_record_list_supports_driver_id_and_status_filters(self) -> None:
+        other_driver_id = str(uuid4())
+        with patch(
+            "deliveryrecords.services.source_clients.SourceClients.validate_company_fleet_scope",
+            return_value=None,
+        ), patch(
+            "deliveryrecords.services.source_clients.SourceClients.validate_driver_exists",
+            return_value=None,
+        ):
+            self._admin_client().post("/records/", self._record_payload(source_reference="record-001"), format="json")
+            self._admin_client().post(
+                "/records/",
+                {
+                    **self._record_payload(source_reference="record-002"),
+                    "status": DeliveryRecord.Status.DRAFT,
+                },
+                format="json",
+            )
+            self._admin_client().post(
+                "/records/",
+                {
+                    **self._record_payload(source_reference="record-003"),
+                    "driver_id": other_driver_id,
+                },
+                format="json",
+            )
+
+        response = self._user_client().get(
+            f"/records/?driver_id={self.driver_id}&status={DeliveryRecord.Status.CONFIRMED}"
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["source_reference"], "record-001")
 
     def test_admin_can_crud_daily_snapshots(self) -> None:
         with patch(
