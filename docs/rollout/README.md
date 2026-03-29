@@ -25,6 +25,7 @@
 - 현재 runtime/service/prefix inventory: [../mappings/current-runtime-inventory.md](../mappings/current-runtime-inventory.md)
 - 플랫폼 전체 구조와 작업 원칙: [../../WORKSPACE.md](../../WORKSPACE.md)
 - repo 상태와 active runtime / empty shell 구분: [../../repo-map.md](../../repo-map.md)
+- 정산 phase 2 gate 정리: [12-settlement-phase-2-api-gates.md](12-settlement-phase-2-api-gates.md)
 - 남은 empty-shell 서비스 구현 우선순위: [09-remaining-empty-shell-service-priority.md](09-remaining-empty-shell-service-priority.md)
 - phase 1 구현물 정리 우선순위: [10-phase-1-runtime-refactor-priority.md](10-phase-1-runtime-refactor-priority.md)
 - final phase 기능 backlog: [11-final-phase-feature-backlog.md](11-final-phase-feature-backlog.md)
