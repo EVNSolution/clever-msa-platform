@@ -5,15 +5,28 @@ from django.test import override_settings
 from rest_framework.exceptions import NotFound
 
 from driver360.services.driver_summary_service import DriverSummaryService
+from driver360.services.source_clients import SourceServiceError
 
 
 class FakeSourceClients:
-    def __init__(self, *, driver=None, companies=None, fleets=None, account=None, latest_settlement=None):
+    def __init__(
+        self,
+        *,
+        driver=None,
+        companies=None,
+        fleets=None,
+        account=None,
+        latest_settlement=None,
+        personnel_documents=None,
+        personnel_documents_error=False,
+    ):
         self.driver = driver
         self.companies = companies if companies is not None else []
         self.fleets = fleets if fleets is not None else []
         self.account = account
         self.latest_settlement = latest_settlement
+        self.personnel_documents = personnel_documents if personnel_documents is not None else []
+        self.personnel_documents_error = personnel_documents_error
 
     def get_driver(self, *, driver_id, authorization):
         return self.driver
@@ -29,6 +42,11 @@ class FakeSourceClients:
 
     def get_latest_settlement(self, *, driver_id, authorization):
         return self.latest_settlement
+
+    def list_personnel_documents(self, *, driver_id, authorization):
+        if self.personnel_documents_error:
+            raise SourceServiceError("Personnel document source unavailable.")
+        return self.personnel_documents
 
 
 class DriverSummaryServiceTests(TestCase):
@@ -59,6 +77,12 @@ class DriverSummaryServiceTests(TestCase):
             "role": "user",
             "is_active": True,
         }
+        self.personnel_documents = [
+            {"document_type": "contract", "status": "active"},
+            {"document_type": "license_or_certificate", "status": "active"},
+            {"document_type": "bank_account_proof", "status": "active"},
+            {"document_type": "business_registration", "status": "active"},
+        ]
         self.latest_settlement = {
             "driver_id": "10000000-0000-0000-0000-000000000001",
             "latest_settlement": {
@@ -78,6 +102,7 @@ class DriverSummaryServiceTests(TestCase):
                 companies=self.companies,
                 fleets=self.fleets,
                 account=self.account,
+                personnel_documents=self.personnel_documents,
                 latest_settlement=self.latest_settlement,
             )
         )
@@ -94,6 +119,9 @@ class DriverSummaryServiceTests(TestCase):
         self.assertEqual(summary["latest_settlement_run_id"], "50000000-0000-0000-0000-000000000002")
         self.assertEqual(summary["latest_settlement_amount"], "125000.50")
         self.assertEqual(summary["latest_payout_status"], "pending")
+        self.assertEqual(summary["driver_cleanup_status"], "ready")
+        self.assertEqual(summary["cleanup_blockers"], [])
+        self.assertEqual(summary["missing_personnel_document_types"], [])
         self.assertEqual(summary["warnings"], [])
 
     def test_build_summary_without_account_or_settlement(self):
@@ -104,6 +132,7 @@ class DriverSummaryServiceTests(TestCase):
                 companies=self.companies,
                 fleets=self.fleets,
                 account=None,
+                personnel_documents=self.personnel_documents,
                 latest_settlement={
                     "driver_id": driver["driver_id"],
                     "latest_settlement": None,
@@ -120,6 +149,8 @@ class DriverSummaryServiceTests(TestCase):
         self.assertIsNone(summary["account_email"])
         self.assertIsNone(summary["latest_settlement_run_id"])
         self.assertIsNone(summary["latest_settlement_amount"])
+        self.assertEqual(summary["driver_cleanup_status"], "action_required")
+        self.assertEqual(summary["cleanup_blockers"], ["Linked account is missing."])
         self.assertEqual(summary["warnings"], [])
 
     def test_build_summary_adds_warnings_for_missing_org_and_account_lookup(self):
@@ -129,6 +160,7 @@ class DriverSummaryServiceTests(TestCase):
                 companies=[],
                 fleets=[],
                 account=None,
+                personnel_documents=self.personnel_documents,
                 latest_settlement={
                     "driver_id": self.driver["driver_id"],
                     "latest_settlement": None,
@@ -152,6 +184,37 @@ class DriverSummaryServiceTests(TestCase):
                 "Account not found for account_id=40000000-0000-0000-0000-000000000001.",
             ],
         )
+        self.assertEqual(
+            summary["cleanup_blockers"],
+            [
+                "Company scope is missing.",
+                "Fleet scope is missing.",
+                "Linked account record not found for account_id=40000000-0000-0000-0000-000000000001.",
+            ],
+        )
+        self.assertEqual(summary["driver_cleanup_status"], "action_required")
+
+    def test_build_summary_marks_cleanup_unavailable_when_personnel_documents_cannot_be_read(self):
+        service = DriverSummaryService(
+            source_clients=FakeSourceClients(
+                driver=self.driver,
+                companies=self.companies,
+                fleets=self.fleets,
+                account=self.account,
+                latest_settlement=self.latest_settlement,
+                personnel_documents_error=True,
+            )
+        )
+
+        summary = service.build_summary(
+            driver_id=self.driver["driver_id"],
+            authorization="Bearer token",
+        )
+
+        self.assertEqual(summary["driver_cleanup_status"], "unavailable")
+        self.assertEqual(summary["active_personnel_document_types"], [])
+        self.assertEqual(summary["missing_personnel_document_types"], [])
+        self.assertEqual(summary["warnings"], ["Personnel document source unavailable."])
 
     def test_build_summary_raises_not_found_when_driver_is_missing(self):
         service = DriverSummaryService(source_clients=FakeSourceClients(driver=None))

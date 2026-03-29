@@ -73,3 +73,15 @@ class SourceClients:
         if not isinstance(payload, dict):
             raise SourceServiceError("Upstream request failed: malformed latest settlement payload.")
         return payload
+
+    def list_personnel_documents(self, *, driver_id: str, authorization: str):
+        payload = self._request_json(
+            url=self._build_url(
+                settings.PERSONNEL_DOCUMENT_BASE_URL,
+                f"/documents/?driver_id={driver_id}",
+            ),
+            authorization=authorization,
+        )
+        if not isinstance(payload, list):
+            raise SourceServiceError("Upstream request failed: malformed personnel document payload.")
+        return payload

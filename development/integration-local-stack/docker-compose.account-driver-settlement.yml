@@ -323,6 +323,7 @@ services:
     depends_on:
       - account-auth-api
       - driver-profile-api
+      - personnel-document-registry-api
       - settlement-ops-api
       - organization-master-api
     expose:

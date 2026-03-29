@@ -134,7 +134,9 @@
 
 ### `driver-ops-api`
 - 기사 단건 운영 화면용 summary query만 제공한다.
-- 내부적으로 `driver-profile`, `organization-master`, `account-auth`, `settlement-ops`를 조회해서 하나의 summary payload로 합친다.
+- 내부적으로 `driver-profile`, `organization-master`, `account-auth`, `personnel-document-registry`, `settlement-ops`를 조회해서 하나의 summary payload로 합친다.
+- 배송원 정리 현황은 linked account, 회사/플릿 scope, 필수 인사문서 기준으로 계산한다.
+- 근태 rule status는 `pending_source`, 배송이력 rule status는 `source_input_only`로 노출한다.
 - settlement read consumer env 이름은 `SETTLEMENT_OPS_BASE_URL`이다.
 - 이번 단계에서는 materialized projection 저장소를 두지 않는다.
 

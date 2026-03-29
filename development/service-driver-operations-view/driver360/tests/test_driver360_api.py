@@ -33,6 +33,17 @@ class Driver360ApiTests(TestCase):
             "latest_settlement_status": "closed",
             "latest_payout_status": "paid",
             "latest_settlement_amount": "125000.50",
+            "driver_cleanup_status": "ready",
+            "cleanup_blockers": [],
+            "active_personnel_document_types": [
+                "bank_account_proof",
+                "business_registration",
+                "contract",
+                "license_or_certificate",
+            ],
+            "missing_personnel_document_types": [],
+            "attendance_rule_status": "pending_source",
+            "delivery_history_rule_status": "source_input_only",
             "warnings": [],
         }
 
@@ -69,6 +80,7 @@ class Driver360ApiTests(TestCase):
         self.assertEqual(response.data["driver_name"], "Kim Driver")
         self.assertEqual(response.data["company_name"], "EVN Company")
         self.assertEqual(response.data["latest_settlement_amount"], "125000.50")
+        self.assertEqual(response.data["driver_cleanup_status"], "ready")
         mock_build_summary.assert_called_once_with(
             driver_id=str(driver_id),
             authorization=f"Bearer {self.token}",

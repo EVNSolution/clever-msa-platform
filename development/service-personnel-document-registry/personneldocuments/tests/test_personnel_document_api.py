@@ -118,6 +118,26 @@ class PersonnelDocumentApiTests(TestCase):
         self.assertEqual(patch_response.status_code, 200)
         self.assertEqual(patch_response.data["title"], "Updated Contract")
 
+    def test_admin_can_filter_documents_by_driver_id(self) -> None:
+        PersonnelDocument.objects.create(
+            driver_id=UUID("10000000-0000-0000-0000-000000000001"),
+            document_type=PersonnelDocument.DocumentType.CONTRACT,
+            status=PersonnelDocument.DocumentStatus.ACTIVE,
+            title="Driver One Contract",
+        )
+        PersonnelDocument.objects.create(
+            driver_id=UUID("10000000-0000-0000-0000-000000000002"),
+            document_type=PersonnelDocument.DocumentType.CONTRACT,
+            status=PersonnelDocument.DocumentStatus.ACTIVE,
+            title="Driver Two Contract",
+        )
+
+        response = self._admin_client().get("/documents/", {"driver_id": self.driver_id})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["driver_id"], self.driver_id)
+
     @patch("personneldocuments.services.source_clients.SourceClients.validate_driver_exists", return_value=None)
     def test_put_and_delete_are_not_allowed_for_document_detail(self, _mock_validate_driver) -> None:
         document = self._create_document()

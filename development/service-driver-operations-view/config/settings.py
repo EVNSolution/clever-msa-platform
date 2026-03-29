@@ -93,3 +93,7 @@ ACCOUNT_AUTH_BASE_URL = os.environ.get("ACCOUNT_AUTH_BASE_URL", "http://account-
 DRIVER_PROFILE_BASE_URL = os.environ.get("DRIVER_PROFILE_BASE_URL", "http://driver-profile-api:8000")
 ORGANIZATION_MASTER_BASE_URL = os.environ.get("ORGANIZATION_MASTER_BASE_URL", "http://organization-master-api:8000")
 SETTLEMENT_OPS_BASE_URL = os.environ.get("SETTLEMENT_OPS_BASE_URL", "http://settlement-ops-api:8000")
+PERSONNEL_DOCUMENT_BASE_URL = os.environ.get(
+    "PERSONNEL_DOCUMENT_BASE_URL",
+    "http://personnel-document-registry-api:8000",
+)

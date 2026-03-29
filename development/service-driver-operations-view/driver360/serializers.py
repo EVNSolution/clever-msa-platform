@@ -21,6 +21,12 @@ class Driver360SummarySerializer(serializers.Serializer):
     latest_settlement_status = serializers.CharField(allow_null=True)
     latest_payout_status = serializers.CharField(allow_null=True)
     latest_settlement_amount = serializers.CharField(allow_null=True)
+    driver_cleanup_status = serializers.CharField()
+    cleanup_blockers = serializers.ListField(child=serializers.CharField(), allow_empty=True)
+    active_personnel_document_types = serializers.ListField(child=serializers.CharField(), allow_empty=True)
+    missing_personnel_document_types = serializers.ListField(child=serializers.CharField(), allow_empty=True)
+    attendance_rule_status = serializers.CharField()
+    delivery_history_rule_status = serializers.CharField()
     warnings = serializers.ListField(child=serializers.CharField(), allow_empty=True)
 
 

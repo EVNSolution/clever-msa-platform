@@ -14,6 +14,8 @@
 3. 현재 어느 회사와 플릿에 속하는가
 4. 연결된 계정은 무엇인가
 5. 최근 정산 요약은 무엇인가
+6. 배송원 정리 현황은 어떤가
+7. 근태, 배송이력 규칙 현황은 어떤가
 
 ## 조회 단위
 
@@ -66,6 +68,15 @@ Driver 360은 우선 `summary-only` consumer domain으로 시작하고, timeline
 - latest_payout_status
 - latest_settlement_amount
 
+### Driver Cleanup / Rule Status
+
+- driver_cleanup_status
+- cleanup_blockers
+- active_personnel_document_types
+- missing_personnel_document_types
+- attendance_rule_status
+- delivery_history_rule_status
+
 ## Future Dependency
 
 아래 항목은 현재 bootstrap source에 아직 정본이 없거나, placeholder-only인 도메인이라서 이번 1차 contract에 넣지 않는다.
@@ -87,12 +98,15 @@ Driver 360은 우선 `summary-only` consumer domain으로 시작하고, timeline
 | Driver Profile HR | 기사 기본정보, 소속, 계정 연결 참조 | 정본 유지 |
 | Identity Access | 계정 요약, 로그인 가능 여부 | 정본 유지 |
 | Organization Master | 회사명, 플릿명 | 정본 유지 |
+| Personnel Document Registry | 문서성 정리 현황에 필요한 기사 문서 메타데이터 | 정본 유지 |
 | Settlement Operations View | 기사별 scoped latest settlement summary | read-only query 유지 |
 
 Driver 360은 어떤 원본 데이터도 직접 수정하지 않는다.
-이번 bootstrap 1차에서는 source service들을 bounded fan-out으로 읽는 query service로 구현한다.
+이번 current runtime에서는 source service들을 bounded fan-out으로 읽는 query service로 구현한다.
 runtime container and gateway naming은 `driver-ops-api` / `/api/driver-ops/`를 사용하지만, 화면과 읽기 모델의 이름은 계속 `Driver 360`으로 유지한다.
 정산 영역에서는 `Settlement Payroll` collection을 직접 읽지 않고, `Settlement Operations View`의 `GET /drivers/<driver_id>/latest-settlement/` scoped contract만 사용한다.
+배송원 정리 현황은 `Driver Profile HR + Identity Access + Organization Master + Personnel Document Registry`를 합쳐 계산한다.
+근태와 배송이력은 아직 정본 runtime이 없어 current contract에서 rule status만 노출한다.
 
 ## 포함하지 않을 것
 
@@ -103,6 +117,34 @@ runtime container and gateway naming은 `driver-ops-api` / `/api/driver-ops/`를
 5. 전체 결재 본문
 
 이 항목들은 별도 상세 조회로 내려간다.
+
+## Current Peripheral Status Rules
+
+### Driver Cleanup Status
+
+- `ready`
+  - 연결 계정, 회사/플릿 scope, 필수 인사문서가 모두 확인된 상태
+- `action_required`
+  - 연결 계정 누락, 회사/플릿 scope 누락, 필수 인사문서 누락 중 하나 이상이 있는 상태
+- `unavailable`
+  - 인사문서 source를 현재 토큰으로 읽을 수 없거나 upstream이 불안정해 정리 현황을 판단할 수 없는 상태
+
+필수 인사문서 타입은 아래 네 가지다.
+
+- `contract`
+- `license_or_certificate`
+- `bank_account_proof`
+- `business_registration`
+
+### Attendance Rule Status
+
+- current runtime에서는 `pending_source`로 고정한다.
+- 이유는 attendance truth가 아직 pending `/api/schedule/*` 분해 범위에 남아 있기 때문이다.
+
+### Delivery History Rule Status
+
+- current runtime에서는 `source_input_only`로 고정한다.
+- 이유는 `service-delivery-record`가 settlement input snapshot 정본만 소유하고, full delivery execution history truth는 아직 active runtime이 아니기 때문이다.
 
 ## 갱신 규칙
 

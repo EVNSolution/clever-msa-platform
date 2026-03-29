@@ -4,7 +4,8 @@
 
 현재 역할:
 - driver ops summary와 detail 조회
-- profile, account, settlement-ops scoped latest-settlement summary, assignment 정보를 조합한 운영 view
+- profile, account, personnel-document, settlement-ops scoped latest-settlement summary를 조합한 운영 view
+- 배송원 정리 현황과 근태/배송이력 rule status 요약 제공
 - 쓰기 없는 read-only query service
 
 포함:
