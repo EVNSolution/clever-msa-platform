@@ -2,16 +2,16 @@
 
 ## 문서 목적
 
-이 문서는 현재 `empty shell` 상태로 남아 있는 서비스 repo의 구현 우선순위를 고정한다.
+이 문서는 마지막 `empty shell` 이었던 서비스 repo의 구현 우선순위와 완료 상태를 기록한다.
 
 이번 문서는 아래 두 가지를 동시에 만족해야 한다.
 
-1. 이미 `active runtime` 으로 올라온 서비스와 남은 구현 대상을 섞지 않는다.
-2. 문서에 이미 적혀 있는 선후 관계만 우선순위 근거로 사용한다.
+1. 이미 `active runtime` 으로 올라온 서비스와 마지막 구현 대상을 섞지 않는다.
+2. 문서에 이미 적혀 있는 선후 관계만 완료 근거로 사용한다.
 
 ## 스코프
 
-이번 문서의 대상은 아래 repo 하나뿐이다.
+이번 문서의 대상은 아래 repo 하나였다.
 
 - `service-notification-hub`
 
@@ -25,18 +25,19 @@
 
 | Repo | 현재 문서 상태 | 핵심 역할 |
 | --- | --- | --- |
-| `service-notification-hub` | `empty shell` | 푸시 발송과 일반 알림함 |
+| 없음 | 없음 | empty shell backlog 해소 완료 |
 
 ## 구현 우선순위
 
-1. `service-notification-hub`
+1. 남은 empty shell 없음
 
 ## 근거
 
 1. `service-region-analytics` 는 이미 active runtime으로 승격됐다.
-2. `service-notification-hub` 가 마지막 empty shell이다.
+2. `service-notification-hub` 가 마지막 empty shell이었다.
 3. `service-notification-hub` 는 공지 / 지원 / 결재 / 정산 이벤트의 전달 채널로 정의돼 있다.
-4. 따라서 정본 업무 데이터 repo들이 올라온 뒤에 두는 현재 순서가 문서 정합성과 맞다.
+4. 따라서 정본 업무 데이터 repo들이 올라온 뒤에 두는 현재 순서가 문서 정합성과 맞았다.
+5. 현재는 `service-notification-hub`까지 runtime으로 승격돼 empty shell backlog가 없다.
 
 ## 제외 기준 재확인
 

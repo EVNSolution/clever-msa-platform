@@ -34,6 +34,7 @@
 | `service-region-analytics` | `region-analytics-api` | `/api/region-analytics/` | `active runtime` | 권역 일별 통계와 성과 요약 snapshot |
 | `service-announcement-registry` | `announcement-registry-api` | `/api/announcements/` | `active runtime` | 공지 게시 정본과 publish/exposure registry |
 | `service-support-registry` | `support-registry-api` | `/api/ticket/` | `active runtime` | 문의, 티켓, 응답, 처리 상태 정본 |
+| `service-notification-hub` | `notification-hub-api` | `/api/notifications/` | `active runtime` | 푸시 토큰, 발송 로그, 일반 알림함 채널 |
 | `service-terminal-registry` | `terminal-registry-api` | `/api/terminals/` | `active runtime` | 단말 자산과 설치 관계 정본 |
 | `service-telemetry-hub` | `telemetry-hub-api` | `/api/telemetry/` | `active runtime` | raw ingest, latest snapshot, diagnostics |
 | `service-telemetry-dead-letter` | `telemetry-dead-letter-api` | `/api/telemetry-dead-letters/` | `active runtime` | 실패 텔레메트리 append-only 저장과 admin read |
@@ -41,9 +42,7 @@
 
 ## Current Empty Shell Repos
 
-| Target repo | Compose service | Gateway prefix | Status | Role summary |
-| --- | --- | --- | --- | --- |
-| `service-notification-hub` | none | none | `empty shell` | 푸시 발송과 일반 알림함 |
+현재 없음.
 
 ## Notes
 

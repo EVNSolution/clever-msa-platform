@@ -60,6 +60,7 @@ wait_for_health "region-registry" "http://region-registry-api:8000/health/"
 wait_for_health "region-analytics" "http://region-analytics-api:8000/health/"
 wait_for_health "announcement-registry" "http://announcement-registry-api:8000/health/"
 wait_for_health "support-registry" "http://support-registry-api:8000/health/"
+wait_for_health "notification-hub" "http://notification-hub-api:8000/health/"
 wait_for_health "terminal-registry" "http://terminal-registry-api:8000/health/"
 wait_for_health "telemetry-hub" "http://telemetry-hub-api:8000/health/"
 wait_for_health "settlement-payroll" "http://settlement-payroll-api:8000/health/"
@@ -98,6 +99,9 @@ run_manage "services/announcement-registry" "infra/env/announcement-registry.env
 
 run_manage "services/support-registry" "infra/env/support-registry.env.example" migrate --noinput
 run_manage "services/support-registry" "infra/env/support-registry.env.example" seed_support
+
+run_manage "services/notification-hub" "infra/env/notification-hub.env.example" migrate --noinput
+run_manage "services/notification-hub" "infra/env/notification-hub.env.example" seed_notifications
 
 run_manage "services/terminal-registry" "infra/env/terminal-registry.env.example" migrate --noinput
 run_manage "services/terminal-registry" "infra/env/terminal-registry.env.example" seed_terminals

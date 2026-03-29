@@ -70,6 +70,7 @@ SCHEMA_ENABLED_SERVICES = {
     "service-announcement-registry",
     "service-region-registry",
     "service-region-analytics",
+    "service-notification-hub",
     "service-support-registry",
     "service-settlement-operations-view",
     "service-settlement-payroll",

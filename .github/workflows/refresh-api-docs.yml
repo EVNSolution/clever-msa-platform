@@ -62,6 +62,7 @@ jobs:
             development/service-vehicle-operations-view/requirements.txt
             development/service-dispatch-registry/requirements.txt
             development/service-dispatch-operations-view/requirements.txt
+            development/service-notification-hub/requirements.txt
             development/service-terminal-registry/requirements.txt
             development/service-telemetry-hub/requirements.txt
             development/service-telemetry-dead-letter/requirements.txt

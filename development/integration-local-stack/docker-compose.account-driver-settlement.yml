@@ -24,6 +24,7 @@ services:
       - region-analytics-api
       - announcement-registry-api
       - support-registry-api
+      - notification-hub-api
       - terminal-registry-api
       - driver-vehicle-assignment-api
       - telemetry-hub-api
@@ -194,6 +195,16 @@ services:
       - ./infra/env/support-registry.env.example
     depends_on:
       - support-registry-db
+    expose:
+      - "8000"
+
+  notification-hub-api:
+    build:
+      context: ../service-notification-hub
+    env_file:
+      - ./infra/env/notification-hub.env.example
+    depends_on:
+      - notification-hub-db
     expose:
       - "8000"
 
@@ -440,6 +451,15 @@ services:
     expose:
       - "5432"
 
+  notification-hub-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: notification_hub
+      POSTGRES_USER: notification_hub
+      POSTGRES_PASSWORD: notification_hub
+    expose:
+      - "5432"
+
   assignment-db:
     image: postgres:16-alpine
     environment:
@@ -510,6 +530,7 @@ services:
       - region-analytics-db
       - announcement-registry-db
       - support-registry-db
+      - notification-hub-db
       - terminal-db
       - telemetry-db
       - telemetry-dead-letter-db
@@ -528,6 +549,7 @@ services:
       - region-analytics-api
       - announcement-registry-api
       - support-registry-api
+      - notification-hub-api
       - terminal-registry-api
       - telemetry-hub-api
       - telemetry-dead-letter-api

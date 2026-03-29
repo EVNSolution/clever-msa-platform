@@ -23,6 +23,7 @@ COPY development/service-region-registry/requirements.txt /tmp/region-registry-r
 COPY development/service-region-analytics/requirements.txt /tmp/region-analytics-requirements.txt
 COPY development/service-announcement-registry/requirements.txt /tmp/announcement-registry-requirements.txt
 COPY development/service-support-registry/requirements.txt /tmp/support-registry-requirements.txt
+COPY development/service-notification-hub/requirements.txt /tmp/notification-hub-requirements.txt
 
 RUN pip install --no-cache-dir \
     -r /tmp/account-auth-requirements.txt \
@@ -37,6 +38,7 @@ RUN pip install --no-cache-dir \
     -r /tmp/region-analytics-requirements.txt \
     -r /tmp/announcement-registry-requirements.txt \
     -r /tmp/support-registry-requirements.txt \
+    -r /tmp/notification-hub-requirements.txt \
     -r /tmp/terminal-registry-requirements.txt \
     -r /tmp/telemetry-hub-requirements.txt
 
@@ -52,6 +54,7 @@ COPY development/service-region-registry /workspace/services/region-registry
 COPY development/service-region-analytics /workspace/services/region-analytics
 COPY development/service-announcement-registry /workspace/services/announcement-registry
 COPY development/service-support-registry /workspace/services/support-registry
+COPY development/service-notification-hub /workspace/services/notification-hub
 COPY development/service-terminal-registry /workspace/services/terminal-registry
 COPY development/service-telemetry-hub /workspace/services/telemetry-hub
 COPY development/service-vehicle-assignment /workspace/services/driver-vehicle-assignment

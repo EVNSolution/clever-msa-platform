@@ -1,6 +1,6 @@
 # Compose Simulation
 
-이 디렉토리의 목적은 `계정 / 조직 / 기사 / 인사문서 / 배송원천기록 / 정산 / 차량 / 배차 / 권역 / 공지 / 지원 / 단말 / 텔레메트리` 경계를 로컬 Docker Compose 환경에서 실제로 띄워 보는 것이다. 더 이상 boundary skeleton만 있는 상태가 아니라, 현재는 독립 Django 서비스들, telemetry ingress용 Python worker 1개, local MQTT broker 1개, React/Vite 앱 2개까지 포함한 실행형 부트스트랩 구조를 가진다.
+이 디렉토리의 목적은 `계정 / 조직 / 기사 / 인사문서 / 배송원천기록 / 정산 / 차량 / 배차 / 권역 / 공지 / 지원 / 알림 / 단말 / 텔레메트리` 경계를 로컬 Docker Compose 환경에서 실제로 띄워 보는 것이다. 더 이상 boundary skeleton만 있는 상태가 아니라, 현재는 독립 Django 서비스들, telemetry ingress용 Python worker 1개, local MQTT broker 1개, React/Vite 앱 2개까지 포함한 실행형 부트스트랩 구조를 가진다.
 
 현재 compose 파일 위치는 상위 [docker-compose.account-driver-settlement.yml](../docker-compose.account-driver-settlement.yml)이다.
 현재 runtime source는 sibling target repo만 참조한다.
@@ -25,6 +25,7 @@
 - `region-analytics-api`
 - `announcement-registry-api`
 - `support-registry-api`
+- `notification-hub-api`
 - `terminal-registry-api`
 - `telemetry-hub-api`
 - `telemetry-listener`
@@ -47,6 +48,7 @@
 - `region-analytics-db`
 - `announcement-registry-db`
 - `support-registry-db`
+- `notification-hub-db`
 - `terminal-db`
 - `telemetry-db`
 - `telemetry-dead-letter-db`
@@ -176,6 +178,13 @@
 - push send, inbox notifications, announcement posting은 소유하지 않는다.
 - gateway 외부 prefix는 `/api/ticket/`다.
 
+### `notification-hub-api`
+- 알림 채널 CRUD를 제공한다.
+- `push token`, `general inbox`, `push delivery log`만 소유한다.
+- 공지 게시나 지원 정본은 소유하지 않는다.
+- phase 1의 push send는 simulated delivery log로만 동작한다.
+- gateway 외부 prefix는 `/api/notifications/`다.
+
 ### `dispatch-ops-api`
 - 배차 운영 상황판용 read-model runtime을 제공한다.
 - `dispatch-registry-api`, `driver-vehicle-assignment-api`, `vehicle-asset-api`, `driver-profile-api`를 fan-out read 한다.
@@ -225,6 +234,7 @@
 - `/api/region-analytics/` -> `region-analytics-api`
 - `/api/announcements/` -> `announcement-registry-api`
 - `/api/ticket/` -> `support-registry-api`
+- `/api/notifications/` -> `notification-hub-api`
 - `/api/terminals/` -> `terminal-registry-api`
 - `/api/telemetry/` -> `telemetry-hub-api`
 - `/api/telemetry-dead-letters/health/` -> `telemetry-dead-letter-api /health/`

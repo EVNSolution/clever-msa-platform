@@ -129,7 +129,7 @@ clever-msa-platform/
 - `service-announcement-registry`
 - `service-support-registry`
 
-이 이름들은 현재 대부분 runtime으로 승격됐다. 현재 `service-dispatch-registry`, `service-dispatch-operations-view`, `service-personnel-document-registry`, `service-region-registry`, `service-region-analytics`, `service-announcement-registry`, `service-support-registry`는 active runtime repo로 승격됐고, `service-notification-hub`만 shell 디렉토리와 README 상태다.
+이 이름들은 현재 모두 active runtime repo로 승격됐다. `service-dispatch-registry`, `service-dispatch-operations-view`, `service-personnel-document-registry`, `service-region-registry`, `service-region-analytics`, `service-notification-hub`, `service-announcement-registry`, `service-support-registry`는 target repo가 active source다.
 
 ## Working Rules
 
@@ -168,6 +168,7 @@ clever-msa-platform/
 - `service-dispatch-operations-view`는 runtime 구현 완료, target repo가 활성화됐다
 - `service-region-registry`는 runtime 구현 완료, target repo가 활성화됐다
 - `service-region-analytics`는 runtime 구현 완료, target repo가 활성화됐다
+- `service-notification-hub`는 runtime 구현 완료, target repo가 활성화됐다
 - `service-announcement-registry`는 runtime 구현 완료, target repo가 활성화됐다
 - `service-support-registry`는 runtime 구현 완료, target repo가 활성화됐다
 - old `MSA-Server/services`에는 direct runtime source가 더 이상 남아 있지 않다
