@@ -11,7 +11,9 @@ import {
   type TerminalPayload,
 } from '../api/terminals';
 import { getErrorMessage, type HttpClient } from '../api/http';
-import type { TerminalInstallation, TerminalRegistry } from '../types';
+import { listCompanies } from '../api/organization';
+import type { Company, TerminalInstallation, TerminalRegistry, VehicleMaster } from '../types';
+import { listVehicleMasters } from '../api/vehicles';
 import {
   formatInstallationStatusLabel,
   formatLifecycleStatusLabel,
@@ -37,9 +39,9 @@ type InstallationFormState = {
   vehicle_id: string;
 };
 
-function createEmptyTerminalForm(): TerminalFormState {
+function createEmptyTerminalForm(companyId = ''): TerminalFormState {
   return {
-    manufacturer_company_id: '',
+    manufacturer_company_id: companyId,
     imei: '',
     iccid: '',
     firmware_version: '1.0.0',
@@ -49,10 +51,10 @@ function createEmptyTerminalForm(): TerminalFormState {
   };
 }
 
-function createEmptyInstallationForm(): InstallationFormState {
+function createEmptyInstallationForm(terminalId = '', vehicleId = ''): InstallationFormState {
   return {
-    terminal_id: '',
-    vehicle_id: '',
+    terminal_id: terminalId,
+    vehicle_id: vehicleId,
   };
 }
 
@@ -85,6 +87,8 @@ function toInstallationPayload(form: InstallationFormState): TerminalInstallatio
 export function TerminalsPage({ client }: TerminalsPageProps) {
   const [terminals, setTerminals] = useState<TerminalRegistry[]>([]);
   const [installations, setInstallations] = useState<TerminalInstallation[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [vehicles, setVehicles] = useState<VehicleMaster[]>([]);
   const [terminalForm, setTerminalForm] = useState<TerminalFormState>(createEmptyTerminalForm());
   const [installationForm, setInstallationForm] = useState<InstallationFormState>(
     createEmptyInstallationForm(),
@@ -94,12 +98,16 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   async function refreshData() {
-    const [nextTerminals, nextInstallations] = await Promise.all([
+    const [nextTerminals, nextInstallations, nextCompanies, nextVehicles] = await Promise.all([
       listTerminals(client),
       listTerminalInstallations(client),
+      listCompanies(client),
+      listVehicleMasters(client),
     ]);
     setTerminals(nextTerminals);
     setInstallations(nextInstallations);
+    setCompanies(nextCompanies);
+    setVehicles(nextVehicles);
   }
 
   useEffect(() => {
@@ -109,13 +117,25 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
       setIsLoading(true);
       setErrorMessage(null);
       try {
-        const [nextTerminals, nextInstallations] = await Promise.all([
+        const [nextTerminals, nextInstallations, nextCompanies, nextVehicles] = await Promise.all([
           listTerminals(client),
           listTerminalInstallations(client),
+          listCompanies(client),
+          listVehicleMasters(client),
         ]);
         if (!ignore) {
           setTerminals(nextTerminals);
           setInstallations(nextInstallations);
+          setCompanies(nextCompanies);
+          setVehicles(nextVehicles);
+          setTerminalForm((current) => ({
+            ...current,
+            manufacturer_company_id: current.manufacturer_company_id || nextCompanies[0]?.company_id || '',
+          }));
+          setInstallationForm((current) => ({
+            terminal_id: current.terminal_id || nextTerminals[0]?.terminal_id || '',
+            vehicle_id: current.vehicle_id || nextVehicles[0]?.vehicle_id || '',
+          }));
         }
       } catch (error) {
         if (!ignore) {
@@ -138,11 +158,24 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
 
   function resetTerminalForm() {
     setEditingTerminalId(null);
-    setTerminalForm(createEmptyTerminalForm());
+    setTerminalForm(createEmptyTerminalForm(companies[0]?.company_id ?? ''));
   }
 
   function resetInstallationForm() {
-    setInstallationForm(createEmptyInstallationForm());
+    setInstallationForm(createEmptyInstallationForm(terminals[0]?.terminal_id ?? '', vehicles[0]?.vehicle_id ?? ''));
+  }
+
+  function getCompanyName(companyId: string) {
+    return companies.find((company) => company.company_id === companyId)?.name ?? '미확인 회사';
+  }
+
+  function getVehicleLabel(vehicleId: string) {
+    return vehicles.find((vehicle) => vehicle.vehicle_id === vehicleId)?.plate_number ?? '미확인 차량';
+  }
+
+  function getTerminalLabel(terminalId: string) {
+    const index = terminals.findIndex((terminal) => terminal.terminal_id === terminalId);
+    return index >= 0 ? `단말기 ${index + 1}` : '미확인 단말기';
   }
 
   function handleEditTerminal(terminal: TerminalRegistry) {
@@ -211,13 +244,19 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
         <form className="form-grid" onSubmit={handleTerminalSubmit}>
           <label className="field">
-            <span>제조사 회사 ID</span>
-            <input
+            <span>제조사 회사</span>
+            <select
               onChange={(event) =>
                 setTerminalForm((current) => ({ ...current, manufacturer_company_id: event.target.value }))
               }
               value={terminalForm.manufacturer_company_id}
-            />
+            >
+              {companies.map((company) => (
+                <option key={company.company_id} value={company.company_id}>
+                  {company.name}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="field">
             <span>IMEI</span>
@@ -298,6 +337,7 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
             <thead>
               <tr>
                 <th>단말기</th>
+                <th>제조사</th>
                 <th>IMEI</th>
                 <th>ICCID</th>
                 <th>상태</th>
@@ -307,7 +347,8 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
             <tbody>
               {terminals.map((terminal) => (
                 <tr key={terminal.terminal_id}>
-                  <td><code>{formatProtectedIdentifier(terminal.terminal_id)}</code></td>
+                  <td>{getTerminalLabel(terminal.terminal_id)}</td>
+                  <td>{getCompanyName(terminal.manufacturer_company_id)}</td>
                   <td>{formatProtectedIdentifier(terminal.imei)}</td>
                   <td>{formatProtectedIdentifier(terminal.iccid)}</td>
                   <td>{formatLifecycleStatusLabel(terminal.terminal_status)}</td>
@@ -336,22 +377,34 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
         </div>
         <form className="form-grid" onSubmit={handleInstallationSubmit}>
           <label className="field">
-            <span>설치 단말기 ID</span>
-            <input
+            <span>설치 단말기</span>
+            <select
               onChange={(event) =>
                 setInstallationForm((current) => ({ ...current, terminal_id: event.target.value }))
               }
               value={installationForm.terminal_id}
-            />
+            >
+              {terminals.map((terminal) => (
+                <option key={terminal.terminal_id} value={terminal.terminal_id}>
+                  {getTerminalLabel(terminal.terminal_id)}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="field">
-            <span>설치 차량 ID</span>
-            <input
+            <span>설치 차량</span>
+            <select
               onChange={(event) =>
                 setInstallationForm((current) => ({ ...current, vehicle_id: event.target.value }))
               }
               value={installationForm.vehicle_id}
-            />
+            >
+              {vehicles.map((vehicle) => (
+                <option key={vehicle.vehicle_id} value={vehicle.vehicle_id}>
+                  {vehicle.plate_number}
+                </option>
+              ))}
+            </select>
           </label>
           <div className="form-actions">
             <button className="button primary" type="submit">
@@ -386,8 +439,8 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
             <tbody>
               {installations.map((installation) => (
                 <tr key={installation.terminal_installation_id}>
-                  <td><code>{formatProtectedIdentifier(installation.terminal_id)}</code></td>
-                  <td><code>{formatProtectedIdentifier(installation.vehicle_id)}</code></td>
+                  <td>{getTerminalLabel(installation.terminal_id)}</td>
+                  <td>{getVehicleLabel(installation.vehicle_id)}</td>
                   <td>{formatInstallationStatusLabel(installation.installation_status)}</td>
                   <td>{installation.installed_at}</td>
                   <td>{installation.removed_at ?? '-'}</td>

@@ -1,21 +1,28 @@
 import { useEffect, useState, type FormEvent } from 'react';
 
+import { listAccounts } from '../api/accounts';
 import { createDriver, deleteDriver, listDrivers, updateDriver, type DriverPayload } from '../api/drivers';
 import { listCompanies, listFleets } from '../api/organization';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { AccountSummary, Company, DriverProfile, Fleet } from '../types';
-import { formatProtectedIdentifier } from '../uiLabels';
 
 type DriversPageProps = {
   account: AccountSummary;
   client: HttpClient;
 };
 
-function createEmptyForm(accountId: string, companies: Company[], fleets: Fleet[]): DriverPayload {
+function createEmptyForm(
+  currentAccountId: string,
+  accounts: AccountSummary[],
+  companies: Company[],
+  fleets: Fleet[],
+): DriverPayload {
+  const defaultCompanyId = companies[0]?.company_id ?? '';
+  const fleetOptions = fleets.filter((fleet) => fleet.company_id === defaultCompanyId);
   return {
-    account_id: accountId,
-    company_id: companies[0]?.company_id ?? '',
-    fleet_id: fleets[0]?.fleet_id ?? '',
+    account_id: accounts[0]?.account_id ?? currentAccountId,
+    company_id: defaultCompanyId,
+    fleet_id: fleetOptions[0]?.fleet_id ?? fleets[0]?.fleet_id ?? '',
     name: '',
     ev_id: '',
     phone_number: '',
@@ -24,10 +31,11 @@ function createEmptyForm(accountId: string, companies: Company[], fleets: Fleet[
 }
 
 export function DriversPage({ account, client }: DriversPageProps) {
+  const [accounts, setAccounts] = useState<AccountSummary[]>([]);
   const [drivers, setDrivers] = useState<DriverProfile[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [fleets, setFleets] = useState<Fleet[]>([]);
-  const [form, setForm] = useState<DriverPayload>(createEmptyForm(account.account_id, [], []));
+  const [form, setForm] = useState<DriverPayload>(createEmptyForm(account.account_id, [], [], []));
   const [editingDriverId, setEditingDriverId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,8 +47,9 @@ export function DriversPage({ account, client }: DriversPageProps) {
       setIsLoading(true);
       setErrorMessage(null);
       try {
-        const [driverResponse, companyResponse, fleetResponse] = await Promise.all([
+        const [driverResponse, accountResponse, companyResponse, fleetResponse] = await Promise.all([
           listDrivers(client),
+          listAccounts(client),
           listCompanies(client),
           listFleets(client),
         ]);
@@ -48,10 +57,11 @@ export function DriversPage({ account, client }: DriversPageProps) {
           return;
         }
         setDrivers(driverResponse);
+        setAccounts(accountResponse);
         setCompanies(companyResponse);
         setFleets(fleetResponse);
         setForm((current) => ({
-          ...createEmptyForm(account.account_id, companyResponse, fleetResponse),
+          ...createEmptyForm(account.account_id, accountResponse, companyResponse, fleetResponse),
           ...current,
         }));
       } catch (error) {
@@ -76,9 +86,32 @@ export function DriversPage({ account, client }: DriversPageProps) {
     setDrivers(response);
   }
 
+  function getFleetOptions(companyId: string) {
+    return fleets.filter((fleet) => fleet.company_id === companyId);
+  }
+
+  function getCompanyName(companyId: string) {
+    return companies.find((company) => company.company_id === companyId)?.name ?? '미확인 회사';
+  }
+
+  function getFleetName(fleetId: string) {
+    return fleets.find((fleet) => fleet.fleet_id === fleetId)?.name ?? '미확인 플릿';
+  }
+
+  function handleCompanyChange(companyId: string) {
+    const nextFleetId = getFleetOptions(companyId)[0]?.fleet_id ?? '';
+    setForm((current) => ({
+      ...current,
+      company_id: companyId,
+      fleet_id: getFleetOptions(companyId).some((fleet) => fleet.fleet_id === current.fleet_id)
+        ? current.fleet_id
+        : nextFleetId,
+    }));
+  }
+
   function resetForm() {
     setEditingDriverId(null);
-    setForm(createEmptyForm(account.account_id, companies, fleets));
+    setForm(createEmptyForm(account.account_id, accounts, companies, fleets));
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -119,9 +152,36 @@ export function DriversPage({ account, client }: DriversPageProps) {
         </div>
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
         <form className="form-grid" onSubmit={handleSubmit}>
-          <label className="field"><span>계정 ID</span><input onChange={(event) => setForm((current) => ({ ...current, account_id: event.target.value }))} value={form.account_id ?? ''} /></label>
-          <label className="field"><span>회사 ID</span><input onChange={(event) => setForm((current) => ({ ...current, company_id: event.target.value }))} value={form.company_id} /></label>
-          <label className="field"><span>플릿 ID</span><input onChange={(event) => setForm((current) => ({ ...current, fleet_id: event.target.value }))} value={form.fleet_id} /></label>
+          <label className="field">
+            <span>계정</span>
+            <select onChange={(event) => setForm((current) => ({ ...current, account_id: event.target.value }))} value={form.account_id ?? ''}>
+              {accounts.map((entry) => (
+                <option key={entry.account_id} value={entry.account_id}>
+                  {entry.email}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="field">
+            <span>회사</span>
+            <select onChange={(event) => handleCompanyChange(event.target.value)} value={form.company_id}>
+              {companies.map((company) => (
+                <option key={company.company_id} value={company.company_id}>
+                  {company.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="field">
+            <span>플릿</span>
+            <select onChange={(event) => setForm((current) => ({ ...current, fleet_id: event.target.value }))} value={form.fleet_id}>
+              {getFleetOptions(form.company_id).map((fleet) => (
+                <option key={fleet.fleet_id} value={fleet.fleet_id}>
+                  {fleet.name}
+                </option>
+              ))}
+            </select>
+          </label>
           <label className="field"><span>이름</span><input onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} value={form.name} /></label>
           <label className="field"><span>EV ID</span><input onChange={(event) => setForm((current) => ({ ...current, ev_id: event.target.value }))} value={form.ev_id} /></label>
           <label className="field"><span>연락처</span><input onChange={(event) => setForm((current) => ({ ...current, phone_number: event.target.value }))} value={form.phone_number} /></label>
@@ -139,13 +199,13 @@ export function DriversPage({ account, client }: DriversPageProps) {
         </div>
         {isLoading ? <p className="empty-state">배송원을 불러오는 중입니다...</p> : (
           <table className="table compact">
-            <thead><tr><th>배송원</th><th>이름</th><th>EV ID</th><th /><th /></tr></thead>
+            <thead><tr><th>이름</th><th>회사</th><th>플릿</th><th /><th /></tr></thead>
             <tbody>
               {drivers.map((driver) => (
                 <tr key={driver.driver_id}>
-                  <td><code>{formatProtectedIdentifier(driver.driver_id)}</code></td>
                   <td>{driver.name}</td>
-                  <td>{formatProtectedIdentifier(driver.ev_id)}</td>
+                  <td>{getCompanyName(driver.company_id)}</td>
+                  <td>{getFleetName(driver.fleet_id)}</td>
                   <td><button className="button ghost small" onClick={() => { setEditingDriverId(driver.driver_id); setForm({ account_id: driver.account_id ?? '', company_id: driver.company_id, fleet_id: driver.fleet_id, name: driver.name, ev_id: driver.ev_id, phone_number: driver.phone_number, address: driver.address }); }} type="button">수정</button></td>
                   <td><button className="button ghost small" onClick={() => void handleDelete(driver.driver_id)} type="button">삭제</button></td>
                 </tr>

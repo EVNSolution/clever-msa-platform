@@ -173,7 +173,7 @@ export function OrganizationPage({ client }: OrganizationPageProps) {
           </div>
           <form className="stack" onSubmit={handleFleetSubmit}>
             <label className="field">
-              <span>회사 ID</span>
+              <span>회사</span>
               <select
                 onChange={(event) => setFleetForm((current) => ({ ...current, company_id: event.target.value }))}
                 value={fleetForm.company_id}

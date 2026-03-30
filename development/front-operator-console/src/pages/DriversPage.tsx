@@ -13,10 +13,12 @@ type DriversPageProps = {
 type DriverFormState = DriverPayload;
 
 function createEmptyForm(accountId: string, companies: Company[], fleets: Fleet[]): DriverFormState {
+  const defaultCompanyId = companies[0]?.company_id ?? '';
+  const fleetOptions = fleets.filter((fleet) => fleet.company_id === defaultCompanyId);
   return {
     account_id: accountId,
-    company_id: companies[0]?.company_id ?? '',
-    fleet_id: fleets[0]?.fleet_id ?? '',
+    company_id: defaultCompanyId,
+    fleet_id: fleetOptions[0]?.fleet_id ?? fleets[0]?.fleet_id ?? '',
     name: '',
     ev_id: '',
     phone_number: '',
@@ -86,6 +88,21 @@ export function DriversPage({ account, client }: DriversPageProps) {
     }));
   }
 
+  function getFleetOptions(companyId: string) {
+    return fleets.filter((fleet) => fleet.company_id === companyId);
+  }
+
+  function handleCompanyChange(companyId: string) {
+    const nextFleetId = getFleetOptions(companyId)[0]?.fleet_id ?? '';
+    setForm((current) => ({
+      ...current,
+      company_id: companyId,
+      fleet_id: getFleetOptions(companyId).some((fleet) => fleet.fleet_id === current.fleet_id)
+        ? current.fleet_id
+        : nextFleetId,
+    }));
+  }
+
   function handleEdit(driver: DriverProfile) {
     setEditingDriverId(driver.driver_id);
     setForm({
@@ -138,25 +155,34 @@ export function DriversPage({ account, client }: DriversPageProps) {
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
         <form className="form-grid" onSubmit={handleSubmit}>
           <label className="field">
-            <span>계정 ID</span>
-            <input
-              onChange={(event) => handleFieldChange('account_id', event.target.value)}
-              value={form.account_id ?? ''}
-            />
+            <span>계정</span>
+            <input readOnly value={account.email} />
           </label>
           <label className="field">
-            <span>회사 ID</span>
-            <input
-              onChange={(event) => handleFieldChange('company_id', event.target.value)}
+            <span>회사</span>
+            <select
+              onChange={(event) => handleCompanyChange(event.target.value)}
               value={form.company_id}
-            />
+            >
+              {companies.map((company) => (
+                <option key={company.company_id} value={company.company_id}>
+                  {company.name}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="field">
-            <span>플릿 ID</span>
-            <input
+            <span>플릿</span>
+            <select
               onChange={(event) => handleFieldChange('fleet_id', event.target.value)}
               value={form.fleet_id}
-            />
+            >
+              {getFleetOptions(form.company_id).map((fleet) => (
+                <option key={fleet.fleet_id} value={fleet.fleet_id}>
+                  {fleet.name}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="field">
             <span>이름</span>

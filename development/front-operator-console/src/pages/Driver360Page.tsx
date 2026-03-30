@@ -44,7 +44,7 @@ export function Driver360Page({ client }: Driver360PageProps) {
     }
 
     if (!driverId) {
-      setErrorMessage('배송원 ID가 필요합니다.');
+      setErrorMessage('배송원 선택이 필요합니다.');
       setIsLoading(false);
       return () => {
         ignore = true;

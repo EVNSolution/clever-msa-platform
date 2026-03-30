@@ -10,6 +10,7 @@ const apiMocks = vi.hoisted(() => ({
   listVehicleOperatorAccesses: vi.fn(),
   createVehicleOperatorAccess: vi.fn(),
   updateVehicleOperatorAccess: vi.fn(),
+  listCompanies: vi.fn(),
 }));
 
 vi.mock('../api/vehicles', () => ({
@@ -19,6 +20,10 @@ vi.mock('../api/vehicles', () => ({
   listVehicleOperatorAccesses: apiMocks.listVehicleOperatorAccesses,
   createVehicleOperatorAccess: apiMocks.createVehicleOperatorAccess,
   updateVehicleOperatorAccess: apiMocks.updateVehicleOperatorAccess,
+}));
+
+vi.mock('../api/organization', () => ({
+  listCompanies: apiMocks.listCompanies,
 }));
 
 function makeVehicleMaster(overrides: Partial<Record<string, string | null>> = {}) {
@@ -55,6 +60,10 @@ describe('Admin VehiclesPage', () => {
     apiMocks.listVehicleMasters.mockResolvedValue([]);
     apiMocks.listVehicleOperatorAccesses.mockResolvedValue([]);
     apiMocks.createVehicleMaster.mockResolvedValue(makeVehicleMaster());
+    apiMocks.listCompanies.mockResolvedValue([
+      { company_id: '30000000-0000-0000-0000-000000000001', name: 'Seed Company' },
+      { company_id: '30000000-0000-0000-0000-000000000002', name: '운영사 회사' },
+    ]);
 
     render(<VehiclesPage client={{ request: vi.fn() }} />);
 
@@ -62,9 +71,9 @@ describe('Admin VehiclesPage', () => {
 
     expect(screen.queryByLabelText(/^company id$/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/fleet id/i)).not.toBeInTheDocument();
-    expect(screen.getByLabelText(/제조사 회사 id/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/제조사 회사/i)).toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText(/제조사 회사 id/i), {
+    fireEvent.change(screen.getByLabelText(/제조사 회사/i), {
       target: { value: '30000000-0000-0000-0000-000000000001' },
     });
     fireEvent.change(screen.getByLabelText(/번호판/i), {
@@ -97,6 +106,9 @@ describe('Admin VehiclesPage', () => {
   it('loads vehicle master data into the edit form and updates it', async () => {
     apiMocks.listVehicleMasters.mockResolvedValue([makeVehicleMaster()]);
     apiMocks.listVehicleOperatorAccesses.mockResolvedValue([]);
+    apiMocks.listCompanies.mockResolvedValue([
+      { company_id: '30000000-0000-0000-0000-000000000001', name: 'Seed Company' },
+    ]);
     apiMocks.updateVehicleMaster.mockResolvedValue(
       makeVehicleMaster({
         model_name: 'Model Y',
@@ -106,10 +118,10 @@ describe('Admin VehiclesPage', () => {
 
     render(<VehiclesPage client={{ request: vi.fn() }} />);
 
-    await screen.findByText('12가3456');
+    await screen.findAllByText('12가3456');
     fireEvent.click(screen.getByRole('button', { name: /마스터 수정/i }));
 
-    expect(screen.getByDisplayValue('30000000-0000-0000-0000-000000000001')).toBeInTheDocument();
+    expect(screen.getAllByRole('option', { name: 'Seed Company' })).not.toHaveLength(0);
     expect(screen.getByDisplayValue('Model X')).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText(/모델명/i), {
@@ -138,6 +150,10 @@ describe('Admin VehiclesPage', () => {
 
   it('creates and ends operator access records', async () => {
     apiMocks.listVehicleMasters.mockResolvedValue([makeVehicleMaster()]);
+    apiMocks.listCompanies.mockResolvedValue([
+      { company_id: '30000000-0000-0000-0000-000000000001', name: 'Seed Company' },
+      { company_id: '30000000-0000-0000-0000-000000000002', name: '운영사 회사' },
+    ]);
     apiMocks.listVehicleOperatorAccesses
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce([makeOperatorAccess()])
@@ -149,12 +165,12 @@ describe('Admin VehiclesPage', () => {
 
     render(<VehiclesPage client={{ request: vi.fn() }} />);
 
-    await screen.findByText('12가3456');
+    await screen.findAllByText('12가3456');
 
-    fireEvent.change(screen.getByLabelText(/접근 차량 id/i), {
+    fireEvent.change(screen.getByLabelText(/접근 차량/i), {
       target: { value: '50000000-0000-0000-0000-000000000001' },
     });
-    fireEvent.change(screen.getByLabelText(/운영사 회사 id/i), {
+    fireEvent.change(screen.getByLabelText(/운영사 회사/i), {
       target: { value: '30000000-0000-0000-0000-000000000002' },
     });
     fireEvent.click(screen.getByRole('button', { name: /운영사 접근 생성/i }));

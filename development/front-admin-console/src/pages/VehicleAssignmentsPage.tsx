@@ -1,9 +1,12 @@
 import { useEffect, useState, type FormEvent } from 'react';
 
 import { createAssignment, listAssignments, updateAssignment } from '../api/assignments';
+import { listDrivers } from '../api/drivers';
 import { getErrorMessage, type HttpClient } from '../api/http';
-import type { DriverVehicleAssignment } from '../types';
-import { formatAssignmentStatusLabel, formatProtectedIdentifier } from '../uiLabels';
+import { listCompanies } from '../api/organization';
+import type { Company, DriverProfile, DriverVehicleAssignment, VehicleMaster } from '../types';
+import { listVehicleMasters } from '../api/vehicles';
+import { formatAssignmentStatusLabel } from '../uiLabels';
 
 type VehicleAssignmentsPageProps = {
   client: HttpClient;
@@ -15,11 +18,15 @@ type AssignmentFormState = {
   operator_company_id: string;
 };
 
-function createEmptyAssignmentForm(): AssignmentFormState {
+function createEmptyAssignmentForm(
+  driverId = '',
+  vehicleId = '',
+  companyId = '',
+): AssignmentFormState {
   return {
-    driver_id: '',
-    vehicle_id: '',
-    operator_company_id: '',
+    driver_id: driverId,
+    vehicle_id: vehicleId,
+    operator_company_id: companyId,
   };
 }
 
@@ -29,6 +36,9 @@ function createTimestamp() {
 
 export function VehicleAssignmentsPage({ client }: VehicleAssignmentsPageProps) {
   const [assignments, setAssignments] = useState<DriverVehicleAssignment[]>([]);
+  const [drivers, setDrivers] = useState<DriverProfile[]>([]);
+  const [vehicleMasters, setVehicleMasters] = useState<VehicleMaster[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [form, setForm] = useState<AssignmentFormState>(createEmptyAssignmentForm());
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,9 +55,22 @@ export function VehicleAssignmentsPage({ client }: VehicleAssignmentsPageProps) 
       setIsLoading(true);
       setErrorMessage(null);
       try {
-        const response = await listAssignments(client);
+        const [response, driverResponse, vehicleResponse, companyResponse] = await Promise.all([
+          listAssignments(client),
+          listDrivers(client),
+          listVehicleMasters(client),
+          listCompanies(client),
+        ]);
         if (!ignore) {
           setAssignments(response);
+          setDrivers(driverResponse);
+          setVehicleMasters(vehicleResponse);
+          setCompanies(companyResponse);
+          setForm((current) => ({
+            driver_id: current.driver_id || driverResponse[0]?.driver_id || '',
+            vehicle_id: current.vehicle_id || vehicleResponse[0]?.vehicle_id || '',
+            operator_company_id: current.operator_company_id || companyResponse[0]?.company_id || '',
+          }));
         }
       } catch (error) {
         if (!ignore) {
@@ -67,6 +90,28 @@ export function VehicleAssignmentsPage({ client }: VehicleAssignmentsPageProps) 
     };
   }, [client]);
 
+  function getDriverName(driverId: string) {
+    return drivers.find((driver) => driver.driver_id === driverId)?.name ?? '미확인 배송원';
+  }
+
+  function getVehicleLabel(vehicleId: string) {
+    return vehicleMasters.find((vehicle) => vehicle.vehicle_id === vehicleId)?.plate_number ?? '미확인 차량';
+  }
+
+  function getCompanyName(companyId: string) {
+    return companies.find((company) => company.company_id === companyId)?.name ?? '미확인 회사';
+  }
+
+  function resetForm() {
+    setForm(
+      createEmptyAssignmentForm(
+        drivers[0]?.driver_id ?? '',
+        vehicleMasters[0]?.vehicle_id ?? '',
+        companies[0]?.company_id ?? '',
+      ),
+    );
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setErrorMessage(null);
@@ -80,7 +125,7 @@ export function VehicleAssignmentsPage({ client }: VehicleAssignmentsPageProps) 
         unassigned_at: null,
       });
       await refreshAssignments();
-      setForm(createEmptyAssignmentForm());
+      resetForm();
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
     }
@@ -108,27 +153,34 @@ export function VehicleAssignmentsPage({ client }: VehicleAssignmentsPageProps) 
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
         <form className="form-grid" onSubmit={handleSubmit}>
           <label className="field">
-            <span>배송원 ID</span>
-            <input
-              onChange={(event) => setForm((current) => ({ ...current, driver_id: event.target.value }))}
-              value={form.driver_id}
-            />
+            <span>배송원</span>
+            <select onChange={(event) => setForm((current) => ({ ...current, driver_id: event.target.value }))} value={form.driver_id}>
+              {drivers.map((driver) => (
+                <option key={driver.driver_id} value={driver.driver_id}>
+                  {driver.name}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="field">
-            <span>차량 ID</span>
-            <input
-              onChange={(event) => setForm((current) => ({ ...current, vehicle_id: event.target.value }))}
-              value={form.vehicle_id}
-            />
+            <span>차량</span>
+            <select onChange={(event) => setForm((current) => ({ ...current, vehicle_id: event.target.value }))} value={form.vehicle_id}>
+              {vehicleMasters.map((vehicle) => (
+                <option key={vehicle.vehicle_id} value={vehicle.vehicle_id}>
+                  {vehicle.plate_number}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="field">
-            <span>운영사 회사 ID</span>
-            <input
-              onChange={(event) =>
-                setForm((current) => ({ ...current, operator_company_id: event.target.value }))
-              }
-              value={form.operator_company_id}
-            />
+            <span>운영사 회사</span>
+            <select onChange={(event) => setForm((current) => ({ ...current, operator_company_id: event.target.value }))} value={form.operator_company_id}>
+              {companies.map((company) => (
+                <option key={company.company_id} value={company.company_id}>
+                  {company.name}
+                </option>
+              ))}
+            </select>
           </label>
           <div className="form-actions">
             <button className="button primary" type="submit">
@@ -159,9 +211,9 @@ export function VehicleAssignmentsPage({ client }: VehicleAssignmentsPageProps) 
             <tbody>
               {assignments.map((assignment) => (
                 <tr key={assignment.driver_vehicle_assignment_id}>
-                  <td><code>{formatProtectedIdentifier(assignment.driver_id)}</code></td>
-                  <td><code>{formatProtectedIdentifier(assignment.vehicle_id)}</code></td>
-                  <td><code>{formatProtectedIdentifier(assignment.operator_company_id)}</code></td>
+                  <td>{getDriverName(assignment.driver_id)}</td>
+                  <td>{getVehicleLabel(assignment.vehicle_id)}</td>
+                  <td>{getCompanyName(assignment.operator_company_id)}</td>
                   <td>{formatAssignmentStatusLabel(assignment.assignment_status)}</td>
                   <td>
                     {assignment.assignment_status === 'assigned' ? (

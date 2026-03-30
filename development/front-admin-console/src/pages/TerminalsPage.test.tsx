@@ -10,6 +10,8 @@ const apiMocks = vi.hoisted(() => ({
   listTerminalInstallations: vi.fn(),
   createTerminalInstallation: vi.fn(),
   updateTerminalInstallation: vi.fn(),
+  listCompanies: vi.fn(),
+  listVehicleMasters: vi.fn(),
 }));
 
 vi.mock('../api/terminals', () => ({
@@ -19,6 +21,14 @@ vi.mock('../api/terminals', () => ({
   listTerminalInstallations: apiMocks.listTerminalInstallations,
   createTerminalInstallation: apiMocks.createTerminalInstallation,
   updateTerminalInstallation: apiMocks.updateTerminalInstallation,
+}));
+
+vi.mock('../api/organization', () => ({
+  listCompanies: apiMocks.listCompanies,
+}));
+
+vi.mock('../api/vehicles', () => ({
+  listVehicleMasters: apiMocks.listVehicleMasters,
 }));
 
 function makeTerminal(overrides: Partial<Record<string, string | null>> = {}) {
@@ -56,6 +66,22 @@ describe('Admin TerminalsPage', () => {
     apiMocks.listTerminals.mockResolvedValue([]);
     apiMocks.listTerminalInstallations.mockResolvedValue([]);
     apiMocks.createTerminal.mockResolvedValue(makeTerminal());
+    apiMocks.listCompanies.mockResolvedValue([
+      { company_id: '30000000-0000-0000-0000-000000000001', name: 'Seed Company' },
+    ]);
+    apiMocks.listVehicleMasters.mockResolvedValue([
+      {
+        vehicle_id: '50000000-0000-0000-0000-000000000001',
+        manufacturer_company_id: '30000000-0000-0000-0000-000000000001',
+        plate_number: '12가3456',
+        vin: 'VIN-000000000000001',
+        manufacturer_vehicle_code: 'MFG-001',
+        model_name: 'Model X',
+        vehicle_status: 'active',
+        created_at: '2026-03-20T00:00:00Z',
+        updated_at: '2026-03-20T00:00:00Z',
+      },
+    ]);
 
     render(<TerminalsPage client={{ request: vi.fn() }} />);
 
@@ -64,7 +90,7 @@ describe('Admin TerminalsPage', () => {
     expect(screen.queryByLabelText(/latitude/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/diagnostic/i)).not.toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText(/제조사 회사 id/i), {
+    fireEvent.change(screen.getByLabelText(/제조사 회사/i), {
       target: { value: '30000000-0000-0000-0000-000000000001' },
     });
     fireEvent.change(screen.getByLabelText(/^imei$/i), {
@@ -101,11 +127,27 @@ describe('Admin TerminalsPage', () => {
   it('loads terminal data into the edit form and updates terminal status', async () => {
     apiMocks.listTerminals.mockResolvedValue([makeTerminal()]);
     apiMocks.listTerminalInstallations.mockResolvedValue([]);
+    apiMocks.listCompanies.mockResolvedValue([
+      { company_id: '30000000-0000-0000-0000-000000000001', name: 'Seed Company' },
+    ]);
+    apiMocks.listVehicleMasters.mockResolvedValue([
+      {
+        vehicle_id: '50000000-0000-0000-0000-000000000001',
+        manufacturer_company_id: '30000000-0000-0000-0000-000000000001',
+        plate_number: '12가3456',
+        vin: 'VIN-000000000000001',
+        manufacturer_vehicle_code: 'MFG-001',
+        model_name: 'Model X',
+        vehicle_status: 'active',
+        created_at: '2026-03-20T00:00:00Z',
+        updated_at: '2026-03-20T00:00:00Z',
+      },
+    ]);
     apiMocks.updateTerminal.mockResolvedValue(makeTerminal({ terminal_status: 'inactive' }));
 
     render(<TerminalsPage client={{ request: vi.fn() }} />);
 
-    await screen.findAllByText('비공개');
+    await screen.findAllByText('단말기 1');
     fireEvent.click(screen.getByRole('button', { name: /단말기 수정/i }));
 
     expect(screen.getByLabelText(/^imei$/i)).toHaveValue('356123456789012');
@@ -151,15 +193,31 @@ describe('Admin TerminalsPage', () => {
         removed_at: '2026-03-21T00:00:00Z',
       }),
     );
+    apiMocks.listCompanies.mockResolvedValue([
+      { company_id: '30000000-0000-0000-0000-000000000001', name: 'Seed Company' },
+    ]);
+    apiMocks.listVehicleMasters.mockResolvedValue([
+      {
+        vehicle_id: '50000000-0000-0000-0000-000000000001',
+        manufacturer_company_id: '30000000-0000-0000-0000-000000000001',
+        plate_number: '12가3456',
+        vin: 'VIN-000000000000001',
+        manufacturer_vehicle_code: 'MFG-001',
+        model_name: 'Model X',
+        vehicle_status: 'active',
+        created_at: '2026-03-20T00:00:00Z',
+        updated_at: '2026-03-20T00:00:00Z',
+      },
+    ]);
 
     render(<TerminalsPage client={{ request: vi.fn() }} />);
 
-    await screen.findAllByText('비공개');
+    await screen.findAllByText('단말기 1');
 
-    fireEvent.change(screen.getByLabelText(/설치 단말기 id/i), {
+    fireEvent.change(screen.getByLabelText(/설치 단말기/i), {
       target: { value: '70000000-0000-0000-0000-000000000001' },
     });
-    fireEvent.change(screen.getByLabelText(/설치 차량 id/i), {
+    fireEvent.change(screen.getByLabelText(/설치 차량/i), {
       target: { value: '50000000-0000-0000-0000-000000000001' },
     });
     fireEvent.click(screen.getByRole('button', { name: /설치 생성/i }));

@@ -11,11 +11,11 @@ import {
   type VehicleOperatorAccessPayload,
 } from '../api/vehicles';
 import { getErrorMessage, type HttpClient } from '../api/http';
-import type { VehicleMaster, VehicleOperatorAccess } from '../types';
+import { listCompanies } from '../api/organization';
+import type { Company, VehicleMaster, VehicleOperatorAccess } from '../types';
 import {
   formatAccessStatusLabel,
   formatLifecycleStatusLabel,
-  formatProtectedIdentifier,
 } from '../uiLabels';
 
 type VehiclesPageProps = {
@@ -36,9 +36,9 @@ type OperatorAccessFormState = {
   operator_company_id: string;
 };
 
-function createEmptyVehicleMasterForm(): VehicleMasterFormState {
+function createEmptyVehicleMasterForm(companyId = ''): VehicleMasterFormState {
   return {
-    manufacturer_company_id: '',
+    manufacturer_company_id: companyId,
     plate_number: '',
     vin: '',
     manufacturer_vehicle_code: '',
@@ -47,10 +47,10 @@ function createEmptyVehicleMasterForm(): VehicleMasterFormState {
   };
 }
 
-function createEmptyOperatorAccessForm(): OperatorAccessFormState {
+function createEmptyOperatorAccessForm(vehicleId = '', companyId = ''): OperatorAccessFormState {
   return {
-    vehicle_id: '',
-    operator_company_id: '',
+    vehicle_id: vehicleId,
+    operator_company_id: companyId,
   };
 }
 
@@ -82,6 +82,7 @@ function toOperatorAccessPayload(form: OperatorAccessFormState): VehicleOperator
 export function VehiclesPage({ client }: VehiclesPageProps) {
   const [vehicleMasters, setVehicleMasters] = useState<VehicleMaster[]>([]);
   const [vehicleOperatorAccesses, setVehicleOperatorAccesses] = useState<VehicleOperatorAccess[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [masterForm, setMasterForm] = useState<VehicleMasterFormState>(createEmptyVehicleMasterForm());
   const [accessForm, setAccessForm] = useState<OperatorAccessFormState>(createEmptyOperatorAccessForm());
   const [editingVehicleId, setEditingVehicleId] = useState<string | null>(null);
@@ -89,12 +90,14 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   async function refreshData() {
-    const [masters, accesses] = await Promise.all([
+    const [masters, accesses, companyResponse] = await Promise.all([
       listVehicleMasters(client),
       listVehicleOperatorAccesses(client),
+      listCompanies(client),
     ]);
     setVehicleMasters(masters);
     setVehicleOperatorAccesses(accesses);
+    setCompanies(companyResponse);
   }
 
   useEffect(() => {
@@ -104,13 +107,23 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
       setIsLoading(true);
       setErrorMessage(null);
       try {
-        const [masters, accesses] = await Promise.all([
+        const [masters, accesses, companyResponse] = await Promise.all([
           listVehicleMasters(client),
           listVehicleOperatorAccesses(client),
+          listCompanies(client),
         ]);
         if (!ignore) {
           setVehicleMasters(masters);
           setVehicleOperatorAccesses(accesses);
+          setCompanies(companyResponse);
+          setMasterForm((current) => ({
+            ...current,
+            manufacturer_company_id: current.manufacturer_company_id || companyResponse[0]?.company_id || '',
+          }));
+          setAccessForm((current) => ({
+            vehicle_id: current.vehicle_id || masters[0]?.vehicle_id || '',
+            operator_company_id: current.operator_company_id || companyResponse[0]?.company_id || '',
+          }));
         }
       } catch (error) {
         if (!ignore) {
@@ -133,11 +146,19 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
 
   function resetVehicleMasterForm() {
     setEditingVehicleId(null);
-    setMasterForm(createEmptyVehicleMasterForm());
+    setMasterForm(createEmptyVehicleMasterForm(companies[0]?.company_id ?? ''));
   }
 
   function resetOperatorAccessForm() {
-    setAccessForm(createEmptyOperatorAccessForm());
+    setAccessForm(createEmptyOperatorAccessForm(vehicleMasters[0]?.vehicle_id ?? '', companies[0]?.company_id ?? ''));
+  }
+
+  function getCompanyName(companyId: string) {
+    return companies.find((company) => company.company_id === companyId)?.name ?? '미확인 회사';
+  }
+
+  function getVehicleLabel(vehicleId: string) {
+    return vehicleMasters.find((vehicle) => vehicle.vehicle_id === vehicleId)?.plate_number ?? '미확인 차량';
   }
 
   function handleEditVehicleMaster(vehicleMaster: VehicleMaster) {
@@ -205,13 +226,14 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
         <form className="form-grid" onSubmit={handleVehicleMasterSubmit}>
           <label className="field">
-            <span>제조사 회사 ID</span>
-            <input
-              onChange={(event) =>
-                setMasterForm((current) => ({ ...current, manufacturer_company_id: event.target.value }))
-              }
-              value={masterForm.manufacturer_company_id}
-            />
+            <span>제조사 회사</span>
+            <select onChange={(event) => setMasterForm((current) => ({ ...current, manufacturer_company_id: event.target.value }))} value={masterForm.manufacturer_company_id}>
+              {companies.map((company) => (
+                <option key={company.company_id} value={company.company_id}>
+                  {company.name}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="field">
             <span>번호판</span>
@@ -276,8 +298,8 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
           <table className="table compact">
             <thead>
               <tr>
-                <th>차량</th>
                 <th>번호판</th>
+                <th>모델명</th>
                 <th>제조사</th>
                 <th>상태</th>
                 <th />
@@ -286,9 +308,9 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
             <tbody>
               {vehicleMasters.map((vehicleMaster) => (
                 <tr key={vehicleMaster.vehicle_id}>
-                  <td><code>{formatProtectedIdentifier(vehicleMaster.vehicle_id)}</code></td>
                   <td>{vehicleMaster.plate_number}</td>
-                  <td><code>{formatProtectedIdentifier(vehicleMaster.manufacturer_company_id)}</code></td>
+                  <td>{vehicleMaster.model_name}</td>
+                  <td>{getCompanyName(vehicleMaster.manufacturer_company_id)}</td>
                   <td>{formatLifecycleStatusLabel(vehicleMaster.vehicle_status)}</td>
                   <td>
                     <button
@@ -315,20 +337,24 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
         </div>
         <form className="form-grid" onSubmit={handleOperatorAccessSubmit}>
           <label className="field">
-            <span>접근 차량 ID</span>
-            <input
-              onChange={(event) => setAccessForm((current) => ({ ...current, vehicle_id: event.target.value }))}
-              value={accessForm.vehicle_id}
-            />
+            <span>접근 차량</span>
+            <select onChange={(event) => setAccessForm((current) => ({ ...current, vehicle_id: event.target.value }))} value={accessForm.vehicle_id}>
+              {vehicleMasters.map((vehicle) => (
+                <option key={vehicle.vehicle_id} value={vehicle.vehicle_id}>
+                  {vehicle.plate_number}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="field">
-            <span>운영사 회사 ID</span>
-            <input
-              onChange={(event) =>
-                setAccessForm((current) => ({ ...current, operator_company_id: event.target.value }))
-              }
-              value={accessForm.operator_company_id}
-            />
+            <span>운영사 회사</span>
+            <select onChange={(event) => setAccessForm((current) => ({ ...current, operator_company_id: event.target.value }))} value={accessForm.operator_company_id}>
+              {companies.map((company) => (
+                <option key={company.company_id} value={company.company_id}>
+                  {company.name}
+                </option>
+              ))}
+            </select>
           </label>
           <div className="form-actions">
             <button className="button primary" type="submit">
@@ -363,8 +389,8 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
             <tbody>
               {vehicleOperatorAccesses.map((vehicleOperatorAccess) => (
                 <tr key={vehicleOperatorAccess.vehicle_operator_access_id}>
-                  <td><code>{formatProtectedIdentifier(vehicleOperatorAccess.vehicle_id)}</code></td>
-                  <td><code>{formatProtectedIdentifier(vehicleOperatorAccess.operator_company_id)}</code></td>
+                  <td>{getVehicleLabel(vehicleOperatorAccess.vehicle_id)}</td>
+                  <td>{getCompanyName(vehicleOperatorAccess.operator_company_id)}</td>
                   <td>{formatAccessStatusLabel(vehicleOperatorAccess.access_status)}</td>
                   <td>{vehicleOperatorAccess.started_at}</td>
                   <td>{vehicleOperatorAccess.ended_at ?? '-'}</td>
