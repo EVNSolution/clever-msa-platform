@@ -13,6 +13,7 @@ import { SettlementsPage } from './pages/SettlementsPage';
 import { TerminalsPage } from './pages/TerminalsPage';
 import { VehicleAssignmentsPage } from './pages/VehicleAssignmentsPage';
 import { VehiclesPage } from './pages/VehiclesPage';
+import { clearStoredSession, loadStoredSession, persistSession } from './sessionPersistence';
 
 const ROUTER_FUTURE = {
   v7_relativeSplatPath: true,
@@ -20,14 +21,20 @@ const ROUTER_FUTURE = {
 } as const;
 
 export default function App() {
-  const [session, setSession] = useState<SessionPayload | null>(null);
+  const [session, setSession] = useState<SessionPayload | null>(() => loadStoredSession());
   const [authError, setAuthError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const sessionRef = useRef<SessionPayload | null>(null);
+  const sessionRef = useRef<SessionPayload | null>(session);
   const clientRef = useRef<HttpClient | null>(null);
 
   useEffect(() => {
     sessionRef.current = session;
+    if (session) {
+      persistSession(session);
+      return;
+    }
+
+    clearStoredSession();
   }, [session]);
 
   if (clientRef.current === null) {
