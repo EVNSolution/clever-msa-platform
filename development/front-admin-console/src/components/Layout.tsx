@@ -40,7 +40,7 @@ export function Layout({ account, onLogout }: LayoutProps) {
           </NavLink>
         </nav>
         <div className="account-card admin-account-card">
-          <div>
+          <div className="account-meta">
             <p className="account-email">{account.email}</p>
             <p className="account-role">{formatRoleLabel(account.role)}</p>
           </div>
