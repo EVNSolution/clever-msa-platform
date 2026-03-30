@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 
 import { listDrivers } from '../api/drivers';
+import { FormModal } from '../components/FormModal';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { listCompanies, listFleets } from '../api/organization';
 import {
@@ -34,6 +35,7 @@ export function SettlementResultsPage({ client }: SettlementResultsPageProps) {
   const [fleets, setFleets] = useState<Fleet[]>([]);
   const [itemForm, setItemForm] = useState<SettlementItemPayload>(DEFAULT_ITEM_FORM);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -131,6 +133,7 @@ export function SettlementResultsPage({ client }: SettlementResultsPageProps) {
         await createSettlementItem(client, itemForm);
       }
       await loadAll();
+      setIsItemModalOpen(false);
       resetItemForm();
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
@@ -143,6 +146,7 @@ export function SettlementResultsPage({ client }: SettlementResultsPageProps) {
       await deleteSettlementItem(client, itemId);
       await loadAll();
       if (editingItemId === itemId) {
+        setIsItemModalOpen(false);
         resetItemForm();
       }
     } catch (error) {
@@ -158,6 +162,17 @@ export function SettlementResultsPage({ client }: SettlementResultsPageProps) {
       amount: item.amount,
       payout_status: item.payout_status,
     });
+    setIsItemModalOpen(true);
+  }
+
+  function openCreateItemModal() {
+    resetItemForm();
+    setIsItemModalOpen(true);
+  }
+
+  function closeItemModal() {
+    setIsItemModalOpen(false);
+    resetItemForm();
   }
 
   function handleItemRowKeyDown(event: React.KeyboardEvent<HTMLTableRowElement>, item: SettlementItem) {
@@ -172,11 +187,69 @@ export function SettlementResultsPage({ client }: SettlementResultsPageProps) {
     <div className="stack large-gap">
       {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
 
-      <section className="panel form-panel">
-        <div className="panel-header">
-          <p className="panel-kicker">정산 결과</p>
-          <h2>{editingItemId ? '정산 항목 수정' : '정산 항목 생성'}</h2>
+      <section className="panel">
+        <div className="panel-header panel-header-inline">
+          <div className="stack">
+            <p className="panel-kicker">현재 항목</p>
+            <h2>정산 결과 목록</h2>
+          </div>
+          <button className="button primary" onClick={openCreateItemModal} type="button">
+            정산 항목 생성
+          </button>
         </div>
+        {isLoading ? (
+          <p className="empty-state">정산 항목을 불러오는 중입니다...</p>
+        ) : items.length ? (
+          <table className="table compact">
+            <thead>
+              <tr>
+                <th>정산 실행</th>
+                <th>대상</th>
+                <th>금액</th>
+                <th>지급 상태</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr
+                  key={item.settlement_item_id}
+                  className={`interactive-row${editingItemId === item.settlement_item_id ? ' is-selected' : ''}`}
+                  onClick={() => selectItem(item)}
+                  onKeyDown={(event) => handleItemRowKeyDown(event, item)}
+                  tabIndex={0}
+                >
+                  <td>{getRunLabel(item.settlement_run_id)}</td>
+                  <td>{getDriverName(drivers, item.driver_id)}</td>
+                  <td>{item.amount}</td>
+                  <td>{formatPayoutStatusLabel(item.payout_status)}</td>
+                  <td>
+                    <button
+                      className="button ghost small"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        void handleDelete(item.settlement_item_id);
+                      }}
+                      type="button"
+                    >
+                      삭제
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="empty-state">정산 항목이 없습니다.</p>
+        )}
+      </section>
+
+      <FormModal
+        isOpen={isItemModalOpen}
+        kicker="정산 결과"
+        onClose={closeItemModal}
+        title={editingItemId ? '정산 항목 수정' : '정산 항목 생성'}
+      >
         <form className="form-stack" onSubmit={handleItemSubmit}>
           <label className="field">
             <span>정산 실행</span>
@@ -225,64 +298,12 @@ export function SettlementResultsPage({ client }: SettlementResultsPageProps) {
             <button className="button primary" type="submit">
               {editingItemId ? '정산 항목 수정' : '정산 항목 생성'}
             </button>
-            <button className="button ghost" onClick={resetItemForm} type="button">
-              초기화
+            <button className="button ghost" onClick={closeItemModal} type="button">
+              취소
             </button>
           </div>
         </form>
-      </section>
-
-      <section className="panel">
-        <div className="panel-header">
-          <p className="panel-kicker">현재 항목</p>
-          <h2>정산 결과 목록</h2>
-        </div>
-        {isLoading ? (
-          <p className="empty-state">정산 항목을 불러오는 중입니다...</p>
-        ) : items.length ? (
-          <table className="table compact">
-            <thead>
-              <tr>
-                <th>정산 실행</th>
-                <th>대상</th>
-                <th>금액</th>
-                <th>지급 상태</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item) => (
-                <tr
-                  key={item.settlement_item_id}
-                  className={`interactive-row${editingItemId === item.settlement_item_id ? ' is-selected' : ''}`}
-                  onClick={() => selectItem(item)}
-                  onKeyDown={(event) => handleItemRowKeyDown(event, item)}
-                  tabIndex={0}
-                >
-                  <td>{getRunLabel(item.settlement_run_id)}</td>
-                  <td>{getDriverName(drivers, item.driver_id)}</td>
-                  <td>{item.amount}</td>
-                  <td>{formatPayoutStatusLabel(item.payout_status)}</td>
-                  <td>
-                    <button
-                      className="button ghost small"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        void handleDelete(item.settlement_item_id);
-                      }}
-                      type="button"
-                    >
-                      삭제
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="empty-state">정산 항목이 없습니다.</p>
-        )}
-      </section>
+      </FormModal>
     </div>
   );
 }

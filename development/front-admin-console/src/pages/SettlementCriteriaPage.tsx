@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { listCompanies, listFleets } from '../api/organization';
+import { FormModal } from '../components/FormModal';
 import {
   createSettlementPolicy,
   createSettlementPolicyAssignment,
@@ -78,6 +79,9 @@ export function SettlementCriteriaPage({ client }: SettlementCriteriaPageProps) 
   const [editingPolicyId, setEditingPolicyId] = useState<string | null>(null);
   const [editingVersionId, setEditingVersionId] = useState<string | null>(null);
   const [editingAssignmentId, setEditingAssignmentId] = useState<string | null>(null);
+  const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false);
+  const [isVersionModalOpen, setIsVersionModalOpen] = useState(false);
+  const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -223,6 +227,7 @@ export function SettlementCriteriaPage({ client }: SettlementCriteriaPageProps) 
         await createSettlementPolicy(client, policyForm);
       }
       await loadAll();
+      setIsPolicyModalOpen(false);
       resetPolicyForm();
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
@@ -247,6 +252,7 @@ export function SettlementCriteriaPage({ client }: SettlementCriteriaPageProps) 
         await createSettlementPolicyVersion(client, payload);
       }
       await loadAll();
+      setIsVersionModalOpen(false);
       resetVersionForm();
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
@@ -272,6 +278,7 @@ export function SettlementCriteriaPage({ client }: SettlementCriteriaPageProps) 
         await createSettlementPolicyAssignment(client, payload);
       }
       await loadAll();
+      setIsAssignmentModalOpen(false);
       resetAssignmentForm();
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
@@ -284,6 +291,7 @@ export function SettlementCriteriaPage({ client }: SettlementCriteriaPageProps) 
       await deleteSettlementPolicy(client, policyId);
       await loadAll();
       if (editingPolicyId === policyId) {
+        setIsPolicyModalOpen(false);
         resetPolicyForm();
       }
     } catch (error) {
@@ -297,6 +305,7 @@ export function SettlementCriteriaPage({ client }: SettlementCriteriaPageProps) 
       await deleteSettlementPolicyVersion(client, policyVersionId);
       await loadAll();
       if (editingVersionId === policyVersionId) {
+        setIsVersionModalOpen(false);
         resetVersionForm();
       }
     } catch (error) {
@@ -310,6 +319,7 @@ export function SettlementCriteriaPage({ client }: SettlementCriteriaPageProps) 
       await deleteSettlementPolicyAssignment(client, assignmentId);
       await loadAll();
       if (editingAssignmentId === assignmentId) {
+        setIsAssignmentModalOpen(false);
         resetAssignmentForm();
       }
     } catch (error) {
@@ -325,6 +335,7 @@ export function SettlementCriteriaPage({ client }: SettlementCriteriaPageProps) 
       status: policy.status,
       description: policy.description,
     });
+    setIsPolicyModalOpen(true);
   }
 
   function selectVersion(version: SettlementPolicyVersion) {
@@ -336,6 +347,7 @@ export function SettlementCriteriaPage({ client }: SettlementCriteriaPageProps) 
       status: version.status,
       published_at: version.published_at ?? '',
     });
+    setIsVersionModalOpen(true);
   }
 
   function selectAssignment(assignment: SettlementPolicyAssignment) {
@@ -348,6 +360,37 @@ export function SettlementCriteriaPage({ client }: SettlementCriteriaPageProps) 
       effective_end_date: assignment.effective_end_date ?? '',
       status: assignment.status,
     });
+    setIsAssignmentModalOpen(true);
+  }
+
+  function openCreatePolicyModal() {
+    resetPolicyForm();
+    setIsPolicyModalOpen(true);
+  }
+
+  function closePolicyModal() {
+    setIsPolicyModalOpen(false);
+    resetPolicyForm();
+  }
+
+  function openCreateVersionModal() {
+    resetVersionForm();
+    setIsVersionModalOpen(true);
+  }
+
+  function closeVersionModal() {
+    setIsVersionModalOpen(false);
+    resetVersionForm();
+  }
+
+  function openCreateAssignmentModal() {
+    resetAssignmentForm();
+    setIsAssignmentModalOpen(true);
+  }
+
+  function closeAssignmentModal() {
+    setIsAssignmentModalOpen(false);
+    resetAssignmentForm();
   }
 
   function handlePolicyRowKeyDown(event: React.KeyboardEvent<HTMLTableRowElement>, policy: SettlementPolicy) {
@@ -424,58 +467,15 @@ export function SettlementCriteriaPage({ client }: SettlementCriteriaPageProps) 
         )}
       </section>
 
-      <section className="panel form-panel">
-        <div className="panel-header">
-          <p className="panel-kicker">Policy</p>
-          <h2>{editingPolicyId ? '정산 정책 수정' : '정산 정책 생성'}</h2>
-        </div>
-        <form className="form-stack" onSubmit={handlePolicySubmit}>
-          <label className="field">
-            <span>정책 코드</span>
-            <input
-              onChange={(event) => setPolicyForm((current) => ({ ...current, policy_code: event.target.value }))}
-              value={policyForm.policy_code}
-            />
-          </label>
-          <label className="field">
-            <span>정책 이름</span>
-            <input
-              onChange={(event) => setPolicyForm((current) => ({ ...current, name: event.target.value }))}
-              value={policyForm.name}
-            />
-          </label>
-          <label className="field">
-            <span>상태</span>
-            <select
-              onChange={(event) => setPolicyForm((current) => ({ ...current, status: event.target.value }))}
-              value={policyForm.status}
-            >
-              <option value="active">활성</option>
-              <option value="inactive">비활성</option>
-            </select>
-          </label>
-          <label className="field">
-            <span>설명</span>
-            <textarea
-              onChange={(event) => setPolicyForm((current) => ({ ...current, description: event.target.value }))}
-              value={policyForm.description}
-            />
-          </label>
-          <div className="form-actions">
-            <button className="button primary" type="submit">
-              {editingPolicyId ? '정책 수정' : '정책 생성'}
-            </button>
-            <button className="button ghost" onClick={resetPolicyForm} type="button">
-              초기화
-            </button>
-          </div>
-        </form>
-      </section>
-
       <section className="panel">
-        <div className="panel-header">
-          <p className="panel-kicker">Policy List</p>
-          <h2>정책 목록</h2>
+        <div className="panel-header panel-header-inline">
+          <div className="stack">
+            <p className="panel-kicker">Policy List</p>
+            <h2>정책 목록</h2>
+          </div>
+          <button className="button primary" onClick={openCreatePolicyModal} type="button">
+            정책 생성
+          </button>
         </div>
         {isLoading ? (
           <p className="empty-state">정책을 불러오는 중입니다...</p>
@@ -522,11 +522,179 @@ export function SettlementCriteriaPage({ client }: SettlementCriteriaPageProps) 
         )}
       </section>
 
-      <section className="panel form-panel">
-        <div className="panel-header">
-          <p className="panel-kicker">Policy Version</p>
-          <h2>{editingVersionId ? '정책 버전 수정' : '정책 버전 생성'}</h2>
+      <section className="panel">
+        <div className="panel-header panel-header-inline">
+          <div className="stack">
+            <p className="panel-kicker">Policy Version List</p>
+            <h2>정책 버전 목록</h2>
+          </div>
+          <button className="button primary" onClick={openCreateVersionModal} type="button">
+            버전 생성
+          </button>
         </div>
+        {isLoading ? (
+          <p className="empty-state">정책 버전을 불러오는 중입니다...</p>
+        ) : versions.length ? (
+          <table className="table compact">
+            <thead>
+              <tr>
+                <th>정책</th>
+                <th>버전</th>
+                <th>상태</th>
+                <th>게시 시각</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {versions.map((version) => (
+                <tr
+                  key={version.policy_version_id}
+                  className={`interactive-row${editingVersionId === version.policy_version_id ? ' is-selected' : ''}`}
+                  onClick={() => selectVersion(version)}
+                  onKeyDown={(event) => handleVersionRowKeyDown(event, version)}
+                  tabIndex={0}
+                >
+                  <td>{getPolicyName(version.policy_id)}</td>
+                  <td>v{version.version_number}</td>
+                  <td>{formatPolicyVersionStatusLabel(version.status)}</td>
+                  <td>{version.published_at ?? '-'}</td>
+                  <td>
+                    <button
+                      className="button ghost small"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        void handleVersionDelete(version.policy_version_id);
+                      }}
+                      type="button"
+                    >
+                      삭제
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="empty-state">정책 버전이 없습니다.</p>
+        )}
+      </section>
+
+      <section className="panel">
+        <div className="panel-header panel-header-inline">
+          <div className="stack">
+            <p className="panel-kicker">Assignment List</p>
+            <h2>정책 연결 목록</h2>
+          </div>
+          <button className="button primary" onClick={openCreateAssignmentModal} type="button">
+            연결 생성
+          </button>
+        </div>
+        {isLoading ? (
+          <p className="empty-state">정책 연결을 불러오는 중입니다...</p>
+        ) : assignments.length ? (
+          <table className="table compact">
+            <thead>
+              <tr>
+                <th>정책 버전</th>
+                <th>회사</th>
+                <th>플릿</th>
+                <th>기간</th>
+                <th>상태</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {assignments.map((assignment) => (
+                <tr
+                  key={assignment.assignment_id}
+                  className={`interactive-row${editingAssignmentId === assignment.assignment_id ? ' is-selected' : ''}`}
+                  onClick={() => selectAssignment(assignment)}
+                  onKeyDown={(event) => handleAssignmentRowKeyDown(event, assignment)}
+                  tabIndex={0}
+                >
+                  <td>{getVersionLabel(assignment.policy_version_id)}</td>
+                  <td>{getCompanyName(companies, assignment.company_id)}</td>
+                  <td>{getFleetName(fleets, assignment.fleet_id)}</td>
+                  <td>
+                    {assignment.effective_start_date} ~ {assignment.effective_end_date ?? '계속'}
+                  </td>
+                  <td>{formatPolicyStatusLabel(assignment.status)}</td>
+                  <td>
+                    <button
+                      className="button ghost small"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        void handleAssignmentDelete(assignment.assignment_id);
+                      }}
+                      type="button"
+                    >
+                      삭제
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="empty-state">정책 연결이 없습니다.</p>
+        )}
+      </section>
+
+      <FormModal
+        isOpen={isPolicyModalOpen}
+        kicker="Policy"
+        onClose={closePolicyModal}
+        title={editingPolicyId ? '정산 정책 수정' : '정산 정책 생성'}
+      >
+        <form className="form-stack" onSubmit={handlePolicySubmit}>
+          <label className="field">
+            <span>정책 코드</span>
+            <input
+              onChange={(event) => setPolicyForm((current) => ({ ...current, policy_code: event.target.value }))}
+              value={policyForm.policy_code}
+            />
+          </label>
+          <label className="field">
+            <span>정책 이름</span>
+            <input
+              onChange={(event) => setPolicyForm((current) => ({ ...current, name: event.target.value }))}
+              value={policyForm.name}
+            />
+          </label>
+          <label className="field">
+            <span>상태</span>
+            <select
+              onChange={(event) => setPolicyForm((current) => ({ ...current, status: event.target.value }))}
+              value={policyForm.status}
+            >
+              <option value="active">활성</option>
+              <option value="inactive">비활성</option>
+            </select>
+          </label>
+          <label className="field">
+            <span>설명</span>
+            <textarea
+              onChange={(event) => setPolicyForm((current) => ({ ...current, description: event.target.value }))}
+              value={policyForm.description}
+            />
+          </label>
+          <div className="form-actions">
+            <button className="button primary" type="submit">
+              {editingPolicyId ? '정책 수정' : '정책 생성'}
+            </button>
+            <button className="button ghost" onClick={closePolicyModal} type="button">
+              취소
+            </button>
+          </div>
+        </form>
+      </FormModal>
+
+      <FormModal
+        isOpen={isVersionModalOpen}
+        kicker="Policy Version"
+        onClose={closeVersionModal}
+        title={editingVersionId ? '정책 버전 수정' : '정책 버전 생성'}
+      >
         <form className="form-stack" onSubmit={handleVersionSubmit}>
           <label className="field">
             <span>정책</span>
@@ -583,70 +751,19 @@ export function SettlementCriteriaPage({ client }: SettlementCriteriaPageProps) 
             <button className="button primary" type="submit">
               {editingVersionId ? '버전 수정' : '버전 생성'}
             </button>
-            <button className="button ghost" onClick={resetVersionForm} type="button">
-              초기화
+            <button className="button ghost" onClick={closeVersionModal} type="button">
+              취소
             </button>
           </div>
         </form>
-      </section>
+      </FormModal>
 
-      <section className="panel">
-        <div className="panel-header">
-          <p className="panel-kicker">Policy Version List</p>
-          <h2>정책 버전 목록</h2>
-        </div>
-        {isLoading ? (
-          <p className="empty-state">정책 버전을 불러오는 중입니다...</p>
-        ) : versions.length ? (
-          <table className="table compact">
-            <thead>
-              <tr>
-                <th>정책</th>
-                <th>버전</th>
-                <th>상태</th>
-                <th>게시 시각</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {versions.map((version) => (
-                <tr
-                  key={version.policy_version_id}
-                  className={`interactive-row${editingVersionId === version.policy_version_id ? ' is-selected' : ''}`}
-                  onClick={() => selectVersion(version)}
-                  onKeyDown={(event) => handleVersionRowKeyDown(event, version)}
-                  tabIndex={0}
-                >
-                  <td>{getPolicyName(version.policy_id)}</td>
-                  <td>v{version.version_number}</td>
-                  <td>{formatPolicyVersionStatusLabel(version.status)}</td>
-                  <td>{version.published_at ?? '-'}</td>
-                  <td>
-                    <button
-                      className="button ghost small"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        void handleVersionDelete(version.policy_version_id);
-                      }}
-                      type="button"
-                    >
-                      삭제
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="empty-state">정책 버전이 없습니다.</p>
-        )}
-      </section>
-
-      <section className="panel form-panel">
-        <div className="panel-header">
-          <p className="panel-kicker">Policy Assignment</p>
-          <h2>{editingAssignmentId ? '정책 연결 수정' : '정책 연결 생성'}</h2>
-        </div>
+      <FormModal
+        isOpen={isAssignmentModalOpen}
+        kicker="Policy Assignment"
+        onClose={closeAssignmentModal}
+        title={editingAssignmentId ? '정책 연결 수정' : '정책 연결 생성'}
+      >
         <form className="form-stack" onSubmit={handleAssignmentSubmit}>
           <label className="field">
             <span>정책 버전</span>
@@ -723,68 +840,12 @@ export function SettlementCriteriaPage({ client }: SettlementCriteriaPageProps) 
             <button className="button primary" type="submit">
               {editingAssignmentId ? '연결 수정' : '연결 생성'}
             </button>
-            <button className="button ghost" onClick={resetAssignmentForm} type="button">
-              초기화
+            <button className="button ghost" onClick={closeAssignmentModal} type="button">
+              취소
             </button>
           </div>
         </form>
-      </section>
-
-      <section className="panel">
-        <div className="panel-header">
-          <p className="panel-kicker">Assignment List</p>
-          <h2>정책 연결 목록</h2>
-        </div>
-        {isLoading ? (
-          <p className="empty-state">정책 연결을 불러오는 중입니다...</p>
-        ) : assignments.length ? (
-          <table className="table compact">
-            <thead>
-              <tr>
-                <th>정책 버전</th>
-                <th>회사</th>
-                <th>플릿</th>
-                <th>기간</th>
-                <th>상태</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {assignments.map((assignment) => (
-                <tr
-                  key={assignment.assignment_id}
-                  className={`interactive-row${editingAssignmentId === assignment.assignment_id ? ' is-selected' : ''}`}
-                  onClick={() => selectAssignment(assignment)}
-                  onKeyDown={(event) => handleAssignmentRowKeyDown(event, assignment)}
-                  tabIndex={0}
-                >
-                  <td>{getVersionLabel(assignment.policy_version_id)}</td>
-                  <td>{getCompanyName(companies, assignment.company_id)}</td>
-                  <td>{getFleetName(fleets, assignment.fleet_id)}</td>
-                  <td>
-                    {assignment.effective_start_date} ~ {assignment.effective_end_date ?? '계속'}
-                  </td>
-                  <td>{formatPolicyStatusLabel(assignment.status)}</td>
-                  <td>
-                    <button
-                      className="button ghost small"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        void handleAssignmentDelete(assignment.assignment_id);
-                      }}
-                      type="button"
-                    >
-                      삭제
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="empty-state">정책 연결이 없습니다.</p>
-        )}
-      </section>
+      </FormModal>
     </div>
   );
 }

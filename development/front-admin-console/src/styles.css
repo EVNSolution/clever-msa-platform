@@ -328,6 +328,23 @@ textarea:focus {
   max-width: 44rem;
 }
 
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgba(28, 32, 43, 0.42);
+  backdrop-filter: blur(8px);
+}
+
+.modal-panel {
+  width: min(100%, 44rem);
+  max-height: calc(100vh - 3rem);
+  overflow: auto;
+}
+
 .panel-header {
   display: grid;
   gap: 0.35rem;
@@ -576,6 +593,14 @@ textarea:focus {
   .auth-panel,
   .auth-hero {
     padding: 1rem;
+  }
+
+  .modal-backdrop {
+    padding: 1rem;
+  }
+
+  .modal-panel {
+    max-height: calc(100vh - 2rem);
   }
 
   .table {

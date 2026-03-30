@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 
 import { listDrivers } from '../api/drivers';
+import { FormModal } from '../components/FormModal';
 import {
   createDailyDeliveryInputSnapshot,
   createDeliveryRecord,
@@ -74,6 +75,8 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
   const [snapshotForm, setSnapshotForm] = useState(DEFAULT_SNAPSHOT_FORM);
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
   const [editingSnapshotId, setEditingSnapshotId] = useState<string | null>(null);
+  const [isRecordModalOpen, setIsRecordModalOpen] = useState(false);
+  const [isSnapshotModalOpen, setIsSnapshotModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -309,6 +312,7 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
         await createDeliveryRecord(client, payload);
       }
       await loadAll();
+      setIsRecordModalOpen(false);
       resetRecordForm();
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
@@ -337,6 +341,7 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
         await createDailyDeliveryInputSnapshot(client, payload);
       }
       await loadAll();
+      setIsSnapshotModalOpen(false);
       resetSnapshotForm();
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
@@ -349,6 +354,7 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
       await deleteDeliveryRecord(client, deliveryRecordId);
       await loadAll();
       if (editingRecordId === deliveryRecordId) {
+        setIsRecordModalOpen(false);
         resetRecordForm();
       }
     } catch (error) {
@@ -362,6 +368,7 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
       await deleteDailyDeliveryInputSnapshot(client, snapshotId);
       await loadAll();
       if (editingSnapshotId === snapshotId) {
+        setIsSnapshotModalOpen(false);
         resetSnapshotForm();
       }
     } catch (error) {
@@ -383,6 +390,7 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
       status: record.status,
       payload_text: stringifyJson(record.payload),
     });
+    setIsRecordModalOpen(true);
   }
 
   function selectSnapshot(snapshot: DailyDeliveryInputSnapshot) {
@@ -398,6 +406,27 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
       source_record_count: String(snapshot.source_record_count),
       status: snapshot.status,
     });
+    setIsSnapshotModalOpen(true);
+  }
+
+  function openCreateRecordModal() {
+    resetRecordForm();
+    setIsRecordModalOpen(true);
+  }
+
+  function closeRecordModal() {
+    setIsRecordModalOpen(false);
+    resetRecordForm();
+  }
+
+  function openCreateSnapshotModal() {
+    resetSnapshotForm();
+    setIsSnapshotModalOpen(true);
+  }
+
+  function closeSnapshotModal() {
+    setIsSnapshotModalOpen(false);
+    resetSnapshotForm();
   }
 
   function handleRecordRowKeyDown(event: React.KeyboardEvent<HTMLTableRowElement>, record: DeliveryRecord) {
@@ -451,11 +480,136 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
         )}
       </section>
 
-      <section className="panel form-panel">
-        <div className="panel-header">
-          <p className="panel-kicker">Delivery Record</p>
-          <h2>{editingRecordId ? '배송 원천 입력 수정' : '배송 원천 입력 생성'}</h2>
+      <section className="panel">
+        <div className="panel-header panel-header-inline">
+          <div className="stack">
+            <p className="panel-kicker">Delivery Record List</p>
+            <h2>배송 원천 입력 목록</h2>
+          </div>
+          <button className="button primary" onClick={openCreateRecordModal} type="button">
+            원천 입력 생성
+          </button>
         </div>
+        {isLoading ? (
+          <p className="empty-state">배송 원천 입력을 불러오는 중입니다...</p>
+        ) : records.length ? (
+          <table className="table compact">
+            <thead>
+              <tr>
+                <th>회사</th>
+                <th>플릿</th>
+                <th>배송원</th>
+                <th>서비스 일자</th>
+                <th>건수</th>
+                <th>상태</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {records.map((record) => (
+                <tr
+                  key={record.delivery_record_id}
+                  className={`interactive-row${editingRecordId === record.delivery_record_id ? ' is-selected' : ''}`}
+                  onClick={() => selectRecord(record)}
+                  onKeyDown={(event) => handleRecordRowKeyDown(event, record)}
+                  tabIndex={0}
+                >
+                  <td>{getCompanyName(companies, record.company_id)}</td>
+                  <td>{getFleetName(fleets, record.fleet_id)}</td>
+                  <td>{getDriverName(drivers, record.driver_id)}</td>
+                  <td>{record.service_date}</td>
+                  <td>{record.delivery_count}</td>
+                  <td>{formatDeliveryRecordStatusLabel(record.status)}</td>
+                  <td>
+                    <button
+                      className="button ghost small"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        void handleRecordDelete(record.delivery_record_id);
+                      }}
+                      type="button"
+                    >
+                      삭제
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="empty-state">배송 원천 입력이 없습니다.</p>
+        )}
+      </section>
+
+      <section className="panel">
+        <div className="panel-header panel-header-inline">
+          <div className="stack">
+            <p className="panel-kicker">Snapshot List</p>
+            <h2>일별 snapshot 목록</h2>
+          </div>
+          <button className="button primary" onClick={openCreateSnapshotModal} type="button">
+            snapshot 생성
+          </button>
+        </div>
+        {isLoading ? (
+          <p className="empty-state">일별 snapshot을 불러오는 중입니다...</p>
+        ) : snapshots.length ? (
+          <table className="table compact">
+            <thead>
+              <tr>
+                <th>회사</th>
+                <th>플릿</th>
+                <th>배송원</th>
+                <th>서비스 일자</th>
+                <th>건수</th>
+                <th>상태</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {snapshots.map((snapshot) => (
+                <tr
+                  key={snapshot.daily_delivery_input_snapshot_id}
+                  className={`interactive-row${
+                    editingSnapshotId === snapshot.daily_delivery_input_snapshot_id ? ' is-selected' : ''
+                  }`}
+                  onClick={() => selectSnapshot(snapshot)}
+                  onKeyDown={(event) => handleSnapshotRowKeyDown(event, snapshot)}
+                  tabIndex={0}
+                >
+                  <td>{getCompanyName(companies, snapshot.company_id)}</td>
+                  <td>{getFleetName(fleets, snapshot.fleet_id)}</td>
+                  <td>{getDriverName(drivers, snapshot.driver_id)}</td>
+                  <td>{snapshot.service_date}</td>
+                  <td>{snapshot.delivery_count}</td>
+                  <td>{formatDeliverySnapshotStatusLabel(snapshot.status)}</td>
+                  <td>
+                    <button
+                      className="button ghost small"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        void handleSnapshotDelete(snapshot.daily_delivery_input_snapshot_id);
+                      }}
+                      type="button"
+                    >
+                      삭제
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="empty-state">일별 snapshot이 없습니다.</p>
+        )}
+      </section>
+
+      <FormModal
+        isOpen={isRecordModalOpen}
+        kicker="Delivery Record"
+        onClose={closeRecordModal}
+        title={editingRecordId ? '배송 원천 입력 수정' : '배송 원천 입력 생성'}
+      >
         <form className="form-stack" onSubmit={handleRecordSubmit}>
           <label className="field">
             <span>회사</span>
@@ -557,74 +711,19 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
             <button className="button primary" type="submit">
               {editingRecordId ? '원천 입력 수정' : '원천 입력 생성'}
             </button>
-            <button className="button ghost" onClick={resetRecordForm} type="button">
-              초기화
+            <button className="button ghost" onClick={closeRecordModal} type="button">
+              취소
             </button>
           </div>
         </form>
-      </section>
+      </FormModal>
 
-      <section className="panel">
-        <div className="panel-header">
-          <p className="panel-kicker">Delivery Record List</p>
-          <h2>배송 원천 입력 목록</h2>
-        </div>
-        {isLoading ? (
-          <p className="empty-state">배송 원천 입력을 불러오는 중입니다...</p>
-        ) : records.length ? (
-          <table className="table compact">
-            <thead>
-              <tr>
-                <th>회사</th>
-                <th>플릿</th>
-                <th>배송원</th>
-                <th>서비스 일자</th>
-                <th>건수</th>
-                <th>상태</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {records.map((record) => (
-                <tr
-                  key={record.delivery_record_id}
-                  className={`interactive-row${editingRecordId === record.delivery_record_id ? ' is-selected' : ''}`}
-                  onClick={() => selectRecord(record)}
-                  onKeyDown={(event) => handleRecordRowKeyDown(event, record)}
-                  tabIndex={0}
-                >
-                  <td>{getCompanyName(companies, record.company_id)}</td>
-                  <td>{getFleetName(fleets, record.fleet_id)}</td>
-                  <td>{getDriverName(drivers, record.driver_id)}</td>
-                  <td>{record.service_date}</td>
-                  <td>{record.delivery_count}</td>
-                  <td>{formatDeliveryRecordStatusLabel(record.status)}</td>
-                  <td>
-                    <button
-                      className="button ghost small"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        void handleRecordDelete(record.delivery_record_id);
-                      }}
-                      type="button"
-                    >
-                      삭제
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="empty-state">배송 원천 입력이 없습니다.</p>
-        )}
-      </section>
-
-      <section className="panel form-panel">
-        <div className="panel-header">
-          <p className="panel-kicker">Daily Snapshot</p>
-          <h2>{editingSnapshotId ? '일별 snapshot 수정' : '일별 snapshot 생성'}</h2>
-        </div>
+      <FormModal
+        isOpen={isSnapshotModalOpen}
+        kicker="Daily Snapshot"
+        onClose={closeSnapshotModal}
+        title={editingSnapshotId ? '일별 snapshot 수정' : '일별 snapshot 생성'}
+      >
         <form className="form-stack" onSubmit={handleSnapshotSubmit}>
           <label className="field">
             <span>회사</span>
@@ -733,70 +832,12 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
             <button className="button primary" type="submit">
               {editingSnapshotId ? 'snapshot 수정' : 'snapshot 생성'}
             </button>
-            <button className="button ghost" onClick={resetSnapshotForm} type="button">
-              초기화
+            <button className="button ghost" onClick={closeSnapshotModal} type="button">
+              취소
             </button>
           </div>
         </form>
-      </section>
-
-      <section className="panel">
-        <div className="panel-header">
-          <p className="panel-kicker">Snapshot List</p>
-          <h2>일별 snapshot 목록</h2>
-        </div>
-        {isLoading ? (
-          <p className="empty-state">일별 snapshot을 불러오는 중입니다...</p>
-        ) : snapshots.length ? (
-          <table className="table compact">
-            <thead>
-              <tr>
-                <th>회사</th>
-                <th>플릿</th>
-                <th>배송원</th>
-                <th>서비스 일자</th>
-                <th>건수</th>
-                <th>상태</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {snapshots.map((snapshot) => (
-                <tr
-                  key={snapshot.daily_delivery_input_snapshot_id}
-                  className={`interactive-row${
-                    editingSnapshotId === snapshot.daily_delivery_input_snapshot_id ? ' is-selected' : ''
-                  }`}
-                  onClick={() => selectSnapshot(snapshot)}
-                  onKeyDown={(event) => handleSnapshotRowKeyDown(event, snapshot)}
-                  tabIndex={0}
-                >
-                  <td>{getCompanyName(companies, snapshot.company_id)}</td>
-                  <td>{getFleetName(fleets, snapshot.fleet_id)}</td>
-                  <td>{getDriverName(drivers, snapshot.driver_id)}</td>
-                  <td>{snapshot.service_date}</td>
-                  <td>{snapshot.delivery_count}</td>
-                  <td>{formatDeliverySnapshotStatusLabel(snapshot.status)}</td>
-                  <td>
-                    <button
-                      className="button ghost small"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        void handleSnapshotDelete(snapshot.daily_delivery_input_snapshot_id);
-                      }}
-                      type="button"
-                    >
-                      삭제
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="empty-state">일별 snapshot이 없습니다.</p>
-        )}
-      </section>
+      </FormModal>
     </div>
   );
 }

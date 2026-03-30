@@ -325,6 +325,8 @@
 - 이번 단계의 settlement UI 정리는 `기준 / 입력 / 실행 / 결과 / 조회` 그룹 라우트 분리까지를 완료 기준으로 둔다.
 - `policy`, `version`, `assignment`, `delivery-record`, `snapshot`, `run`, `item` 각각의 상세 / 생성 / 수정 라우트 세분화는 후속 단계로 남긴다.
 - `operator` settlement 화면은 shared read summary 화면 한 장으로 유지한다.
+- `admin` settlement의 생성 / 수정은 그룹 페이지 안에서 모달로 연다.
+- settlement 하위 write 리소스는 별도 full-page 생성 폼을 두지 않는다.
 
 ## 현재 적용 메모
 

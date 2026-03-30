@@ -48,8 +48,10 @@
 
 1. 이번 단계는 settlement UI를 업무 흐름 기준 그룹 페이지로 분리하는 것까지만 본다.
 2. `정산 기준 / 정산 입력 / 정산 실행 / 정산 결과 / 정산 조회` 라우트가 분리돼 있으면 1차 완료로 본다.
-3. `policy`, `version`, `assignment`, `delivery-record`, `daily snapshot`, `run`, `item`의 하위 detail / create / edit 라우트 세분화는 아직 하지 않는다.
-4. operator shared read 화면은 별도 계약 문서에서 다룬다.
+3. `policy`, `version`, `assignment`, `delivery-record`, `daily snapshot`, `run`, `item`의 하위 detail route 세분화는 아직 하지 않는다.
+4. `정산 기준 / 입력 / 실행 / 결과`의 생성과 수정은 각 그룹 페이지 안에서 모달로 연다.
+5. settlement 하위 write 리소스의 별도 full-page 생성 화면은 1차 범위에 넣지 않는다.
+6. operator shared read 화면은 별도 계약 문서에서 다룬다.
 
 ## 페이지별 소유 서비스
 

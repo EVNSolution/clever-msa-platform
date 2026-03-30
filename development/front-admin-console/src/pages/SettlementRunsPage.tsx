@@ -7,6 +7,7 @@ import {
   updateSettlementRun,
   type SettlementRunPayload,
 } from '../api/settlements';
+import { FormModal } from '../components/FormModal';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { listCompanies, listFleets } from '../api/organization';
 import type { Company, Fleet, SettlementRun } from '../types';
@@ -31,6 +32,7 @@ export function SettlementRunsPage({ client }: SettlementRunsPageProps) {
   const [fleets, setFleets] = useState<Fleet[]>([]);
   const [runForm, setRunForm] = useState<SettlementRunPayload>(DEFAULT_RUN_FORM);
   const [editingRunId, setEditingRunId] = useState<string | null>(null);
+  const [isRunModalOpen, setIsRunModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -143,6 +145,7 @@ export function SettlementRunsPage({ client }: SettlementRunsPageProps) {
         await createSettlementRun(client, runForm);
       }
       await loadAll();
+      setIsRunModalOpen(false);
       resetRunForm();
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
@@ -155,6 +158,7 @@ export function SettlementRunsPage({ client }: SettlementRunsPageProps) {
       await deleteSettlementRun(client, runId);
       await loadAll();
       if (editingRunId === runId) {
+        setIsRunModalOpen(false);
         resetRunForm();
       }
     } catch (error) {
@@ -171,6 +175,17 @@ export function SettlementRunsPage({ client }: SettlementRunsPageProps) {
       period_end: run.period_end,
       status: run.status,
     });
+    setIsRunModalOpen(true);
+  }
+
+  function openCreateRunModal() {
+    resetRunForm();
+    setIsRunModalOpen(true);
+  }
+
+  function closeRunModal() {
+    setIsRunModalOpen(false);
+    resetRunForm();
   }
 
   function handleRunRowKeyDown(event: React.KeyboardEvent<HTMLTableRowElement>, run: SettlementRun) {
@@ -185,11 +200,71 @@ export function SettlementRunsPage({ client }: SettlementRunsPageProps) {
     <div className="stack large-gap">
       {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
 
-      <section className="panel form-panel">
-        <div className="panel-header">
-          <p className="panel-kicker">정산 실행</p>
-          <h2>{editingRunId ? '정산 실행 수정' : '정산 실행 생성'}</h2>
+      <section className="panel">
+        <div className="panel-header panel-header-inline">
+          <div className="stack">
+            <p className="panel-kicker">현재 실행</p>
+            <h2>정산 실행 목록</h2>
+          </div>
+          <button className="button primary" onClick={openCreateRunModal} type="button">
+            정산 실행 생성
+          </button>
         </div>
+        {isLoading ? (
+          <p className="empty-state">정산 실행을 불러오는 중입니다...</p>
+        ) : runs.length ? (
+          <table className="table compact">
+            <thead>
+              <tr>
+                <th>회사</th>
+                <th>플릿</th>
+                <th>기간</th>
+                <th>상태</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {runs.map((run) => (
+                <tr
+                  key={run.settlement_run_id}
+                  className={`interactive-row${editingRunId === run.settlement_run_id ? ' is-selected' : ''}`}
+                  onClick={() => selectRun(run)}
+                  onKeyDown={(event) => handleRunRowKeyDown(event, run)}
+                  tabIndex={0}
+                >
+                  <td>{getCompanyName(companies, run.company_id)}</td>
+                  <td>{getFleetName(fleets, run.fleet_id)}</td>
+                  <td>
+                    {run.period_start} ~ {run.period_end}
+                  </td>
+                  <td>{formatSettlementStatusLabel(run.status)}</td>
+                  <td>
+                    <button
+                      className="button ghost small"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        void handleDelete(run.settlement_run_id);
+                      }}
+                      type="button"
+                    >
+                      삭제
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="empty-state">정산 실행이 없습니다.</p>
+        )}
+      </section>
+
+      <FormModal
+        isOpen={isRunModalOpen}
+        kicker="정산 실행"
+        onClose={closeRunModal}
+        title={editingRunId ? '정산 실행 수정' : '정산 실행 생성'}
+      >
         <form className="form-stack" onSubmit={handleRunSubmit}>
           <label className="field">
             <span>회사</span>
@@ -248,66 +323,12 @@ export function SettlementRunsPage({ client }: SettlementRunsPageProps) {
             <button className="button primary" type="submit">
               {editingRunId ? '정산 실행 수정' : '정산 실행 생성'}
             </button>
-            <button className="button ghost" onClick={resetRunForm} type="button">
-              초기화
+            <button className="button ghost" onClick={closeRunModal} type="button">
+              취소
             </button>
           </div>
         </form>
-      </section>
-
-      <section className="panel">
-        <div className="panel-header">
-          <p className="panel-kicker">현재 실행</p>
-          <h2>정산 실행 목록</h2>
-        </div>
-        {isLoading ? (
-          <p className="empty-state">정산 실행을 불러오는 중입니다...</p>
-        ) : runs.length ? (
-          <table className="table compact">
-            <thead>
-              <tr>
-                <th>회사</th>
-                <th>플릿</th>
-                <th>기간</th>
-                <th>상태</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {runs.map((run) => (
-                <tr
-                  key={run.settlement_run_id}
-                  className={`interactive-row${editingRunId === run.settlement_run_id ? ' is-selected' : ''}`}
-                  onClick={() => selectRun(run)}
-                  onKeyDown={(event) => handleRunRowKeyDown(event, run)}
-                  tabIndex={0}
-                >
-                  <td>{getCompanyName(companies, run.company_id)}</td>
-                  <td>{getFleetName(fleets, run.fleet_id)}</td>
-                  <td>
-                    {run.period_start} ~ {run.period_end}
-                  </td>
-                  <td>{formatSettlementStatusLabel(run.status)}</td>
-                  <td>
-                    <button
-                      className="button ghost small"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        void handleDelete(run.settlement_run_id);
-                      }}
-                      type="button"
-                    >
-                      삭제
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="empty-state">정산 실행이 없습니다.</p>
-        )}
-      </section>
+      </FormModal>
     </div>
   );
 }
