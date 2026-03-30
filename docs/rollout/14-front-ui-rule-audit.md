@@ -46,13 +46,14 @@
 
 ### 4. `vehicles`
 
-- 상태: 위반
+- 상태: 적합
 - 현재 라우트
   - `/vehicles`
-- 위반 점
-  - 목록과 상세가 같은 화면에 같이 있다.
-  - 상세 접근이 라우트 이동이 아니라 화면 내 선택 상태다.
-  - 상세 URL이 존재하지 않는다.
+  - `/vehicles/:vehicleRef`
+- 근거
+  - 목록과 상세가 분리돼 있다.
+  - 목록 로우 클릭으로 상세 라우트에 진입한다.
+  - 상세 URL이 `route_no`를 따른다.
 
 ### 5. `settlements`
 
@@ -159,8 +160,7 @@
 1. `admin terminals`
 2. `admin vehicle-assignments`
 3. `admin settlements`
-4. `operator vehicles`
-5. `operator settlements`
+4. `operator settlements`
 
 ## 순서 기준
 

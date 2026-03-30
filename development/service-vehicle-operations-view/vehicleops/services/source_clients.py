@@ -50,9 +50,9 @@ class SourceClients:
 
         return payload
 
-    def get_vehicle(self, *, vehicle_id: str, authorization: str):
+    def get_vehicle(self, *, vehicle_ref: str, authorization: str):
         return self._request_json(
-            url=self._build_url(settings.VEHICLE_ASSET_BASE_URL, f"/vehicle-masters/{vehicle_id}/"),
+            url=self._build_url(settings.VEHICLE_ASSET_BASE_URL, f"/vehicle-masters/{vehicle_ref}/"),
             authorization=authorization,
             allow_not_found=True,
         )

@@ -39,6 +39,7 @@ export type Vehicle = {
 
 export type VehicleOpsSummary = {
   vehicle_id: string;
+  route_no?: number;
   plate_number: string;
   vin: string;
   vehicle_status: string;

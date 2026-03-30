@@ -5,6 +5,6 @@ export function listVehicleOps(client: HttpClient) {
   return client.request<VehicleOpsSummary[]>('/vehicle-ops/vehicles/');
 }
 
-export function getVehicleOps(client: HttpClient, vehicleId: string) {
-  return client.request<VehicleOpsSummary>(`/vehicle-ops/vehicles/${vehicleId}/`);
+export function getVehicleOps(client: HttpClient, vehicleRef: string) {
+  return client.request<VehicleOpsSummary>(`/vehicle-ops/vehicles/${vehicleRef}/`);
 }

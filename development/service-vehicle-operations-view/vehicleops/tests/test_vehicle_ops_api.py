@@ -15,6 +15,7 @@ class VehicleOpsApiTests(TestCase):
         self.token = self._issue_token()
         self.summary = {
             "vehicle_id": "11111111-1111-1111-1111-111111111111",
+            "route_no": 1,
             "plate_number": "12가3456",
             "vin": "KMH00000000000001",
             "vehicle_status": "active",
@@ -123,14 +124,28 @@ class VehicleOpsApiTests(TestCase):
     def test_authenticated_detail_returns_summary_contract(self, mock_get_summary):
         mock_get_summary.return_value = self.summary
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.token}")
-        vehicle_id = uuid4()
+        vehicle_ref = "1"
 
-        response = self.client.get(f"/vehicles/{vehicle_id}/")
+        response = self.client.get(f"/vehicles/{vehicle_ref}/")
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, self.summary)
         mock_get_summary.assert_called_once_with(
-            vehicle_id=str(vehicle_id),
+            vehicle_ref=vehicle_ref,
+            authorization=f"Bearer {self.token}",
+        )
+
+    @patch("vehicleops.views.VehicleSummaryService.build_summary")
+    def test_detail_accepts_uuid_lookup_too(self, mock_get_summary):
+        mock_get_summary.return_value = self.summary
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.token}")
+        vehicle_ref = str(uuid4())
+
+        response = self.client.get(f"/vehicles/{vehicle_ref}/")
+
+        self.assertEqual(response.status_code, 200)
+        mock_get_summary.assert_called_once_with(
+            vehicle_ref=vehicle_ref,
             authorization=f"Bearer {self.token}",
         )
 
@@ -138,7 +153,7 @@ class VehicleOpsApiTests(TestCase):
     def test_detail_endpoint_returns_404_envelope_when_summary_missing(self, _mock_get_summary):
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.token}")
 
-        response = self.client.get(f"/vehicles/{uuid4()}/")
+        response = self.client.get("/vehicles/1/")
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(set(response.data.keys()), {"code", "message", "details"})

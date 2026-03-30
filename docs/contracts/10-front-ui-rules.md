@@ -232,6 +232,7 @@
 - 읽기 화면에서 raw ID를 숨기는 것만으로는 충분하지 않다. URL도 같이 숨겨야 한다.
 - 이 규칙은 브라우저의 모든 상세, 수정, 관계 라우트에 적용한다.
 - 새 브라우저 라우트를 추가할 때는 프론트 임시 키를 만들지 않고, 정본 서비스가 `route_no`를 먼저 제공해야 한다.
+- read-model이나 ops summary도 브라우저 상세 라우트를 열어야 하면 `route_no`를 응답에 포함해야 한다.
 
 ### 3. Company / Fleet 형태
 
@@ -296,15 +297,15 @@
 - `admin accounts`
 - `admin companies`
 - `admin fleets`
+- `admin drivers`
+- `admin vehicles`
+- `operator drivers`
 - `operator driver detail`
+- `operator vehicles`
 
 ### 2. 아직 정리 중인 화면
 
-- `operator drivers`
-- `operator vehicles`
 - `operator settlements`
-- `admin drivers`
-- `admin vehicles`
 - `admin terminals`
 - `admin vehicle-assignments`
 - `admin settlements`

@@ -10,6 +10,7 @@ import { DriverFormPage } from './pages/DriverFormPage';
 import { DriversPage } from './pages/DriversPage';
 import { LoginPage } from './pages/LoginPage';
 import { SettlementsPage } from './pages/SettlementsPage';
+import { VehicleDetailPage } from './pages/VehicleDetailPage';
 import { VehiclesPage } from './pages/VehiclesPage';
 import { clearStoredSession, loadStoredSession, persistSession } from './sessionPersistence';
 
@@ -90,6 +91,7 @@ export default function App() {
           <Route path="/drivers/:driverRef" element={<Driver360Page client={client} />} />
           <Route path="/drivers/:driverRef/edit" element={<DriverFormPage account={session.account} client={client} mode="edit" />} />
           <Route path="/vehicles" element={<VehiclesPage client={client} />} />
+          <Route path="/vehicles/:vehicleRef" element={<VehicleDetailPage client={client} />} />
           <Route path="/settlements" element={<SettlementsPage client={client} />} />
           <Route path="*" element={<Navigate replace to="/" />} />
         </Route>

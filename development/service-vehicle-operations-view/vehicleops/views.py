@@ -43,11 +43,11 @@ class VehicleDetailView(APIView):
     permission_classes = [AuthenticatedReadOnly]
 
     @extend_schema(responses={200: VehicleOpsSummarySerializer})
-    def get(self, request, vehicle_id):
-        path_serializer = VehicleOpsVehiclePathSerializer(data={"vehicle_id": vehicle_id})
+    def get(self, request, vehicle_ref):
+        path_serializer = VehicleOpsVehiclePathSerializer(data={"vehicle_ref": vehicle_ref})
         path_serializer.is_valid(raise_exception=True)
         summary = VehicleSummaryService().build_summary(
-            vehicle_id=str(vehicle_id),
+            vehicle_ref=str(vehicle_ref),
             authorization=request.META.get("HTTP_AUTHORIZATION", ""),
         )
         serializer = VehicleOpsSummarySerializer(summary)

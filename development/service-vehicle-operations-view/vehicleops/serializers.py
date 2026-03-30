@@ -73,6 +73,7 @@ class VehicleOpsSummarySerializer(serializers.Serializer):
     )
 
     vehicle_id = serializers.UUIDField()
+    route_no = serializers.IntegerField()
     plate_number = serializers.CharField()
     vin = serializers.CharField()
     vehicle_status = serializers.ChoiceField(choices=("active", "inactive", "retired"))
@@ -88,7 +89,7 @@ class VehicleOpsSummarySerializer(serializers.Serializer):
 
 
 class VehicleOpsVehiclePathSerializer(serializers.Serializer):
-    vehicle_id = serializers.UUIDField()
+    vehicle_ref = serializers.CharField()
 
 
 class HealthSerializer(serializers.Serializer):

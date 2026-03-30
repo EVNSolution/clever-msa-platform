@@ -42,7 +42,7 @@ class SourceClientsTests(TestCase):
 
         clients = SourceClients()
 
-        detail = clients.get_vehicle(vehicle_id="v1", authorization=self.authorization)
+        detail = clients.get_vehicle(vehicle_ref="v1", authorization=self.authorization)
         vehicles = clients.list_vehicles(authorization=self.authorization)
         operator_accesses = clients.list_active_operator_accesses(authorization=self.authorization)
         companies = clients.list_companies(authorization=self.authorization)
@@ -112,7 +112,7 @@ class SourceClientsTests(TestCase):
         clients = SourceClients()
 
         with self.assertRaises(SourceNotFoundError):
-            clients.get_vehicle(vehicle_id="v1", authorization=self.authorization)
+            clients.get_vehicle(vehicle_ref="v1", authorization=self.authorization)
 
     @override_settings(VEHICLE_ASSET_BASE_URL="http://vehicle-asset-api:8000")
     @patch("vehicleops.services.source_clients.urlopen")

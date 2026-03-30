@@ -18,9 +18,9 @@ class VehicleSummaryService:
             raise APIException("Vehicle asset service is unavailable.") from exc
         return self._normalize_collection(vehicles)
 
-    def _get_vehicle(self, *, vehicle_id: str, authorization: str):
+    def _get_vehicle(self, *, vehicle_ref: str, authorization: str):
         try:
-            vehicle = self.source_clients.get_vehicle(vehicle_id=vehicle_id, authorization=authorization)
+            vehicle = self.source_clients.get_vehicle(vehicle_ref=vehicle_ref, authorization=authorization)
         except SourceNotFoundError as exc:
             raise NotFound("Vehicle not found.") from exc
         except SourceServiceError as exc:
@@ -159,6 +159,7 @@ class VehicleSummaryService:
 
         return {
             "vehicle_id": vehicle_id,
+            "route_no": vehicle["route_no"],
             "plate_number": vehicle["plate_number"],
             "vin": vehicle["vin"],
             "vehicle_status": vehicle["vehicle_status"],
@@ -299,10 +300,10 @@ class VehicleSummaryService:
         finally:
             self._authorization = ""
 
-    def build_summary(self, *, vehicle_id: str, authorization: str):
+    def build_summary(self, *, vehicle_ref: str, authorization: str):
         self._authorization = authorization
         try:
-            vehicle = self._get_vehicle(vehicle_id=vehicle_id, authorization=authorization)
+            vehicle = self._get_vehicle(vehicle_ref=vehicle_ref, authorization=authorization)
             companies = self._build_company_map(authorization=authorization)
             operator_accesses = self._build_active_operator_access_map(authorization=authorization)
             assignments = self._build_assignment_map(authorization=authorization)

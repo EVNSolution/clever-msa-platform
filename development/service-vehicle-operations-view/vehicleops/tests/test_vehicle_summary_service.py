@@ -49,7 +49,7 @@ class FakeSourceClients:
         self.latest_location_error = latest_location_error
         self.latest_diagnostics_error = latest_diagnostics_error
 
-    def get_vehicle(self, *, vehicle_id, authorization):
+    def get_vehicle(self, *, vehicle_ref, authorization):
         if self.vehicles_error is not None:
             raise self.vehicles_error
         return self.vehicle
@@ -99,6 +99,7 @@ class VehicleSummaryServiceTests(TestCase):
     def setUp(self) -> None:
         self.vehicle = {
             "vehicle_id": "11111111-1111-1111-1111-111111111111",
+            "route_no": 1,
             "manufacturer_company_id": "22222222-2222-2222-2222-222222222222",
             "plate_number": "12가3456",
             "vin": "KMH00000000000001",
@@ -181,11 +182,12 @@ class VehicleSummaryServiceTests(TestCase):
         )
 
         summary = service.build_summary(
-            vehicle_id=self.vehicle["vehicle_id"],
+            vehicle_ref=self.vehicle["vehicle_id"],
             authorization="Bearer token",
         )
 
         self.assertEqual(summary["vehicle_id"], self.vehicle["vehicle_id"])
+        self.assertEqual(summary["route_no"], self.vehicle["route_no"])
         self.assertEqual(summary["plate_number"], "12가3456")
         self.assertEqual(summary["vin"], "KMH00000000000001")
         self.assertEqual(summary["vehicle_status"], "active")
@@ -260,7 +262,7 @@ class VehicleSummaryServiceTests(TestCase):
         )
 
         summary = service.build_summary(
-            vehicle_id=self.vehicle["vehicle_id"],
+            vehicle_ref=self.vehicle["vehicle_id"],
             authorization="Bearer token",
         )
 
@@ -315,7 +317,7 @@ class VehicleSummaryServiceTests(TestCase):
         )
 
         summary = service.build_summary(
-            vehicle_id=self.vehicle["vehicle_id"],
+            vehicle_ref=self.vehicle["vehicle_id"],
             authorization="Bearer token",
         )
 
@@ -353,7 +355,7 @@ class VehicleSummaryServiceTests(TestCase):
 
         with self.assertRaisesRegex(APIException, "Driver vehicle assignment service is unavailable."):
             service.build_summary(
-                vehicle_id=self.vehicle["vehicle_id"],
+                vehicle_ref=self.vehicle["vehicle_id"],
                 authorization="Bearer token",
             )
 
@@ -372,7 +374,7 @@ class VehicleSummaryServiceTests(TestCase):
         )
 
         summary = service.build_summary(
-            vehicle_id=self.vehicle["vehicle_id"],
+            vehicle_ref=self.vehicle["vehicle_id"],
             authorization="Bearer token",
         )
 
@@ -416,7 +418,7 @@ class VehicleSummaryServiceTests(TestCase):
         )
 
         summary = service.build_summary(
-            vehicle_id=self.vehicle["vehicle_id"],
+            vehicle_ref=self.vehicle["vehicle_id"],
             authorization="Bearer token",
         )
 
@@ -440,7 +442,7 @@ class VehicleSummaryServiceTests(TestCase):
         )
 
         summary = service.build_summary(
-            vehicle_id=self.vehicle["vehicle_id"],
+            vehicle_ref=self.vehicle["vehicle_id"],
             authorization="Bearer token",
         )
 
@@ -468,7 +470,7 @@ class VehicleSummaryServiceTests(TestCase):
 
         with self.assertRaisesRegex(APIException, "Terminal registry service is unavailable."):
             service.build_summary(
-                vehicle_id=self.vehicle["vehicle_id"],
+                vehicle_ref=self.vehicle["vehicle_id"],
                 authorization="Bearer token",
             )
 
@@ -487,7 +489,7 @@ class VehicleSummaryServiceTests(TestCase):
 
         with self.assertRaisesRegex(APIException, "Telemetry hub service is unavailable."):
             service.build_summary(
-                vehicle_id=self.vehicle["vehicle_id"],
+                vehicle_ref=self.vehicle["vehicle_id"],
                 authorization="Bearer token",
             )
 
@@ -495,7 +497,7 @@ class VehicleSummaryServiceTests(TestCase):
         service = VehicleSummaryService(source_clients=FakeSourceClients(vehicle=None))
 
         with self.assertRaisesRegex(NotFound, "Vehicle not found."):
-            service.build_summary(vehicle_id=self.vehicle["vehicle_id"], authorization="Bearer token")
+            service.build_summary(vehicle_ref=self.vehicle["vehicle_id"], authorization="Bearer token")
 
 
 class VehicleOpsSummarySerializerTests(TestCase):
@@ -503,6 +505,7 @@ class VehicleOpsSummarySerializerTests(TestCase):
         serializer = VehicleOpsSummarySerializer(
             data={
                 "vehicle_id": "11111111-1111-1111-1111-111111111111",
+                "route_no": 1,
                 "plate_number": "12가3456",
                 "vin": "KMH00000000000001",
                 "vehicle_status": "active",
