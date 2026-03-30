@@ -1,0 +1,54 @@
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { describe, expect, it, vi } from 'vitest';
+
+import { CompanyDetailPage } from './CompanyDetailPage';
+
+const apiMocks = vi.hoisted(() => ({
+  getCompany: vi.fn(),
+  listFleets: vi.fn(),
+  deleteCompany: vi.fn(),
+}));
+
+vi.mock('../api/organization', () => ({
+  getCompany: apiMocks.getCompany,
+  listFleets: apiMocks.listFleets,
+  deleteCompany: apiMocks.deleteCompany,
+}));
+
+describe('CompanyDetailPage', () => {
+  it('renders only fleets that belong to the selected company', async () => {
+    apiMocks.getCompany.mockResolvedValue({
+      company_id: '30000000-0000-0000-0000-000000000001',
+      name: 'Seed Company',
+    });
+    apiMocks.listFleets.mockResolvedValue([
+      {
+        fleet_id: '40000000-0000-0000-0000-000000000001',
+        company_id: '30000000-0000-0000-0000-000000000001',
+        name: 'Seed Fleet',
+      },
+      {
+        fleet_id: '40000000-0000-0000-0000-000000000002',
+        company_id: '30000000-0000-0000-0000-000000000002',
+        name: 'Other Fleet',
+      },
+    ]);
+
+    render(
+      <MemoryRouter initialEntries={['/companies/30000000-0000-0000-0000-000000000001']}>
+        <Routes>
+          <Route path="/companies/:companyId" element={<CompanyDetailPage client={{ request: vi.fn() }} />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole('heading', { name: 'Seed Company' });
+    expect(screen.getByText('Seed Fleet')).toBeInTheDocument();
+    expect(screen.queryByText('Other Fleet')).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /플릿 생성/i })).toHaveAttribute(
+      'href',
+      '/companies/30000000-0000-0000-0000-000000000001/fleets/new',
+    );
+  });
+});

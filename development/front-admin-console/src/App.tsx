@@ -6,9 +6,13 @@ import { createHttpClient, DEFAULT_API_BASE_URL, getErrorMessage, type HttpClien
 import { Layout } from './components/Layout';
 import { RequireAdmin } from './components/RequireAdmin';
 import { AccountsPage } from './pages/AccountsPage';
+import { CompaniesPage } from './pages/CompaniesPage';
+import { CompanyDetailPage } from './pages/CompanyDetailPage';
+import { CompanyFormPage } from './pages/CompanyFormPage';
 import { DriversPage } from './pages/DriversPage';
+import { FleetDetailPage } from './pages/FleetDetailPage';
+import { FleetFormPage } from './pages/FleetFormPage';
 import { LoginPage } from './pages/LoginPage';
-import { OrganizationPage } from './pages/OrganizationPage';
 import { SettlementsPage } from './pages/SettlementsPage';
 import { TerminalsPage } from './pages/TerminalsPage';
 import { VehicleAssignmentsPage } from './pages/VehicleAssignmentsPage';
@@ -89,7 +93,14 @@ export default function App() {
           <Route element={<Layout account={session.account} onLogout={handleLogout} />}>
             <Route path="/" element={<Navigate replace to="/accounts" />} />
             <Route path="/accounts" element={<AccountsPage client={client} />} />
-            <Route path="/organization" element={<OrganizationPage client={client} />} />
+            <Route path="/organization" element={<Navigate replace to="/companies" />} />
+            <Route path="/companies" element={<CompaniesPage client={client} />} />
+            <Route path="/companies/new" element={<CompanyFormPage client={client} mode="create" />} />
+            <Route path="/companies/:companyId" element={<CompanyDetailPage client={client} />} />
+            <Route path="/companies/:companyId/edit" element={<CompanyFormPage client={client} mode="edit" />} />
+            <Route path="/companies/:companyId/fleets/new" element={<FleetFormPage client={client} mode="create" />} />
+            <Route path="/companies/:companyId/fleets/:fleetId" element={<FleetDetailPage client={client} />} />
+            <Route path="/companies/:companyId/fleets/:fleetId/edit" element={<FleetFormPage client={client} mode="edit" />} />
             <Route path="/drivers" element={<DriversPage account={session.account} client={client} />} />
             <Route path="/vehicles" element={<VehiclesPage client={client} />} />
             <Route path="/terminals" element={<TerminalsPage client={client} />} />

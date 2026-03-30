@@ -127,6 +127,10 @@ code {
   color: var(--text-muted);
 }
 
+.field span {
+  font-size: 0.9rem;
+}
+
 input,
 select {
   width: 100%;
@@ -236,6 +240,22 @@ select {
   overflow-wrap: anywhere;
 }
 
+.form-panel {
+  max-width: 44rem;
+}
+
+.panel-header {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.panel-header-inline {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 1rem;
+}
+
 .data-grid,
 .grid-cards,
 .sub-grid {
@@ -290,6 +310,12 @@ select {
   margin: 0;
 }
 
+.form-stack {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -301,6 +327,39 @@ select {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
+}
+
+.inline-actions,
+.page-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.relationship-grid {
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.2fr);
+}
+
+.detail-list {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+}
+
+.detail-list div {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.detail-list dt {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.detail-list dd {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .run-list {
@@ -352,7 +411,8 @@ select {
   .auth-shell,
   .data-grid.two-columns,
   .data-grid.two-columns.wide-left,
-  .sub-grid.three-columns {
+  .sub-grid.three-columns,
+  .relationship-grid {
     grid-template-columns: 1fr;
   }
 

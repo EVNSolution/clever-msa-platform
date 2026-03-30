@@ -5,6 +5,10 @@ export function listCompanies(client: HttpClient) {
   return client.request<Company[]>('/org/companies/');
 }
 
+export function getCompany(client: HttpClient, companyId: string) {
+  return client.request<Company>(`/org/companies/${companyId}/`);
+}
+
 export function createCompany(client: HttpClient, payload: Pick<Company, 'name'>) {
   return client.request<Company>('/org/companies/', {
     method: 'POST',
@@ -27,6 +31,10 @@ export function deleteCompany(client: HttpClient, companyId: string) {
 
 export function listFleets(client: HttpClient) {
   return client.request<Fleet[]>('/org/fleets/');
+}
+
+export function getFleet(client: HttpClient, fleetId: string) {
+  return client.request<Fleet>(`/org/fleets/${fleetId}/`);
 }
 
 export function createFleet(client: HttpClient, payload: Pick<Fleet, 'company_id' | 'name'>) {

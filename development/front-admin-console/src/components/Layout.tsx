@@ -20,8 +20,8 @@ export function Layout({ account, onLogout }: LayoutProps) {
           <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/accounts">
             계정
           </NavLink>
-          <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/organization">
-            조직
+          <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/companies">
+            회사
           </NavLink>
           <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/drivers">
             배송원
