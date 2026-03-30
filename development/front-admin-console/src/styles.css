@@ -125,6 +125,7 @@ code {
   display: grid;
   gap: 0.5rem;
   color: var(--text-muted);
+  min-width: 0;
 }
 
 .field span {
@@ -303,13 +304,18 @@ select:focus {
 .panel-header {
   display: grid;
   gap: 0.35rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.15rem;
+  min-width: 0;
 }
 
 .panel-header-inline {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
   gap: 1rem;
+}
+
+.panel-header-inline > * {
+  min-width: 0;
 }
 
 .data-grid,
@@ -324,7 +330,7 @@ select:focus {
 }
 
 .data-grid.two-columns.wide-left {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  grid-template-columns: minmax(0, 44rem) minmax(0, 1fr);
 }
 
 .sub-grid.three-columns {
@@ -345,6 +351,7 @@ select:focus {
   vertical-align: top;
   overflow-wrap: anywhere;
   word-break: break-word;
+  line-height: 1.35;
 }
 
 .table th {
@@ -370,12 +377,15 @@ select:focus {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
+  width: min(100%, 44rem);
 }
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: 1fr;
   gap: 1rem;
+  width: min(100%, 44rem);
+  align-content: start;
 }
 
 .form-actions {
@@ -390,6 +400,11 @@ select:focus {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
+}
+
+.table .button,
+.table .button.small {
+  white-space: nowrap;
 }
 
 .relationship-grid {
@@ -493,5 +508,19 @@ select:focus {
   .auth-panel,
   .auth-hero {
     padding: 1rem;
+  }
+
+  .table {
+    table-layout: auto;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.7rem 0.45rem;
+    font-size: 0.92rem;
+  }
+
+  .table th {
+    font-size: 0.74rem;
   }
 }

@@ -123,6 +123,7 @@ code {
   display: grid;
   gap: 0.5rem;
   color: var(--text-muted);
+  min-width: 0;
 }
 
 .field span {
@@ -298,7 +299,7 @@ select:focus {
 .grid-cards,
 .data-grid {
   display: grid;
-  gap: 1rem;
+  gap: 1.15rem;
 }
 
 .grid-cards {
@@ -311,7 +312,7 @@ select:focus {
 }
 
 .data-grid.two-columns.wide-left {
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.2fr);
+  grid-template-columns: minmax(0, 44rem) minmax(0, 1fr);
 }
 
 .data-grid.three-columns {
@@ -349,6 +350,7 @@ select:focus {
   vertical-align: top;
   overflow-wrap: anywhere;
   word-break: break-word;
+  line-height: 1.35;
 }
 
 .table th {
@@ -372,8 +374,10 @@ select:focus {
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: 1fr;
   gap: 1rem;
+  width: min(100%, 44rem);
+  align-content: start;
 }
 
 .form-actions {
@@ -421,6 +425,11 @@ select:focus {
 .run-card.selected {
   border-color: var(--accent);
   background: var(--accent-soft);
+}
+
+.table .button,
+.table .button.small {
+  white-space: nowrap;
 }
 
 .auth-hero h1,
@@ -475,5 +484,19 @@ select:focus {
   .auth-panel,
   .auth-hero {
     padding: 1rem;
+  }
+
+  .table {
+    table-layout: auto;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.7rem 0.45rem;
+    font-size: 0.92rem;
+  }
+
+  .table th {
+    font-size: 0.74rem;
   }
 }
