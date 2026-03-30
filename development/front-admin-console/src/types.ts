@@ -110,3 +110,73 @@ export type SettlementItem = {
   amount: string;
   payout_status: string;
 };
+
+export type SettlementPolicy = {
+  policy_id: string;
+  policy_code: string;
+  name: string;
+  status: string;
+  description: string;
+};
+
+export type SettlementPolicyVersion = {
+  policy_version_id: string;
+  policy_id: string;
+  version_number: number;
+  rule_payload: Record<string, unknown>;
+  status: string;
+  published_at: string | null;
+};
+
+export type SettlementPolicyAssignment = {
+  assignment_id: string;
+  policy_version_id: string;
+  company_id: string;
+  fleet_id: string;
+  effective_start_date: string;
+  effective_end_date: string | null;
+  status: string;
+};
+
+export type DeliveryRecord = {
+  delivery_record_id: string;
+  company_id: string;
+  fleet_id: string;
+  driver_id: string;
+  service_date: string;
+  source_reference: string;
+  delivery_count: number;
+  distance_km: string;
+  base_amount: string;
+  status: string;
+  payload: Record<string, unknown>;
+};
+
+export type DailyDeliveryInputSnapshot = {
+  daily_delivery_input_snapshot_id: string;
+  company_id: string;
+  fleet_id: string;
+  driver_id: string;
+  service_date: string;
+  delivery_count: number;
+  total_distance_km: string;
+  total_base_amount: string;
+  source_record_count: number;
+  status: string;
+};
+
+export type LatestSettlementSummary = {
+  settlement_run_id: string;
+  period_start: string;
+  period_end: string;
+  status: string;
+  payout_status: string;
+  amount: string;
+};
+
+export type DriverLatestSettlement = {
+  driver_id: string;
+  delivery_history_present: boolean | null;
+  attendance_inferred_from_delivery_history: boolean | null;
+  latest_settlement: LatestSettlementSummary | null;
+};

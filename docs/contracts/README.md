@@ -8,5 +8,6 @@
 - integration rules
 - read model output contract
 - front UI routing, layout, state, and session rules
+- admin settlement group/page contract
 
 공유 식별자, 상태값, 응답 형태를 고정할 때 이 폴더를 기준으로 본다.

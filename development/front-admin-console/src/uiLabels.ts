@@ -90,6 +90,14 @@ export function formatSettlementStatusLabel(value: string | null | undefined) {
   switch (value) {
     case 'draft':
       return '초안';
+    case 'calculated':
+      return '계산 완료';
+    case 'reviewed':
+      return '검토 완료';
+    case 'approved':
+      return '승인됨';
+    case 'paid':
+      return '지급됨';
     case 'closed':
       return '마감';
     default:
@@ -106,4 +114,60 @@ export function formatPayoutStatusLabel(value: string | null | undefined) {
     default:
       return value ?? '-';
   }
+}
+
+export function formatPolicyStatusLabel(value: string | null | undefined) {
+  switch (value) {
+    case 'active':
+      return '활성';
+    case 'inactive':
+      return '비활성';
+    default:
+      return value ?? '-';
+  }
+}
+
+export function formatPolicyVersionStatusLabel(value: string | null | undefined) {
+  switch (value) {
+    case 'draft':
+      return '초안';
+    case 'published':
+      return '게시됨';
+    case 'retired':
+      return '종료';
+    default:
+      return value ?? '-';
+  }
+}
+
+export function formatDeliveryRecordStatusLabel(value: string | null | undefined) {
+  switch (value) {
+    case 'draft':
+      return '초안';
+    case 'confirmed':
+      return '확정';
+    case 'void':
+      return '무효';
+    default:
+      return value ?? '-';
+  }
+}
+
+export function formatDeliverySnapshotStatusLabel(value: string | null | undefined) {
+  switch (value) {
+    case 'active':
+      return '활성';
+    case 'superseded':
+      return '대체됨';
+    default:
+      return value ?? '-';
+  }
+}
+
+export function formatNullableBooleanLabel(value: boolean | null | undefined) {
+  if (value == null) {
+    return '확인 불가';
+  }
+
+  return value ? '예' : '아니오';
 }

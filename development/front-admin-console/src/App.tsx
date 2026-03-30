@@ -5,6 +5,7 @@ import { login, logout } from './api/auth';
 import { createHttpClient, DEFAULT_API_BASE_URL, getErrorMessage, type HttpClient, type SessionPayload } from './api/http';
 import { Layout } from './components/Layout';
 import { RequireAdmin } from './components/RequireAdmin';
+import { SettlementSectionLayout } from './components/SettlementSectionLayout';
 import { AccountDetailPage } from './pages/AccountDetailPage';
 import { AccountFormPage } from './pages/AccountFormPage';
 import { AccountsPage } from './pages/AccountsPage';
@@ -17,7 +18,11 @@ import { DriversPage } from './pages/DriversPage';
 import { FleetDetailPage } from './pages/FleetDetailPage';
 import { FleetFormPage } from './pages/FleetFormPage';
 import { LoginPage } from './pages/LoginPage';
-import { SettlementsPage } from './pages/SettlementsPage';
+import { SettlementCriteriaPage } from './pages/SettlementCriteriaPage';
+import { SettlementInputsPage } from './pages/SettlementInputsPage';
+import { SettlementOverviewPage } from './pages/SettlementOverviewPage';
+import { SettlementResultsPage } from './pages/SettlementResultsPage';
+import { SettlementRunsPage } from './pages/SettlementRunsPage';
 import { TerminalsPage } from './pages/TerminalsPage';
 import { VehicleAssignmentsPage } from './pages/VehicleAssignmentsPage';
 import { VehicleDetailPage } from './pages/VehicleDetailPage';
@@ -122,7 +127,14 @@ export default function App() {
             <Route path="/vehicles/:vehicleRef/accesses/new" element={<VehicleOperatorAccessFormPage client={client} />} />
             <Route path="/terminals" element={<TerminalsPage client={client} />} />
             <Route path="/vehicle-assignments" element={<VehicleAssignmentsPage client={client} />} />
-            <Route path="/settlements" element={<SettlementsPage client={client} />} />
+            <Route path="/settlements" element={<SettlementSectionLayout />}>
+              <Route index element={<Navigate replace to="/settlements/overview" />} />
+              <Route path="overview" element={<SettlementOverviewPage client={client} />} />
+              <Route path="criteria" element={<SettlementCriteriaPage client={client} />} />
+              <Route path="inputs" element={<SettlementInputsPage client={client} />} />
+              <Route path="runs" element={<SettlementRunsPage client={client} />} />
+              <Route path="results" element={<SettlementResultsPage client={client} />} />
+            </Route>
             <Route path="*" element={<Navigate replace to="/accounts" />} />
           </Route>
         </Routes>
