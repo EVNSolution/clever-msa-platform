@@ -60,14 +60,19 @@ export function Driver360Page({ client }: Driver360PageProps) {
   return (
     <div className="stack large-gap">
       <section className="panel">
-        <div className="panel-header">
+        <div className="panel-header panel-header-inline">
           <div>
             <p className="panel-kicker">배송원 360</p>
             <h2>배송원 요약</h2>
           </div>
-          <Link className="button ghost small" to="/drivers">
-            배송원 목록
-          </Link>
+          <div className="inline-actions">
+            <Link className="button ghost small" to="/drivers">
+              배송원 목록
+            </Link>
+            <Link className="button ghost small" to={`/drivers/${driverRef}/edit`}>
+              배송원 수정
+            </Link>
+          </div>
         </div>
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
         {isLoading ? <p className="empty-state">배송원 요약을 불러오는 중입니다...</p> : null}
@@ -82,6 +87,10 @@ export function Driver360Page({ client }: Driver360PageProps) {
                 <h3>{summary.driver_name}</h3>
               </div>
               <dl className="detail-list">
+                <div>
+                  <dt>EV ID</dt>
+                  <dd>{summary.ev_id}</dd>
+                </div>
                 <div>
                   <dt>연락처</dt>
                   <dd>{summary.phone_number}</dd>

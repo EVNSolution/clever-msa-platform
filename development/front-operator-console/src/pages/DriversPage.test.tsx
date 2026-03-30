@@ -61,17 +61,13 @@ describe('DriversPage', () => {
       </MemoryRouter>,
     );
 
-    await screen.findByText(/배송원 등록/i);
+    await screen.findByRole('heading', { name: /user@example.com/i });
     await waitFor(() => {
-      expect(screen.getByRole('link', { name: /보기/i })).toHaveAttribute(
-        'href',
-        '/drivers/1',
-      );
+      expect(screen.getByRole('link', { name: '보기' })).toHaveAttribute('href', '/drivers/1');
     });
-    expect(screen.getByLabelText(/이름/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/ev id/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/연락처/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/주소/i)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /배송원 생성/i })).toHaveAttribute('href', '/drivers/new');
+    expect(screen.getByRole('link', { name: '수정' })).toHaveAttribute('href', '/drivers/1/edit');
+    expect(screen.queryByLabelText(/이름/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/org unit id/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/employment status/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/qualification status/i)).not.toBeInTheDocument();

@@ -1,4 +1,5 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
 import { DriversPage } from './DriversPage';
@@ -11,7 +12,6 @@ const apiMocks = vi.hoisted(() => ({
   updateDriver: vi.fn(),
   listCompanies: vi.fn(),
   listFleets: vi.fn(),
-  listOrgUnits: vi.fn(),
 }));
 
 vi.mock('../api/accounts', () => ({
@@ -28,17 +28,28 @@ vi.mock('../api/drivers', () => ({
 vi.mock('../api/organization', () => ({
   listCompanies: apiMocks.listCompanies,
   listFleets: apiMocks.listFleets,
-  listOrgUnits: apiMocks.listOrgUnits,
 }));
 
 describe('Admin DriversPage', () => {
-  it('renders only the trimmed driver profile fields', async () => {
-    apiMocks.listDrivers.mockResolvedValue([]);
+  it('renders driver list with separated view and edit routes', async () => {
+    apiMocks.listDrivers.mockResolvedValue([
+      {
+        driver_id: '90000000-0000-0000-0000-000000000001',
+        route_no: 1,
+        account_id: '20000000-0000-0000-0000-000000000001',
+        company_id: '30000000-0000-0000-0000-000000000001',
+        fleet_id: '40000000-0000-0000-0000-000000000001',
+        name: 'Kim Driver',
+        ev_id: 'EV-001',
+        phone_number: '010-1234-5678',
+        address: 'Seoul',
+      },
+    ]);
     apiMocks.listAccounts.mockResolvedValue([
       {
         account_id: '20000000-0000-0000-0000-000000000001',
         email: 'driver@example.com',
-        role: 'driver',
+        role: 'user',
         is_active: true,
       },
     ]);
@@ -50,33 +61,17 @@ describe('Admin DriversPage', () => {
         name: 'Seed Fleet',
       },
     ]);
-    apiMocks.listOrgUnits.mockResolvedValue([]);
-
     render(
-      <DriversPage
-        account={{
-          account_id: '10000000-0000-0000-0000-000000000001',
-          email: 'admin@example.com',
-          role: 'admin',
-          is_active: true,
-        }}
-        client={{ request: vi.fn() }}
-      />,
+      <MemoryRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
+        <DriversPage client={{ request: vi.fn() }} />
+      </MemoryRouter>,
     );
 
-    await screen.findByText(/배송원 관리/i);
-    await waitFor(() => {
-      expect(apiMocks.listOrgUnits).not.toHaveBeenCalled();
-    });
-    expect(screen.getByLabelText(/이름/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^계정$/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^회사$/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^플릿$/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/ev id/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/연락처/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/주소/i)).toBeInTheDocument();
+    await screen.findByRole('heading', { name: /driver profile hr 관리자 조회/i });
+    expect(screen.getByRole('link', { name: /배송원 생성/i })).toHaveAttribute('href', '/drivers/new');
+    expect(screen.getByRole('link', { name: '보기' })).toHaveAttribute('href', '/drivers/1');
+    expect(screen.getByRole('link', { name: '수정' })).toHaveAttribute('href', '/drivers/1/edit');
+    expect(screen.queryByLabelText(/이름/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/org unit id/i)).not.toBeInTheDocument();
-    expect(screen.queryByLabelText(/employment status/i)).not.toBeInTheDocument();
-    expect(screen.queryByLabelText(/qualification status/i)).not.toBeInTheDocument();
   });
 });

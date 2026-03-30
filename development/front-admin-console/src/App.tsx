@@ -11,6 +11,8 @@ import { AccountsPage } from './pages/AccountsPage';
 import { CompaniesPage } from './pages/CompaniesPage';
 import { CompanyDetailPage } from './pages/CompanyDetailPage';
 import { CompanyFormPage } from './pages/CompanyFormPage';
+import { DriverDetailPage } from './pages/DriverDetailPage';
+import { DriverFormPage } from './pages/DriverFormPage';
 import { DriversPage } from './pages/DriversPage';
 import { FleetDetailPage } from './pages/FleetDetailPage';
 import { FleetFormPage } from './pages/FleetFormPage';
@@ -106,7 +108,10 @@ export default function App() {
             <Route path="/companies/:companyRef/fleets/new" element={<FleetFormPage client={client} mode="create" />} />
             <Route path="/companies/:companyRef/fleets/:fleetRef" element={<FleetDetailPage client={client} />} />
             <Route path="/companies/:companyRef/fleets/:fleetRef/edit" element={<FleetFormPage client={client} mode="edit" />} />
-            <Route path="/drivers" element={<DriversPage account={session.account} client={client} />} />
+            <Route path="/drivers" element={<DriversPage client={client} />} />
+            <Route path="/drivers/new" element={<DriverFormPage account={session.account} client={client} mode="create" />} />
+            <Route path="/drivers/:driverRef" element={<DriverDetailPage client={client} />} />
+            <Route path="/drivers/:driverRef/edit" element={<DriverFormPage account={session.account} client={client} mode="edit" />} />
             <Route path="/vehicles" element={<VehiclesPage client={client} />} />
             <Route path="/terminals" element={<TerminalsPage client={client} />} />
             <Route path="/vehicle-assignments" element={<VehicleAssignmentsPage client={client} />} />

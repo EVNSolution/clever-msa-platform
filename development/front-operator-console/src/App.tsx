@@ -6,6 +6,7 @@ import { createHttpClient, DEFAULT_API_BASE_URL, getErrorMessage, type HttpClien
 import { Layout } from './components/Layout';
 import { DashboardPage } from './pages/DashboardPage';
 import { Driver360Page } from './pages/Driver360Page';
+import { DriverFormPage } from './pages/DriverFormPage';
 import { DriversPage } from './pages/DriversPage';
 import { LoginPage } from './pages/LoginPage';
 import { SettlementsPage } from './pages/SettlementsPage';
@@ -85,7 +86,9 @@ export default function App() {
         <Route element={<Layout account={session.account} onLogout={handleLogout} />}>
           <Route path="/" element={<DashboardPage account={session.account} client={client} />} />
           <Route path="/drivers" element={<DriversPage account={session.account} client={client} />} />
+          <Route path="/drivers/new" element={<DriverFormPage account={session.account} client={client} mode="create" />} />
           <Route path="/drivers/:driverRef" element={<Driver360Page client={client} />} />
+          <Route path="/drivers/:driverRef/edit" element={<DriverFormPage account={session.account} client={client} mode="edit" />} />
           <Route path="/vehicles" element={<VehiclesPage client={client} />} />
           <Route path="/settlements" element={<SettlementsPage client={client} />} />
           <Route path="*" element={<Navigate replace to="/" />} />

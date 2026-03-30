@@ -16,10 +16,9 @@
 
 ## 점검 결과 요약
 
-1. `accounts`, `companies`, `fleets`는 규칙에 맞게 정리됐다.
-2. `driver` 브라우저 URL은 `route_no`로 정리됐지만, 화면 구조는 아직 혼합이 남아 있다.
-3. `vehicles`, `terminals`, `vehicle-assignments`, `settlements`는 대부분 `목록 + 입력 + 상태 변경`이 한 페이지에 같이 있다.
-4. 현재 가장 큰 위반 패턴은 `목록/생성/수정 혼합`이다.
+1. `accounts`, `companies`, `fleets`, `drivers`는 규칙에 맞게 정리됐다.
+2. `vehicles`, `terminals`, `vehicle-assignments`, `settlements`는 대부분 `목록 + 입력 + 상태 변경`이 한 페이지에 같이 있다.
+3. 현재 가장 큰 위반 패턴은 `목록/생성/수정 혼합`이다.
 
 ## Operator Audit
 
@@ -35,16 +34,15 @@
 
 ### 3. `drivers`
 
-- 상태: 부분 적합
+- 상태: 적합
 - 현재 라우트
   - `/drivers`
+  - `/drivers/new`
   - `/drivers/:driverRef`
-- 맞는 점
-  - 상세 라우트가 분리돼 있다.
+  - `/drivers/:driverRef/edit`
+- 근거
+  - 목록, 생성, 상세, 수정이 분리돼 있다.
   - 상세 URL은 `route_no`를 사용한다.
-- 위반 점
-  - `/drivers` 화면이 목록과 생성/수정 폼을 같이 가진다.
-  - 수정이 별도 라우트가 아니라 목록 화면 안에서 열린다.
 
 ### 4. `vehicles`
 
@@ -104,13 +102,15 @@
 
 ### 4. `drivers`
 
-- 상태: 위반
+- 상태: 적합
 - 현재 라우트
   - `/drivers`
-- 위반 점
-  - 목록과 생성/수정 폼이 한 화면에 같이 있다.
-  - 상세 라우트가 없다.
-  - 수정 라우트가 없다.
+  - `/drivers/new`
+  - `/drivers/:driverRef`
+  - `/drivers/:driverRef/edit`
+- 근거
+  - 목록, 생성, 상세, 수정이 분리돼 있다.
+  - 브라우저 URL이 `route_no`를 따른다.
 
 ### 5. `vehicles`
 
@@ -152,14 +152,12 @@
 
 ## 우선 정리 순서
 
-1. `admin drivers`
-2. `operator drivers`
-3. `admin vehicles`
-4. `admin terminals`
-5. `admin vehicle-assignments`
-6. `admin settlements`
-7. `operator vehicles`
-8. `operator settlements`
+1. `admin vehicles`
+2. `admin terminals`
+3. `admin vehicle-assignments`
+4. `admin settlements`
+5. `operator vehicles`
+6. `operator settlements`
 
 ## 순서 기준
 

@@ -1,10 +1,14 @@
 import type { DriverProfile } from '../types';
 import type { HttpClient } from './http';
 
-export type DriverPayload = Omit<DriverProfile, 'driver_id'>;
+export type DriverPayload = Omit<DriverProfile, 'driver_id' | 'route_no'>;
 
 export function listDrivers(client: HttpClient) {
   return client.request<DriverProfile[]>('/drivers/');
+}
+
+export function getDriver(client: HttpClient, driverRef: string) {
+  return client.request<DriverProfile>(`/drivers/${driverRef}/`);
 }
 
 export function createDriver(client: HttpClient, payload: DriverPayload) {

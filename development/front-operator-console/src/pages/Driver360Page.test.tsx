@@ -53,7 +53,9 @@ describe('Driver360Page', () => {
     renderPage();
 
     expect(await screen.findByRole('heading', { name: /kim driver/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /배송원 수정/i })).toHaveAttribute('href', '/drivers/1/edit');
     expect(screen.getByText(/driver@example.com/i)).toBeInTheDocument();
+    expect(screen.getByText(/EV-001/i)).toBeInTheDocument();
     expect(screen.getByText(/125000.50/i)).toBeInTheDocument();
     expect(screen.getByText(/주의 사항이 없습니다/i)).toBeInTheDocument();
   });
