@@ -22,7 +22,11 @@ export function formatProtectedIdentifier(
     return missingLabel;
   }
 
-  if (/^\d{8,}$/.test(normalized)) {
+  if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(normalized)) {
+    return '비공개';
+  }
+
+  if (/^[0-9-]{8,}$/.test(normalized)) {
     return '비공개';
   }
 

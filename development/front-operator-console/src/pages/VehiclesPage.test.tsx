@@ -147,8 +147,8 @@ describe('VehiclesPage', () => {
     expect(within(table).getByText('12가3456')).toBeInTheDocument();
     expect(within(table).getByText('Manufacturer Co')).toBeInTheDocument();
     expect(within(table).getByText('Operator Co')).toBeInTheDocument();
-    expect(within(table).getByText('10000000-0000-0000-0000-000000000001')).toBeInTheDocument();
-    expect(within(table).getByText('비공개')).toBeInTheDocument();
+    expect(within(table).getByText('배정됨')).toBeInTheDocument();
+    expect(within(table).getByText('설치됨')).toBeInTheDocument();
     expect(within(table).queryByRole('columnheader', { name: /fleet/i })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /상세 보기/i }));
@@ -162,11 +162,9 @@ describe('VehiclesPage', () => {
 
     expect(await getDetailScope().findByText('Manufacturer Co')).toBeInTheDocument();
     expect(getDetailScope().getByText('Operator Co')).toBeInTheDocument();
-    expect(getDetailScope().getByText('10000000-0000-0000-0000-000000000001')).toBeInTheDocument();
-    expect(getDetailScope().getByText('70000000-0000-0000-0000-000000000001')).toBeInTheDocument();
     expect(getDetailScope().getByText('설치됨')).toBeInTheDocument();
+    expect(getDetailScope().getAllByText('배정됨').length).toBeGreaterThanOrEqual(2);
     expect(getDetailScope().getByText('2026-03-20T09:55:00Z')).toBeInTheDocument();
-    expect(getDetailScope().getAllByText('비공개').length).toBeGreaterThanOrEqual(2);
     expect(getDetailScope().getByText('2.1')).toBeInTheDocument();
     expect(getDetailScope().getByText('3.4.5')).toBeInTheDocument();
     expect(getDetailScope().getByText('37.5665, 126.978')).toBeInTheDocument();
@@ -175,6 +173,11 @@ describe('VehiclesPage', () => {
     expect(getDetailScope().getByText('active_operator_company_name_missing')).toBeInTheDocument();
     expect(getDetailScope().queryByText('플릿')).not.toBeInTheDocument();
     expect(getDetailScope().queryByText('플릿 ID')).not.toBeInTheDocument();
+    expect(getDetailScope().queryByText('제조사 회사 ID')).not.toBeInTheDocument();
+    expect(getDetailScope().queryByText('운영사 회사 ID')).not.toBeInTheDocument();
+    expect(getDetailScope().queryByText('단말기 ID')).not.toBeInTheDocument();
+    expect(getDetailScope().queryByText('IMEI')).not.toBeInTheDocument();
+    expect(getDetailScope().queryByText('ICCID')).not.toBeInTheDocument();
   });
 
   it('shows Unassigned when there is no current assignment or active operator', async () => {
@@ -254,7 +257,6 @@ describe('VehiclesPage', () => {
 
     const detailSection = getDetailSection();
     expect(await within(detailSection).findByText('운영사 미상')).toBeInTheDocument();
-    expect(within(detailSection).getByText('30000000-0000-0000-0000-000000000002')).toBeInTheDocument();
     expect(within(detailSection).getByText('active_operator_company_name_missing')).toBeInTheDocument();
   });
 

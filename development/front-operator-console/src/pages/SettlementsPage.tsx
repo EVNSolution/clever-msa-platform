@@ -5,7 +5,6 @@ import { getErrorMessage, type HttpClient } from '../api/http';
 import type { SettlementItem, SettlementRun } from '../types';
 import {
   formatPayoutStatusLabel,
-  formatProtectedIdentifier,
   formatSettlementStatusLabel,
 } from '../uiLabels';
 
@@ -82,7 +81,6 @@ export function SettlementsPage({ client }: SettlementsPageProps) {
               >
                 <span>{formatSettlementStatusLabel(run.status)}</span>
                 <strong>{run.period_start} → {run.period_end}</strong>
-                <code>{formatProtectedIdentifier(run.settlement_run_id)}</code>
               </button>
             ))}
           </div>
@@ -102,8 +100,7 @@ export function SettlementsPage({ client }: SettlementsPageProps) {
           <table className="table compact">
             <thead>
               <tr>
-                <th>항목 ID</th>
-                <th>배송원 ID</th>
+                <th>대상</th>
                 <th>금액</th>
                 <th>지급 상태</th>
               </tr>
@@ -111,8 +108,7 @@ export function SettlementsPage({ client }: SettlementsPageProps) {
             <tbody>
               {filteredItems.map((item) => (
                 <tr key={item.settlement_item_id}>
-                  <td><code>{formatProtectedIdentifier(item.settlement_item_id)}</code></td>
-                  <td><code>{formatProtectedIdentifier(item.driver_id)}</code></td>
+                  <td>{item.driver_id ? '배송원 비공개' : '-'}</td>
                   <td>{item.amount}</td>
                   <td>{formatPayoutStatusLabel(item.payout_status)}</td>
                 </tr>

@@ -7,7 +7,6 @@ import type { Driver360Summary } from '../types';
 import {
   formatBooleanLabel,
   formatPayoutStatusLabel,
-  formatProtectedIdentifier,
   formatRoleLabel,
   formatSettlementStatusLabel,
 } from '../uiLabels';
@@ -84,14 +83,6 @@ export function Driver360Page({ client }: Driver360PageProps) {
               </div>
               <dl className="detail-list">
                 <div>
-                  <dt>배송원 ID</dt>
-                  <dd><code>{formatProtectedIdentifier(summary.driver_id)}</code></dd>
-                </div>
-                <div>
-                  <dt>EV ID</dt>
-                  <dd>{formatProtectedIdentifier(summary.ev_id)}</dd>
-                </div>
-                <div>
                   <dt>연락처</dt>
                   <dd>{summary.phone_number}</dd>
                 </div>
@@ -113,16 +104,8 @@ export function Driver360Page({ client }: Driver360PageProps) {
                   <dd>{summary.company_name ?? '미확인 회사'}</dd>
                 </div>
                 <div>
-                  <dt>회사 ID</dt>
-                  <dd><code>{formatProtectedIdentifier(summary.company_id)}</code></dd>
-                </div>
-                <div>
                   <dt>플릿</dt>
                   <dd>{summary.fleet_name ?? '미확인 플릿'}</dd>
-                </div>
-                <div>
-                  <dt>플릿 ID</dt>
-                  <dd><code>{formatProtectedIdentifier(summary.fleet_id)}</code></dd>
                 </div>
               </dl>
             </article>
@@ -136,10 +119,6 @@ export function Driver360Page({ client }: Driver360PageProps) {
               </div>
               {summary.account_id ? (
                 <dl className="detail-list">
-                  <div>
-                    <dt>계정 ID</dt>
-                    <dd><code>{formatProtectedIdentifier(summary.account_id)}</code></dd>
-                  </div>
                   <div>
                     <dt>이메일</dt>
                     <dd>{summary.account_email}</dd>
@@ -165,10 +144,6 @@ export function Driver360Page({ client }: Driver360PageProps) {
               </div>
               {summary.latest_settlement_run_id ? (
                 <dl className="detail-list">
-                  <div>
-                    <dt>실행 ID</dt>
-                    <dd><code>{formatProtectedIdentifier(summary.latest_settlement_run_id)}</code></dd>
-                  </div>
                   <div>
                     <dt>기간</dt>
                     <dd>

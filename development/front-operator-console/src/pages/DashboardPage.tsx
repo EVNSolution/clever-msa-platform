@@ -4,7 +4,7 @@ import { getMe } from '../api/auth';
 import { listCompanies, listFleets } from '../api/organization';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { AccountSummary, Company, Fleet } from '../types';
-import { formatProtectedIdentifier, formatRoleLabel } from '../uiLabels';
+import { formatRoleLabel } from '../uiLabels';
 
 type DashboardPageProps = {
   account: AccountSummary;
@@ -17,6 +17,10 @@ export function DashboardPage({ account, client }: DashboardPageProps) {
   const [fleets, setFleets] = useState<Fleet[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  function getCompanyName(companyId: string) {
+    return companies.find((company) => company.company_id === companyId)?.name ?? '미확인 회사';
+  }
 
   useEffect(() => {
     let ignore = false;
@@ -91,14 +95,12 @@ export function DashboardPage({ account, client }: DashboardPageProps) {
               <thead>
                 <tr>
                   <th>이름</th>
-                  <th>ID</th>
                 </tr>
               </thead>
               <tbody>
                 {companies.map((company) => (
                   <tr key={company.company_id}>
                     <td>{company.name}</td>
-                    <td><code>{formatProtectedIdentifier(company.company_id)}</code></td>
                   </tr>
                 ))}
               </tbody>
@@ -127,7 +129,7 @@ export function DashboardPage({ account, client }: DashboardPageProps) {
                 {fleets.map((fleet) => (
                   <tr key={fleet.fleet_id}>
                     <td>{fleet.name}</td>
-                    <td><code>{formatProtectedIdentifier(fleet.company_id)}</code></td>
+                    <td>{getCompanyName(fleet.company_id)}</td>
                   </tr>
                 ))}
               </tbody>

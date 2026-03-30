@@ -63,7 +63,7 @@ describe('VehicleAssignmentsPage', () => {
       });
     });
 
-    expect(await screen.findByText('10000000-0000-0000-0000-000000000001')).toBeInTheDocument();
+    expect(await screen.findAllByText('비공개')).not.toHaveLength(0);
     expect(screen.getByText('배정됨')).toBeInTheDocument();
   });
 

@@ -50,7 +50,7 @@ describe('DashboardPage', () => {
       />,
     );
 
-    await screen.findByText('Seed Company');
+    await screen.findAllByText('Seed Company');
     await waitFor(() => {
       expect(apiMocks.listOrgUnits).not.toHaveBeenCalled();
     });

@@ -37,19 +37,15 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
   }
 
   function getCurrentDriverLabel(vehicle: VehicleOpsSummary) {
-    return formatProtectedIdentifier(vehicle.current_assignment?.driver_id, { missingLabel: '미배정' });
-  }
-
-  function shortenIdentifier(value: string) {
-    return `${value.slice(0, 8)}...`;
+    if (vehicle.current_assignment?.driver_id) {
+      return '배정됨';
+    }
+    return '미배정';
   }
 
   function getCurrentTerminalLabel(vehicle: VehicleOpsSummary) {
-    if (vehicle.current_terminal?.imei) {
-      return formatProtectedIdentifier(vehicle.current_terminal.imei);
-    }
-    if (vehicle.current_terminal?.terminal_id) {
-      return shortenIdentifier(vehicle.current_terminal.terminal_id);
+    if (vehicle.current_terminal?.terminal_id || vehicle.current_terminal?.imei) {
+      return '설치됨';
     }
     return '미설치';
   }
@@ -189,28 +185,16 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
               <dd>{getManufacturerName(selectedVehicle)}</dd>
             </div>
             <div>
-              <dt>제조사 회사 ID</dt>
-              <dd><code>{formatProtectedIdentifier(selectedVehicle.manufacturer_company.company_id)}</code></dd>
-            </div>
-            <div>
               <dt>현재 운영사</dt>
               <dd>{getActiveOperatorName(selectedVehicle)}</dd>
-            </div>
-            <div>
-              <dt>운영사 회사 ID</dt>
-              <dd><code>{formatProtectedIdentifier(selectedVehicle.active_operator_company.company_id, { missingLabel: '미배정' })}</code></dd>
             </div>
             <div>
               <dt>현재 배송원</dt>
               <dd>{getCurrentDriverLabel(selectedVehicle)}</dd>
             </div>
             <div>
-              <dt>현재 배정</dt>
-              <dd><code>{formatProtectedIdentifier(selectedVehicle.current_assignment?.driver_vehicle_assignment_id, { missingLabel: '미배정' })}</code></dd>
-            </div>
-            <div>
-              <dt>단말기 ID</dt>
-              <dd><code>{formatProtectedIdentifier(getTerminalDetailValue(selectedVehicle.current_terminal?.terminal_id), { missingLabel: '미설치' })}</code></dd>
+              <dt>배정 상태</dt>
+              <dd>{selectedVehicle.current_assignment ? '배정됨' : '미배정'}</dd>
             </div>
             <div>
               <dt>설치 상태</dt>
@@ -225,14 +209,6 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
             <div>
               <dt>설치 시각</dt>
               <dd>{getTerminalDetailValue(selectedVehicle.current_terminal?.installed_at)}</dd>
-            </div>
-            <div>
-              <dt>IMEI</dt>
-              <dd>{formatProtectedIdentifier(getTerminalDetailValue(selectedVehicle.current_terminal?.imei), { missingLabel: '미설치' })}</dd>
-            </div>
-            <div>
-              <dt>ICCID</dt>
-              <dd>{formatProtectedIdentifier(getTerminalDetailValue(selectedVehicle.current_terminal?.iccid), { missingLabel: '미설치' })}</dd>
             </div>
             <div>
               <dt>펌웨어 버전</dt>
