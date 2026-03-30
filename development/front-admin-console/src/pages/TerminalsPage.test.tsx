@@ -59,12 +59,12 @@ describe('Admin TerminalsPage', () => {
 
     render(<TerminalsPage client={{ request: vi.fn() }} />);
 
-    await screen.findByRole('heading', { name: /create terminal/i });
+    await screen.findByRole('heading', { name: /단말기 생성/i });
 
     expect(screen.queryByLabelText(/latitude/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/diagnostic/i)).not.toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText(/manufacturer company id/i), {
+    fireEvent.change(screen.getByLabelText(/제조사 회사 id/i), {
       target: { value: '30000000-0000-0000-0000-000000000001' },
     });
     fireEvent.change(screen.getByLabelText(/^imei$/i), {
@@ -73,17 +73,17 @@ describe('Admin TerminalsPage', () => {
     fireEvent.change(screen.getByLabelText(/^iccid$/i), {
       target: { value: '8982123456789012345' },
     });
-    fireEvent.change(screen.getByLabelText(/firmware version/i), {
+    fireEvent.change(screen.getByLabelText(/펌웨어 버전/i), {
       target: { value: '1.0.0' },
     });
-    fireEvent.change(screen.getByLabelText(/protocol version/i), {
+    fireEvent.change(screen.getByLabelText(/프로토콜 버전/i), {
       target: { value: '1.0' },
     });
-    fireEvent.change(screen.getByLabelText(/app version/i), {
+    fireEvent.change(screen.getByLabelText(/앱 버전/i), {
       target: { value: '1.0.0' },
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /create terminal/i }));
+    fireEvent.click(screen.getByRole('button', { name: /단말기 생성/i }));
 
     await waitFor(() => {
       expect(apiMocks.createTerminal).toHaveBeenCalledWith(expect.anything(), {
@@ -106,14 +106,15 @@ describe('Admin TerminalsPage', () => {
     render(<TerminalsPage client={{ request: vi.fn() }} />);
 
     await screen.findByText('356123456789012');
-    fireEvent.click(screen.getByRole('button', { name: /edit terminal/i }));
+    fireEvent.click(screen.getByRole('button', { name: /단말기 수정/i }));
 
     expect(screen.getByDisplayValue('356123456789012')).toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText(/terminal status/i), {
+    fireEvent.change(screen.getByLabelText(/단말기 상태/i), {
       target: { value: 'inactive' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /update terminal/i }));
+    const formSection = screen.getByRole('heading', { name: /단말기 수정/i }).closest('section') as HTMLElement;
+    fireEvent.click(within(formSection).getByRole('button', { name: /단말기 수정/i }));
 
     await waitFor(() => {
       expect(apiMocks.updateTerminal).toHaveBeenCalledWith(
@@ -155,13 +156,13 @@ describe('Admin TerminalsPage', () => {
 
     await screen.findByText('356123456789012');
 
-    fireEvent.change(screen.getByLabelText(/installation terminal id/i), {
+    fireEvent.change(screen.getByLabelText(/설치 단말기 id/i), {
       target: { value: '70000000-0000-0000-0000-000000000001' },
     });
-    fireEvent.change(screen.getByLabelText(/installation vehicle id/i), {
+    fireEvent.change(screen.getByLabelText(/설치 차량 id/i), {
       target: { value: '50000000-0000-0000-0000-000000000001' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /create installation/i }));
+    fireEvent.click(screen.getByRole('button', { name: /설치 생성/i }));
 
     await waitFor(() => {
       expect(apiMocks.createTerminalInstallation).toHaveBeenCalledWith(expect.anything(), {
@@ -173,8 +174,8 @@ describe('Admin TerminalsPage', () => {
       });
     });
 
-    const registrySection = screen.getByRole('heading', { name: /installation registry/i }).closest('section') as HTMLElement;
-    const removeButton = await within(registrySection).findByRole('button', { name: /remove installation/i });
+    const registrySection = screen.getByRole('heading', { name: /설치 목록/i }).closest('section') as HTMLElement;
+    const removeButton = await within(registrySection).findByRole('button', { name: /설치 해제/i });
     fireEvent.click(removeButton);
 
     await waitFor(() => {

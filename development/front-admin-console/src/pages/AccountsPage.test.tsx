@@ -25,7 +25,7 @@ describe('AccountsPage', () => {
       expect(apiMocks.listAccounts).toHaveBeenCalled();
     });
 
-    expect(screen.getByLabelText(/^email$/i)).toHaveAttribute('autocomplete', 'email');
-    expect(screen.getByLabelText(/password/i)).toHaveAttribute('autocomplete', 'new-password');
+    expect(screen.getByLabelText(/^이메일$/i)).toHaveAttribute('autocomplete', 'email');
+    expect(screen.getByLabelText(/비밀번호/i)).toHaveAttribute('autocomplete', 'new-password');
   });
 });

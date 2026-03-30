@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { listSettlementItems, listSettlementRuns } from '../api/settlements';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { SettlementItem, SettlementRun } from '../types';
+import { formatPayoutStatusLabel, formatSettlementStatusLabel } from '../uiLabels';
 
 type SettlementsPageProps = {
   client: HttpClient;
@@ -61,11 +62,11 @@ export function SettlementsPage({ client }: SettlementsPageProps) {
       {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Settlement Runs</p>
-          <h2>Read-only settlement placeholder</h2>
+          <p className="panel-kicker">정산 실행</p>
+          <h2>읽기 전용 정산 조회</h2>
         </div>
         {isLoading ? (
-          <p className="empty-state">Loading settlement runs...</p>
+          <p className="empty-state">정산 실행을 불러오는 중입니다...</p>
         ) : runs.length ? (
           <div className="run-list">
             {runs.map((run) => (
@@ -75,32 +76,32 @@ export function SettlementsPage({ client }: SettlementsPageProps) {
                 onClick={() => setSelectedRunId(run.settlement_run_id)}
                 type="button"
               >
-                <span>{run.status}</span>
+                <span>{formatSettlementStatusLabel(run.status)}</span>
                 <strong>{run.period_start} → {run.period_end}</strong>
                 <code>{run.settlement_run_id}</code>
               </button>
             ))}
           </div>
         ) : (
-          <p className="empty-state">No settlement runs seeded yet.</p>
+          <p className="empty-state">등록된 정산 실행이 없습니다.</p>
         )}
       </section>
 
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Settlement Items</p>
-          <h2>{selectedRunId ? 'Items for selected run' : 'All placeholder items'}</h2>
+          <p className="panel-kicker">정산 항목</p>
+          <h2>{selectedRunId ? '선택한 실행의 항목' : '전체 정산 항목'}</h2>
         </div>
         {isLoading ? (
-          <p className="empty-state">Loading settlement items...</p>
+          <p className="empty-state">정산 항목을 불러오는 중입니다...</p>
         ) : filteredItems.length ? (
           <table className="table compact">
             <thead>
               <tr>
-                <th>Item ID</th>
-                <th>Driver ID</th>
-                <th>Amount</th>
-                <th>Payout Status</th>
+                <th>항목 ID</th>
+                <th>배송원 ID</th>
+                <th>금액</th>
+                <th>지급 상태</th>
               </tr>
             </thead>
             <tbody>
@@ -109,13 +110,13 @@ export function SettlementsPage({ client }: SettlementsPageProps) {
                   <td><code>{item.settlement_item_id}</code></td>
                   <td><code>{item.driver_id}</code></td>
                   <td>{item.amount}</td>
-                  <td>{item.payout_status}</td>
+                  <td>{formatPayoutStatusLabel(item.payout_status)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <p className="empty-state">No settlement items found for this run.</p>
+          <p className="empty-state">해당 실행의 정산 항목이 없습니다.</p>
         )}
       </section>
     </div>

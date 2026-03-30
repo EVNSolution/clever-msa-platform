@@ -41,7 +41,7 @@ export default function App() {
       onUnauthorized: () => {
         sessionRef.current = null;
         setSession(null);
-        setAuthError('Session expired. Please sign in again.');
+        setAuthError('세션이 만료되었습니다. 다시 로그인하세요.');
       },
     });
   }
@@ -56,7 +56,7 @@ export default function App() {
       sessionRef.current = nextSession;
       setSession(nextSession);
     } catch (error) {
-      setAuthError(getErrorMessage(error, 'Unable to sign in.'));
+      setAuthError(getErrorMessage(error, '로그인할 수 없습니다.'));
     } finally {
       setIsSubmitting(false);
     }

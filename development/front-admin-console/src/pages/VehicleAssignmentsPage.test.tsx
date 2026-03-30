@@ -39,18 +39,18 @@ describe('VehicleAssignmentsPage', () => {
 
     render(<VehicleAssignmentsPage client={{ request: vi.fn() }} />);
 
-    await screen.findByRole('heading', { name: /create assignment/i });
+    await screen.findByRole('heading', { name: /배정 생성/i });
 
-    fireEvent.change(screen.getByLabelText(/driver id/i), {
+    fireEvent.change(screen.getByLabelText(/배송원 id/i), {
       target: { value: '10000000-0000-0000-0000-000000000001' },
     });
-    fireEvent.change(screen.getByLabelText(/vehicle id/i), {
+    fireEvent.change(screen.getByLabelText(/차량 id/i), {
       target: { value: '50000000-0000-0000-0000-000000000001' },
     });
-    fireEvent.change(screen.getByLabelText(/operator company id/i), {
+    fireEvent.change(screen.getByLabelText(/운영사 회사 id/i), {
       target: { value: '30000000-0000-0000-0000-000000000001' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /create assignment/i }));
+    fireEvent.click(screen.getByRole('button', { name: /배정 생성/i }));
 
     await waitFor(() => {
       expect(apiMocks.createAssignment).toHaveBeenCalledWith(expect.anything(), {
@@ -64,7 +64,7 @@ describe('VehicleAssignmentsPage', () => {
     });
 
     expect(await screen.findByText('10000000-0000-0000-0000-000000000001')).toBeInTheDocument();
-    expect(screen.getByText('assigned')).toBeInTheDocument();
+    expect(screen.getByText('배정됨')).toBeInTheDocument();
   });
 
   it('unassigns an active assignment', async () => {
@@ -77,8 +77,8 @@ describe('VehicleAssignmentsPage', () => {
 
     render(<VehicleAssignmentsPage client={{ request: vi.fn() }} />);
 
-    const registrySection = screen.getByRole('heading', { name: /assignment registry/i }).closest('section') as HTMLElement;
-    const unassignButton = await within(registrySection).findByRole('button', { name: /unassign/i });
+    const registrySection = screen.getByRole('heading', { name: /배정 목록/i }).closest('section') as HTMLElement;
+    const unassignButton = await within(registrySection).findByRole('button', { name: /배정 해제/i });
     fireEvent.click(unassignButton);
 
     await waitFor(() => {

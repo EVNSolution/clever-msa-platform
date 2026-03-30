@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom';
 
 import type { AccountSummary } from '../types';
+import { formatRoleLabel } from '../uiLabels';
 
 type LayoutProps = {
   account: AccountSummary;
@@ -13,32 +14,32 @@ export function Layout({ account, onLogout }: LayoutProps) {
       <header className="topbar">
         <div>
           <p className="brand-kicker">CLEVER Local MSA</p>
-          <h1 className="brand-title">Operations Front</h1>
+          <h1 className="brand-title">운영 콘솔</h1>
         </div>
         <nav className="nav-links">
           <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/">
-            Dashboard
+            대시보드
           </NavLink>
           <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/drivers">
-            Drivers
+            배송원
           </NavLink>
           <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/vehicles">
-            Vehicles
+            차량
           </NavLink>
           <NavLink
             className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
             to="/settlements"
           >
-            Settlements
+            정산
           </NavLink>
         </nav>
         <div className="account-card">
           <div>
             <p className="account-email">{account.email}</p>
-            <p className="account-role">{account.role}</p>
+            <p className="account-role">{formatRoleLabel(account.role)}</p>
           </div>
           <button className="button ghost" onClick={() => void onLogout()} type="button">
-            Sign out
+            로그아웃
           </button>
         </div>
       </header>

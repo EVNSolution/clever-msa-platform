@@ -85,11 +85,11 @@ function makeVehicle({
 }
 
 function getListSection() {
-  return screen.getByRole('heading', { name: /active vehicles/i }).closest('section') as HTMLElement;
+  return screen.getByRole('heading', { name: /운영 중 차량/i }).closest('section') as HTMLElement;
 }
 
 function getDetailSection() {
-  return screen.getByRole('heading', { name: /vehicle detail/i }).closest('section') as HTMLElement;
+  return screen.getByRole('heading', { name: /차량 상세/i }).closest('section') as HTMLElement;
 }
 
 function getDetailScope() {
@@ -151,7 +151,7 @@ describe('VehiclesPage', () => {
     expect(within(table).getByText('356123456789012')).toBeInTheDocument();
     expect(within(table).queryByRole('columnheader', { name: /fleet/i })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: /view details/i }));
+    fireEvent.click(screen.getByRole('button', { name: /상세 보기/i }));
 
     await waitFor(() => {
       expect(apiMocks.getVehicleOps).toHaveBeenCalledWith(
@@ -164,18 +164,18 @@ describe('VehiclesPage', () => {
     expect(getDetailScope().getByText('Operator Co')).toBeInTheDocument();
     expect(getDetailScope().getByText('10000000-0000-0000-0000-000000000001')).toBeInTheDocument();
     expect(getDetailScope().getByText('70000000-0000-0000-0000-000000000001')).toBeInTheDocument();
-    expect(getDetailScope().getByText('installed')).toBeInTheDocument();
+    expect(getDetailScope().getByText('설치됨')).toBeInTheDocument();
     expect(getDetailScope().getByText('2026-03-20T09:55:00Z')).toBeInTheDocument();
     expect(getDetailScope().getByText('356123456789012')).toBeInTheDocument();
     expect(getDetailScope().getByText('8982123412341234123')).toBeInTheDocument();
     expect(getDetailScope().getByText('2.1')).toBeInTheDocument();
     expect(getDetailScope().getByText('3.4.5')).toBeInTheDocument();
     expect(getDetailScope().getByText('37.5665, 126.978')).toBeInTheDocument();
-    expect(getDetailScope().getByText('fresh')).toBeInTheDocument();
+    expect(getDetailScope().getByText('정상')).toBeInTheDocument();
     expect(getDetailScope().getByText('BAT_LOW')).toBeInTheDocument();
     expect(getDetailScope().getByText('active_operator_company_name_missing')).toBeInTheDocument();
-    expect(getDetailScope().queryByText('Fleet')).not.toBeInTheDocument();
-    expect(getDetailScope().queryByText('Fleet ID')).not.toBeInTheDocument();
+    expect(getDetailScope().queryByText('플릿')).not.toBeInTheDocument();
+    expect(getDetailScope().queryByText('플릿 ID')).not.toBeInTheDocument();
   });
 
   it('shows Unassigned when there is no current assignment or active operator', async () => {
@@ -209,14 +209,14 @@ describe('VehiclesPage', () => {
     render(<VehiclesPage client={{ request: vi.fn() }} />);
 
     const table = await screen.findByRole('table');
-    expect(within(table).getAllByText('Unassigned').length).toBeGreaterThan(0);
-    expect(within(table).getByText('Uninstalled')).toBeInTheDocument();
+    expect(within(table).getAllByText('미배정').length).toBeGreaterThan(0);
+    expect(within(table).getByText('미설치')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: /view details/i }));
+    fireEvent.click(screen.getByRole('button', { name: /상세 보기/i }));
 
     const detailSection = getDetailSection();
-    expect(await within(detailSection).findAllByText('Unassigned')).not.toHaveLength(0);
-    expect(within(detailSection).getAllByText('Uninstalled').length).toBeGreaterThan(0);
+    expect(await within(detailSection).findAllByText('미배정')).not.toHaveLength(0);
+    expect(within(detailSection).getAllByText('미설치').length).toBeGreaterThan(0);
   });
 
   it('shows Unknown operator when an active operator exists but company-name lookup is missing', async () => {
@@ -248,13 +248,13 @@ describe('VehiclesPage', () => {
     render(<VehiclesPage client={{ request: vi.fn() }} />);
 
     const table = await screen.findByRole('table');
-    expect(within(table).getByText('Unknown operator')).toBeInTheDocument();
-    expect(within(table).queryByText('Unassigned')).not.toBeInTheDocument();
+    expect(within(table).getByText('운영사 미상')).toBeInTheDocument();
+    expect(within(table).queryByText('미배정')).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: /view details/i }));
+    fireEvent.click(screen.getByRole('button', { name: /상세 보기/i }));
 
     const detailSection = getDetailSection();
-    expect(await within(detailSection).findByText('Unknown operator')).toBeInTheDocument();
+    expect(await within(detailSection).findByText('운영사 미상')).toBeInTheDocument();
     expect(within(detailSection).getByText('30000000-0000-0000-0000-000000000002')).toBeInTheDocument();
     expect(within(detailSection).getByText('active_operator_company_name_missing')).toBeInTheDocument();
   });
@@ -266,7 +266,7 @@ describe('VehiclesPage', () => {
 
     const listSection = getListSection();
     expect(await within(listSection).findByText('vehicle backend down')).toBeInTheDocument();
-    expect(within(listSection).queryByText(/no vehicles yet/i)).not.toBeInTheDocument();
+    expect(within(listSection).queryByText(/등록된 차량이 없습니다/i)).not.toBeInTheDocument();
     expect(within(getDetailSection()).queryByText('vehicle backend down')).not.toBeInTheDocument();
   });
 
@@ -288,7 +288,7 @@ describe('VehiclesPage', () => {
     render(<VehiclesPage client={{ request: vi.fn() }} />);
 
     await screen.findByText('12가3456');
-    fireEvent.click(screen.getByRole('button', { name: /view details/i }));
+    fireEvent.click(screen.getByRole('button', { name: /상세 보기/i }));
 
     const detailSection = getDetailSection();
     expect(await within(detailSection).findByText('detail lookup failed')).toBeInTheDocument();
@@ -334,7 +334,7 @@ describe('VehiclesPage', () => {
     await screen.findByText('12가3456');
     await screen.findByText('34나5678');
 
-    const buttons = screen.getAllByRole('button', { name: /view details/i });
+    const buttons = screen.getAllByRole('button', { name: /상세 보기/i });
     fireEvent.click(buttons[0]);
     fireEvent.click(buttons[1]);
 

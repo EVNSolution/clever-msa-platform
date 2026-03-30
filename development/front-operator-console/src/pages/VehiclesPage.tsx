@@ -3,6 +3,11 @@ import { useEffect, useRef, useState } from 'react';
 import { getVehicleOps, listVehicleOps } from '../api/vehicleOps';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { VehicleOpsSummary } from '../types';
+import {
+  formatInstallationStatusLabel,
+  formatLocationStatusLabel,
+  formatVehicleStatusLabel,
+} from '../uiLabels';
 
 type VehiclesPageProps = {
   client: HttpClient;
@@ -17,7 +22,7 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
   const detailRequestId = useRef(0);
 
   function getManufacturerName(vehicle: VehicleOpsSummary) {
-    return vehicle.manufacturer_company.company_name ?? 'Unknown manufacturer';
+    return vehicle.manufacturer_company.company_name ?? '제조사 미상';
   }
 
   function getActiveOperatorName(vehicle: VehicleOpsSummary) {
@@ -25,13 +30,13 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
       return vehicle.active_operator_company.company_name;
     }
     if (vehicle.active_operator_company.company_id) {
-      return 'Unknown operator';
+      return '운영사 미상';
     }
-    return 'Unassigned';
+    return '미배정';
   }
 
   function getCurrentDriverLabel(vehicle: VehicleOpsSummary) {
-    return vehicle.current_assignment?.driver_id ?? 'Unassigned';
+    return vehicle.current_assignment?.driver_id ?? '미배정';
   }
 
   function shortenIdentifier(value: string) {
@@ -45,15 +50,15 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
     if (vehicle.current_terminal?.terminal_id) {
       return shortenIdentifier(vehicle.current_terminal.terminal_id);
     }
-    return 'Uninstalled';
+    return '미설치';
   }
 
   function getTerminalDetailValue(
     value: string | null | undefined,
-    { missingLabel = 'Unavailable' }: { missingLabel?: string } = {},
+    { missingLabel = '확인 불가' }: { missingLabel?: string } = {},
   ) {
     if (selectedVehicle?.current_terminal == null) {
-      return 'Uninstalled';
+      return '미설치';
     }
     return value ?? missingLabel;
   }
@@ -61,13 +66,13 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
   function getLatestLocationLabel(vehicle: VehicleOpsSummary) {
     const latestLocation = vehicle.telemetry.latest_location;
     if (latestLocation.lat == null || latestLocation.lng == null) {
-      return 'Unavailable';
+      return '확인 불가';
     }
     return `${latestLocation.lat}, ${latestLocation.lng}`;
   }
 
   function getLatestDiagnosticLabel(vehicle: VehicleOpsSummary) {
-    return vehicle.telemetry.latest_diagnostic.event_code ?? 'Unavailable';
+    return vehicle.telemetry.latest_diagnostic.event_code ?? '확인 불가';
   }
 
   useEffect(() => {
@@ -122,23 +127,23 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
     <div className="data-grid two-columns wide-left">
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Vehicle Registry</p>
-          <h2>Active vehicles</h2>
+          <p className="panel-kicker">차량 레지스트리</p>
+          <h2>운영 중 차량</h2>
         </div>
         {listErrorMessage ? <div className="error-banner">{listErrorMessage}</div> : null}
         {isLoading ? (
-          <p className="empty-state">Loading vehicles...</p>
+          <p className="empty-state">차량을 불러오는 중입니다...</p>
         ) : listErrorMessage ? null : vehicles.length ? (
           <table className="table compact">
             <thead>
               <tr>
-                <th>Plate Number</th>
-                <th>Manufacturer</th>
-                <th>Active Operator</th>
-                <th>Current Driver</th>
-                <th>Terminal</th>
+                <th>번호판</th>
+                <th>제조사</th>
+                <th>현재 운영사</th>
+                <th>현재 배송원</th>
+                <th>단말기</th>
                 <th>VIN</th>
-                <th>Status</th>
+                <th>상태</th>
                 <th />
               </tr>
             </thead>
@@ -151,10 +156,10 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
                   <td>{getCurrentDriverLabel(vehicle)}</td>
                   <td>{getCurrentTerminalLabel(vehicle)}</td>
                   <td>{vehicle.vin}</td>
-                  <td>{vehicle.vehicle_status}</td>
+                  <td>{formatVehicleStatusLabel(vehicle.vehicle_status)}</td>
                   <td>
                     <button className="button ghost small" onClick={() => void handleViewDetails(vehicle.vehicle_id)} type="button">
-                      View Details
+                      상세 보기
                     </button>
                   </td>
                 </tr>
@@ -162,56 +167,62 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
             </tbody>
           </table>
         ) : (
-          <p className="empty-state">No vehicles yet.</p>
+          <p className="empty-state">등록된 차량이 없습니다.</p>
         )}
       </section>
 
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Vehicle Summary</p>
-          <h2>Vehicle detail</h2>
+          <p className="panel-kicker">차량 요약</p>
+          <h2>차량 상세</h2>
         </div>
         {detailErrorMessage ? <div className="error-banner">{detailErrorMessage}</div> : null}
         {selectedVehicle ? (
           <dl className="detail-list">
             <div>
-              <dt>Plate Number</dt>
+              <dt>번호판</dt>
               <dd>{selectedVehicle.plate_number}</dd>
             </div>
             <div>
-              <dt>Manufacturer</dt>
+              <dt>제조사</dt>
               <dd>{getManufacturerName(selectedVehicle)}</dd>
             </div>
             <div>
-              <dt>Manufacturer Company ID</dt>
+              <dt>제조사 회사 ID</dt>
               <dd><code>{selectedVehicle.manufacturer_company.company_id}</code></dd>
             </div>
             <div>
-              <dt>Active Operator</dt>
+              <dt>현재 운영사</dt>
               <dd>{getActiveOperatorName(selectedVehicle)}</dd>
             </div>
             <div>
-              <dt>Active Operator Company ID</dt>
-              <dd><code>{selectedVehicle.active_operator_company.company_id ?? 'Unassigned'}</code></dd>
+              <dt>운영사 회사 ID</dt>
+              <dd><code>{selectedVehicle.active_operator_company.company_id ?? '미배정'}</code></dd>
             </div>
             <div>
-              <dt>Current Driver</dt>
+              <dt>현재 배송원</dt>
               <dd>{getCurrentDriverLabel(selectedVehicle)}</dd>
             </div>
             <div>
-              <dt>Current Assignment</dt>
-              <dd><code>{selectedVehicle.current_assignment?.driver_vehicle_assignment_id ?? 'Unassigned'}</code></dd>
+              <dt>현재 배정</dt>
+              <dd><code>{selectedVehicle.current_assignment?.driver_vehicle_assignment_id ?? '미배정'}</code></dd>
             </div>
             <div>
-              <dt>Terminal ID</dt>
+              <dt>단말기 ID</dt>
               <dd><code>{getTerminalDetailValue(selectedVehicle.current_terminal?.terminal_id)}</code></dd>
             </div>
             <div>
-              <dt>Installation Status</dt>
-              <dd>{getTerminalDetailValue(selectedVehicle.current_terminal?.installation_status)}</dd>
+              <dt>설치 상태</dt>
+              <dd>
+                {getTerminalDetailValue(
+                  selectedVehicle.current_terminal?.installation_status
+                    ? formatInstallationStatusLabel(selectedVehicle.current_terminal.installation_status)
+                    : null,
+                )}
+              </dd>
             </div>
             <div>
-              <dt>Installed At</dt>
+              <dt>설치 시각</dt>
               <dd>{getTerminalDetailValue(selectedVehicle.current_terminal?.installed_at)}</dd>
             </div>
             <div>
@@ -223,27 +234,31 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
               <dd>{getTerminalDetailValue(selectedVehicle.current_terminal?.iccid)}</dd>
             </div>
             <div>
-              <dt>Firmware Version</dt>
+              <dt>펌웨어 버전</dt>
               <dd>{getTerminalDetailValue(selectedVehicle.current_terminal?.firmware_version)}</dd>
             </div>
             <div>
-              <dt>Protocol Version</dt>
+              <dt>프로토콜 버전</dt>
               <dd>{getTerminalDetailValue(selectedVehicle.current_terminal?.protocol_version)}</dd>
             </div>
             <div>
-              <dt>App Version</dt>
+              <dt>앱 버전</dt>
               <dd>{getTerminalDetailValue(selectedVehicle.current_terminal?.app_version)}</dd>
             </div>
             <div>
-              <dt>Latest Location</dt>
+              <dt>최신 위치</dt>
               <dd>{getLatestLocationLabel(selectedVehicle)}</dd>
             </div>
             <div>
-              <dt>Location Status</dt>
-              <dd>{selectedVehicle.telemetry.latest_location.snapshot_status ?? 'Unavailable'}</dd>
+              <dt>위치 상태</dt>
+              <dd>
+                {selectedVehicle.telemetry.latest_location.snapshot_status
+                  ? formatLocationStatusLabel(selectedVehicle.telemetry.latest_location.snapshot_status)
+                  : '확인 불가'}
+              </dd>
             </div>
             <div>
-              <dt>Latest Diagnostic</dt>
+              <dt>최신 진단</dt>
               <dd>{getLatestDiagnosticLabel(selectedVehicle)}</dd>
             </div>
             <div>
@@ -251,16 +266,16 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
               <dd>{selectedVehicle.vin}</dd>
             </div>
             <div>
-              <dt>Status</dt>
-              <dd>{selectedVehicle.vehicle_status}</dd>
+              <dt>상태</dt>
+              <dd>{formatVehicleStatusLabel(selectedVehicle.vehicle_status)}</dd>
             </div>
           </dl>
         ) : (
-          <p className="empty-state">Select a vehicle to view details.</p>
+          <p className="empty-state">차량을 선택하면 상세를 볼 수 있습니다.</p>
         )}
         {selectedVehicle?.warnings.length ? (
           <section className="subpanel">
-            <p className="panel-kicker">Warnings</p>
+            <p className="panel-kicker">주의 사항</p>
             <ul className="warning-list">
               {selectedVehicle.warnings.map((warning) => (
                 <li key={warning}>{warning}</li>

@@ -12,6 +12,7 @@ import {
 } from '../api/vehicles';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { VehicleMaster, VehicleOperatorAccess } from '../types';
+import { formatAccessStatusLabel, formatLifecycleStatusLabel } from '../uiLabels';
 
 type VehiclesPageProps = {
   client: HttpClient;
@@ -194,13 +195,13 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
     <div className="data-grid two-columns wide-left">
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Vehicle Master Admin</p>
-          <h2>{editingVehicleId ? 'Update vehicle master' : 'Create vehicle master'}</h2>
+          <p className="panel-kicker">차량 마스터 관리</p>
+          <h2>{editingVehicleId ? '차량 마스터 수정' : '차량 마스터 생성'}</h2>
         </div>
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
         <form className="form-grid" onSubmit={handleVehicleMasterSubmit}>
           <label className="field">
-            <span>Manufacturer Company ID</span>
+            <span>제조사 회사 ID</span>
             <input
               onChange={(event) =>
                 setMasterForm((current) => ({ ...current, manufacturer_company_id: event.target.value }))
@@ -209,7 +210,7 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
             />
           </label>
           <label className="field">
-            <span>Plate Number</span>
+            <span>번호판</span>
             <input
               onChange={(event) => setMasterForm((current) => ({ ...current, plate_number: event.target.value }))}
               value={masterForm.plate_number}
@@ -223,7 +224,7 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
             />
           </label>
           <label className="field">
-            <span>Manufacturer Vehicle Code</span>
+            <span>제조사 차량 코드</span>
             <input
               onChange={(event) =>
                 setMasterForm((current) => ({ ...current, manufacturer_vehicle_code: event.target.value }))
@@ -232,29 +233,29 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
             />
           </label>
           <label className="field">
-            <span>Model Name</span>
+            <span>모델명</span>
             <input
               onChange={(event) => setMasterForm((current) => ({ ...current, model_name: event.target.value }))}
               value={masterForm.model_name}
             />
           </label>
           <label className="field">
-            <span>Vehicle Status</span>
+            <span>차량 상태</span>
             <select
               onChange={(event) => setMasterForm((current) => ({ ...current, vehicle_status: event.target.value }))}
               value={masterForm.vehicle_status}
             >
-              <option value="active">active</option>
-              <option value="inactive">inactive</option>
-              <option value="retired">retired</option>
+              <option value="active">운영</option>
+              <option value="inactive">중지</option>
+              <option value="retired">퇴역</option>
             </select>
           </label>
           <div className="form-actions">
             <button className="button primary" type="submit">
-              {editingVehicleId ? 'Update vehicle master' : 'Create vehicle master'}
+              {editingVehicleId ? '차량 마스터 수정' : '차량 마스터 생성'}
             </button>
             <button className="button ghost" onClick={resetVehicleMasterForm} type="button">
-              Reset
+              초기화
             </button>
           </div>
         </form>
@@ -262,19 +263,19 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
 
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Vehicle Master Registry</p>
-          <h2>Vehicle master registry</h2>
+          <p className="panel-kicker">차량 마스터 레지스트리</p>
+          <h2>차량 마스터 목록</h2>
         </div>
         {isLoading ? (
-          <p className="empty-state">Loading vehicle masters...</p>
+          <p className="empty-state">차량 마스터를 불러오는 중입니다...</p>
         ) : errorMessage ? null : vehicleMasters.length ? (
           <table className="table compact">
             <thead>
               <tr>
-                <th>Vehicle</th>
-                <th>Plate Number</th>
-                <th>Manufacturer</th>
-                <th>Status</th>
+                <th>차량</th>
+                <th>번호판</th>
+                <th>제조사</th>
+                <th>상태</th>
                 <th />
               </tr>
             </thead>
@@ -284,14 +285,14 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
                   <td><code>{vehicleMaster.vehicle_id}</code></td>
                   <td>{vehicleMaster.plate_number}</td>
                   <td><code>{vehicleMaster.manufacturer_company_id}</code></td>
-                  <td>{vehicleMaster.vehicle_status}</td>
+                  <td>{formatLifecycleStatusLabel(vehicleMaster.vehicle_status)}</td>
                   <td>
                     <button
                       className="button ghost small"
                       onClick={() => handleEditVehicleMaster(vehicleMaster)}
                       type="button"
                     >
-                      Edit master
+                      마스터 수정
                     </button>
                   </td>
                 </tr>
@@ -299,25 +300,25 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
             </tbody>
           </table>
         ) : (
-          <p className="empty-state">No vehicle masters yet.</p>
+          <p className="empty-state">등록된 차량 마스터가 없습니다.</p>
         )}
       </section>
 
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Operator Access Admin</p>
-          <h2>Create operator access</h2>
+          <p className="panel-kicker">운영사 접근 관리</p>
+          <h2>운영사 접근 생성</h2>
         </div>
         <form className="form-grid" onSubmit={handleOperatorAccessSubmit}>
           <label className="field">
-            <span>Access Vehicle ID</span>
+            <span>접근 차량 ID</span>
             <input
               onChange={(event) => setAccessForm((current) => ({ ...current, vehicle_id: event.target.value }))}
               value={accessForm.vehicle_id}
             />
           </label>
           <label className="field">
-            <span>Operator Company ID</span>
+            <span>운영사 회사 ID</span>
             <input
               onChange={(event) =>
                 setAccessForm((current) => ({ ...current, operator_company_id: event.target.value }))
@@ -327,10 +328,10 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
           </label>
           <div className="form-actions">
             <button className="button primary" type="submit">
-              Create operator access
+              운영사 접근 생성
             </button>
             <button className="button ghost" onClick={resetOperatorAccessForm} type="button">
-              Reset
+              초기화
             </button>
           </div>
         </form>
@@ -338,20 +339,20 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
 
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Operator Access Registry</p>
-          <h2>Operator access registry</h2>
+          <p className="panel-kicker">운영사 접근 레지스트리</p>
+          <h2>운영사 접근 목록</h2>
         </div>
         {isLoading ? (
-          <p className="empty-state">Loading operator access...</p>
+          <p className="empty-state">운영사 접근 정보를 불러오는 중입니다...</p>
         ) : errorMessage ? null : vehicleOperatorAccesses.length ? (
           <table className="table compact">
             <thead>
               <tr>
-                <th>Vehicle</th>
-                <th>Operator Company</th>
-                <th>Status</th>
-                <th>Started</th>
-                <th>Ended</th>
+                <th>차량</th>
+                <th>운영사</th>
+                <th>상태</th>
+                <th>시작</th>
+                <th>종료</th>
                 <th />
               </tr>
             </thead>
@@ -360,7 +361,7 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
                 <tr key={vehicleOperatorAccess.vehicle_operator_access_id}>
                   <td><code>{vehicleOperatorAccess.vehicle_id}</code></td>
                   <td><code>{vehicleOperatorAccess.operator_company_id}</code></td>
-                  <td>{vehicleOperatorAccess.access_status}</td>
+                  <td>{formatAccessStatusLabel(vehicleOperatorAccess.access_status)}</td>
                   <td>{vehicleOperatorAccess.started_at}</td>
                   <td>{vehicleOperatorAccess.ended_at ?? '-'}</td>
                   <td>
@@ -370,7 +371,7 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
                         onClick={() => void handleEndAccess(vehicleOperatorAccess.vehicle_operator_access_id)}
                         type="button"
                       >
-                        End access
+                        접근 종료
                       </button>
                     ) : null}
                   </td>
@@ -379,7 +380,7 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
             </tbody>
           </table>
         ) : (
-          <p className="empty-state">No operator access yet.</p>
+          <p className="empty-state">등록된 운영사 접근 정보가 없습니다.</p>
         )}
       </section>
     </div>

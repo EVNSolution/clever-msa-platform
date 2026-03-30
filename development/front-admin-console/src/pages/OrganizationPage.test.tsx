@@ -47,11 +47,11 @@ describe('OrganizationPage', () => {
 
     render(<OrganizationPage client={{ request: vi.fn() }} />);
 
-    await screen.findByText(/master company registry/i);
+    await screen.findByText(/회사 마스터 레지스트리/i);
     await waitFor(() => {
       expect(apiMocks.listOrgUnits).not.toHaveBeenCalled();
     });
     expect(screen.queryByText(/org units/i)).not.toBeInTheDocument();
-    expect(screen.getByText(/fleet assignments/i)).toBeInTheDocument();
+    expect(screen.getByText(/플릿 배정/i)).toBeInTheDocument();
   });
 });

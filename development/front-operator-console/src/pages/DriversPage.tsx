@@ -133,34 +133,34 @@ export function DriversPage({ account, client }: DriversPageProps) {
     <div className="data-grid two-columns wide-left">
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Driver Registry</p>
-          <h2>{editingDriverId ? 'Update driver profile' : 'Create driver profile'}</h2>
+          <p className="panel-kicker">배송원 등록</p>
+          <h2>{editingDriverId ? '배송원 프로필 수정' : '배송원 프로필 생성'}</h2>
         </div>
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
         <form className="form-grid" onSubmit={handleSubmit}>
           <label className="field">
-            <span>Account ID</span>
+            <span>계정 ID</span>
             <input
               onChange={(event) => handleFieldChange('account_id', event.target.value)}
               value={form.account_id ?? ''}
             />
           </label>
           <label className="field">
-            <span>Company ID</span>
+            <span>회사 ID</span>
             <input
               onChange={(event) => handleFieldChange('company_id', event.target.value)}
               value={form.company_id}
             />
           </label>
           <label className="field">
-            <span>Fleet ID</span>
+            <span>플릿 ID</span>
             <input
               onChange={(event) => handleFieldChange('fleet_id', event.target.value)}
               value={form.fleet_id}
             />
           </label>
           <label className="field">
-            <span>Name</span>
+            <span>이름</span>
             <input
               onChange={(event) => handleFieldChange('name', event.target.value)}
               value={form.name}
@@ -174,14 +174,14 @@ export function DriversPage({ account, client }: DriversPageProps) {
             />
           </label>
           <label className="field">
-            <span>Phone Number</span>
+            <span>연락처</span>
             <input
               onChange={(event) => handleFieldChange('phone_number', event.target.value)}
               value={form.phone_number}
             />
           </label>
           <label className="field">
-            <span>Address</span>
+            <span>주소</span>
             <input
               onChange={(event) => handleFieldChange('address', event.target.value)}
               value={form.address}
@@ -189,33 +189,33 @@ export function DriversPage({ account, client }: DriversPageProps) {
           </label>
           <div className="form-actions">
             <button className="button primary" disabled={isSaving} type="submit">
-              {isSaving ? 'Saving...' : editingDriverId ? 'Update driver' : 'Create driver'}
+              {isSaving ? '저장 중...' : editingDriverId ? '배송원 수정' : '배송원 생성'}
             </button>
             <button className="button ghost" onClick={handleReset} type="button">
-              Reset
+              초기화
             </button>
           </div>
         </form>
         <div className="reference-strip">
-          <span className="chip">Companies: {companies.length}</span>
-          <span className="chip">Fleets: {fleets.length}</span>
+          <span className="chip">회사: {companies.length}</span>
+          <span className="chip">플릿: {fleets.length}</span>
         </div>
       </section>
 
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Current Profiles</p>
-          <h2>Live data from Driver Profile HR</h2>
+          <p className="panel-kicker">현재 프로필</p>
+          <h2>Driver Profile HR 정본 데이터</h2>
         </div>
         {isLoading ? (
-          <p className="empty-state">Loading drivers...</p>
+          <p className="empty-state">배송원을 불러오는 중입니다...</p>
         ) : drivers.length ? (
           <table className="table compact">
             <thead>
               <tr>
-                <th>Driver ID</th>
-                <th>Account ID</th>
-                <th>Name</th>
+                <th>배송원 ID</th>
+                <th>계정 ID</th>
+                <th>이름</th>
                 <th>EV ID</th>
                 <th />
               </tr>
@@ -224,15 +224,15 @@ export function DriversPage({ account, client }: DriversPageProps) {
               {drivers.map((driver) => (
                 <tr key={driver.driver_id}>
                   <td><code>{driver.driver_id}</code></td>
-                  <td><code>{driver.account_id ?? 'unlinked'}</code></td>
+                  <td><code>{driver.account_id ?? '미연결'}</code></td>
                   <td>{driver.name}</td>
                   <td>{driver.ev_id}</td>
                   <td>
                     <Link className="button ghost small" to={`/drivers/${driver.driver_id}`}>
-                      View
+                      보기
                     </Link>
                     <button className="button ghost small" onClick={() => handleEdit(driver)} type="button">
-                      Edit
+                      수정
                     </button>
                   </td>
                 </tr>
@@ -240,7 +240,7 @@ export function DriversPage({ account, client }: DriversPageProps) {
             </tbody>
           </table>
         ) : (
-          <p className="empty-state">No drivers yet.</p>
+          <p className="empty-state">등록된 배송원이 없습니다.</p>
         )}
       </section>
     </div>

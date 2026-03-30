@@ -127,12 +127,12 @@ export function OrganizationPage({ client }: OrganizationPageProps) {
       <div className="sub-grid two-columns">
         <section className="panel">
           <div className="panel-header">
-            <p className="panel-kicker">Companies</p>
-            <h2>Master company registry</h2>
+            <p className="panel-kicker">회사</p>
+            <h2>회사 마스터 레지스트리</h2>
           </div>
           <form className="stack" onSubmit={handleCompanySubmit}>
             <label className="field">
-              <span>Name</span>
+              <span>이름</span>
               <input
                 onChange={(event) => setCompanyForm({ name: event.target.value })}
                 value={companyForm.name}
@@ -140,24 +140,24 @@ export function OrganizationPage({ client }: OrganizationPageProps) {
             </label>
             <div className="form-actions">
               <button className="button primary" type="submit">
-                {editingCompanyId ? 'Update company' : 'Create company'}
+                {editingCompanyId ? '회사 수정' : '회사 생성'}
               </button>
               <button className="button ghost" onClick={() => { setEditingCompanyId(null); setCompanyForm({ name: '' }); }} type="button">
-                Reset
+                초기화
               </button>
             </div>
           </form>
-          {isLoading ? <p className="empty-state">Loading companies...</p> : (
+          {isLoading ? <p className="empty-state">회사를 불러오는 중입니다...</p> : (
             <table className="table compact">
               <tbody>
                 {companies.map((company) => (
                   <tr key={company.company_id}>
                     <td>{company.name}</td>
                     <td>
-                      <button className="button ghost small" onClick={() => { setEditingCompanyId(company.company_id); setCompanyForm({ name: company.name }); }} type="button">Edit</button>
+                      <button className="button ghost small" onClick={() => { setEditingCompanyId(company.company_id); setCompanyForm({ name: company.name }); }} type="button">수정</button>
                     </td>
                     <td>
-                      <button className="button ghost small" onClick={() => void handleDelete('company', company.company_id)} type="button">Delete</button>
+                      <button className="button ghost small" onClick={() => void handleDelete('company', company.company_id)} type="button">삭제</button>
                     </td>
                   </tr>
                 ))}
@@ -168,12 +168,12 @@ export function OrganizationPage({ client }: OrganizationPageProps) {
 
         <section className="panel">
           <div className="panel-header">
-            <p className="panel-kicker">Fleets</p>
-            <h2>Fleet assignments</h2>
+            <p className="panel-kicker">플릿</p>
+            <h2>플릿 배정</h2>
           </div>
           <form className="stack" onSubmit={handleFleetSubmit}>
             <label className="field">
-              <span>Company ID</span>
+              <span>회사 ID</span>
               <select
                 onChange={(event) => setFleetForm((current) => ({ ...current, company_id: event.target.value }))}
                 value={fleetForm.company_id}
@@ -184,7 +184,7 @@ export function OrganizationPage({ client }: OrganizationPageProps) {
               </select>
             </label>
             <label className="field">
-              <span>Name</span>
+              <span>이름</span>
               <input
                 onChange={(event) => setFleetForm((current) => ({ ...current, name: event.target.value }))}
                 value={fleetForm.name}
@@ -192,24 +192,24 @@ export function OrganizationPage({ client }: OrganizationPageProps) {
             </label>
             <div className="form-actions">
               <button className="button primary" type="submit">
-                {editingFleetId ? 'Update fleet' : 'Create fleet'}
+                {editingFleetId ? '플릿 수정' : '플릿 생성'}
               </button>
               <button className="button ghost" onClick={() => { setEditingFleetId(null); setFleetForm({ company_id: companies[0]?.company_id ?? '', name: '' }); }} type="button">
-                Reset
+                초기화
               </button>
             </div>
           </form>
-          {isLoading ? <p className="empty-state">Loading fleets...</p> : (
+          {isLoading ? <p className="empty-state">플릿을 불러오는 중입니다...</p> : (
             <table className="table compact">
               <tbody>
                 {fleets.map((fleet) => (
                   <tr key={fleet.fleet_id}>
                     <td>{fleet.name}</td>
                     <td>
-                      <button className="button ghost small" onClick={() => { setEditingFleetId(fleet.fleet_id); setFleetForm({ company_id: fleet.company_id, name: fleet.name }); }} type="button">Edit</button>
+                      <button className="button ghost small" onClick={() => { setEditingFleetId(fleet.fleet_id); setFleetForm({ company_id: fleet.company_id, name: fleet.name }); }} type="button">수정</button>
                     </td>
                     <td>
-                      <button className="button ghost small" onClick={() => void handleDelete('fleet', fleet.fleet_id)} type="button">Delete</button>
+                      <button className="button ghost small" onClick={() => void handleDelete('fleet', fleet.fleet_id)} type="button">삭제</button>
                     </td>
                   </tr>
                 ))}

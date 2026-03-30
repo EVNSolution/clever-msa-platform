@@ -12,6 +12,7 @@ import {
 } from '../api/terminals';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { TerminalInstallation, TerminalRegistry } from '../types';
+import { formatInstallationStatusLabel, formatLifecycleStatusLabel } from '../uiLabels';
 
 type TerminalsPageProps = {
   client: HttpClient;
@@ -200,13 +201,13 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
     <div className="data-grid two-columns wide-left">
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Terminal Registry Admin</p>
-          <h2>{editingTerminalId ? 'Update terminal' : 'Create terminal'}</h2>
+          <p className="panel-kicker">단말기 관리</p>
+          <h2>{editingTerminalId ? '단말기 수정' : '단말기 생성'}</h2>
         </div>
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
         <form className="form-grid" onSubmit={handleTerminalSubmit}>
           <label className="field">
-            <span>Manufacturer Company ID</span>
+            <span>제조사 회사 ID</span>
             <input
               onChange={(event) =>
                 setTerminalForm((current) => ({ ...current, manufacturer_company_id: event.target.value }))
@@ -229,7 +230,7 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
             />
           </label>
           <label className="field">
-            <span>Firmware Version</span>
+            <span>펌웨어 버전</span>
             <input
               onChange={(event) =>
                 setTerminalForm((current) => ({ ...current, firmware_version: event.target.value }))
@@ -238,7 +239,7 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
             />
           </label>
           <label className="field">
-            <span>Protocol Version</span>
+            <span>프로토콜 버전</span>
             <input
               onChange={(event) =>
                 setTerminalForm((current) => ({ ...current, protocol_version: event.target.value }))
@@ -247,7 +248,7 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
             />
           </label>
           <label className="field">
-            <span>App Version</span>
+            <span>앱 버전</span>
             <input
               onChange={(event) =>
                 setTerminalForm((current) => ({ ...current, app_version: event.target.value }))
@@ -256,24 +257,24 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
             />
           </label>
           <label className="field">
-            <span>Terminal Status</span>
+            <span>단말기 상태</span>
             <select
               onChange={(event) =>
                 setTerminalForm((current) => ({ ...current, terminal_status: event.target.value }))
               }
               value={terminalForm.terminal_status}
             >
-              <option value="active">active</option>
-              <option value="inactive">inactive</option>
-              <option value="retired">retired</option>
+              <option value="active">운영</option>
+              <option value="inactive">중지</option>
+              <option value="retired">퇴역</option>
             </select>
           </label>
           <div className="form-actions">
             <button className="button primary" type="submit">
-              {editingTerminalId ? 'Update terminal' : 'Create terminal'}
+              {editingTerminalId ? '단말기 수정' : '단말기 생성'}
             </button>
             <button className="button ghost" onClick={resetTerminalForm} type="button">
-              Reset
+              초기화
             </button>
           </div>
         </form>
@@ -281,19 +282,19 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
 
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Terminal Registry</p>
-          <h2>Terminal registry</h2>
+          <p className="panel-kicker">단말기 레지스트리</p>
+          <h2>단말기 목록</h2>
         </div>
         {isLoading ? (
-          <p className="empty-state">Loading terminals...</p>
+          <p className="empty-state">단말기를 불러오는 중입니다...</p>
         ) : errorMessage ? null : terminals.length ? (
           <table className="table compact">
             <thead>
               <tr>
-                <th>Terminal</th>
+                <th>단말기</th>
                 <th>IMEI</th>
                 <th>ICCID</th>
-                <th>Status</th>
+                <th>상태</th>
                 <th />
               </tr>
             </thead>
@@ -303,14 +304,14 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
                   <td><code>{terminal.terminal_id}</code></td>
                   <td>{terminal.imei}</td>
                   <td>{terminal.iccid}</td>
-                  <td>{terminal.terminal_status}</td>
+                  <td>{formatLifecycleStatusLabel(terminal.terminal_status)}</td>
                   <td>
                     <button
                       className="button ghost small"
                       onClick={() => handleEditTerminal(terminal)}
                       type="button"
                     >
-                      Edit terminal
+                      단말기 수정
                     </button>
                   </td>
                 </tr>
@@ -318,18 +319,18 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
             </tbody>
           </table>
         ) : (
-          <p className="empty-state">No terminals yet.</p>
+          <p className="empty-state">등록된 단말기가 없습니다.</p>
         )}
       </section>
 
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Terminal Installation Admin</p>
-          <h2>Create installation</h2>
+          <p className="panel-kicker">단말기 설치 관리</p>
+          <h2>설치 생성</h2>
         </div>
         <form className="form-grid" onSubmit={handleInstallationSubmit}>
           <label className="field">
-            <span>Installation Terminal ID</span>
+            <span>설치 단말기 ID</span>
             <input
               onChange={(event) =>
                 setInstallationForm((current) => ({ ...current, terminal_id: event.target.value }))
@@ -338,7 +339,7 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
             />
           </label>
           <label className="field">
-            <span>Installation Vehicle ID</span>
+            <span>설치 차량 ID</span>
             <input
               onChange={(event) =>
                 setInstallationForm((current) => ({ ...current, vehicle_id: event.target.value }))
@@ -348,10 +349,10 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
           </label>
           <div className="form-actions">
             <button className="button primary" type="submit">
-              Create installation
+              설치 생성
             </button>
             <button className="button ghost" onClick={resetInstallationForm} type="button">
-              Reset
+              초기화
             </button>
           </div>
         </form>
@@ -359,20 +360,20 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
 
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Installation Registry</p>
-          <h2>Installation registry</h2>
+          <p className="panel-kicker">설치 레지스트리</p>
+          <h2>설치 목록</h2>
         </div>
         {isLoading ? (
-          <p className="empty-state">Loading installations...</p>
+          <p className="empty-state">설치 정보를 불러오는 중입니다...</p>
         ) : errorMessage ? null : installations.length ? (
           <table className="table compact">
             <thead>
               <tr>
-                <th>Terminal</th>
-                <th>Vehicle</th>
-                <th>Status</th>
-                <th>Installed</th>
-                <th>Removed</th>
+                <th>단말기</th>
+                <th>차량</th>
+                <th>상태</th>
+                <th>설치됨</th>
+                <th>해제됨</th>
                 <th />
               </tr>
             </thead>
@@ -381,7 +382,7 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
                 <tr key={installation.terminal_installation_id}>
                   <td><code>{installation.terminal_id}</code></td>
                   <td><code>{installation.vehicle_id}</code></td>
-                  <td>{installation.installation_status}</td>
+                  <td>{formatInstallationStatusLabel(installation.installation_status)}</td>
                   <td>{installation.installed_at}</td>
                   <td>{installation.removed_at ?? '-'}</td>
                   <td>
@@ -391,7 +392,7 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
                         onClick={() => void handleRemoveInstallation(installation.terminal_installation_id)}
                         type="button"
                       >
-                        Remove installation
+                        설치 해제
                       </button>
                     ) : null}
                   </td>
@@ -400,7 +401,7 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
             </tbody>
           </table>
         ) : (
-          <p className="empty-state">No installations yet.</p>
+          <p className="empty-state">등록된 설치 정보가 없습니다.</p>
         )}
       </section>
     </div>

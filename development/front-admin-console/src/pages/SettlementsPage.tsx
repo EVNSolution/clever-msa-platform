@@ -14,6 +14,7 @@ import {
 } from '../api/settlements';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { SettlementItem, SettlementRun } from '../types';
+import { formatPayoutStatusLabel, formatSettlementStatusLabel } from '../uiLabels';
 
 type SettlementsPageProps = {
   client: HttpClient;
@@ -138,54 +139,54 @@ export function SettlementsPage({ client }: SettlementsPageProps) {
       {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
       <div className="data-grid two-columns">
         <section className="panel">
-          <div className="panel-header"><p className="panel-kicker">Settlement Runs</p><h2>{editingRunId ? 'Update settlement placeholder' : 'Create settlement placeholder'}</h2></div>
+          <div className="panel-header"><p className="panel-kicker">정산 실행</p><h2>{editingRunId ? '정산 실행 수정' : '정산 실행 생성'}</h2></div>
           <form className="form-grid" onSubmit={handleRunSubmit}>
-            <label className="field"><span>Company ID</span><input onChange={(event) => setRunForm((current) => ({ ...current, company_id: event.target.value }))} value={runForm.company_id} /></label>
-            <label className="field"><span>Fleet ID</span><input onChange={(event) => setRunForm((current) => ({ ...current, fleet_id: event.target.value }))} value={runForm.fleet_id} /></label>
-            <label className="field"><span>Period Start</span><input onChange={(event) => setRunForm((current) => ({ ...current, period_start: event.target.value }))} type="date" value={runForm.period_start} /></label>
-            <label className="field"><span>Period End</span><input onChange={(event) => setRunForm((current) => ({ ...current, period_end: event.target.value }))} type="date" value={runForm.period_end} /></label>
-            <label className="field"><span>Status</span><select onChange={(event) => setRunForm((current) => ({ ...current, status: event.target.value }))} value={runForm.status}><option value="draft">draft</option><option value="closed">closed</option></select></label>
-            <div className="form-actions"><button className="button primary" type="submit">{editingRunId ? 'Update run' : 'Create run'}</button></div>
+            <label className="field"><span>회사 ID</span><input onChange={(event) => setRunForm((current) => ({ ...current, company_id: event.target.value }))} value={runForm.company_id} /></label>
+            <label className="field"><span>플릿 ID</span><input onChange={(event) => setRunForm((current) => ({ ...current, fleet_id: event.target.value }))} value={runForm.fleet_id} /></label>
+            <label className="field"><span>시작일</span><input onChange={(event) => setRunForm((current) => ({ ...current, period_start: event.target.value }))} type="date" value={runForm.period_start} /></label>
+            <label className="field"><span>종료일</span><input onChange={(event) => setRunForm((current) => ({ ...current, period_end: event.target.value }))} type="date" value={runForm.period_end} /></label>
+            <label className="field"><span>상태</span><select onChange={(event) => setRunForm((current) => ({ ...current, status: event.target.value }))} value={runForm.status}><option value="draft">초안</option><option value="closed">마감</option></select></label>
+            <div className="form-actions"><button className="button primary" type="submit">{editingRunId ? '정산 실행 수정' : '정산 실행 생성'}</button></div>
           </form>
         </section>
 
         <section className="panel">
-          <div className="panel-header"><p className="panel-kicker">Settlement Items</p><h2>{editingItemId ? 'Update placeholder item' : 'Create placeholder item'}</h2></div>
+          <div className="panel-header"><p className="panel-kicker">정산 항목</p><h2>{editingItemId ? '정산 항목 수정' : '정산 항목 생성'}</h2></div>
           <form className="form-grid" onSubmit={handleItemSubmit}>
-            <label className="field"><span>Settlement Run</span><select onChange={(event) => setItemForm((current) => ({ ...current, settlement_run_id: event.target.value }))} value={itemForm.settlement_run_id}>{runs.map((run) => <option key={run.settlement_run_id} value={run.settlement_run_id}>{run.settlement_run_id}</option>)}</select></label>
-            <label className="field"><span>Driver ID</span><input onChange={(event) => setItemForm((current) => ({ ...current, driver_id: event.target.value }))} value={itemForm.driver_id} /></label>
-            <label className="field"><span>Amount</span><input onChange={(event) => setItemForm((current) => ({ ...current, amount: event.target.value }))} value={itemForm.amount} /></label>
-            <label className="field"><span>Payout Status</span><select onChange={(event) => setItemForm((current) => ({ ...current, payout_status: event.target.value }))} value={itemForm.payout_status}><option value="pending">pending</option><option value="paid">paid</option></select></label>
-            <div className="form-actions"><button className="button primary" type="submit">{editingItemId ? 'Update item' : 'Create item'}</button></div>
+            <label className="field"><span>정산 실행</span><select onChange={(event) => setItemForm((current) => ({ ...current, settlement_run_id: event.target.value }))} value={itemForm.settlement_run_id}>{runs.map((run) => <option key={run.settlement_run_id} value={run.settlement_run_id}>{run.settlement_run_id}</option>)}</select></label>
+            <label className="field"><span>배송원 ID</span><input onChange={(event) => setItemForm((current) => ({ ...current, driver_id: event.target.value }))} value={itemForm.driver_id} /></label>
+            <label className="field"><span>금액</span><input onChange={(event) => setItemForm((current) => ({ ...current, amount: event.target.value }))} value={itemForm.amount} /></label>
+            <label className="field"><span>지급 상태</span><select onChange={(event) => setItemForm((current) => ({ ...current, payout_status: event.target.value }))} value={itemForm.payout_status}><option value="pending">대기</option><option value="paid">지급 완료</option></select></label>
+            <div className="form-actions"><button className="button primary" type="submit">{editingItemId ? '정산 항목 수정' : '정산 항목 생성'}</button></div>
           </form>
         </section>
       </div>
 
       <div className="data-grid two-columns">
         <section className="panel">
-          <div className="panel-header"><p className="panel-kicker">Current Runs</p><h2>Admin write surface for placeholders</h2></div>
-          {isLoading ? <p className="empty-state">Loading runs...</p> : (
+          <div className="panel-header"><p className="panel-kicker">현재 실행</p><h2>관리자 쓰기 화면</h2></div>
+          {isLoading ? <p className="empty-state">정산 실행을 불러오는 중입니다...</p> : (
             <table className="table compact"><tbody>{runs.map((run) => (
               <tr key={run.settlement_run_id}>
                 <td><code>{run.settlement_run_id}</code></td>
-                <td>{run.status}</td>
-                <td><button className="button ghost small" onClick={() => { setEditingRunId(run.settlement_run_id); setRunForm({ company_id: run.company_id, fleet_id: run.fleet_id, period_start: run.period_start, period_end: run.period_end, status: run.status }); }} type="button">Edit</button></td>
-                <td><button className="button ghost small" onClick={() => void handleDelete('run', run.settlement_run_id)} type="button">Delete</button></td>
+                <td>{formatSettlementStatusLabel(run.status)}</td>
+                <td><button className="button ghost small" onClick={() => { setEditingRunId(run.settlement_run_id); setRunForm({ company_id: run.company_id, fleet_id: run.fleet_id, period_start: run.period_start, period_end: run.period_end, status: run.status }); }} type="button">수정</button></td>
+                <td><button className="button ghost small" onClick={() => void handleDelete('run', run.settlement_run_id)} type="button">삭제</button></td>
               </tr>
             ))}</tbody></table>
           )}
         </section>
 
         <section className="panel">
-          <div className="panel-header"><p className="panel-kicker">Current Items</p><h2>Settlement placeholder items</h2></div>
-          {isLoading ? <p className="empty-state">Loading items...</p> : (
+          <div className="panel-header"><p className="panel-kicker">현재 항목</p><h2>정산 항목 목록</h2></div>
+          {isLoading ? <p className="empty-state">정산 항목을 불러오는 중입니다...</p> : (
             <table className="table compact"><tbody>{items.map((item) => (
               <tr key={item.settlement_item_id}>
                 <td><code>{item.settlement_item_id}</code></td>
                 <td>{item.amount}</td>
-                <td>{item.payout_status}</td>
-                <td><button className="button ghost small" onClick={() => { setEditingItemId(item.settlement_item_id); setItemForm({ settlement_run_id: item.settlement_run_id, driver_id: item.driver_id, amount: item.amount, payout_status: item.payout_status }); }} type="button">Edit</button></td>
-                <td><button className="button ghost small" onClick={() => void handleDelete('item', item.settlement_item_id)} type="button">Delete</button></td>
+                <td>{formatPayoutStatusLabel(item.payout_status)}</td>
+                <td><button className="button ghost small" onClick={() => { setEditingItemId(item.settlement_item_id); setItemForm({ settlement_run_id: item.settlement_run_id, driver_id: item.driver_id, amount: item.amount, payout_status: item.payout_status }); }} type="button">수정</button></td>
+                <td><button className="button ghost small" onClick={() => void handleDelete('item', item.settlement_item_id)} type="button">삭제</button></td>
               </tr>
             ))}</tbody></table>
           )}

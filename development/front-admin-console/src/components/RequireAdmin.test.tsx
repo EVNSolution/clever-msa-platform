@@ -23,9 +23,9 @@ describe('RequireAdmin', () => {
       </RequireAdmin>,
     );
 
-    expect(screen.getByText(/admin access required/i)).toBeInTheDocument();
+    expect(screen.getByText(/관리자 권한 필요/i)).toBeInTheDocument();
     expect(screen.queryByText('Admin content')).not.toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: /return to sign in/i }));
+    await user.click(screen.getByRole('button', { name: /로그인 화면으로/i }));
     expect(onLogout).toHaveBeenCalledTimes(1);
   });
 

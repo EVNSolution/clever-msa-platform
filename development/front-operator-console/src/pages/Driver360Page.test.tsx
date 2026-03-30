@@ -55,7 +55,7 @@ describe('Driver360Page', () => {
     expect(await screen.findByRole('heading', { name: /kim driver/i })).toBeInTheDocument();
     expect(screen.getByText(/driver@example.com/i)).toBeInTheDocument();
     expect(screen.getByText(/125000.50/i)).toBeInTheDocument();
-    expect(screen.getByText(/no warnings/i)).toBeInTheDocument();
+    expect(screen.getByText(/주의 사항이 없습니다/i)).toBeInTheDocument();
   });
 
   it('renders empty states when account and settlement are missing', async () => {
@@ -84,8 +84,8 @@ describe('Driver360Page', () => {
 
     renderPage();
 
-    expect(await screen.findByText(/no linked account/i)).toBeInTheDocument();
-    expect(screen.getByText(/no settlement summary/i)).toBeInTheDocument();
+    expect(await screen.findByText(/연결된 계정이 없습니다/i)).toBeInTheDocument();
+    expect(screen.getByText(/정산 정보가 없습니다/i)).toBeInTheDocument();
     expect(screen.getByText(/company not found/i)).toBeInTheDocument();
   });
 

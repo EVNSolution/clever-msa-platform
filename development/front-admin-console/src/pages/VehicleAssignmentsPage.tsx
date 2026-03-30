@@ -3,6 +3,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { createAssignment, listAssignments, updateAssignment } from '../api/assignments';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { DriverVehicleAssignment } from '../types';
+import { formatAssignmentStatusLabel } from '../uiLabels';
 
 type VehicleAssignmentsPageProps = {
   client: HttpClient;
@@ -101,27 +102,27 @@ export function VehicleAssignmentsPage({ client }: VehicleAssignmentsPageProps) 
     <div className="data-grid two-columns wide-left">
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Driver Assignment Admin</p>
-          <h2>Create assignment</h2>
+          <p className="panel-kicker">배송원 배정 관리</p>
+          <h2>배정 생성</h2>
         </div>
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
         <form className="form-grid" onSubmit={handleSubmit}>
           <label className="field">
-            <span>Driver ID</span>
+            <span>배송원 ID</span>
             <input
               onChange={(event) => setForm((current) => ({ ...current, driver_id: event.target.value }))}
               value={form.driver_id}
             />
           </label>
           <label className="field">
-            <span>Vehicle ID</span>
+            <span>차량 ID</span>
             <input
               onChange={(event) => setForm((current) => ({ ...current, vehicle_id: event.target.value }))}
               value={form.vehicle_id}
             />
           </label>
           <label className="field">
-            <span>Operator Company ID</span>
+            <span>운영사 회사 ID</span>
             <input
               onChange={(event) =>
                 setForm((current) => ({ ...current, operator_company_id: event.target.value }))
@@ -131,7 +132,7 @@ export function VehicleAssignmentsPage({ client }: VehicleAssignmentsPageProps) 
           </label>
           <div className="form-actions">
             <button className="button primary" type="submit">
-              Create assignment
+              배정 생성
             </button>
           </div>
         </form>
@@ -139,19 +140,19 @@ export function VehicleAssignmentsPage({ client }: VehicleAssignmentsPageProps) 
 
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Assignment Registry</p>
-          <h2>Assignment registry</h2>
+          <p className="panel-kicker">배정 레지스트리</p>
+          <h2>배정 목록</h2>
         </div>
         {isLoading ? (
-          <p className="empty-state">Loading assignments...</p>
+          <p className="empty-state">배정 정보를 불러오는 중입니다...</p>
         ) : errorMessage ? null : assignments.length ? (
           <table className="table compact">
             <thead>
               <tr>
-                <th>Driver</th>
-                <th>Vehicle</th>
-                <th>Operator Company</th>
-                <th>Status</th>
+                <th>배송원</th>
+                <th>차량</th>
+                <th>운영사</th>
+                <th>상태</th>
                 <th />
               </tr>
             </thead>
@@ -161,7 +162,7 @@ export function VehicleAssignmentsPage({ client }: VehicleAssignmentsPageProps) 
                   <td><code>{assignment.driver_id}</code></td>
                   <td><code>{assignment.vehicle_id}</code></td>
                   <td><code>{assignment.operator_company_id}</code></td>
-                  <td>{assignment.assignment_status}</td>
+                  <td>{formatAssignmentStatusLabel(assignment.assignment_status)}</td>
                   <td>
                     {assignment.assignment_status === 'assigned' ? (
                       <button
@@ -169,7 +170,7 @@ export function VehicleAssignmentsPage({ client }: VehicleAssignmentsPageProps) 
                         onClick={() => void handleUnassign(assignment.driver_vehicle_assignment_id)}
                         type="button"
                       >
-                        Unassign
+                        배정 해제
                       </button>
                     ) : null}
                   </td>
@@ -178,7 +179,7 @@ export function VehicleAssignmentsPage({ client }: VehicleAssignmentsPageProps) 
             </tbody>
           </table>
         ) : (
-          <p className="empty-state">No assignments yet.</p>
+          <p className="empty-state">등록된 배정 정보가 없습니다.</p>
         )}
       </section>
     </div>

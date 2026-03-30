@@ -18,21 +18,20 @@ export function LoginPage({ errorMessage, isSubmitting, onLogin }: LoginPageProp
   return (
     <div className="auth-shell">
       <section className="auth-hero">
-        <p className="eyebrow">Local Bootstrap</p>
-        <h1>Gateway-only front for account, organization, driver, and settlement flows.</h1>
+        <p className="eyebrow">로컬 운영 화면</p>
+        <h1>계정, 조직, 배송원, 정산 흐름을 게이트웨이만 통해 다루는 운영 화면입니다.</h1>
         <p className="hero-copy">
-          This app only talks to <code>/api</code> through the gateway and relies on refresh-cookie based
-          session renewal.
+          이 앱은 게이트웨이의 <code>/api</code>만 호출하며, refresh cookie 기반으로 세션을 갱신합니다.
         </p>
       </section>
       <section className="auth-panel panel">
         <div className="panel-header">
-          <p className="panel-kicker">Sign In</p>
-          <h2>Use the seeded admin account or any registered user.</h2>
+          <p className="panel-kicker">로그인</p>
+          <h2>시드 관리자 계정 또는 등록된 사용자 계정으로 로그인하세요.</h2>
         </div>
         <form className="stack" onSubmit={(event) => void handleSubmit(event)}>
           <label className="field">
-            <span>Email</span>
+            <span>이메일</span>
             <input
               autoComplete="email"
               name="email"
@@ -43,7 +42,7 @@ export function LoginPage({ errorMessage, isSubmitting, onLogin }: LoginPageProp
             />
           </label>
           <label className="field">
-            <span>Password</span>
+            <span>비밀번호</span>
             <input
               autoComplete="current-password"
               name="password"
@@ -59,7 +58,7 @@ export function LoginPage({ errorMessage, isSubmitting, onLogin }: LoginPageProp
             disabled={isSubmitting}
             type="submit"
           >
-            {isSubmitting ? 'Signing in...' : 'Sign in'}
+            {isSubmitting ? '로그인 중...' : '로그인'}
           </button>
         </form>
       </section>

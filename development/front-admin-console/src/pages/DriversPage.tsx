@@ -113,40 +113,40 @@ export function DriversPage({ account, client }: DriversPageProps) {
     <div className="data-grid two-columns wide-left">
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Driver Admin</p>
-          <h2>{editingDriverId ? 'Update driver' : 'Create driver'}</h2>
+          <p className="panel-kicker">배송원 관리</p>
+          <h2>{editingDriverId ? '배송원 수정' : '배송원 생성'}</h2>
         </div>
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
         <form className="form-grid" onSubmit={handleSubmit}>
-          <label className="field"><span>Account ID</span><input onChange={(event) => setForm((current) => ({ ...current, account_id: event.target.value }))} value={form.account_id ?? ''} /></label>
-          <label className="field"><span>Company ID</span><input onChange={(event) => setForm((current) => ({ ...current, company_id: event.target.value }))} value={form.company_id} /></label>
-          <label className="field"><span>Fleet ID</span><input onChange={(event) => setForm((current) => ({ ...current, fleet_id: event.target.value }))} value={form.fleet_id} /></label>
-          <label className="field"><span>Name</span><input onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} value={form.name} /></label>
+          <label className="field"><span>계정 ID</span><input onChange={(event) => setForm((current) => ({ ...current, account_id: event.target.value }))} value={form.account_id ?? ''} /></label>
+          <label className="field"><span>회사 ID</span><input onChange={(event) => setForm((current) => ({ ...current, company_id: event.target.value }))} value={form.company_id} /></label>
+          <label className="field"><span>플릿 ID</span><input onChange={(event) => setForm((current) => ({ ...current, fleet_id: event.target.value }))} value={form.fleet_id} /></label>
+          <label className="field"><span>이름</span><input onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} value={form.name} /></label>
           <label className="field"><span>EV ID</span><input onChange={(event) => setForm((current) => ({ ...current, ev_id: event.target.value }))} value={form.ev_id} /></label>
-          <label className="field"><span>Phone Number</span><input onChange={(event) => setForm((current) => ({ ...current, phone_number: event.target.value }))} value={form.phone_number} /></label>
-          <label className="field"><span>Address</span><input onChange={(event) => setForm((current) => ({ ...current, address: event.target.value }))} value={form.address} /></label>
+          <label className="field"><span>연락처</span><input onChange={(event) => setForm((current) => ({ ...current, phone_number: event.target.value }))} value={form.phone_number} /></label>
+          <label className="field"><span>주소</span><input onChange={(event) => setForm((current) => ({ ...current, address: event.target.value }))} value={form.address} /></label>
           <div className="form-actions">
-            <button className="button primary" type="submit">{editingDriverId ? 'Update driver' : 'Create driver'}</button>
-            <button className="button ghost" onClick={resetForm} type="button">Reset</button>
+            <button className="button primary" type="submit">{editingDriverId ? '배송원 수정' : '배송원 생성'}</button>
+            <button className="button ghost" onClick={resetForm} type="button">초기화</button>
           </div>
         </form>
       </section>
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Current Drivers</p>
-          <h2>Admin CRUD over Driver Profile HR</h2>
+          <p className="panel-kicker">현재 배송원</p>
+          <h2>Driver Profile HR 관리자 CRUD</h2>
         </div>
-        {isLoading ? <p className="empty-state">Loading drivers...</p> : (
+        {isLoading ? <p className="empty-state">배송원을 불러오는 중입니다...</p> : (
           <table className="table compact">
-            <thead><tr><th>Driver</th><th>Name</th><th>EV ID</th><th /><th /></tr></thead>
+            <thead><tr><th>배송원</th><th>이름</th><th>EV ID</th><th /><th /></tr></thead>
             <tbody>
               {drivers.map((driver) => (
                 <tr key={driver.driver_id}>
                   <td><code>{driver.driver_id}</code></td>
                   <td>{driver.name}</td>
                   <td>{driver.ev_id}</td>
-                  <td><button className="button ghost small" onClick={() => { setEditingDriverId(driver.driver_id); setForm({ account_id: driver.account_id ?? '', company_id: driver.company_id, fleet_id: driver.fleet_id, name: driver.name, ev_id: driver.ev_id, phone_number: driver.phone_number, address: driver.address }); }} type="button">Edit</button></td>
-                  <td><button className="button ghost small" onClick={() => void handleDelete(driver.driver_id)} type="button">Delete</button></td>
+                  <td><button className="button ghost small" onClick={() => { setEditingDriverId(driver.driver_id); setForm({ account_id: driver.account_id ?? '', company_id: driver.company_id, fleet_id: driver.fleet_id, name: driver.name, ev_id: driver.ev_id, phone_number: driver.phone_number, address: driver.address }); }} type="button">수정</button></td>
+                  <td><button className="button ghost small" onClick={() => void handleDelete(driver.driver_id)} type="button">삭제</button></td>
                 </tr>
               ))}
             </tbody>

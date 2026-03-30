@@ -60,17 +60,17 @@ describe('DriversPage', () => {
       </MemoryRouter>,
     );
 
-    await screen.findByText(/driver registry/i);
+    await screen.findByText(/배송원 등록/i);
     await waitFor(() => {
-      expect(screen.getByRole('link', { name: /view/i })).toHaveAttribute(
+      expect(screen.getByRole('link', { name: /보기/i })).toHaveAttribute(
         'href',
         '/drivers/90000000-0000-0000-0000-000000000001',
       );
     });
-    expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/이름/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/ev id/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/phone number/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/address/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/연락처/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/주소/i)).toBeInTheDocument();
     expect(screen.queryByLabelText(/org unit id/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/employment status/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/qualification status/i)).not.toBeInTheDocument();

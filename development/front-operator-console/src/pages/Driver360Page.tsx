@@ -4,6 +4,12 @@ import { Link, useParams } from 'react-router-dom';
 import { getDriver360 } from '../api/driver360';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { Driver360Summary } from '../types';
+import {
+  formatBooleanLabel,
+  formatPayoutStatusLabel,
+  formatRoleLabel,
+  formatSettlementStatusLabel,
+} from '../uiLabels';
 
 type Driver360PageProps = {
   client: HttpClient;
@@ -38,7 +44,7 @@ export function Driver360Page({ client }: Driver360PageProps) {
     }
 
     if (!driverId) {
-      setErrorMessage('Driver ID is required.');
+      setErrorMessage('배송원 ID가 필요합니다.');
       setIsLoading(false);
       return () => {
         ignore = true;
@@ -56,15 +62,15 @@ export function Driver360Page({ client }: Driver360PageProps) {
       <section className="panel">
         <div className="panel-header">
           <div>
-            <p className="panel-kicker">Driver 360</p>
-            <h2>Driver summary</h2>
+            <p className="panel-kicker">배송원 360</p>
+            <h2>배송원 요약</h2>
           </div>
           <Link className="button ghost small" to="/drivers">
-            Back to drivers
+            배송원 목록
           </Link>
         </div>
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
-        {isLoading ? <p className="empty-state">Loading driver summary...</p> : null}
+        {isLoading ? <p className="empty-state">배송원 요약을 불러오는 중입니다...</p> : null}
       </section>
 
       {summary ? (
@@ -72,12 +78,12 @@ export function Driver360Page({ client }: Driver360PageProps) {
           <section className="data-grid two-columns">
             <article className="panel">
               <div className="panel-header">
-                <p className="panel-kicker">Identity</p>
+                <p className="panel-kicker">기본 정보</p>
                 <h3>{summary.driver_name}</h3>
               </div>
               <dl className="detail-list">
                 <div>
-                  <dt>Driver ID</dt>
+                  <dt>배송원 ID</dt>
                   <dd><code>{summary.driver_id}</code></dd>
                 </div>
                 <div>
@@ -85,11 +91,11 @@ export function Driver360Page({ client }: Driver360PageProps) {
                   <dd>{summary.ev_id}</dd>
                 </div>
                 <div>
-                  <dt>Phone</dt>
+                  <dt>연락처</dt>
                   <dd>{summary.phone_number}</dd>
                 </div>
                 <div>
-                  <dt>Address</dt>
+                  <dt>주소</dt>
                   <dd>{summary.address}</dd>
                 </div>
               </dl>
@@ -97,24 +103,24 @@ export function Driver360Page({ client }: Driver360PageProps) {
 
             <article className="panel">
               <div className="panel-header">
-                <p className="panel-kicker">Organization</p>
-                <h3>Current company and fleet</h3>
+                <p className="panel-kicker">소속 정보</p>
+                <h3>현재 회사 및 플릿</h3>
               </div>
               <dl className="detail-list">
                 <div>
-                  <dt>Company</dt>
-                  <dd>{summary.company_name ?? 'Unknown company'}</dd>
+                  <dt>회사</dt>
+                  <dd>{summary.company_name ?? '미확인 회사'}</dd>
                 </div>
                 <div>
-                  <dt>Company ID</dt>
+                  <dt>회사 ID</dt>
                   <dd><code>{summary.company_id}</code></dd>
                 </div>
                 <div>
-                  <dt>Fleet</dt>
-                  <dd>{summary.fleet_name ?? 'Unknown fleet'}</dd>
+                  <dt>플릿</dt>
+                  <dd>{summary.fleet_name ?? '미확인 플릿'}</dd>
                 </div>
                 <div>
-                  <dt>Fleet ID</dt>
+                  <dt>플릿 ID</dt>
                   <dd><code>{summary.fleet_id}</code></dd>
                 </div>
               </dl>
@@ -124,73 +130,73 @@ export function Driver360Page({ client }: Driver360PageProps) {
           <section className="data-grid two-columns">
             <article className="panel">
               <div className="panel-header">
-                <p className="panel-kicker">Account</p>
-                <h3>Linked account summary</h3>
+                <p className="panel-kicker">계정</p>
+                <h3>연결 계정 요약</h3>
               </div>
               {summary.account_id ? (
                 <dl className="detail-list">
                   <div>
-                    <dt>Account ID</dt>
+                    <dt>계정 ID</dt>
                     <dd><code>{summary.account_id}</code></dd>
                   </div>
                   <div>
-                    <dt>Email</dt>
+                    <dt>이메일</dt>
                     <dd>{summary.account_email}</dd>
                   </div>
                   <div>
-                    <dt>Role</dt>
-                    <dd>{summary.account_role}</dd>
+                    <dt>권한</dt>
+                    <dd>{formatRoleLabel(summary.account_role)}</dd>
                   </div>
                   <div>
-                    <dt>Active</dt>
-                    <dd>{summary.account_is_active ? 'Yes' : 'No'}</dd>
+                    <dt>활성</dt>
+                    <dd>{formatBooleanLabel(summary.account_is_active)}</dd>
                   </div>
                 </dl>
               ) : (
-                <p className="empty-state">No linked account.</p>
+                <p className="empty-state">연결된 계정이 없습니다.</p>
               )}
             </article>
 
             <article className="panel">
               <div className="panel-header">
-                <p className="panel-kicker">Settlement</p>
-                <h3>Latest settlement placeholder</h3>
+                <p className="panel-kicker">정산</p>
+                <h3>최근 정산 정보</h3>
               </div>
               {summary.latest_settlement_run_id ? (
                 <dl className="detail-list">
                   <div>
-                    <dt>Run ID</dt>
+                    <dt>실행 ID</dt>
                     <dd><code>{summary.latest_settlement_run_id}</code></dd>
                   </div>
                   <div>
-                    <dt>Period</dt>
+                    <dt>기간</dt>
                     <dd>
                       {summary.latest_settlement_period_start} - {summary.latest_settlement_period_end}
                     </dd>
                   </div>
                   <div>
-                    <dt>Status</dt>
-                    <dd>{summary.latest_settlement_status}</dd>
+                    <dt>상태</dt>
+                    <dd>{formatSettlementStatusLabel(summary.latest_settlement_status)}</dd>
                   </div>
                   <div>
-                    <dt>Payout</dt>
-                    <dd>{summary.latest_payout_status}</dd>
+                    <dt>지급 상태</dt>
+                    <dd>{formatPayoutStatusLabel(summary.latest_payout_status)}</dd>
                   </div>
                   <div>
-                    <dt>Amount</dt>
+                    <dt>금액</dt>
                     <dd>{summary.latest_settlement_amount}</dd>
                   </div>
                 </dl>
               ) : (
-                <p className="empty-state">No settlement summary.</p>
+                <p className="empty-state">정산 정보가 없습니다.</p>
               )}
             </article>
           </section>
 
           <section className="panel">
             <div className="panel-header">
-              <p className="panel-kicker">Warnings</p>
-              <h3>Missing source references</h3>
+              <p className="panel-kicker">주의 사항</p>
+              <h3>누락된 참조</h3>
             </div>
             {summary.warnings.length ? (
               <ul className="warning-list">
@@ -199,7 +205,7 @@ export function Driver360Page({ client }: Driver360PageProps) {
                 ))}
               </ul>
             ) : (
-              <p className="empty-state">No warnings.</p>
+              <p className="empty-state">주의 사항이 없습니다.</p>
             )}
           </section>
         </>

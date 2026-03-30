@@ -3,6 +3,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { createAccount, listAccounts, updateAccount, type AccountPayload } from '../api/accounts';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { AccountSummary } from '../types';
+import { formatBooleanLabel, formatRoleLabel } from '../uiLabels';
 
 type AccountsPageProps = {
   client: HttpClient;
@@ -102,13 +103,13 @@ export function AccountsPage({ client }: AccountsPageProps) {
     <div className="data-grid two-columns wide-left">
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Identity Access</p>
-          <h2>{editingAccountId ? 'Update account' : 'Create account'}</h2>
+          <p className="panel-kicker">계정 관리</p>
+          <h2>{editingAccountId ? '계정 수정' : '계정 생성'}</h2>
         </div>
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
         <form className="form-grid" onSubmit={handleSubmit}>
           <label className="field">
-            <span>Email</span>
+            <span>이메일</span>
             <input
               autoComplete="email"
               name="email"
@@ -118,7 +119,7 @@ export function AccountsPage({ client }: AccountsPageProps) {
             />
           </label>
           <label className="field">
-            <span>Password {editingAccountId ? '(optional)' : ''}</span>
+            <span>비밀번호 {editingAccountId ? '(선택)' : ''}</span>
             <input
               autoComplete="new-password"
               name="password"
@@ -128,33 +129,33 @@ export function AccountsPage({ client }: AccountsPageProps) {
             />
           </label>
           <label className="field">
-            <span>Role</span>
+            <span>권한</span>
             <select
               onChange={(event) => setForm((current) => ({ ...current, role: event.target.value }))}
               value={form.role}
             >
-              <option value="user">user</option>
-              <option value="admin">admin</option>
+              <option value="user">사용자</option>
+              <option value="admin">관리자</option>
             </select>
           </label>
           <label className="field">
-            <span>Active</span>
+            <span>활성 여부</span>
             <select
               onChange={(event) =>
                 setForm((current) => ({ ...current, is_active: event.target.value === 'true' }))
               }
               value={String(form.is_active)}
             >
-              <option value="true">true</option>
-              <option value="false">false</option>
+              <option value="true">활성</option>
+              <option value="false">비활성</option>
             </select>
           </label>
           <div className="form-actions">
             <button className="button primary" disabled={isSaving} type="submit">
-              {isSaving ? 'Saving...' : editingAccountId ? 'Update account' : 'Create account'}
+              {isSaving ? '저장 중...' : editingAccountId ? '계정 수정' : '계정 생성'}
             </button>
             <button className="button ghost" onClick={resetForm} type="button">
-              Reset
+              초기화
             </button>
           </div>
         </form>
@@ -162,18 +163,18 @@ export function AccountsPage({ client }: AccountsPageProps) {
 
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">Current Accounts</p>
-          <h2>Admin-visible account list</h2>
+          <p className="panel-kicker">현재 계정</p>
+          <h2>관리자 조회용 계정 목록</h2>
         </div>
         {isLoading ? (
-          <p className="empty-state">Loading accounts...</p>
+          <p className="empty-state">계정을 불러오는 중입니다...</p>
         ) : (
           <table className="table compact">
             <thead>
               <tr>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Active</th>
+                <th>이메일</th>
+                <th>권한</th>
+                <th>활성</th>
                 <th />
               </tr>
             </thead>
@@ -181,11 +182,11 @@ export function AccountsPage({ client }: AccountsPageProps) {
               {accounts.map((account) => (
                 <tr key={account.account_id}>
                   <td>{account.email}</td>
-                  <td>{account.role}</td>
-                  <td>{String(account.is_active)}</td>
+                  <td>{formatRoleLabel(account.role)}</td>
+                  <td>{formatBooleanLabel(account.is_active)}</td>
                   <td>
                     <button className="button ghost small" onClick={() => handleEdit(account)} type="button">
-                      Edit
+                      수정
                     </button>
                   </td>
                 </tr>

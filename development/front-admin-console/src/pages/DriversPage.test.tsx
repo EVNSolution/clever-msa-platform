@@ -51,14 +51,14 @@ describe('Admin DriversPage', () => {
       />,
     );
 
-    await screen.findByText(/driver admin/i);
+    await screen.findByText(/배송원 관리/i);
     await waitFor(() => {
       expect(apiMocks.listOrgUnits).not.toHaveBeenCalled();
     });
-    expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/이름/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/ev id/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/phone number/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/address/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/연락처/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/주소/i)).toBeInTheDocument();
     expect(screen.queryByLabelText(/org unit id/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/employment status/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/qualification status/i)).not.toBeInTheDocument();

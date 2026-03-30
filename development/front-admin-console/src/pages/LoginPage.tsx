@@ -18,20 +18,20 @@ export function LoginPage({ errorMessage, isSubmitting, onLogin }: LoginPageProp
   return (
     <div className="auth-shell admin-auth-shell">
       <section className="auth-hero admin-hero">
-        <p className="eyebrow">Admin Surface</p>
-        <h1>Write-enabled console for account, organization, driver, and settlement domains.</h1>
+        <p className="eyebrow">관리자 화면</p>
+        <h1>계정, 조직, 배송원, 정산 도메인을 직접 관리하는 관리자 콘솔입니다.</h1>
         <p className="hero-copy">
-          All actions still route through the gateway. Refresh tokens stay in <code>HttpOnly</code> cookies.
+          모든 요청은 게이트웨이를 거치며, Refresh 토큰은 <code>HttpOnly</code> 쿠키로 유지됩니다.
         </p>
       </section>
       <section className="auth-panel panel">
         <div className="panel-header">
-          <p className="panel-kicker">Admin Sign In</p>
-          <h2>Seeded admin credentials are accepted here.</h2>
+          <p className="panel-kicker">관리자 로그인</p>
+          <h2>시드 관리자 계정으로 로그인할 수 있습니다.</h2>
         </div>
         <form className="stack" onSubmit={(event) => void handleSubmit(event)}>
           <label className="field">
-            <span>Email</span>
+            <span>이메일</span>
             <input
               autoComplete="email"
               name="email"
@@ -42,7 +42,7 @@ export function LoginPage({ errorMessage, isSubmitting, onLogin }: LoginPageProp
             />
           </label>
           <label className="field">
-            <span>Password</span>
+            <span>비밀번호</span>
             <input
               autoComplete="current-password"
               name="password"
@@ -58,7 +58,7 @@ export function LoginPage({ errorMessage, isSubmitting, onLogin }: LoginPageProp
             disabled={isSubmitting}
             type="submit"
           >
-            {isSubmitting ? 'Signing in...' : 'Sign in'}
+            {isSubmitting ? '로그인 중...' : '로그인'}
           </button>
         </form>
       </section>

@@ -4,6 +4,7 @@ import { getMe } from '../api/auth';
 import { listCompanies, listFleets } from '../api/organization';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { AccountSummary, Company, Fleet } from '../types';
+import { formatRoleLabel } from '../uiLabels';
 
 type DashboardPageProps = {
   account: AccountSummary;
@@ -56,20 +57,20 @@ export function DashboardPage({ account, client }: DashboardPageProps) {
     <div className="stack large-gap">
       <section className="hero-card panel">
         <div>
-          <p className="panel-kicker">Operator Summary</p>
+          <p className="panel-kicker">운영 요약</p>
           <h2>{me.email}</h2>
           <p className="hero-copy">
-            Logged in as <strong>{me.role}</strong>. Organization data is loaded directly from the gateway-backed
-            read endpoints.
+            현재 <strong>{formatRoleLabel(me.role)}</strong> 권한으로 로그인되어 있습니다. 조직 데이터는 게이트웨이를
+            거친 읽기 API에서 바로 불러옵니다.
           </p>
         </div>
         <div className="grid-cards">
           <article className="stat-card">
-            <span>Companies</span>
+            <span>회사</span>
             <strong>{companies.length}</strong>
           </article>
           <article className="stat-card">
-            <span>Fleets</span>
+            <span>플릿</span>
             <strong>{fleets.length}</strong>
           </article>
         </div>
@@ -80,16 +81,16 @@ export function DashboardPage({ account, client }: DashboardPageProps) {
       <section className="data-grid two-columns">
         <article className="panel">
           <div className="panel-header">
-            <p className="panel-kicker">Companies</p>
-            <h3>Source of truth from Organization Master</h3>
+            <p className="panel-kicker">회사</p>
+            <h3>Organization Master 정본</h3>
           </div>
           {isLoading ? (
-            <p className="empty-state">Loading companies...</p>
+            <p className="empty-state">회사를 불러오는 중입니다...</p>
           ) : companies.length ? (
             <table className="table">
               <thead>
                 <tr>
-                  <th>Name</th>
+                  <th>이름</th>
                   <th>ID</th>
                 </tr>
               </thead>
@@ -103,23 +104,23 @@ export function DashboardPage({ account, client }: DashboardPageProps) {
               </tbody>
             </table>
           ) : (
-            <p className="empty-state">No companies seeded yet.</p>
+            <p className="empty-state">등록된 회사가 없습니다.</p>
           )}
         </article>
 
         <article className="panel">
           <div className="panel-header">
-            <p className="panel-kicker">Fleets</p>
-            <h3>Current fleet registry</h3>
+            <p className="panel-kicker">플릿</p>
+            <h3>현재 플릿 레지스트리</h3>
           </div>
           {isLoading ? (
-            <p className="empty-state">Loading fleets...</p>
+            <p className="empty-state">플릿을 불러오는 중입니다...</p>
           ) : fleets.length ? (
             <table className="table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Company</th>
+                  <th>이름</th>
+                  <th>회사</th>
                 </tr>
               </thead>
               <tbody>
@@ -132,7 +133,7 @@ export function DashboardPage({ account, client }: DashboardPageProps) {
               </tbody>
             </table>
           ) : (
-            <p className="empty-state">No fleets seeded yet.</p>
+            <p className="empty-state">등록된 플릿이 없습니다.</p>
           )}
         </article>
       </section>

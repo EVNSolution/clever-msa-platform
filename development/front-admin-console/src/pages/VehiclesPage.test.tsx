@@ -58,29 +58,29 @@ describe('Admin VehiclesPage', () => {
 
     render(<VehiclesPage client={{ request: vi.fn() }} />);
 
-    await screen.findByRole('heading', { name: /create vehicle master/i });
+    await screen.findByRole('heading', { name: /차량 마스터 생성/i });
 
     expect(screen.queryByLabelText(/^company id$/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/fleet id/i)).not.toBeInTheDocument();
-    expect(screen.getByLabelText(/manufacturer company id/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/제조사 회사 id/i)).toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText(/manufacturer company id/i), {
+    fireEvent.change(screen.getByLabelText(/제조사 회사 id/i), {
       target: { value: '30000000-0000-0000-0000-000000000001' },
     });
-    fireEvent.change(screen.getByLabelText(/plate number/i), {
+    fireEvent.change(screen.getByLabelText(/번호판/i), {
       target: { value: '12가3456' },
     });
     fireEvent.change(screen.getByLabelText(/^vin$/i), {
       target: { value: 'VIN-000000000000001' },
     });
-    fireEvent.change(screen.getByLabelText(/manufacturer vehicle code/i), {
+    fireEvent.change(screen.getByLabelText(/제조사 차량 코드/i), {
       target: { value: 'MFG-001' },
     });
-    fireEvent.change(screen.getByLabelText(/model name/i), {
+    fireEvent.change(screen.getByLabelText(/모델명/i), {
       target: { value: 'Model X' },
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /create vehicle master/i }));
+    fireEvent.click(screen.getByRole('button', { name: /차량 마스터 생성/i }));
 
     await waitFor(() => {
       expect(apiMocks.createVehicleMaster).toHaveBeenCalledWith(expect.anything(), {
@@ -107,18 +107,18 @@ describe('Admin VehiclesPage', () => {
     render(<VehiclesPage client={{ request: vi.fn() }} />);
 
     await screen.findByText('12가3456');
-    fireEvent.click(screen.getByRole('button', { name: /edit master/i }));
+    fireEvent.click(screen.getByRole('button', { name: /마스터 수정/i }));
 
     expect(screen.getByDisplayValue('30000000-0000-0000-0000-000000000001')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Model X')).toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText(/model name/i), {
+    fireEvent.change(screen.getByLabelText(/모델명/i), {
       target: { value: 'Model Y' },
     });
-    fireEvent.change(screen.getByLabelText(/vehicle status/i), {
+    fireEvent.change(screen.getByLabelText(/차량 상태/i), {
       target: { value: 'inactive' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /update vehicle master/i }));
+    fireEvent.click(screen.getByRole('button', { name: /차량 마스터 수정/i }));
 
     await waitFor(() => {
       expect(apiMocks.updateVehicleMaster).toHaveBeenCalledWith(
@@ -151,13 +151,13 @@ describe('Admin VehiclesPage', () => {
 
     await screen.findByText('12가3456');
 
-    fireEvent.change(screen.getByLabelText(/access vehicle id/i), {
+    fireEvent.change(screen.getByLabelText(/접근 차량 id/i), {
       target: { value: '50000000-0000-0000-0000-000000000001' },
     });
-    fireEvent.change(screen.getByLabelText(/operator company id/i), {
+    fireEvent.change(screen.getByLabelText(/운영사 회사 id/i), {
       target: { value: '30000000-0000-0000-0000-000000000002' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /create operator access/i }));
+    fireEvent.click(screen.getByRole('button', { name: /운영사 접근 생성/i }));
 
     await waitFor(() => {
       expect(apiMocks.createVehicleOperatorAccess).toHaveBeenCalledWith(expect.anything(), {
@@ -169,8 +169,8 @@ describe('Admin VehiclesPage', () => {
       });
     });
 
-    const accessSection = screen.getByRole('heading', { name: /operator access registry/i }).closest('section') as HTMLElement;
-    const endButton = await within(accessSection).findByRole('button', { name: /end access/i });
+    const accessSection = screen.getByRole('heading', { name: /운영사 접근 목록/i }).closest('section') as HTMLElement;
+    const endButton = await within(accessSection).findByRole('button', { name: /접근 종료/i });
     fireEvent.click(endButton);
 
     await waitFor(() => {
