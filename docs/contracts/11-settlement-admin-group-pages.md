@@ -44,6 +44,13 @@
 4. `/settlements/results`
 5. `/settlements/overview`
 
+## 1차 구현 범위
+
+1. 이번 단계는 settlement UI를 업무 흐름 기준 그룹 페이지로 분리하는 것까지만 본다.
+2. `정산 기준 / 정산 입력 / 정산 실행 / 정산 결과 / 정산 조회` 라우트가 분리돼 있으면 1차 완료로 본다.
+3. `policy`, `version`, `assignment`, `delivery-record`, `daily snapshot`, `run`, `item`의 하위 detail / create / edit 라우트 세분화는 아직 하지 않는다.
+4. operator shared read 화면은 별도 계약 문서에서 다룬다.
+
 ## 페이지별 소유 서비스
 
 ### 1. `정산 기준`
@@ -117,5 +124,6 @@
 - `06-id-and-state-dictionary.md`
 - `09-integration-rules.md`
 - `10-front-ui-rules.md`
+- `12-settlement-shared-read-pages.md`
 - `../rollout/12-settlement-phase-2-api-gates.md`
 - `../decisions/specs/2026-03-23-settlement-phase-2-decomposition-design.md`

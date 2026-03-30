@@ -16,8 +16,8 @@
 
 ## 점검 결과 요약
 
-1. `accounts`, `companies`, `fleets`, `drivers`, `vehicles`는 규칙에 맞게 정리됐다.
-2. `terminals`, `vehicle-assignments`, `settlements`는 대부분 `목록 + 입력 + 상태 변경`이 한 페이지에 같이 있다.
+1. `accounts`, `companies`, `fleets`, `drivers`, `vehicles`, `settlements`는 현재 계약 기준으로 정리됐다.
+2. 남은 핵심 위반 화면은 `terminals`, `vehicle-assignments`다.
 3. 현재 가장 큰 위반 패턴은 `목록/생성/수정 혼합`이다.
 
 ## Operator Audit
@@ -57,14 +57,13 @@
 
 ### 5. `settlements`
 
-- 상태: 부분 적합
+- 상태: 적합
 - 현재 라우트
   - `/settlements`
-- 맞는 점
-  - 읽기 전용이다.
-- 위반 점
-  - 실행 목록과 항목 상세가 같은 화면에 있다.
-  - 선택한 실행 상세가 별도 라우트가 아니다.
+- 근거
+  - `operator` settlement는 1차 범위에서 shared read summary 화면 한 장으로 고정했다.
+  - write 동작이 없다.
+  - read contract는 `settlement-ops` 기준으로 분리돼 있다.
 
 ## Admin Audit
 
@@ -148,25 +147,27 @@
 
 ### 8. `settlements`
 
-- 상태: 위반
+- 상태: 적합
 - 현재 라우트
-  - `/settlements`
-- 위반 점
-  - `settlement-run`, `settlement-item` 생성/수정/삭제와 목록이 한 화면에 같이 있다.
-  - 실행과 항목이 각각 독립 리소스인데 라우트 분리가 없다.
+  - `/settlements/overview`
+  - `/settlements/criteria`
+  - `/settlements/inputs`
+  - `/settlements/runs`
+  - `/settlements/results`
+- 근거
+  - settlement 1차 범위를 `기준 / 입력 / 실행 / 결과 / 조회` 그룹 라우트 분리로 고정했다.
+  - admin settlement는 그 계약대로 분리돼 있다.
 
 ## 우선 정리 순서
 
 1. `admin terminals`
 2. `admin vehicle-assignments`
-3. `admin settlements`
-4. `operator settlements`
 
 ## 순서 기준
 
 1. 먼저 같은 도메인에서 admin/operator가 같이 걸린 화면을 정리한다.
 2. 그다음 하나의 화면에서 여러 리소스를 같이 쓰는 페이지를 자른다.
-3. 마지막에 읽기 전용이지만 상세 라우트가 없는 operator read 화면을 자른다.
+3. 정산은 1차 범위 기준 정리 완료로 보고 우선순위에서 뺀다.
 
 ## 구현 기준 메모
 

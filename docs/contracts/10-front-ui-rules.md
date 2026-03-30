@@ -320,6 +320,12 @@
 - `admin`도 조회 화면에서는 payroll direct read 대신 `settlement-ops`를 우선한다.
 - write 화면만 `/api/settlements/`를 사용한다.
 
+### 5. 정산 UI 1차 범위는 그룹 페이지 분리까지만 본다
+
+- 이번 단계의 settlement UI 정리는 `기준 / 입력 / 실행 / 결과 / 조회` 그룹 라우트 분리까지를 완료 기준으로 둔다.
+- `policy`, `version`, `assignment`, `delivery-record`, `snapshot`, `run`, `item` 각각의 상세 / 생성 / 수정 라우트 세분화는 후속 단계로 남긴다.
+- `operator` settlement 화면은 shared read summary 화면 한 장으로 유지한다.
+
 ## 현재 적용 메모
 
 ### 1. 현재 규칙에 이미 맞는 화면
@@ -329,16 +335,16 @@
 - `admin fleets`
 - `admin drivers`
 - `admin vehicles`
+- `admin settlements`
 - `operator drivers`
 - `operator driver detail`
 - `operator vehicles`
+- `operator settlements`
 
 ### 2. 아직 정리 중인 화면
 
-- `operator settlements`
 - `admin terminals`
 - `admin vehicle-assignments`
-- `admin settlements`
 
 ## 금지 규칙
 
