@@ -12,6 +12,10 @@ export function listAccounts(client: HttpClient) {
   return client.request<AccountSummary[]>('/auth/accounts/');
 }
 
+export function getAccount(client: HttpClient, accountId: string) {
+  return client.request<AccountSummary>(`/auth/accounts/${accountId}/`);
+}
+
 export function createAccount(client: HttpClient, payload: AccountPayload) {
   return client.request<AccountSummary>('/auth/accounts/', {
     method: 'POST',

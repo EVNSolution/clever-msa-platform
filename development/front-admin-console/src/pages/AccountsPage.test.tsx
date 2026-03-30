@@ -1,31 +1,36 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
 import { AccountsPage } from './AccountsPage';
 
 const apiMocks = vi.hoisted(() => ({
   listAccounts: vi.fn(),
-  createAccount: vi.fn(),
-  updateAccount: vi.fn(),
 }));
 
 vi.mock('../api/accounts', () => ({
   listAccounts: apiMocks.listAccounts,
-  createAccount: apiMocks.createAccount,
-  updateAccount: apiMocks.updateAccount,
 }));
 
 describe('AccountsPage', () => {
-  it('uses autocomplete hints for account credential inputs', async () => {
-    apiMocks.listAccounts.mockResolvedValue([]);
+  it('renders account list without an inline form', async () => {
+    apiMocks.listAccounts.mockResolvedValue([
+      {
+        account_id: '20000000-0000-0000-0000-000000000001',
+        email: 'admin@example.com',
+        role: 'admin',
+        is_active: true,
+      },
+    ]);
 
-    render(<AccountsPage client={{ request: vi.fn() }} />);
+    render(
+      <MemoryRouter>
+        <AccountsPage client={{ request: vi.fn() }} />
+      </MemoryRouter>,
+    );
 
-    await waitFor(() => {
-      expect(apiMocks.listAccounts).toHaveBeenCalled();
-    });
-
-    expect(screen.getByLabelText(/^이메일$/i)).toHaveAttribute('autocomplete', 'email');
-    expect(screen.getByLabelText(/비밀번호/i)).toHaveAttribute('autocomplete', 'new-password');
+    await screen.findByText('admin@example.com');
+    expect(screen.getByRole('link', { name: /계정 생성/i })).toHaveAttribute('href', '/accounts/new');
+    expect(screen.queryByLabelText(/^이메일$/i)).not.toBeInTheDocument();
   });
 });

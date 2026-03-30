@@ -5,6 +5,8 @@ import { login, logout } from './api/auth';
 import { createHttpClient, DEFAULT_API_BASE_URL, getErrorMessage, type HttpClient, type SessionPayload } from './api/http';
 import { Layout } from './components/Layout';
 import { RequireAdmin } from './components/RequireAdmin';
+import { AccountDetailPage } from './pages/AccountDetailPage';
+import { AccountFormPage } from './pages/AccountFormPage';
 import { AccountsPage } from './pages/AccountsPage';
 import { CompaniesPage } from './pages/CompaniesPage';
 import { CompanyDetailPage } from './pages/CompanyDetailPage';
@@ -93,6 +95,9 @@ export default function App() {
           <Route element={<Layout account={session.account} onLogout={handleLogout} />}>
             <Route path="/" element={<Navigate replace to="/accounts" />} />
             <Route path="/accounts" element={<AccountsPage client={client} />} />
+            <Route path="/accounts/new" element={<AccountFormPage client={client} mode="create" />} />
+            <Route path="/accounts/:accountId" element={<AccountDetailPage client={client} />} />
+            <Route path="/accounts/:accountId/edit" element={<AccountFormPage client={client} mode="edit" />} />
             <Route path="/organization" element={<Navigate replace to="/companies" />} />
             <Route path="/companies" element={<CompaniesPage client={client} />} />
             <Route path="/companies/new" element={<CompanyFormPage client={client} mode="create" />} />
