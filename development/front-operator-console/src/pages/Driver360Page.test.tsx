@@ -17,10 +17,10 @@ describe('Driver360Page', () => {
     return render(
       <MemoryRouter
         future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
-        initialEntries={['/drivers/10000000-0000-0000-0000-000000000001']}
+        initialEntries={['/drivers/1']}
       >
         <Routes>
-          <Route path="/drivers/:driverId" element={<Driver360Page client={{ request: vi.fn() }} />} />
+          <Route path="/drivers/:driverRef" element={<Driver360Page client={{ request: vi.fn() }} />} />
         </Routes>
       </MemoryRouter>,
     );

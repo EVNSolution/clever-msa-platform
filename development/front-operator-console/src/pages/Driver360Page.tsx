@@ -16,7 +16,7 @@ type Driver360PageProps = {
 };
 
 export function Driver360Page({ client }: Driver360PageProps) {
-  const { driverId = '' } = useParams();
+  const { driverRef = '' } = useParams();
   const [summary, setSummary] = useState<Driver360Summary | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -28,7 +28,7 @@ export function Driver360Page({ client }: Driver360PageProps) {
       setIsLoading(true);
       setErrorMessage(null);
       try {
-        const response = await getDriver360(client, driverId);
+        const response = await getDriver360(client, driverRef);
         if (!ignore) {
           setSummary(response);
         }
@@ -43,7 +43,7 @@ export function Driver360Page({ client }: Driver360PageProps) {
       }
     }
 
-    if (!driverId) {
+    if (!driverRef) {
       setErrorMessage('배송원 선택이 필요합니다.');
       setIsLoading(false);
       return () => {
@@ -55,7 +55,7 @@ export function Driver360Page({ client }: Driver360PageProps) {
     return () => {
       ignore = true;
     };
-  }, [client, driverId]);
+  }, [client, driverRef]);
 
   return (
     <div className="stack large-gap">

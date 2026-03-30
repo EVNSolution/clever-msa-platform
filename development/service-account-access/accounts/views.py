@@ -237,6 +237,8 @@ class AccountDetailView(generics.RetrieveUpdateAPIView):
         lookup_value = self.kwargs[self.lookup_url_kwarg]
         queryset = self.filter_queryset(self.get_queryset())
         filters = Q(public_ref=lookup_value)
+        if lookup_value.isdigit():
+            filters |= Q(route_no=int(lookup_value))
         try:
             filters |= Q(account_id=uuid.UUID(lookup_value))
         except ValueError:

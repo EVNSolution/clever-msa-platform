@@ -20,26 +20,26 @@ describe('CompanyDetailPage', () => {
   it('renders only fleets that belong to the selected company', async () => {
     apiMocks.getCompany.mockResolvedValue({
       company_id: '30000000-0000-0000-0000-000000000001',
-      public_ref: 'cmp_seedcompany01',
+      route_no: 1,
       name: 'Seed Company',
     });
     apiMocks.listFleets.mockResolvedValue([
       {
         fleet_id: '40000000-0000-0000-0000-000000000001',
-        public_ref: 'flt_seedfleet0001',
+        route_no: 1,
         company_id: '30000000-0000-0000-0000-000000000001',
         name: 'Seed Fleet',
       },
       {
         fleet_id: '40000000-0000-0000-0000-000000000002',
-        public_ref: 'flt_otherfleet0002',
+        route_no: 2,
         company_id: '30000000-0000-0000-0000-000000000002',
         name: 'Other Fleet',
       },
     ]);
 
     render(
-      <MemoryRouter initialEntries={['/companies/cmp_seedcompany01']}>
+      <MemoryRouter initialEntries={['/companies/1']}>
         <Routes>
           <Route path="/companies/:companyRef" element={<CompanyDetailPage client={{ request: vi.fn() }} />} />
         </Routes>
@@ -51,7 +51,7 @@ describe('CompanyDetailPage', () => {
     expect(screen.queryByText('Other Fleet')).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: /플릿 생성/i })).toHaveAttribute(
       'href',
-      '/companies/cmp_seedcompany01/fleets/new',
+      '/companies/1/fleets/new',
     );
   });
 });

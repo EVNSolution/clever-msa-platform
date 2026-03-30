@@ -75,8 +75,8 @@ class Driver360ApiTests(TestCase):
         mock_build_summary.return_value = self.summary
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.token}")
 
-        driver_id = uuid4()
-        response = self.client.get(f"/drivers/{driver_id}/")
+        driver_ref = "1"
+        response = self.client.get(f"/drivers/{driver_ref}/")
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["driver_name"], "Kim Driver")
@@ -86,7 +86,7 @@ class Driver360ApiTests(TestCase):
         self.assertEqual(response.data["latest_settlement_amount"], "125000.50")
         self.assertEqual(response.data["driver_cleanup_status"], "ready")
         mock_build_summary.assert_called_once_with(
-            driver_id=str(driver_id),
+            driver_ref=driver_ref,
             authorization=f"Bearer {self.token}",
         )
 
@@ -94,7 +94,7 @@ class Driver360ApiTests(TestCase):
     def test_detail_endpoint_returns_404_shape_when_driver_missing(self, _mock_build_summary):
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.token}")
 
-        response = self.client.get(f"/drivers/{uuid4()}/")
+        response = self.client.get("/drivers/999999/")
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(set(response.data.keys()), {"code", "message", "details"})

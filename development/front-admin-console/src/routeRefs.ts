@@ -1,13 +1,20 @@
 import type { AccountSummary, Company, Fleet } from './types';
 
-export function getAccountRouteRef(account: Pick<AccountSummary, 'account_id' | 'public_ref'>): string {
-  return account.public_ref ?? account.account_id;
+function requireRouteNo(routeNo: number | undefined, resourceLabel: string): string {
+  if (routeNo == null) {
+    throw new Error(`${resourceLabel} route_no is required for browser routes.`);
+  }
+  return String(routeNo);
 }
 
-export function getCompanyRouteRef(company: Pick<Company, 'company_id' | 'public_ref'>): string {
-  return company.public_ref ?? company.company_id;
+export function getAccountRouteRef(account: Pick<AccountSummary, 'route_no'>): string {
+  return requireRouteNo(account.route_no, 'account');
 }
 
-export function getFleetRouteRef(fleet: Pick<Fleet, 'fleet_id' | 'public_ref'>): string {
-  return fleet.public_ref ?? fleet.fleet_id;
+export function getCompanyRouteRef(company: Pick<Company, 'route_no'>): string {
+  return requireRouteNo(company.route_no, 'company');
+}
+
+export function getFleetRouteRef(fleet: Pick<Fleet, 'route_no'>): string {
+  return requireRouteNo(fleet.route_no, 'fleet');
 }

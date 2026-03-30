@@ -2,7 +2,8 @@ import secrets
 import uuid
 
 from django.contrib.auth.hashers import check_password, make_password
-from django.db import models
+from django.db import IntegrityError, models, transaction
+from django.db.models import Max
 
 
 def generate_account_public_ref() -> str:
@@ -15,6 +16,7 @@ class Account(models.Model):
         USER = "user", "User"
 
     account_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    route_no = models.PositiveIntegerField(unique=True, null=True, editable=False)
     public_ref = models.CharField(
         max_length=20,
         unique=True,
@@ -45,3 +47,17 @@ class Account(models.Model):
 
     def check_password(self, raw_password: str) -> bool:
         return check_password(raw_password, self.password_hash)
+
+    def save(self, *args, **kwargs):
+        if self.route_no is not None:
+            return super().save(*args, **kwargs)
+
+        for _ in range(5):
+            self.route_no = (type(self).objects.aggregate(max_route_no=Max("route_no"))["max_route_no"] or 0) + 1
+            try:
+                with transaction.atomic():
+                    return super().save(*args, **kwargs)
+            except IntegrityError:
+                self.route_no = None
+
+        raise IntegrityError("Failed to allocate account route_no.")

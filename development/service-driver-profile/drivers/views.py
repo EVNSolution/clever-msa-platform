@@ -1,3 +1,8 @@
+import uuid
+
+from django.http import Http404
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -46,7 +51,29 @@ class DriverDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = DriverProfile.objects.all()
     serializer_class = DriverProfileSerializer
     lookup_field = "driver_id"
+    lookup_url_kwarg = "driver_ref"
     permission_classes = [AuthenticatedReadWrite]
+
+    def get_object(self):
+        lookup_value = self.kwargs[self.lookup_url_kwarg]
+        queryset = self.filter_queryset(self.get_queryset())
+        q_parts: list[Q] = []
+        if lookup_value.isdigit():
+            q_parts.append(Q(route_no=int(lookup_value)))
+        try:
+            q_parts.append(Q(driver_id=uuid.UUID(lookup_value)))
+        except ValueError:
+            pass
+
+        if not q_parts:
+            raise Http404
+
+        filters = q_parts[0]
+        for part in q_parts[1:]:
+            filters |= part
+        obj = get_object_or_404(queryset, filters)
+        self.check_object_permissions(self.request, obj)
+        return obj
 
 
 class CheckEvIdView(APIView):

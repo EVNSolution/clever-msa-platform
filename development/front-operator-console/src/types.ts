@@ -18,6 +18,7 @@ export type Fleet = {
 
 export type DriverProfile = {
   driver_id: string;
+  route_no?: number;
   account_id: string | null;
   company_id: string;
   fleet_id: string;

@@ -17,7 +17,7 @@ describe('AccountsPage', () => {
     apiMocks.listAccounts.mockResolvedValue([
       {
         account_id: '20000000-0000-0000-0000-000000000001',
-        public_ref: 'acc_seedadmin0001',
+        route_no: 2,
         email: 'admin@example.com',
         role: 'admin',
         is_active: true,
@@ -32,7 +32,7 @@ describe('AccountsPage', () => {
 
     await screen.findByText('admin@example.com');
     expect(screen.getByRole('link', { name: /계정 생성/i })).toHaveAttribute('href', '/accounts/new');
-    expect(screen.getByRole('link', { name: '보기' })).toHaveAttribute('href', '/accounts/acc_seedadmin0001');
+    expect(screen.getByRole('link', { name: '보기' })).toHaveAttribute('href', '/accounts/2');
     expect(screen.queryByLabelText(/^이메일$/i)).not.toBeInTheDocument();
   });
 });

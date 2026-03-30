@@ -1,6 +1,7 @@
 import uuid
 
-from django.db import models
+from django.db import IntegrityError, models, transaction
+from django.db.models import Max
 
 
 class DriverProfile(models.Model):
@@ -19,6 +20,7 @@ class DriverProfile(models.Model):
         REVOKED = "revoked", "revoked"
 
     driver_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    route_no = models.PositiveIntegerField(unique=True, null=True, editable=False)
     account_id = models.UUIDField(null=True, blank=True)
     company_id = models.UUIDField()
     fleet_id = models.UUIDField()
@@ -39,3 +41,17 @@ class DriverProfile(models.Model):
 
     class Meta:
         ordering = ("driver_id",)
+
+    def save(self, *args, **kwargs):
+        if self.route_no is not None:
+            return super().save(*args, **kwargs)
+
+        for _ in range(5):
+            self.route_no = (type(self).objects.aggregate(max_route_no=Max("route_no"))["max_route_no"] or 0) + 1
+            try:
+                with transaction.atomic():
+                    return super().save(*args, **kwargs)
+            except IntegrityError:
+                self.route_no = None
+
+        raise IntegrityError("Failed to allocate driver route_no.")

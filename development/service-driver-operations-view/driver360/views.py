@@ -29,9 +29,9 @@ class Driver360DetailView(APIView):
     permission_classes = [AuthenticatedReadOnly]
 
     @extend_schema(responses={200: Driver360SummarySerializer})
-    def get(self, request, driver_id):
+    def get(self, request, driver_ref):
         summary = DriverSummaryService().build_summary(
-            driver_id=str(driver_id),
+            driver_ref=str(driver_ref),
             authorization=request.META.get("HTTP_AUTHORIZATION", ""),
         )
         return Response(Driver360SummarySerializer(summary).data, status=status.HTTP_200_OK)

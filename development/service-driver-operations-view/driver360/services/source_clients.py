@@ -36,9 +36,9 @@ class SourceClients:
         except (URLError, json.JSONDecodeError) as exc:
             raise SourceServiceError(f"Upstream request failed: {url}") from exc
 
-    def get_driver(self, *, driver_id: str, authorization: str):
+    def get_driver(self, *, driver_ref: str, authorization: str):
         return self._request_json(
-            url=self._build_url(settings.DRIVER_PROFILE_BASE_URL, f"/{driver_id}/"),
+            url=self._build_url(settings.DRIVER_PROFILE_BASE_URL, f"/{driver_ref}/"),
             authorization=authorization,
             allow_not_found=True,
         )

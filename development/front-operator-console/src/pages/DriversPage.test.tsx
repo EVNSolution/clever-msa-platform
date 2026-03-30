@@ -28,6 +28,7 @@ describe('DriversPage', () => {
     apiMocks.listDrivers.mockResolvedValue([
       {
         driver_id: '90000000-0000-0000-0000-000000000001',
+        route_no: 1,
         account_id: '10000000-0000-0000-0000-000000000001',
         company_id: '30000000-0000-0000-0000-000000000001',
         fleet_id: '40000000-0000-0000-0000-000000000001',
@@ -64,7 +65,7 @@ describe('DriversPage', () => {
     await waitFor(() => {
       expect(screen.getByRole('link', { name: /보기/i })).toHaveAttribute(
         'href',
-        '/drivers/90000000-0000-0000-0000-000000000001',
+        '/drivers/1',
       );
     });
     expect(screen.getByLabelText(/이름/i)).toBeInTheDocument();

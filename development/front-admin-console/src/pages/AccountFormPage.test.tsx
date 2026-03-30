@@ -34,14 +34,14 @@ describe('AccountFormPage', () => {
     const client = { request: vi.fn() };
     apiMocks.getAccount.mockResolvedValue({
       account_id: '20000000-0000-0000-0000-000000000001',
-      public_ref: 'acc_seedadmin0001',
+      route_no: 2,
       email: 'admin@example.com',
       role: 'admin',
       is_active: true,
     });
 
     render(
-      <MemoryRouter initialEntries={['/accounts/acc_seedadmin0001/edit']}>
+      <MemoryRouter initialEntries={['/accounts/2/edit']}>
         <Routes>
           <Route path="/accounts/:accountRef/edit" element={<AccountFormPage client={client} mode="edit" />} />
         </Routes>
@@ -51,7 +51,7 @@ describe('AccountFormPage', () => {
     await waitFor(() => {
       expect(apiMocks.getAccount).toHaveBeenCalledWith(
         client,
-        'acc_seedadmin0001',
+        '2',
       );
     });
     expect(screen.getByDisplayValue('admin@example.com')).toBeInTheDocument();

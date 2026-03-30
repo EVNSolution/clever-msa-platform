@@ -7,8 +7,8 @@ describe('getDriver360', () => {
     const request = vi.fn().mockResolvedValue({ driver_id: '10000000-0000-0000-0000-000000000001' });
     const client = { request };
 
-    await getDriver360(client, '10000000-0000-0000-0000-000000000001');
+    await getDriver360(client, '1');
 
-    expect(request).toHaveBeenCalledWith('/driver-ops/drivers/10000000-0000-0000-0000-000000000001/');
+    expect(request).toHaveBeenCalledWith('/driver-ops/drivers/1/');
   });
 });

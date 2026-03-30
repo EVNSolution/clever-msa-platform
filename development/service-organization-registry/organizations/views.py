@@ -26,6 +26,8 @@ class PublicRefLookupMixin:
         lookup_value = self.kwargs[self.lookup_url_kwarg or self.lookup_field]
         queryset = self.filter_queryset(self.get_queryset())
         filters = Q(**{self.lookup_field: lookup_value})
+        if lookup_value.isdigit():
+            filters |= Q(route_no=int(lookup_value))
         try:
             filters |= Q(**{self.raw_id_field: uuid.UUID(lookup_value)})
         except ValueError:

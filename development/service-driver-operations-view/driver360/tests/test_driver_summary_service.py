@@ -28,7 +28,7 @@ class FakeSourceClients:
         self.personnel_documents = personnel_documents if personnel_documents is not None else []
         self.personnel_documents_error = personnel_documents_error
 
-    def get_driver(self, *, driver_id, authorization):
+    def get_driver(self, *, driver_ref, authorization):
         return self.driver
 
     def list_companies(self, *, authorization):
@@ -110,7 +110,7 @@ class DriverSummaryServiceTests(TestCase):
         )
 
         summary = service.build_summary(
-            driver_id=self.driver["driver_id"],
+            driver_ref="1",
             authorization="Bearer token",
         )
 
@@ -145,7 +145,7 @@ class DriverSummaryServiceTests(TestCase):
         )
 
         summary = service.build_summary(
-            driver_id=driver["driver_id"],
+            driver_ref="1",
             authorization="Bearer token",
         )
 
@@ -173,7 +173,7 @@ class DriverSummaryServiceTests(TestCase):
         )
 
         summary = service.build_summary(
-            driver_id=self.driver["driver_id"],
+            driver_ref="1",
             authorization="Bearer token",
         )
 
@@ -216,7 +216,7 @@ class DriverSummaryServiceTests(TestCase):
         )
 
         summary = service.build_summary(
-            driver_id=driver["driver_id"],
+            driver_ref="1",
             authorization="Bearer token",
         )
 
@@ -244,7 +244,7 @@ class DriverSummaryServiceTests(TestCase):
         )
 
         summary = service.build_summary(
-            driver_id=self.driver["driver_id"],
+            driver_ref="1",
             authorization="Bearer token",
         )
 
@@ -258,6 +258,6 @@ class DriverSummaryServiceTests(TestCase):
 
         with self.assertRaisesRegex(NotFound, "Driver not found."):
             service.build_summary(
-                driver_id="10000000-0000-0000-0000-000000000001",
+                driver_ref="1",
                 authorization="Bearer token",
             )

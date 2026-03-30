@@ -85,7 +85,7 @@ export default function App() {
         <Route element={<Layout account={session.account} onLogout={handleLogout} />}>
           <Route path="/" element={<DashboardPage account={session.account} client={client} />} />
           <Route path="/drivers" element={<DriversPage account={session.account} client={client} />} />
-          <Route path="/drivers/:driverId" element={<Driver360Page client={client} />} />
+          <Route path="/drivers/:driverRef" element={<Driver360Page client={client} />} />
           <Route path="/vehicles" element={<VehiclesPage client={client} />} />
           <Route path="/settlements" element={<SettlementsPage client={client} />} />
           <Route path="*" element={<Navigate replace to="/" />} />

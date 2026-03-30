@@ -1,7 +1,8 @@
 import secrets
 import uuid
 
-from django.db import models
+from django.db import IntegrityError, models, transaction
+from django.db.models import Max
 
 
 def generate_company_public_ref() -> str:
@@ -14,6 +15,7 @@ def generate_fleet_public_ref() -> str:
 
 class Company(models.Model):
     company_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    route_no = models.PositiveIntegerField(unique=True, null=True, editable=False)
     public_ref = models.CharField(
         max_length=20,
         unique=True,
@@ -25,9 +27,24 @@ class Company(models.Model):
     class Meta:
         ordering = ("name",)
 
+    def save(self, *args, **kwargs):
+        if self.route_no is not None:
+            return super().save(*args, **kwargs)
+
+        for _ in range(5):
+            self.route_no = (type(self).objects.aggregate(max_route_no=Max("route_no"))["max_route_no"] or 0) + 1
+            try:
+                with transaction.atomic():
+                    return super().save(*args, **kwargs)
+            except IntegrityError:
+                self.route_no = None
+
+        raise IntegrityError("Failed to allocate company route_no.")
+
 
 class Fleet(models.Model):
     fleet_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    route_no = models.PositiveIntegerField(unique=True, null=True, editable=False)
     public_ref = models.CharField(
         max_length=20,
         unique=True,
@@ -39,3 +56,17 @@ class Fleet(models.Model):
 
     class Meta:
         ordering = ("name",)
+
+    def save(self, *args, **kwargs):
+        if self.route_no is not None:
+            return super().save(*args, **kwargs)
+
+        for _ in range(5):
+            self.route_no = (type(self).objects.aggregate(max_route_no=Max("route_no"))["max_route_no"] or 0) + 1
+            try:
+                with transaction.atomic():
+                    return super().save(*args, **kwargs)
+            except IntegrityError:
+                self.route_no = None
+
+        raise IntegrityError("Failed to allocate fleet route_no.")

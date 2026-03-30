@@ -251,9 +251,13 @@ export function DriversPage({ account, client }: DriversPageProps) {
                   <td>{driver.phone_number}</td>
                   <td>{driver.account_id ? '연결됨' : '미연결'}</td>
                   <td>
-                    <Link className="button ghost small" to={`/drivers/${driver.driver_id}`}>
-                      보기
-                    </Link>
+                    {driver.route_no != null ? (
+                      <Link className="button ghost small" to={`/drivers/${driver.route_no}`}>
+                        보기
+                      </Link>
+                    ) : (
+                      <span className="status-chip">상세 비공개</span>
+                    )}
                     <button className="button ghost small" onClick={() => handleEdit(driver)} type="button">
                       수정
                     </button>

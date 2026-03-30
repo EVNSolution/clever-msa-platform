@@ -43,7 +43,7 @@ class OrganizationApiTests(TestCase):
         company_response = self.client.post("/companies/", {"name": "Seed Company"}, format="json")
         self.assertEqual(company_response.status_code, 201)
         company_id = company_response.data["company_id"]
-        company_ref = company_response.data["public_ref"]
+        company_ref = company_response.data["route_no"]
 
         fleet_response = self.client.post(
             "/fleets/",
@@ -52,7 +52,7 @@ class OrganizationApiTests(TestCase):
         )
         self.assertEqual(fleet_response.status_code, 201)
         fleet_id = fleet_response.data["fleet_id"]
-        fleet_ref = fleet_response.data["public_ref"]
+        fleet_ref = fleet_response.data["route_no"]
 
         self.assertEqual(self.client.get(f"/companies/{company_ref}/").status_code, 200)
         self.assertEqual(self.client.get(f"/fleets/{fleet_ref}/").status_code, 200)
@@ -103,7 +103,7 @@ class OrganizationApiTests(TestCase):
     def test_missing_resource_returns_404_shape(self):
         self._authenticate(self.admin_token)
 
-        response = self.client.get("/companies/cmp_missing00000000/")
+        response = self.client.get("/companies/999999/")
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(set(response.data.keys()), {"code", "message", "details"})

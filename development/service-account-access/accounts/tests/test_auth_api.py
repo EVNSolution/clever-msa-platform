@@ -64,7 +64,7 @@ class AuthApiTests(TestCase):
 
         self.assertIn("access_token", response.data)
         self.assertIn("account", response.data)
-        self.assertIn("public_ref", response.data["account"])
+        self.assertIn("route_no", response.data["account"])
         self.assertIn("refresh_token", response.cookies)
         self.assertTrue(response.cookies["refresh_token"]["httponly"])
 
@@ -127,15 +127,15 @@ class AuthApiTests(TestCase):
 
         self.assertEqual(list_response.status_code, 200)
         self.assertEqual(create_response.status_code, 201)
-        self.assertIn("public_ref", create_response.data)
+        self.assertIn("route_no", create_response.data)
         self.assertTrue(Account.objects.filter(email="created@example.com").exists())
 
     def test_admin_can_read_and_update_account_detail(self):
         self._authenticate(self.admin.email, self.admin_password)
 
-        detail_response = self.client.get(f"/accounts/{self.user.public_ref}/")
+        detail_response = self.client.get(f"/accounts/{self.user.route_no}/")
         patch_response = self.client.patch(
-            f"/accounts/{self.user.public_ref}/",
+            f"/accounts/{self.user.route_no}/",
             {"role": Account.Role.ADMIN},
             format="json",
         )
@@ -144,7 +144,7 @@ class AuthApiTests(TestCase):
         self.assertEqual(detail_response.status_code, 200)
         self.assertEqual(patch_response.status_code, 200)
         self.assertEqual(legacy_detail_response.status_code, 200)
-        self.assertEqual(detail_response.data["public_ref"], self.user.public_ref)
+        self.assertEqual(detail_response.data["route_no"], self.user.route_no)
         self.user.refresh_from_db()
         self.assertEqual(self.user.role, Account.Role.ADMIN)
 
@@ -152,9 +152,9 @@ class AuthApiTests(TestCase):
         self._authenticate(self.user.email, self.user_password)
 
         list_response = self.client.get("/accounts/")
-        detail_response = self.client.get(f"/accounts/{self.admin.public_ref}/")
+        detail_response = self.client.get(f"/accounts/{self.admin.route_no}/")
         patch_response = self.client.patch(
-            f"/accounts/{self.admin.public_ref}/",
+            f"/accounts/{self.admin.route_no}/",
             {"role": Account.Role.ADMIN},
             format="json",
         )

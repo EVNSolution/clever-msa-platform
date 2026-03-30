@@ -82,12 +82,14 @@
 - `/<resource>/:ref`
 - `/<resource>/:ref/edit`
 
-### 3. 브라우저 URL은 public_ref만 사용한다
+### 3. 브라우저 URL은 route_no만 사용한다
 
 - 브라우저 URL에는 원본 `*_id`를 직접 넣지 않는다.
-- 브라우저 URL path segment는 서비스별 `public_ref`를 사용한다.
+- 브라우저 URL path segment는 서비스별 `route_no`를 사용한다.
+- `route_no`는 짧은 정수 값으로 유지한다.
 - 링크 복사, 새로고침, 북마크, 브라우저 히스토리 기준으로도 같은 규칙을 유지한다.
 - 읽기 화면에서 raw ID를 숨기는 것만으로는 충분하지 않다. URL도 같이 숨겨야 한다.
+- 현재 범위에서는 `account`, `company`, `fleet`, `driver` 라우트에 이 규칙을 적용한다.
 
 ### 3. Company / Fleet 형태
 

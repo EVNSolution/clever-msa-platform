@@ -13,22 +13,25 @@ MSA에서는 같은 대상을 여러 서비스가 참조하므로, 이 문서가
 3. API payload, 로그, 이벤트, 프로젝션은 같은 외부 식별자를 사용한다.
 4. 재사용 가능한 번호 체계를 만들지 않는다.
 
-## 브라우저 라우트 공개 키 원칙
+## 브라우저 라우트 번호 원칙
 
-1. 브라우저 URL path segment에는 `account_id`, `company_id`, `fleet_id` 같은 원본 식별자를 직접 노출하지 않는다.
-2. 브라우저 라우트에는 서비스별 `public_ref`를 사용한다.
-3. `public_ref`는 브라우저 라우트 전용 공개 키다.
-4. `public_ref`는 불변이어야 한다.
-5. `public_ref`는 정산, 이벤트, 로그, 서비스 간 참조 식별자로 사용하지 않는다.
-6. 서비스 간 참조와 도메인 정본 식별자는 계속 `account_id`, `company_id`, `fleet_id` 같은 외부 식별자를 사용한다.
+1. 브라우저 URL path segment에는 `account_id`, `company_id`, `fleet_id`, `driver_id` 같은 원본 식별자를 직접 노출하지 않는다.
+2. 브라우저 라우트에는 서비스별 `route_no`를 사용한다.
+3. `route_no`는 브라우저 라우트 전용 번호다.
+4. `route_no`는 짧고 사람이 읽기 쉬운 정수 값으로 유지한다.
+5. `route_no`는 한 번 발급되면 바꾸지 않는다.
+6. `route_no`는 삭제 이후에도 재사용하지 않는다.
+7. `route_no`는 정산, 이벤트, 로그, 서비스 간 참조 식별자로 사용하지 않는다.
+8. 서비스 간 참조와 도메인 정본 식별자는 계속 `account_id`, `company_id`, `fleet_id` 같은 외부 식별자를 사용한다.
 
-### 브라우저 라우트 공개 키 범위
+### 브라우저 라우트 번호 범위
 
-| 공개 키 | 소유 서비스 | 용도 |
+| 라우트 번호 | 소유 서비스 | 용도 |
 |---|---|---|
-| account.public_ref | Identity Access | 관리자/운영 UI 라우트 |
-| company.public_ref | Organization Master | 관리자/운영 UI 라우트 |
-| fleet.public_ref | Organization Master | 관리자/운영 UI 라우트 |
+| account.route_no | Identity Access | 관리자/운영 UI 라우트 |
+| company.route_no | Organization Master | 관리자/운영 UI 라우트 |
+| fleet.route_no | Organization Master | 관리자/운영 UI 라우트 |
+| driver.route_no | Driver Profile HR | 관리자/운영 UI 라우트 |
 
 ## 핵심 외부 식별자
 
@@ -240,7 +243,7 @@ MSA에서는 같은 대상을 여러 서비스가 참조하므로, 이 문서가
 2. `vehicle_status`와 `assignment_status`를 같은 값으로 쓰지 않는다.
 3. retired 는 서비스마다 의미가 다를 수 있으므로 문맥을 항상 붙인다.
 4. company 와 fleet 는 마스터 정본이고, driver 와 vehicle 은 소속 참조만 가진다.
-5. 브라우저 URL의 `public_ref`와 서비스 정본 식별자 `*_id`를 같은 값으로 취급하지 않는다.
+5. 브라우저 URL의 `route_no`와 서비스 정본 식별자 `*_id`를 같은 값으로 취급하지 않는다.
 
 ## 연결 문서
 

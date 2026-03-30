@@ -62,11 +62,13 @@ class DriverApiTests(TestCase):
         create_response = self.client.post("/", self._payload(), format="json")
         self.assertEqual(create_response.status_code, 201)
         driver_id = create_response.data["driver_id"]
+        driver_ref = create_response.data["route_no"]
 
+        self.assertEqual(self.client.get(f"/{driver_ref}/").status_code, 200)
         self.assertEqual(self.client.get(f"/{driver_id}/").status_code, 200)
         self.assertEqual(
             self.client.patch(
-                f"/{driver_id}/",
+                f"/{driver_ref}/",
                 {"phone_number": "010-9999-9999"},
                 format="json",
             ).status_code,
@@ -80,11 +82,13 @@ class DriverApiTests(TestCase):
         create_response = self.client.post("/", self._payload(), format="json")
         self.assertEqual(create_response.status_code, 201)
         driver_id = create_response.data["driver_id"]
+        driver_ref = create_response.data["route_no"]
 
+        self.assertEqual(self.client.get(f"/{driver_ref}/").status_code, 200)
         self.assertEqual(self.client.get(f"/{driver_id}/").status_code, 200)
         self.assertEqual(
             self.client.patch(
-                f"/{driver_id}/",
+                f"/{driver_ref}/",
                 {"address": "Busan"},
                 format="json",
             ).status_code,
@@ -121,12 +125,13 @@ class DriverApiTests(TestCase):
         response = self.client.post("/", payload, format="json")
 
         self.assertEqual(response.status_code, 201)
+        self.assertIn("route_no", response.data)
         self.assertEqual(response.data["employment_status"], "active")
         self.assertEqual(response.data["qualification_status"], "qualified")
 
     def test_missing_driver_returns_404_shape(self):
         self._authenticate(self.user_token)
-        response = self.client.get(f"/{uuid4()}/")
+        response = self.client.get("/999999/")
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(set(response.data.keys()), {"code", "message", "details"})

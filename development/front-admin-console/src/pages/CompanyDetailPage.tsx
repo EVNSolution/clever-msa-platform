@@ -153,7 +153,7 @@ export function CompanyDetailPage({ client }: CompanyDetailPageProps) {
                   <td>
                     <Link
                       className="button ghost small"
-                      to={`/companies/${getCompanyRouteRef(company ?? { company_id: fleet.company_id })}/fleets/${getFleetRouteRef(fleet)}`}
+                      to={`/companies/${companyRef}/fleets/${getFleetRouteRef(fleet)}`}
                     >
                       보기
                     </Link>
@@ -161,7 +161,7 @@ export function CompanyDetailPage({ client }: CompanyDetailPageProps) {
                   <td>
                     <Link
                       className="button ghost small"
-                      to={`/companies/${getCompanyRouteRef(company ?? { company_id: fleet.company_id })}/fleets/${getFleetRouteRef(fleet)}/edit`}
+                      to={`/companies/${companyRef}/fleets/${getFleetRouteRef(fleet)}/edit`}
                     >
                       수정
                     </Link>

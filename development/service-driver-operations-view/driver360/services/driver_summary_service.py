@@ -18,10 +18,11 @@ class DriverSummaryService:
     def __init__(self, source_clients=None):
         self.source_clients = source_clients or SourceClients()
 
-    def build_summary(self, *, driver_id: str, authorization: str):
+    def build_summary(self, *, driver_ref: str, authorization: str):
         warnings = []
         cleanup_blockers = []
-        driver = self._get_driver(driver_id=driver_id, authorization=authorization)
+        driver = self._get_driver(driver_ref=driver_ref, authorization=authorization)
+        driver_id = driver["driver_id"]
 
         companies = self.source_clients.list_companies(authorization=authorization)
         company = next((item for item in companies if item["company_id"] == driver["company_id"]), None)
@@ -120,9 +121,9 @@ class DriverSummaryService:
             "warnings": warnings,
         }
 
-    def _get_driver(self, *, driver_id: str, authorization: str):
+    def _get_driver(self, *, driver_ref: str, authorization: str):
         try:
-            driver = self.source_clients.get_driver(driver_id=driver_id, authorization=authorization)
+            driver = self.source_clients.get_driver(driver_ref=driver_ref, authorization=authorization)
         except SourceNotFoundError as exc:
             raise NotFound("Driver not found.") from exc
         except SourceServiceError as exc:
