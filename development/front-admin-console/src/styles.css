@@ -276,6 +276,57 @@ textarea:focus {
   border: 1px solid rgba(28, 32, 43, 0.08);
 }
 
+.step-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.step-card {
+  display: grid;
+  gap: 0.3rem;
+  padding: 1rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(28, 32, 43, 0.08);
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
+}
+
+.step-card strong,
+.step-card span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.step-card.active {
+  border-color: rgba(181, 41, 67, 0.28);
+  background: rgba(249, 217, 223, 0.72);
+}
+
+.step-index {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.15rem;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.flow-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: end;
+  margin-top: 1rem;
+}
+
+.flow-current {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
 .account-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -568,7 +619,8 @@ textarea:focus {
   .data-grid.two-columns.wide-left,
   .sub-grid.three-columns,
   .relationship-grid,
-  .metric-grid {
+  .metric-grid,
+  .flow-actions {
     grid-template-columns: 1fr;
   }
 

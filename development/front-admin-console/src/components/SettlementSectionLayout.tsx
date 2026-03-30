@@ -1,14 +1,23 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 
 const SETTLEMENT_NAV_ITEMS = [
-  { to: '/settlements/overview', label: '정산 조회' },
-  { to: '/settlements/criteria', label: '정산 기준' },
-  { to: '/settlements/inputs', label: '정산 입력' },
-  { to: '/settlements/runs', label: '정산 실행' },
-  { to: '/settlements/results', label: '정산 결과' },
+  { to: '/settlements/overview', label: '정산 조회', description: '현재 run, item, 최신 정산을 읽습니다.' },
+  { to: '/settlements/criteria', label: '정산 기준', description: '정책, 버전, 회사/플릿 연결을 관리합니다.' },
+  { to: '/settlements/inputs', label: '정산 입력', description: '배송 원천 입력과 일별 snapshot을 준비합니다.' },
+  { to: '/settlements/runs', label: '정산 실행', description: '회사/플릿 기준으로 run을 생성합니다.' },
+  { to: '/settlements/results', label: '정산 결과', description: '기사별 정산 항목과 지급 상태를 확인합니다.' },
 ] as const;
 
 export function SettlementSectionLayout() {
+  const location = useLocation();
+  const currentIndex = Math.max(
+    0,
+    SETTLEMENT_NAV_ITEMS.findIndex((item) => location.pathname === item.to),
+  );
+  const currentItem = SETTLEMENT_NAV_ITEMS[currentIndex];
+  const previousItem = currentIndex > 0 ? SETTLEMENT_NAV_ITEMS[currentIndex - 1] : null;
+  const nextItem = currentIndex < SETTLEMENT_NAV_ITEMS.length - 1 ? SETTLEMENT_NAV_ITEMS[currentIndex + 1] : null;
+
   return (
     <div className="stack large-gap">
       <section className="panel">
@@ -30,6 +39,38 @@ export function SettlementSectionLayout() {
             </NavLink>
           ))}
         </nav>
+        <div className="step-grid">
+          {SETTLEMENT_NAV_ITEMS.map((item, index) => (
+            <NavLink
+              key={item.to}
+              className={({ isActive }) => (isActive ? 'step-card active' : 'step-card')}
+              to={item.to}
+            >
+              <span className="step-index">{index + 1}</span>
+              <strong>{item.label}</strong>
+              <span>{item.description}</span>
+            </NavLink>
+          ))}
+        </div>
+        <div className="flow-actions">
+          <div className="flow-current">
+            <span className="panel-kicker">현재 단계</span>
+            <strong>{currentItem.label}</strong>
+            <span className="empty-state">{currentItem.description}</span>
+          </div>
+          <div className="page-actions">
+            {previousItem ? (
+              <Link className="button ghost" to={previousItem.to}>
+                이전: {previousItem.label}
+              </Link>
+            ) : null}
+            {nextItem ? (
+              <Link className="button primary" to={nextItem.to}>
+                다음: {nextItem.label}
+              </Link>
+            ) : null}
+          </div>
+        </div>
       </section>
       <Outlet />
     </div>
