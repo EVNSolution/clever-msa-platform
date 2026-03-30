@@ -327,7 +327,8 @@
 - `operator` settlement 화면은 shared read summary 화면 한 장으로 유지한다.
 - `admin` settlement의 생성 / 수정은 그룹 페이지 안에서 모달로 연다.
 - settlement 하위 write 리소스는 별도 full-page 생성 폼을 두지 않는다.
-- settlement 그룹 상단에는 단계 네비게이션과 이전 / 다음 이동을 같이 둔다.
+- settlement 그룹 상단에는 카드형 단계 이동만 둔다.
+- settlement 그룹 상단의 별도 버튼형 보조 네비게이션과 `현재 단계` 요약 블록은 두지 않는다.
 
 ## 현재 적용 메모
 
