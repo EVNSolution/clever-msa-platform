@@ -24,14 +24,16 @@ MSA에서는 같은 대상을 여러 서비스가 참조하므로, 이 문서가
 7. `route_no`는 정산, 이벤트, 로그, 서비스 간 참조 식별자로 사용하지 않는다.
 8. 서비스 간 참조와 도메인 정본 식별자는 계속 `account_id`, `company_id`, `fleet_id` 같은 외부 식별자를 사용한다.
 
-### 브라우저 라우트 번호 범위
+### 브라우저 라우트 번호 적용 원칙
 
-| 라우트 번호 | 소유 서비스 | 용도 |
-|---|---|---|
-| account.route_no | Identity Access | 관리자/운영 UI 라우트 |
-| company.route_no | Organization Master | 관리자/운영 UI 라우트 |
-| fleet.route_no | Organization Master | 관리자/운영 UI 라우트 |
-| driver.route_no | Driver Profile HR | 관리자/운영 UI 라우트 |
+| 항목 | 규칙 |
+|---|---|
+| 적용 대상 | 브라우저에서 상세, 수정, 관계 라우트를 가지는 모든 리소스 |
+| 발급 위치 | 각 리소스 정본 서비스 |
+| 사용 위치 | 관리자 콘솔, 운영 콘솔 같은 브라우저 라우트 |
+| 비적용 위치 | 서비스 간 API 참조, 이벤트, 로그, 정산 입력/결과 식별 |
+
+현재 적용 예시는 `account`, `company`, `fleet`, `driver` 이다.
 
 ## 핵심 외부 식별자
 
