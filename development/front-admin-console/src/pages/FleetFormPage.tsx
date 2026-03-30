@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { createFleet, getCompany, getFleet, updateFleet } from '../api/organization';
 import { getErrorMessage, type HttpClient } from '../api/http';
+import { getCompanyRouteRef, getFleetRouteRef } from '../routeRefs';
 import type { Company } from '../types';
 
 type FleetFormPageProps = {
@@ -12,7 +13,7 @@ type FleetFormPageProps = {
 
 export function FleetFormPage({ client, mode }: FleetFormPageProps) {
   const navigate = useNavigate();
-  const { companyId, fleetId } = useParams();
+  const { companyRef, fleetRef } = useParams();
   const isEdit = mode === 'edit';
   const [company, setCompany] = useState<Company | null>(null);
   const [name, setName] = useState('');
@@ -21,36 +22,36 @@ export function FleetFormPage({ client, mode }: FleetFormPageProps) {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (!companyId) {
-      setErrorMessage('회사 ID가 없습니다.');
+    if (!companyRef) {
+      setErrorMessage('회사 경로 키가 없습니다.');
       setIsLoading(false);
       return;
     }
 
-    const selectedCompanyId = companyId;
-    const selectedFleetId = fleetId;
+    const selectedCompanyRef = companyRef;
+    const selectedFleetRef = fleetRef;
     let ignore = false;
 
     async function load() {
       setIsLoading(true);
       setErrorMessage(null);
       try {
-        const companyResponse = await getCompany(client, selectedCompanyId);
+        const companyResponse = await getCompany(client, selectedCompanyRef);
         if (ignore) {
           return;
         }
         setCompany(companyResponse);
 
-        if (!isEdit || !selectedFleetId) {
+        if (!isEdit || !selectedFleetRef) {
           setIsLoading(false);
           return;
         }
 
-        const fleet = await getFleet(client, selectedFleetId);
+        const fleet = await getFleet(client, selectedFleetRef);
         if (ignore) {
           return;
         }
-        if (fleet.company_id !== selectedCompanyId) {
+        if (fleet.company_id !== companyResponse.company_id) {
           setErrorMessage('회사와 플릿 관계가 맞지 않습니다.');
           setIsLoading(false);
           return;
@@ -71,26 +72,34 @@ export function FleetFormPage({ client, mode }: FleetFormPageProps) {
     return () => {
       ignore = true;
     };
-  }, [client, companyId, fleetId, isEdit]);
+  }, [client, companyRef, fleetRef, isEdit]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!companyId) {
-      setErrorMessage('회사 ID가 없습니다.');
+    if (!companyRef) {
+      setErrorMessage('회사 경로 키가 없습니다.');
       return;
     }
 
     setIsSaving(true);
     setErrorMessage(null);
     try {
-      if (isEdit && fleetId) {
-        await updateFleet(client, fleetId, { company_id: companyId, name });
-        navigate(`/companies/${companyId}/fleets/${fleetId}`);
+      if (isEdit && fleetRef) {
+        const updated = await updateFleet(client, fleetRef, { company_id: company?.company_id ?? '', name });
+        navigate(
+          company
+            ? `/companies/${getCompanyRouteRef(company)}/fleets/${getFleetRouteRef(updated)}`
+            : '/companies',
+        );
         return;
       }
 
-      const created = await createFleet(client, { company_id: companyId, name });
-      navigate(`/companies/${companyId}/fleets/${created.fleet_id}`);
+      const created = await createFleet(client, { company_id: company?.company_id ?? '', name });
+      navigate(
+        company
+          ? `/companies/${getCompanyRouteRef(company)}/fleets/${getFleetRouteRef(created)}`
+          : '/companies',
+      );
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
     } finally {
@@ -99,7 +108,11 @@ export function FleetFormPage({ client, mode }: FleetFormPageProps) {
   }
 
   const cancelHref =
-    isEdit && companyId && fleetId ? `/companies/${companyId}/fleets/${fleetId}` : companyId ? `/companies/${companyId}` : '/companies';
+    isEdit && company && fleetRef
+      ? `/companies/${getCompanyRouteRef(company)}/fleets/${fleetRef}`
+      : company
+        ? `/companies/${getCompanyRouteRef(company)}`
+        : '/companies';
 
   return (
     <section className="panel form-panel">

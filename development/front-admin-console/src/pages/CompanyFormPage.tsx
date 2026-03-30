@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { createCompany, getCompany, updateCompany } from '../api/organization';
 import { getErrorMessage, type HttpClient } from '../api/http';
+import { getCompanyRouteRef } from '../routeRefs';
 
 type CompanyFormPageProps = {
   client: HttpClient;
@@ -11,7 +12,7 @@ type CompanyFormPageProps = {
 
 export function CompanyFormPage({ client, mode }: CompanyFormPageProps) {
   const navigate = useNavigate();
-  const { companyId } = useParams();
+  const { companyRef } = useParams();
   const isEdit = mode === 'edit';
   const [name, setName] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -19,19 +20,19 @@ export function CompanyFormPage({ client, mode }: CompanyFormPageProps) {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (!isEdit || !companyId) {
+    if (!isEdit || !companyRef) {
       setIsLoading(false);
       return;
     }
 
-    const selectedCompanyId = companyId;
+    const selectedCompanyRef = companyRef;
     let ignore = false;
 
     async function load() {
       setIsLoading(true);
       setErrorMessage(null);
       try {
-        const company = await getCompany(client, selectedCompanyId);
+        const company = await getCompany(client, selectedCompanyRef);
         if (!ignore) {
           setName(company.name);
         }
@@ -50,21 +51,21 @@ export function CompanyFormPage({ client, mode }: CompanyFormPageProps) {
     return () => {
       ignore = true;
     };
-  }, [client, companyId, isEdit]);
+  }, [client, companyRef, isEdit]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSaving(true);
     setErrorMessage(null);
     try {
-      if (isEdit && companyId) {
-        await updateCompany(client, companyId, { name });
-        navigate(`/companies/${companyId}`);
+      if (isEdit && companyRef) {
+        const updated = await updateCompany(client, companyRef, { name });
+        navigate(`/companies/${getCompanyRouteRef(updated)}`);
         return;
       }
 
       const created = await createCompany(client, { name });
-      navigate(`/companies/${created.company_id}`);
+      navigate(`/companies/${getCompanyRouteRef(created)}`);
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
     } finally {
@@ -72,7 +73,7 @@ export function CompanyFormPage({ client, mode }: CompanyFormPageProps) {
     }
   }
 
-  const cancelHref = isEdit && companyId ? `/companies/${companyId}` : '/companies';
+  const cancelHref = isEdit && companyRef ? `/companies/${companyRef}` : '/companies';
 
   return (
     <section className="panel form-panel">

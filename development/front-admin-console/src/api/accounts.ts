@@ -12,8 +12,8 @@ export function listAccounts(client: HttpClient) {
   return client.request<AccountSummary[]>('/auth/accounts/');
 }
 
-export function getAccount(client: HttpClient, accountId: string) {
-  return client.request<AccountSummary>(`/auth/accounts/${accountId}/`);
+export function getAccount(client: HttpClient, accountRef: string) {
+  return client.request<AccountSummary>(`/auth/accounts/${accountRef}/`);
 }
 
 export function createAccount(client: HttpClient, payload: AccountPayload) {
@@ -23,8 +23,8 @@ export function createAccount(client: HttpClient, payload: AccountPayload) {
   });
 }
 
-export function updateAccount(client: HttpClient, accountId: string, payload: Partial<AccountPayload>) {
-  return client.request<AccountSummary>(`/auth/accounts/${accountId}/`, {
+export function updateAccount(client: HttpClient, accountRef: string, payload: Partial<AccountPayload>) {
+  return client.request<AccountSummary>(`/auth/accounts/${accountRef}/`, {
     method: 'PATCH',
     body: JSON.stringify(payload),
   });

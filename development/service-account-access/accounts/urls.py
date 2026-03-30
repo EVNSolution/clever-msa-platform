@@ -22,6 +22,6 @@ urlpatterns = [
     path("change-password/", ChangePasswordView.as_view(), name="change-password"),
     path("account-driver-links/", AccountDriverLinkView.as_view(), name="account-driver-link"),
     path("accounts/", AccountListCreateView.as_view(), name="account-list"),
-    path("accounts/<uuid:account_id>/", AccountDetailView.as_view(), name="account-detail"),
+    path("accounts/<str:account_ref>/", AccountDetailView.as_view(), name="account-detail"),
     path("health/", HealthView.as_view(), name="health"),
 ]

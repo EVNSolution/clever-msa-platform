@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { listCompanies, listFleets } from '../api/organization';
 import { getErrorMessage, type HttpClient } from '../api/http';
+import { getCompanyRouteRef } from '../routeRefs';
 import type { Company, Fleet } from '../types';
 
 type CompaniesPageProps = {
@@ -87,12 +88,12 @@ export function CompaniesPage({ client }: CompaniesPageProps) {
                   <td>{company.name}</td>
                   <td>{fleetCountByCompanyId.get(company.company_id) ?? 0}</td>
                   <td>
-                    <Link className="button ghost small" to={`/companies/${company.company_id}`}>
+                    <Link className="button ghost small" to={`/companies/${getCompanyRouteRef(company)}`}>
                       보기
                     </Link>
                   </td>
                   <td>
-                    <Link className="button ghost small" to={`/companies/${company.company_id}/edit`}>
+                    <Link className="button ghost small" to={`/companies/${getCompanyRouteRef(company)}/edit`}>
                       수정
                     </Link>
                   </td>

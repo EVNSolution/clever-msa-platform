@@ -1,5 +1,6 @@
 export type AccountSummary = {
   account_id: string;
+  public_ref?: string;
   email: string;
   role: string;
   is_active: boolean;
@@ -7,11 +8,13 @@ export type AccountSummary = {
 
 export type Company = {
   company_id: string;
+  public_ref?: string;
   name: string;
 };
 
 export type Fleet = {
   fleet_id: string;
+  public_ref?: string;
   company_id: string;
   name: string;
 };

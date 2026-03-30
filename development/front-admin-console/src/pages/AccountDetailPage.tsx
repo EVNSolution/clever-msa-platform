@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 
 import { getAccount } from '../api/accounts';
 import { getErrorMessage, type HttpClient } from '../api/http';
+import { getAccountRouteRef } from '../routeRefs';
 import type { AccountSummary } from '../types';
 import { formatBooleanLabel, formatRoleLabel } from '../uiLabels';
 
@@ -11,26 +12,26 @@ type AccountDetailPageProps = {
 };
 
 export function AccountDetailPage({ client }: AccountDetailPageProps) {
-  const { accountId } = useParams();
+  const { accountRef } = useParams();
   const [account, setAccount] = useState<AccountSummary | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!accountId) {
-      setErrorMessage('계정 ID가 없습니다.');
+    if (!accountRef) {
+      setErrorMessage('계정 경로 키가 없습니다.');
       setIsLoading(false);
       return;
     }
 
-    const selectedAccountId = accountId;
+    const selectedAccountRef = accountRef;
     let ignore = false;
 
     async function load() {
       setIsLoading(true);
       setErrorMessage(null);
       try {
-        const response = await getAccount(client, selectedAccountId);
+        const response = await getAccount(client, selectedAccountRef);
         if (!ignore) {
           setAccount(response);
         }
@@ -49,7 +50,7 @@ export function AccountDetailPage({ client }: AccountDetailPageProps) {
     return () => {
       ignore = true;
     };
-  }, [accountId, client]);
+  }, [accountRef, client]);
 
   return (
     <section className="panel">
@@ -58,8 +59,8 @@ export function AccountDetailPage({ client }: AccountDetailPageProps) {
           <p className="panel-kicker">계정 상세</p>
           <h2>{account?.email ?? '계정 상세'}</h2>
         </div>
-        {accountId ? (
-          <Link className="button ghost" to={`/accounts/${accountId}/edit`}>
+        {account ? (
+          <Link className="button ghost" to={`/accounts/${getAccountRouteRef(account)}/edit`}>
             계정 수정
           </Link>
         ) : null}

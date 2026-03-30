@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { deleteCompany, getCompany, listFleets } from '../api/organization';
 import { getErrorMessage, type HttpClient } from '../api/http';
+import { getCompanyRouteRef, getFleetRouteRef } from '../routeRefs';
 import type { Company, Fleet } from '../types';
 
 type CompanyDetailPageProps = {
@@ -11,7 +12,7 @@ type CompanyDetailPageProps = {
 
 export function CompanyDetailPage({ client }: CompanyDetailPageProps) {
   const navigate = useNavigate();
-  const { companyId } = useParams();
+  const { companyRef } = useParams();
   const [company, setCompany] = useState<Company | null>(null);
   const [fleets, setFleets] = useState<Fleet[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -19,13 +20,13 @@ export function CompanyDetailPage({ client }: CompanyDetailPageProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    if (!companyId) {
-      setErrorMessage('회사 ID가 없습니다.');
+    if (!companyRef) {
+      setErrorMessage('회사 경로 키가 없습니다.');
       setIsLoading(false);
       return;
     }
 
-    const selectedCompanyId = companyId;
+    const selectedCompanyRef = companyRef;
     let ignore = false;
 
     async function load() {
@@ -33,14 +34,14 @@ export function CompanyDetailPage({ client }: CompanyDetailPageProps) {
       setErrorMessage(null);
       try {
         const [companyResponse, fleetResponse] = await Promise.all([
-          getCompany(client, selectedCompanyId),
+          getCompany(client, selectedCompanyRef),
           listFleets(client),
         ]);
         if (ignore) {
           return;
         }
         setCompany(companyResponse);
-        setFleets(fleetResponse.filter((fleet) => fleet.company_id === selectedCompanyId));
+        setFleets(fleetResponse.filter((fleet) => fleet.company_id === companyResponse.company_id));
       } catch (error) {
         if (!ignore) {
           setErrorMessage(getErrorMessage(error));
@@ -56,10 +57,10 @@ export function CompanyDetailPage({ client }: CompanyDetailPageProps) {
     return () => {
       ignore = true;
     };
-  }, [client, companyId]);
+  }, [client, companyRef]);
 
   async function handleDelete() {
-    if (!companyId || !company) {
+    if (!companyRef || !company) {
       return;
     }
     if (!window.confirm(`회사 "${company.name}"를 삭제할까요?`)) {
@@ -69,7 +70,7 @@ export function CompanyDetailPage({ client }: CompanyDetailPageProps) {
     setIsDeleting(true);
     setErrorMessage(null);
     try {
-      await deleteCompany(client, companyId);
+      await deleteCompany(client, companyRef);
       navigate('/companies');
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
@@ -86,8 +87,8 @@ export function CompanyDetailPage({ client }: CompanyDetailPageProps) {
             <h2>{company?.name ?? '회사 상세'}</h2>
           </div>
           <div className="inline-actions">
-            {companyId ? (
-              <Link className="button ghost" to={`/companies/${companyId}/edit`}>
+            {company ? (
+              <Link className="button ghost" to={`/companies/${getCompanyRouteRef(company)}/edit`}>
                 회사 수정
               </Link>
             ) : null}
@@ -115,8 +116,8 @@ export function CompanyDetailPage({ client }: CompanyDetailPageProps) {
               <Link className="button ghost" to="/companies">
                 목록으로
               </Link>
-              {companyId ? (
-                <Link className="button primary" to={`/companies/${companyId}/fleets/new`}>
+              {company ? (
+                <Link className="button primary" to={`/companies/${getCompanyRouteRef(company)}/fleets/new`}>
                   플릿 생성
                 </Link>
               ) : null}
@@ -150,12 +151,18 @@ export function CompanyDetailPage({ client }: CompanyDetailPageProps) {
                 <tr key={fleet.fleet_id}>
                   <td>{fleet.name}</td>
                   <td>
-                    <Link className="button ghost small" to={`/companies/${fleet.company_id}/fleets/${fleet.fleet_id}`}>
+                    <Link
+                      className="button ghost small"
+                      to={`/companies/${getCompanyRouteRef(company ?? { company_id: fleet.company_id })}/fleets/${getFleetRouteRef(fleet)}`}
+                    >
                       보기
                     </Link>
                   </td>
                   <td>
-                    <Link className="button ghost small" to={`/companies/${fleet.company_id}/fleets/${fleet.fleet_id}/edit`}>
+                    <Link
+                      className="button ghost small"
+                      to={`/companies/${getCompanyRouteRef(company ?? { company_id: fleet.company_id })}/fleets/${getFleetRouteRef(fleet)}/edit`}
+                    >
                       수정
                     </Link>
                   </td>

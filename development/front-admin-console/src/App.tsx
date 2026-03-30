@@ -96,16 +96,16 @@ export default function App() {
             <Route path="/" element={<Navigate replace to="/accounts" />} />
             <Route path="/accounts" element={<AccountsPage client={client} />} />
             <Route path="/accounts/new" element={<AccountFormPage client={client} mode="create" />} />
-            <Route path="/accounts/:accountId" element={<AccountDetailPage client={client} />} />
-            <Route path="/accounts/:accountId/edit" element={<AccountFormPage client={client} mode="edit" />} />
+            <Route path="/accounts/:accountRef" element={<AccountDetailPage client={client} />} />
+            <Route path="/accounts/:accountRef/edit" element={<AccountFormPage client={client} mode="edit" />} />
             <Route path="/organization" element={<Navigate replace to="/companies" />} />
             <Route path="/companies" element={<CompaniesPage client={client} />} />
             <Route path="/companies/new" element={<CompanyFormPage client={client} mode="create" />} />
-            <Route path="/companies/:companyId" element={<CompanyDetailPage client={client} />} />
-            <Route path="/companies/:companyId/edit" element={<CompanyFormPage client={client} mode="edit" />} />
-            <Route path="/companies/:companyId/fleets/new" element={<FleetFormPage client={client} mode="create" />} />
-            <Route path="/companies/:companyId/fleets/:fleetId" element={<FleetDetailPage client={client} />} />
-            <Route path="/companies/:companyId/fleets/:fleetId/edit" element={<FleetFormPage client={client} mode="edit" />} />
+            <Route path="/companies/:companyRef" element={<CompanyDetailPage client={client} />} />
+            <Route path="/companies/:companyRef/edit" element={<CompanyFormPage client={client} mode="edit" />} />
+            <Route path="/companies/:companyRef/fleets/new" element={<FleetFormPage client={client} mode="create" />} />
+            <Route path="/companies/:companyRef/fleets/:fleetRef" element={<FleetDetailPage client={client} />} />
+            <Route path="/companies/:companyRef/fleets/:fleetRef/edit" element={<FleetFormPage client={client} mode="edit" />} />
             <Route path="/drivers" element={<DriversPage account={session.account} client={client} />} />
             <Route path="/vehicles" element={<VehiclesPage client={client} />} />
             <Route path="/terminals" element={<TerminalsPage client={client} />} />

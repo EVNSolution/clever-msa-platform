@@ -79,18 +79,25 @@
 
 - `/<resource>`
 - `/<resource>/new`
-- `/<resource>/:id`
-- `/<resource>/:id/edit`
+- `/<resource>/:ref`
+- `/<resource>/:ref/edit`
+
+### 3. 브라우저 URL은 public_ref만 사용한다
+
+- 브라우저 URL에는 원본 `*_id`를 직접 넣지 않는다.
+- 브라우저 URL path segment는 서비스별 `public_ref`를 사용한다.
+- 링크 복사, 새로고침, 북마크, 브라우저 히스토리 기준으로도 같은 규칙을 유지한다.
+- 읽기 화면에서 raw ID를 숨기는 것만으로는 충분하지 않다. URL도 같이 숨겨야 한다.
 
 ### 3. Company / Fleet 형태
 
 - `/companies`
 - `/companies/new`
-- `/companies/:companyId`
-- `/companies/:companyId/edit`
-- `/companies/:companyId/fleets/new`
-- `/companies/:companyId/fleets/:fleetId`
-- `/companies/:companyId/fleets/:fleetId/edit`
+- `/companies/:companyRef`
+- `/companies/:companyRef/edit`
+- `/companies/:companyRef/fleets/new`
+- `/companies/:companyRef/fleets/:fleetRef`
+- `/companies/:companyRef/fleets/:fleetRef/edit`
 
 ## 화면 구성 규칙
 
@@ -144,6 +151,7 @@
 3. 관계 설명이 아닌 일반 입력 화면을 2열로 넓히는 것
 4. `fleet`를 `company` 문맥 없이 독립 루트처럼 다루는 것
 5. 긴 식별자와 내부 식별자를 읽기 화면에 기본 노출하는 것
+6. 브라우저 URL에 raw `account_id`, `company_id`, `fleet_id`를 직접 쓰는 것
 
 ## 연결 문서
 

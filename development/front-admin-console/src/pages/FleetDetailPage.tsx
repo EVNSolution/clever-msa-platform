@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { deleteFleet, getCompany, getFleet } from '../api/organization';
 import { getErrorMessage, type HttpClient } from '../api/http';
+import { getCompanyRouteRef, getFleetRouteRef } from '../routeRefs';
 import type { Company, Fleet } from '../types';
 
 type FleetDetailPageProps = {
@@ -11,7 +12,7 @@ type FleetDetailPageProps = {
 
 export function FleetDetailPage({ client }: FleetDetailPageProps) {
   const navigate = useNavigate();
-  const { companyId, fleetId } = useParams();
+  const { companyRef, fleetRef } = useParams();
   const [company, setCompany] = useState<Company | null>(null);
   const [fleet, setFleet] = useState<Fleet | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -19,14 +20,14 @@ export function FleetDetailPage({ client }: FleetDetailPageProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    if (!companyId || !fleetId) {
-      setErrorMessage('회사 또는 플릿 ID가 없습니다.');
+    if (!companyRef || !fleetRef) {
+      setErrorMessage('회사 또는 플릿 경로 키가 없습니다.');
       setIsLoading(false);
       return;
     }
 
-    const selectedCompanyId = companyId;
-    const selectedFleetId = fleetId;
+    const selectedCompanyRef = companyRef;
+    const selectedFleetRef = fleetRef;
     let ignore = false;
 
     async function load() {
@@ -34,13 +35,13 @@ export function FleetDetailPage({ client }: FleetDetailPageProps) {
       setErrorMessage(null);
       try {
         const [companyResponse, fleetResponse] = await Promise.all([
-          getCompany(client, selectedCompanyId),
-          getFleet(client, selectedFleetId),
+          getCompany(client, selectedCompanyRef),
+          getFleet(client, selectedFleetRef),
         ]);
         if (ignore) {
           return;
         }
-        if (fleetResponse.company_id !== selectedCompanyId) {
+        if (fleetResponse.company_id !== companyResponse.company_id) {
           setErrorMessage('회사와 플릿 관계가 맞지 않습니다.');
           setIsLoading(false);
           return;
@@ -62,10 +63,10 @@ export function FleetDetailPage({ client }: FleetDetailPageProps) {
     return () => {
       ignore = true;
     };
-  }, [client, companyId, fleetId]);
+  }, [client, companyRef, fleetRef]);
 
   async function handleDelete() {
-    if (!companyId || !fleetId || !fleet) {
+    if (!companyRef || !fleetRef || !fleet) {
       return;
     }
     if (!window.confirm(`플릿 "${fleet.name}"를 삭제할까요?`)) {
@@ -75,8 +76,8 @@ export function FleetDetailPage({ client }: FleetDetailPageProps) {
     setIsDeleting(true);
     setErrorMessage(null);
     try {
-      await deleteFleet(client, fleetId);
-      navigate(`/companies/${companyId}`);
+      await deleteFleet(client, fleetRef);
+      navigate(company ? `/companies/${getCompanyRouteRef(company)}` : '/companies');
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
       setIsDeleting(false);
@@ -91,8 +92,8 @@ export function FleetDetailPage({ client }: FleetDetailPageProps) {
           <h2>{fleet?.name ?? '플릿 상세'}</h2>
         </div>
         <div className="inline-actions">
-          {companyId && fleetId ? (
-            <Link className="button ghost" to={`/companies/${companyId}/fleets/${fleetId}/edit`}>
+          {company && fleet ? (
+            <Link className="button ghost" to={`/companies/${getCompanyRouteRef(company)}/fleets/${getFleetRouteRef(fleet)}/edit`}>
               플릿 수정
             </Link>
           ) : null}
@@ -117,8 +118,8 @@ export function FleetDetailPage({ client }: FleetDetailPageProps) {
             </div>
           </dl>
           <div className="page-actions">
-            {companyId ? (
-              <Link className="button ghost" to={`/companies/${companyId}`}>
+            {company ? (
+              <Link className="button ghost" to={`/companies/${getCompanyRouteRef(company)}`}>
                 회사 상세로
               </Link>
             ) : null}

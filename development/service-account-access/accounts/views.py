@@ -1,4 +1,8 @@
+import uuid
+
 from django.conf import settings
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
 from rest_framework.exceptions import APIException, AuthenticationFailed
 from rest_framework.response import Response
@@ -225,8 +229,22 @@ class AccountListCreateView(generics.ListCreateAPIView):
 
 class AccountDetailView(generics.RetrieveUpdateAPIView):
     queryset = Account.objects.all()
-    lookup_field = "account_id"
+    lookup_field = "public_ref"
+    lookup_url_kwarg = "account_ref"
     permission_classes = [IsAdminRole]
+
+    def get_object(self):
+        lookup_value = self.kwargs[self.lookup_url_kwarg]
+        queryset = self.filter_queryset(self.get_queryset())
+        filters = Q(public_ref=lookup_value)
+        try:
+            filters |= Q(account_id=uuid.UUID(lookup_value))
+        except ValueError:
+            pass
+
+        account = get_object_or_404(queryset, filters)
+        self.check_object_permissions(self.request, account)
+        return account
 
     def get_serializer_class(self):
         if self.request.method == "PATCH":

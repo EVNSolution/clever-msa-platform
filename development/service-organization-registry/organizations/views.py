@@ -1,3 +1,7 @@
+import uuid
+
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from rest_framework import permissions, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,15 +19,36 @@ class HealthView(APIView):
         return Response({"status": "ok"})
 
 
-class CompanyViewSet(viewsets.ModelViewSet):
+class PublicRefLookupMixin:
+    raw_id_field = ""
+
+    def get_object(self):
+        lookup_value = self.kwargs[self.lookup_url_kwarg or self.lookup_field]
+        queryset = self.filter_queryset(self.get_queryset())
+        filters = Q(**{self.lookup_field: lookup_value})
+        try:
+            filters |= Q(**{self.raw_id_field: uuid.UUID(lookup_value)})
+        except ValueError:
+            pass
+
+        obj = get_object_or_404(queryset, filters)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+
+class CompanyViewSet(PublicRefLookupMixin, viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
-    lookup_field = "company_id"
+    lookup_field = "public_ref"
+    lookup_url_kwarg = "company_ref"
+    raw_id_field = "company_id"
     permission_classes = [AuthenticatedReadAdminWrite]
 
 
-class FleetViewSet(viewsets.ModelViewSet):
+class FleetViewSet(PublicRefLookupMixin, viewsets.ModelViewSet):
     queryset = Fleet.objects.all()
     serializer_class = FleetSerializer
-    lookup_field = "fleet_id"
+    lookup_field = "public_ref"
+    lookup_url_kwarg = "fleet_ref"
+    raw_id_field = "fleet_id"
     permission_classes = [AuthenticatedReadAdminWrite]

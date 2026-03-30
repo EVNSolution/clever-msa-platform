@@ -8,7 +8,7 @@ class AccountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Account
-        fields = ("account_id", "email", "role", "is_active")
+        fields = ("account_id", "public_ref", "email", "role", "is_active")
 
 
 class HealthSerializer(serializers.Serializer):

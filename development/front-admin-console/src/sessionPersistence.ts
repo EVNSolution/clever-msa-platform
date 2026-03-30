@@ -11,6 +11,7 @@ function isSessionPayload(value: unknown): value is SessionPayload {
     accessToken?: unknown;
     account?: {
       account_id?: unknown;
+      public_ref?: unknown;
       email?: unknown;
       role?: unknown;
       is_active?: unknown;

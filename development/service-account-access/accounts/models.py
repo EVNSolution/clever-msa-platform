@@ -1,7 +1,12 @@
+import secrets
 import uuid
 
 from django.contrib.auth.hashers import check_password, make_password
 from django.db import models
+
+
+def generate_account_public_ref() -> str:
+    return f"acc_{secrets.token_hex(8)}"
 
 
 class Account(models.Model):
@@ -10,6 +15,12 @@ class Account(models.Model):
         USER = "user", "User"
 
     account_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    public_ref = models.CharField(
+        max_length=20,
+        unique=True,
+        default=generate_account_public_ref,
+        editable=False,
+    )
     email = models.EmailField(unique=True)
     password_hash = models.CharField(max_length=128)
     role = models.CharField(max_length=16, choices=Role.choices, default=Role.USER)

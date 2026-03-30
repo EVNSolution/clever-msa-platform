@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { createAccount, getAccount, updateAccount, type AccountPayload } from '../api/accounts';
 import { getErrorMessage, type HttpClient } from '../api/http';
+import { getAccountRouteRef } from '../routeRefs';
 
 type AccountFormPageProps = {
   client: HttpClient;
@@ -18,7 +19,7 @@ const EMPTY_FORM: AccountPayload = {
 
 export function AccountFormPage({ client, mode }: AccountFormPageProps) {
   const navigate = useNavigate();
-  const { accountId } = useParams();
+  const { accountRef } = useParams();
   const isEdit = mode === 'edit';
   const [form, setForm] = useState<AccountPayload>(EMPTY_FORM);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -26,19 +27,19 @@ export function AccountFormPage({ client, mode }: AccountFormPageProps) {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (!isEdit || !accountId) {
+    if (!isEdit || !accountRef) {
       setIsLoading(false);
       return;
     }
 
-    const selectedAccountId = accountId;
+    const selectedAccountRef = accountRef;
     let ignore = false;
 
     async function load() {
       setIsLoading(true);
       setErrorMessage(null);
       try {
-        const account = await getAccount(client, selectedAccountId);
+        const account = await getAccount(client, selectedAccountRef);
         if (!ignore) {
           setForm({
             email: account.email,
@@ -62,14 +63,14 @@ export function AccountFormPage({ client, mode }: AccountFormPageProps) {
     return () => {
       ignore = true;
     };
-  }, [accountId, client, isEdit]);
+  }, [accountRef, client, isEdit]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSaving(true);
     setErrorMessage(null);
     try {
-      if (isEdit && accountId) {
+      if (isEdit && accountRef) {
         const payload: Partial<AccountPayload> = {
           email: form.email,
           role: form.role,
@@ -78,13 +79,13 @@ export function AccountFormPage({ client, mode }: AccountFormPageProps) {
         if (form.password) {
           payload.password = form.password;
         }
-        await updateAccount(client, accountId, payload);
-        navigate(`/accounts/${accountId}`);
+        const updated = await updateAccount(client, accountRef, payload);
+        navigate(`/accounts/${getAccountRouteRef(updated)}`);
         return;
       }
 
       const created = await createAccount(client, form);
-      navigate(`/accounts/${created.account_id}`);
+      navigate(`/accounts/${getAccountRouteRef(created)}`);
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
     } finally {
@@ -92,7 +93,7 @@ export function AccountFormPage({ client, mode }: AccountFormPageProps) {
     }
   }
 
-  const cancelHref = isEdit && accountId ? `/accounts/${accountId}` : '/accounts';
+  const cancelHref = isEdit && accountRef ? `/accounts/${accountRef}` : '/accounts';
 
   return (
     <section className="panel form-panel">

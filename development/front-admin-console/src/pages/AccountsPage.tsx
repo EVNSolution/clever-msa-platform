@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { listAccounts } from '../api/accounts';
 import { getErrorMessage, type HttpClient } from '../api/http';
+import { getAccountRouteRef } from '../routeRefs';
 import type { AccountSummary } from '../types';
 import { formatBooleanLabel, formatRoleLabel } from '../uiLabels';
 
@@ -75,12 +76,12 @@ export function AccountsPage({ client }: AccountsPageProps) {
                 <td>{formatRoleLabel(account.role)}</td>
                 <td>{formatBooleanLabel(account.is_active)}</td>
                 <td>
-                  <Link className="button ghost small" to={`/accounts/${account.account_id}`}>
+                  <Link className="button ghost small" to={`/accounts/${getAccountRouteRef(account)}`}>
                     보기
                   </Link>
                 </td>
                 <td>
-                  <Link className="button ghost small" to={`/accounts/${account.account_id}/edit`}>
+                  <Link className="button ghost small" to={`/accounts/${getAccountRouteRef(account)}/edit`}>
                     수정
                   </Link>
                 </td>

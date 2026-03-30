@@ -6,13 +6,13 @@ from organizations.models import Company, Fleet
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = ("company_id", "name")
+        fields = ("company_id", "public_ref", "name")
 
 
 class FleetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Fleet
-        fields = ("fleet_id", "company_id", "name")
+        fields = ("fleet_id", "public_ref", "company_id", "name")
 
     def validate_company_id(self, value):
         if not Company.objects.filter(company_id=value).exists():

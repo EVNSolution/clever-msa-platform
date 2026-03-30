@@ -5,8 +5,8 @@ export function listCompanies(client: HttpClient) {
   return client.request<Company[]>('/org/companies/');
 }
 
-export function getCompany(client: HttpClient, companyId: string) {
-  return client.request<Company>(`/org/companies/${companyId}/`);
+export function getCompany(client: HttpClient, companyRef: string) {
+  return client.request<Company>(`/org/companies/${companyRef}/`);
 }
 
 export function createCompany(client: HttpClient, payload: Pick<Company, 'name'>) {
@@ -16,15 +16,15 @@ export function createCompany(client: HttpClient, payload: Pick<Company, 'name'>
   });
 }
 
-export function updateCompany(client: HttpClient, companyId: string, payload: Partial<Pick<Company, 'name'>>) {
-  return client.request<Company>(`/org/companies/${companyId}/`, {
+export function updateCompany(client: HttpClient, companyRef: string, payload: Partial<Pick<Company, 'name'>>) {
+  return client.request<Company>(`/org/companies/${companyRef}/`, {
     method: 'PATCH',
     body: JSON.stringify(payload),
   });
 }
 
-export function deleteCompany(client: HttpClient, companyId: string) {
-  return client.request<void>(`/org/companies/${companyId}/`, {
+export function deleteCompany(client: HttpClient, companyRef: string) {
+  return client.request<void>(`/org/companies/${companyRef}/`, {
     method: 'DELETE',
   });
 }
@@ -33,8 +33,8 @@ export function listFleets(client: HttpClient) {
   return client.request<Fleet[]>('/org/fleets/');
 }
 
-export function getFleet(client: HttpClient, fleetId: string) {
-  return client.request<Fleet>(`/org/fleets/${fleetId}/`);
+export function getFleet(client: HttpClient, fleetRef: string) {
+  return client.request<Fleet>(`/org/fleets/${fleetRef}/`);
 }
 
 export function createFleet(client: HttpClient, payload: Pick<Fleet, 'company_id' | 'name'>) {
@@ -44,15 +44,15 @@ export function createFleet(client: HttpClient, payload: Pick<Fleet, 'company_id
   });
 }
 
-export function updateFleet(client: HttpClient, fleetId: string, payload: Partial<Pick<Fleet, 'company_id' | 'name'>>) {
-  return client.request<Fleet>(`/org/fleets/${fleetId}/`, {
+export function updateFleet(client: HttpClient, fleetRef: string, payload: Partial<Pick<Fleet, 'company_id' | 'name'>>) {
+  return client.request<Fleet>(`/org/fleets/${fleetRef}/`, {
     method: 'PATCH',
     body: JSON.stringify(payload),
   });
 }
 
-export function deleteFleet(client: HttpClient, fleetId: string) {
-  return client.request<void>(`/org/fleets/${fleetId}/`, {
+export function deleteFleet(client: HttpClient, fleetRef: string) {
+  return client.request<void>(`/org/fleets/${fleetRef}/`, {
     method: 'DELETE',
   });
 }
