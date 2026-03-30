@@ -367,6 +367,25 @@ select:focus {
   letter-spacing: 0.08em;
 }
 
+.table tbody tr.interactive-row {
+  cursor: pointer;
+  transition: background 120ms ease, box-shadow 120ms ease;
+}
+
+.table tbody tr.interactive-row:hover,
+.table tbody tr.interactive-row:focus {
+  background: rgba(181, 41, 67, 0.06);
+}
+
+.table tbody tr.interactive-row:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 2px rgba(181, 41, 67, 0.14);
+}
+
+.table tbody tr.interactive-row.is-selected {
+  background: rgba(181, 41, 67, 0.1);
+}
+
 .compact code {
   display: inline-block;
   max-width: 18ch;

@@ -192,6 +192,14 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
     });
   }
 
+  function handleTerminalRowKeyDown(event: React.KeyboardEvent<HTMLTableRowElement>, terminal: TerminalRegistry) {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+    event.preventDefault();
+    handleEditTerminal(terminal);
+  }
+
   async function handleTerminalSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setErrorMessage(null);
@@ -341,26 +349,22 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
                 <th>IMEI</th>
                 <th>ICCID</th>
                 <th>상태</th>
-                <th />
               </tr>
             </thead>
             <tbody>
               {terminals.map((terminal) => (
-                <tr key={terminal.terminal_id}>
+                <tr
+                  key={terminal.terminal_id}
+                  className={`interactive-row${editingTerminalId === terminal.terminal_id ? ' is-selected' : ''}`}
+                  onClick={() => handleEditTerminal(terminal)}
+                  onKeyDown={(event) => handleTerminalRowKeyDown(event, terminal)}
+                  tabIndex={0}
+                >
                   <td>{getTerminalLabel(terminal.terminal_id)}</td>
                   <td>{getCompanyName(terminal.manufacturer_company_id)}</td>
                   <td>{formatProtectedIdentifier(terminal.imei)}</td>
                   <td>{formatProtectedIdentifier(terminal.iccid)}</td>
                   <td>{formatLifecycleStatusLabel(terminal.terminal_status)}</td>
-                  <td>
-                    <button
-                      className="button ghost small"
-                      onClick={() => handleEditTerminal(terminal)}
-                      type="button"
-                    >
-                      단말기 수정
-                    </button>
-                  </td>
                 </tr>
               ))}
             </tbody>

@@ -120,6 +120,14 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
     }
   }
 
+  function handleVehicleRowKeyDown(event: React.KeyboardEvent<HTMLTableRowElement>, vehicleId: string) {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+    event.preventDefault();
+    void handleViewDetails(vehicleId);
+  }
+
   return (
     <div className="data-grid two-columns wide-left">
       <section className="panel">
@@ -141,12 +149,18 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
                 <th>단말기</th>
                 <th>VIN</th>
                 <th>상태</th>
-                <th />
               </tr>
             </thead>
             <tbody>
               {vehicles.map((vehicle) => (
-                <tr key={vehicle.vehicle_id}>
+                <tr
+                  key={vehicle.vehicle_id}
+                  className={`interactive-row${selectedVehicle?.vehicle_id === vehicle.vehicle_id ? ' is-selected' : ''}`}
+                  data-detail-target={vehicle.vehicle_id}
+                  onClick={() => void handleViewDetails(vehicle.vehicle_id)}
+                  onKeyDown={(event) => handleVehicleRowKeyDown(event, vehicle.vehicle_id)}
+                  tabIndex={0}
+                >
                   <td>{vehicle.plate_number}</td>
                   <td>{getManufacturerName(vehicle)}</td>
                   <td>{getActiveOperatorName(vehicle)}</td>
@@ -154,11 +168,6 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
                   <td>{getCurrentTerminalLabel(vehicle)}</td>
                   <td>{vehicle.vin}</td>
                   <td>{formatVehicleStatusLabel(vehicle.vehicle_status)}</td>
-                  <td>
-                    <button className="button ghost small" onClick={() => void handleViewDetails(vehicle.vehicle_id)} type="button">
-                      상세 보기
-                    </button>
-                  </td>
                 </tr>
               ))}
             </tbody>

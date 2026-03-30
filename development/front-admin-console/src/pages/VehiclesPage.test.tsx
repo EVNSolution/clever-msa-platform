@@ -44,9 +44,11 @@ describe('Admin VehiclesPage', () => {
     );
 
     await screen.findByRole('heading', { name: /차량 마스터 관리자 조회/i });
+    const row = screen.getByText('12가3456').closest('tr');
     expect(screen.getByRole('link', { name: /차량 생성/i })).toHaveAttribute('href', '/vehicles/new');
-    expect(screen.getByRole('link', { name: '보기' })).toHaveAttribute('href', '/vehicles/1');
-    expect(screen.getByRole('link', { name: '수정' })).toHaveAttribute('href', '/vehicles/1/edit');
+    expect(row).toHaveAttribute('data-detail-path', '/vehicles/1');
+    expect(screen.queryByRole('link', { name: '보기' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: '수정' })).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/번호판/i)).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /운영사 접근 생성/i })).not.toBeInTheDocument();
   });

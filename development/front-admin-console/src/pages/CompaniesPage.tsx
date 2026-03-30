@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { listCompanies, listFleets } from '../api/organization';
 import { getErrorMessage, type HttpClient } from '../api/http';
@@ -11,10 +11,19 @@ type CompaniesPageProps = {
 };
 
 export function CompaniesPage({ client }: CompaniesPageProps) {
+  const navigate = useNavigate();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [fleets, setFleets] = useState<Fleet[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  function handleRowKeyDown(event: React.KeyboardEvent<HTMLTableRowElement>, detailPath: string) {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+    event.preventDefault();
+    navigate(detailPath);
+  }
 
   useEffect(() => {
     let ignore = false;
@@ -78,27 +87,26 @@ export function CompaniesPage({ client }: CompaniesPageProps) {
               <tr>
                 <th>회사</th>
                 <th>플릿 수</th>
-                <th />
-                <th />
               </tr>
             </thead>
             <tbody>
-              {companies.map((company) => (
-                <tr key={company.company_id}>
-                  <td>{company.name}</td>
-                  <td>{fleetCountByCompanyId.get(company.company_id) ?? 0}</td>
-                  <td>
-                    <Link className="button ghost small" to={`/companies/${getCompanyRouteRef(company)}`}>
-                      보기
-                    </Link>
-                  </td>
-                  <td>
-                    <Link className="button ghost small" to={`/companies/${getCompanyRouteRef(company)}/edit`}>
-                      수정
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+              {companies.map((company) => {
+                const detailPath = company.route_no != null ? `/companies/${getCompanyRouteRef(company)}` : null;
+
+                return (
+                  <tr
+                    key={company.company_id}
+                    className={detailPath ? 'interactive-row' : undefined}
+                    data-detail-path={detailPath ?? undefined}
+                    onClick={detailPath ? () => navigate(detailPath) : undefined}
+                    onKeyDown={detailPath ? (event) => handleRowKeyDown(event, detailPath) : undefined}
+                    tabIndex={detailPath ? 0 : undefined}
+                  >
+                    <td>{company.name}</td>
+                    <td>{fleetCountByCompanyId.get(company.company_id) ?? 0}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         ) : (

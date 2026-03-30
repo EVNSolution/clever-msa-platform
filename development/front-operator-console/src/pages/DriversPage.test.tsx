@@ -63,10 +63,11 @@ describe('DriversPage', () => {
 
     await screen.findByRole('heading', { name: /user@example.com/i });
     await waitFor(() => {
-      expect(screen.getByRole('link', { name: '보기' })).toHaveAttribute('href', '/drivers/1');
+      expect(screen.getByText('Kim Driver').closest('tr')).toHaveAttribute('data-detail-path', '/drivers/1');
     });
     expect(screen.getByRole('link', { name: /배송원 생성/i })).toHaveAttribute('href', '/drivers/new');
-    expect(screen.getByRole('link', { name: '수정' })).toHaveAttribute('href', '/drivers/1/edit');
+    expect(screen.queryByRole('link', { name: '보기' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: '수정' })).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/이름/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/org unit id/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/employment status/i)).not.toBeInTheDocument();

@@ -41,9 +41,12 @@ describe('CompaniesPage', () => {
     );
 
     await screen.findByText(/회사 루트 목록/i);
+    const row = screen.getByText('Seed Company').closest('tr');
     expect(screen.getByText('Seed Company')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /회사 생성/i })).toHaveAttribute('href', '/companies/new');
-    expect(screen.getByRole('link', { name: '보기' })).toHaveAttribute('href', '/companies/1');
+    expect(row).toHaveAttribute('data-detail-path', '/companies/1');
+    expect(screen.queryByRole('link', { name: '보기' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: '수정' })).not.toBeInTheDocument();
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
     expect(screen.getByText('2')).toBeInTheDocument();
   });

@@ -31,8 +31,11 @@ describe('AccountsPage', () => {
     );
 
     await screen.findByText('admin@example.com');
+    const row = screen.getByText('admin@example.com').closest('tr');
     expect(screen.getByRole('link', { name: /계정 생성/i })).toHaveAttribute('href', '/accounts/new');
-    expect(screen.getByRole('link', { name: '보기' })).toHaveAttribute('href', '/accounts/2');
+    expect(row).toHaveAttribute('data-detail-path', '/accounts/2');
+    expect(screen.queryByRole('link', { name: '보기' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: '수정' })).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/^이메일$/i)).not.toBeInTheDocument();
   });
 });

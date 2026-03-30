@@ -148,7 +148,9 @@ describe('Admin TerminalsPage', () => {
     render(<TerminalsPage client={{ request: vi.fn() }} />);
 
     await screen.findAllByText('단말기 1');
-    fireEvent.click(screen.getByRole('button', { name: /단말기 수정/i }));
+    const registrySection = screen.getByRole('heading', { name: /단말기 목록/i }).closest('section') as HTMLElement;
+    const terminalRow = within(registrySection).getByText('단말기 1').closest('tr') as HTMLElement;
+    fireEvent.click(terminalRow);
 
     expect(screen.getByLabelText(/^imei$/i)).toHaveValue('356123456789012');
 

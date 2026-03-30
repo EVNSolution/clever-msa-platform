@@ -78,6 +78,14 @@ export function CompanyDetailPage({ client }: CompanyDetailPageProps) {
     }
   }
 
+  function handleFleetRowKeyDown(event: React.KeyboardEvent<HTMLTableRowElement>, detailPath: string) {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+    event.preventDefault();
+    navigate(detailPath);
+  }
+
   return (
     <div className="data-grid two-columns relationship-grid">
       <section className="panel">
@@ -142,32 +150,25 @@ export function CompanyDetailPage({ client }: CompanyDetailPageProps) {
             <thead>
               <tr>
                 <th>플릿</th>
-                <th />
-                <th />
               </tr>
             </thead>
             <tbody>
-              {fleets.map((fleet) => (
-                <tr key={fleet.fleet_id}>
-                  <td>{fleet.name}</td>
-                  <td>
-                    <Link
-                      className="button ghost small"
-                      to={`/companies/${companyRef}/fleets/${getFleetRouteRef(fleet)}`}
-                    >
-                      보기
-                    </Link>
-                  </td>
-                  <td>
-                    <Link
-                      className="button ghost small"
-                      to={`/companies/${companyRef}/fleets/${getFleetRouteRef(fleet)}/edit`}
-                    >
-                      수정
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+              {fleets.map((fleet) => {
+                const detailPath = `/companies/${companyRef}/fleets/${getFleetRouteRef(fleet)}`;
+
+                return (
+                  <tr
+                    key={fleet.fleet_id}
+                    className="interactive-row"
+                    data-detail-path={detailPath}
+                    onClick={() => navigate(detailPath)}
+                    onKeyDown={(event) => handleFleetRowKeyDown(event, detailPath)}
+                    tabIndex={0}
+                  >
+                    <td>{fleet.name}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         ) : (

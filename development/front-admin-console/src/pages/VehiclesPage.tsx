@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { listVehicleMasters } from '../api/vehicles';
 import { getErrorMessage, type HttpClient } from '../api/http';
@@ -13,6 +13,7 @@ type VehiclesPageProps = {
 };
 
 export function VehiclesPage({ client }: VehiclesPageProps) {
+  const navigate = useNavigate();
   const [vehicleMasters, setVehicleMasters] = useState<VehicleMaster[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -55,6 +56,14 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
     return companies.find((company) => company.company_id === companyId)?.name ?? '미확인 회사';
   }
 
+  function handleRowKeyDown(event: React.KeyboardEvent<HTMLTableRowElement>, detailPath: string) {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+    event.preventDefault();
+    navigate(detailPath);
+  }
+
   return (
     <section className="panel">
       <div className="panel-header panel-header-inline">
@@ -77,37 +86,28 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
               <th>모델명</th>
               <th>제조사</th>
               <th>상태</th>
-              <th />
-              <th />
             </tr>
           </thead>
           <tbody>
-            {vehicleMasters.map((vehicle) => (
-              <tr key={vehicle.vehicle_id}>
-                <td>{vehicle.plate_number}</td>
-                <td>{vehicle.model_name}</td>
-                <td>{getCompanyName(vehicle.manufacturer_company_id)}</td>
-                <td>{formatLifecycleStatusLabel(vehicle.vehicle_status)}</td>
-                <td>
-                  {vehicle.route_no != null ? (
-                    <Link className="button ghost small" to={`/vehicles/${getVehicleRouteRef(vehicle)}`}>
-                      보기
-                    </Link>
-                  ) : (
-                    <span className="empty-state">상세 비공개</span>
-                  )}
-                </td>
-                <td>
-                  {vehicle.route_no != null ? (
-                    <Link className="button ghost small" to={`/vehicles/${getVehicleRouteRef(vehicle)}/edit`}>
-                      수정
-                    </Link>
-                  ) : (
-                    <span className="empty-state">수정 비공개</span>
-                  )}
-                </td>
-              </tr>
-            ))}
+            {vehicleMasters.map((vehicle) => {
+              const detailPath = vehicle.route_no != null ? `/vehicles/${getVehicleRouteRef(vehicle)}` : null;
+
+              return (
+                <tr
+                  key={vehicle.vehicle_id}
+                  className={detailPath ? 'interactive-row' : undefined}
+                  data-detail-path={detailPath ?? undefined}
+                  onClick={detailPath ? () => navigate(detailPath) : undefined}
+                  onKeyDown={detailPath ? (event) => handleRowKeyDown(event, detailPath) : undefined}
+                  tabIndex={detailPath ? 0 : undefined}
+                >
+                  <td>{vehicle.plate_number}</td>
+                  <td>{vehicle.model_name}</td>
+                  <td>{getCompanyName(vehicle.manufacturer_company_id)}</td>
+                  <td>{formatLifecycleStatusLabel(vehicle.vehicle_status)}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       ) : (

@@ -220,6 +220,43 @@ export function SettlementsPage({ client }: SettlementsPageProps) {
     }
   }
 
+  function selectRun(run: SettlementRun) {
+    setEditingRunId(run.settlement_run_id);
+    setRunForm({
+      company_id: run.company_id,
+      fleet_id: run.fleet_id,
+      period_start: run.period_start,
+      period_end: run.period_end,
+      status: run.status,
+    });
+  }
+
+  function selectItem(item: SettlementItem) {
+    setEditingItemId(item.settlement_item_id);
+    setItemForm({
+      settlement_run_id: item.settlement_run_id,
+      driver_id: item.driver_id,
+      amount: item.amount,
+      payout_status: item.payout_status,
+    });
+  }
+
+  function handleRunRowKeyDown(event: React.KeyboardEvent<HTMLTableRowElement>, run: SettlementRun) {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+    event.preventDefault();
+    selectRun(run);
+  }
+
+  function handleItemRowKeyDown(event: React.KeyboardEvent<HTMLTableRowElement>, item: SettlementItem) {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+    event.preventDefault();
+    selectItem(item);
+  }
+
   return (
     <div className="stack large-gap">
       {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
@@ -252,14 +289,19 @@ export function SettlementsPage({ client }: SettlementsPageProps) {
         <section className="panel">
           <div className="panel-header"><p className="panel-kicker">현재 실행</p><h2>관리자 쓰기 화면</h2></div>
           {isLoading ? <p className="empty-state">정산 실행을 불러오는 중입니다...</p> : (
-            <table className="table compact"><thead><tr><th>회사</th><th>플릿</th><th>기간</th><th>상태</th><th /><th /></tr></thead><tbody>{runs.map((run) => (
-              <tr key={run.settlement_run_id}>
+            <table className="table compact"><thead><tr><th>회사</th><th>플릿</th><th>기간</th><th>상태</th><th /></tr></thead><tbody>{runs.map((run) => (
+              <tr
+                key={run.settlement_run_id}
+                className={`interactive-row${editingRunId === run.settlement_run_id ? ' is-selected' : ''}`}
+                onClick={() => selectRun(run)}
+                onKeyDown={(event) => handleRunRowKeyDown(event, run)}
+                tabIndex={0}
+              >
                 <td>{getCompanyName(run.company_id)}</td>
                 <td>{getFleetName(run.fleet_id)}</td>
                 <td>{run.period_start} ~ {run.period_end}</td>
                 <td>{formatSettlementStatusLabel(run.status)}</td>
-                <td><button className="button ghost small" onClick={() => { setEditingRunId(run.settlement_run_id); setRunForm({ company_id: run.company_id, fleet_id: run.fleet_id, period_start: run.period_start, period_end: run.period_end, status: run.status }); }} type="button">수정</button></td>
-                <td><button className="button ghost small" onClick={() => void handleDelete('run', run.settlement_run_id)} type="button">삭제</button></td>
+                <td><button className="button ghost small" onClick={(event) => { event.stopPropagation(); void handleDelete('run', run.settlement_run_id); }} type="button">삭제</button></td>
               </tr>
             ))}</tbody></table>
           )}
@@ -268,14 +310,19 @@ export function SettlementsPage({ client }: SettlementsPageProps) {
         <section className="panel">
           <div className="panel-header"><p className="panel-kicker">현재 항목</p><h2>정산 항목 목록</h2></div>
           {isLoading ? <p className="empty-state">정산 항목을 불러오는 중입니다...</p> : (
-            <table className="table compact"><thead><tr><th>정산 실행</th><th>대상</th><th>금액</th><th>지급 상태</th><th /><th /></tr></thead><tbody>{items.map((item) => (
-              <tr key={item.settlement_item_id}>
+            <table className="table compact"><thead><tr><th>정산 실행</th><th>대상</th><th>금액</th><th>지급 상태</th><th /></tr></thead><tbody>{items.map((item) => (
+              <tr
+                key={item.settlement_item_id}
+                className={`interactive-row${editingItemId === item.settlement_item_id ? ' is-selected' : ''}`}
+                onClick={() => selectItem(item)}
+                onKeyDown={(event) => handleItemRowKeyDown(event, item)}
+                tabIndex={0}
+              >
                 <td>{getRunLabel(item.settlement_run_id)}</td>
                 <td>{getDriverName(item.driver_id)}</td>
                 <td>{item.amount}</td>
                 <td>{formatPayoutStatusLabel(item.payout_status)}</td>
-                <td><button className="button ghost small" onClick={() => { setEditingItemId(item.settlement_item_id); setItemForm({ settlement_run_id: item.settlement_run_id, driver_id: item.driver_id, amount: item.amount, payout_status: item.payout_status }); }} type="button">수정</button></td>
-                <td><button className="button ghost small" onClick={() => void handleDelete('item', item.settlement_item_id)} type="button">삭제</button></td>
+                <td><button className="button ghost small" onClick={(event) => { event.stopPropagation(); void handleDelete('item', item.settlement_item_id); }} type="button">삭제</button></td>
               </tr>
             ))}</tbody></table>
           )}

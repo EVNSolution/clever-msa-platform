@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { listDrivers } from '../api/drivers';
 import { getErrorMessage, type HttpClient } from '../api/http';
@@ -11,6 +11,7 @@ type DriversPageProps = {
 };
 
 export function DriversPage({ account, client }: DriversPageProps) {
+  const navigate = useNavigate();
   const [drivers, setDrivers] = useState<DriverProfile[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -44,6 +45,14 @@ export function DriversPage({ account, client }: DriversPageProps) {
     };
   }, [client]);
 
+  function handleRowKeyDown(event: React.KeyboardEvent<HTMLTableRowElement>, detailPath: string) {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+    event.preventDefault();
+    navigate(detailPath);
+  }
+
   return (
     <section className="panel">
       <div className="panel-header panel-header-inline">
@@ -65,36 +74,27 @@ export function DriversPage({ account, client }: DriversPageProps) {
               <th>이름</th>
               <th>연락처</th>
               <th>계정 연결</th>
-              <th />
-              <th />
             </tr>
           </thead>
           <tbody>
-            {drivers.map((driver) => (
-              <tr key={driver.driver_id}>
-                <td>{driver.name}</td>
-                <td>{driver.phone_number}</td>
-                <td>{driver.account_id ? '연결됨' : '미연결'}</td>
-                <td>
-                  {driver.route_no != null ? (
-                    <Link className="button ghost small" to={`/drivers/${getDriverRouteRef(driver)}`}>
-                      보기
-                    </Link>
-                  ) : (
-                    <span className="empty-state">상세 비공개</span>
-                  )}
-                </td>
-                <td>
-                  {driver.route_no != null ? (
-                    <Link className="button ghost small" to={`/drivers/${getDriverRouteRef(driver)}/edit`}>
-                      수정
-                    </Link>
-                  ) : (
-                    <span className="empty-state">수정 비공개</span>
-                  )}
-                </td>
-              </tr>
-            ))}
+            {drivers.map((driver) => {
+              const detailPath = driver.route_no != null ? `/drivers/${getDriverRouteRef(driver)}` : null;
+
+              return (
+                <tr
+                  key={driver.driver_id}
+                  className={detailPath ? 'interactive-row' : undefined}
+                  data-detail-path={detailPath ?? undefined}
+                  onClick={detailPath ? () => navigate(detailPath) : undefined}
+                  onKeyDown={detailPath ? (event) => handleRowKeyDown(event, detailPath) : undefined}
+                  tabIndex={detailPath ? 0 : undefined}
+                >
+                  <td>{driver.name}</td>
+                  <td>{driver.phone_number}</td>
+                  <td>{driver.account_id ? '연결됨' : '미연결'}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       ) : (

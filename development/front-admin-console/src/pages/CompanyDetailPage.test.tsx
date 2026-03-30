@@ -47,8 +47,12 @@ describe('CompanyDetailPage', () => {
     );
 
     await screen.findByRole('heading', { name: 'Seed Company' });
+    const row = screen.getByText('Seed Fleet').closest('tr');
     expect(screen.getByText('Seed Fleet')).toBeInTheDocument();
     expect(screen.queryByText('Other Fleet')).not.toBeInTheDocument();
+    expect(row).toHaveAttribute('data-detail-path', '/companies/1/fleets/1');
+    expect(screen.queryByRole('link', { name: '보기' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: '수정' })).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: /플릿 생성/i })).toHaveAttribute(
       'href',
       '/companies/1/fleets/new',

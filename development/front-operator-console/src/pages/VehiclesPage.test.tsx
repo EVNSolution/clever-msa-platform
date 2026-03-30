@@ -96,6 +96,10 @@ function getDetailScope() {
   return within(getDetailSection());
 }
 
+function getVehicleRow(plateNumber: string) {
+  return screen.getByText(plateNumber).closest('tr') as HTMLElement;
+}
+
 describe('VehiclesPage', () => {
   it('loads the split Vehicle Ops summary contract and renders manufacturer operator and assignment fields', async () => {
     apiMocks.listVehicleOps.mockResolvedValue([
@@ -151,7 +155,7 @@ describe('VehiclesPage', () => {
     expect(within(table).getByText('설치됨')).toBeInTheDocument();
     expect(within(table).queryByRole('columnheader', { name: /fleet/i })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: /상세 보기/i }));
+    fireEvent.click(getVehicleRow('12가3456'));
 
     await waitFor(() => {
       expect(apiMocks.getVehicleOps).toHaveBeenCalledWith(
@@ -214,7 +218,7 @@ describe('VehiclesPage', () => {
     expect(within(table).getAllByText('미배정').length).toBeGreaterThan(0);
     expect(within(table).getByText('미설치')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: /상세 보기/i }));
+    fireEvent.click(getVehicleRow('12가3456'));
 
     const detailSection = getDetailSection();
     expect(await within(detailSection).findAllByText('미배정')).not.toHaveLength(0);
@@ -253,7 +257,7 @@ describe('VehiclesPage', () => {
     expect(within(table).getByText('운영사 미상')).toBeInTheDocument();
     expect(within(table).queryByText('미배정')).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: /상세 보기/i }));
+    fireEvent.click(getVehicleRow('12가3456'));
 
     const detailSection = getDetailSection();
     expect(await within(detailSection).findByText('운영사 미상')).toBeInTheDocument();
@@ -289,7 +293,7 @@ describe('VehiclesPage', () => {
     render(<VehiclesPage client={{ request: vi.fn() }} />);
 
     await screen.findByText('12가3456');
-    fireEvent.click(screen.getByRole('button', { name: /상세 보기/i }));
+    fireEvent.click(getVehicleRow('12가3456'));
 
     const detailSection = getDetailSection();
     expect(await within(detailSection).findByText('detail lookup failed')).toBeInTheDocument();
@@ -335,9 +339,8 @@ describe('VehiclesPage', () => {
     await screen.findByText('12가3456');
     await screen.findByText('34나5678');
 
-    const buttons = screen.getAllByRole('button', { name: /상세 보기/i });
-    fireEvent.click(buttons[0]);
-    fireEvent.click(buttons[1]);
+    fireEvent.click(getVehicleRow('12가3456'));
+    fireEvent.click(getVehicleRow('34나5678'));
 
     await waitFor(() => {
       expect((pendingByVehicle.get('50000000-0000-0000-0000-000000000001') ?? []).length).toBeGreaterThan(0);
