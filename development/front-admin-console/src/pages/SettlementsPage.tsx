@@ -14,7 +14,11 @@ import {
 } from '../api/settlements';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { SettlementItem, SettlementRun } from '../types';
-import { formatPayoutStatusLabel, formatSettlementStatusLabel } from '../uiLabels';
+import {
+  formatPayoutStatusLabel,
+  formatProtectedIdentifier,
+  formatSettlementStatusLabel,
+} from '../uiLabels';
 
 type SettlementsPageProps = {
   client: HttpClient;
@@ -153,7 +157,7 @@ export function SettlementsPage({ client }: SettlementsPageProps) {
         <section className="panel">
           <div className="panel-header"><p className="panel-kicker">정산 항목</p><h2>{editingItemId ? '정산 항목 수정' : '정산 항목 생성'}</h2></div>
           <form className="form-grid" onSubmit={handleItemSubmit}>
-            <label className="field"><span>정산 실행</span><select onChange={(event) => setItemForm((current) => ({ ...current, settlement_run_id: event.target.value }))} value={itemForm.settlement_run_id}>{runs.map((run) => <option key={run.settlement_run_id} value={run.settlement_run_id}>{run.settlement_run_id}</option>)}</select></label>
+            <label className="field"><span>정산 실행</span><select onChange={(event) => setItemForm((current) => ({ ...current, settlement_run_id: event.target.value }))} value={itemForm.settlement_run_id}>{runs.map((run) => <option key={run.settlement_run_id} value={run.settlement_run_id}>{formatProtectedIdentifier(run.settlement_run_id)}</option>)}</select></label>
             <label className="field"><span>배송원 ID</span><input onChange={(event) => setItemForm((current) => ({ ...current, driver_id: event.target.value }))} value={itemForm.driver_id} /></label>
             <label className="field"><span>금액</span><input onChange={(event) => setItemForm((current) => ({ ...current, amount: event.target.value }))} value={itemForm.amount} /></label>
             <label className="field"><span>지급 상태</span><select onChange={(event) => setItemForm((current) => ({ ...current, payout_status: event.target.value }))} value={itemForm.payout_status}><option value="pending">대기</option><option value="paid">지급 완료</option></select></label>
@@ -168,7 +172,7 @@ export function SettlementsPage({ client }: SettlementsPageProps) {
           {isLoading ? <p className="empty-state">정산 실행을 불러오는 중입니다...</p> : (
             <table className="table compact"><tbody>{runs.map((run) => (
               <tr key={run.settlement_run_id}>
-                <td><code>{run.settlement_run_id}</code></td>
+                <td><code>{formatProtectedIdentifier(run.settlement_run_id)}</code></td>
                 <td>{formatSettlementStatusLabel(run.status)}</td>
                 <td><button className="button ghost small" onClick={() => { setEditingRunId(run.settlement_run_id); setRunForm({ company_id: run.company_id, fleet_id: run.fleet_id, period_start: run.period_start, period_end: run.period_end, status: run.status }); }} type="button">수정</button></td>
                 <td><button className="button ghost small" onClick={() => void handleDelete('run', run.settlement_run_id)} type="button">삭제</button></td>
@@ -182,7 +186,7 @@ export function SettlementsPage({ client }: SettlementsPageProps) {
           {isLoading ? <p className="empty-state">정산 항목을 불러오는 중입니다...</p> : (
             <table className="table compact"><tbody>{items.map((item) => (
               <tr key={item.settlement_item_id}>
-                <td><code>{item.settlement_item_id}</code></td>
+                <td><code>{formatProtectedIdentifier(item.settlement_item_id)}</code></td>
                 <td>{item.amount}</td>
                 <td>{formatPayoutStatusLabel(item.payout_status)}</td>
                 <td><button className="button ghost small" onClick={() => { setEditingItemId(item.settlement_item_id); setItemForm({ settlement_run_id: item.settlement_run_id, driver_id: item.driver_id, amount: item.amount, payout_status: item.payout_status }); }} type="button">수정</button></td>

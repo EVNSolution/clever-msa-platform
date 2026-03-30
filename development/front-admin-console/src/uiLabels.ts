@@ -9,6 +9,26 @@ export function formatRoleLabel(role: string | null | undefined) {
   }
 }
 
+export function formatProtectedIdentifier(
+  value: string | null | undefined,
+  { missingLabel = '-' }: { missingLabel?: string } = {},
+) {
+  if (value == null) {
+    return missingLabel;
+  }
+
+  const normalized = value.trim();
+  if (!normalized) {
+    return missingLabel;
+  }
+
+  if (/^\d{8,}$/.test(normalized)) {
+    return '비공개';
+  }
+
+  return normalized;
+}
+
 export function formatBooleanLabel(value: boolean | null | undefined) {
   if (value == null) {
     return '-';

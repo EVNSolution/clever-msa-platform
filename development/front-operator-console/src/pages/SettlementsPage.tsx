@@ -3,7 +3,11 @@ import { useEffect, useState } from 'react';
 import { listSettlementItems, listSettlementRuns } from '../api/settlements';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { SettlementItem, SettlementRun } from '../types';
-import { formatPayoutStatusLabel, formatSettlementStatusLabel } from '../uiLabels';
+import {
+  formatPayoutStatusLabel,
+  formatProtectedIdentifier,
+  formatSettlementStatusLabel,
+} from '../uiLabels';
 
 type SettlementsPageProps = {
   client: HttpClient;
@@ -78,7 +82,7 @@ export function SettlementsPage({ client }: SettlementsPageProps) {
               >
                 <span>{formatSettlementStatusLabel(run.status)}</span>
                 <strong>{run.period_start} → {run.period_end}</strong>
-                <code>{run.settlement_run_id}</code>
+                <code>{formatProtectedIdentifier(run.settlement_run_id)}</code>
               </button>
             ))}
           </div>
@@ -107,8 +111,8 @@ export function SettlementsPage({ client }: SettlementsPageProps) {
             <tbody>
               {filteredItems.map((item) => (
                 <tr key={item.settlement_item_id}>
-                  <td><code>{item.settlement_item_id}</code></td>
-                  <td><code>{item.driver_id}</code></td>
+                  <td><code>{formatProtectedIdentifier(item.settlement_item_id)}</code></td>
+                  <td><code>{formatProtectedIdentifier(item.driver_id)}</code></td>
                   <td>{item.amount}</td>
                   <td>{formatPayoutStatusLabel(item.payout_status)}</td>
                 </tr>

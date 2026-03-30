@@ -5,6 +5,7 @@ import { createDriver, listDrivers, updateDriver, type DriverPayload } from '../
 import { listCompanies, listFleets } from '../api/organization';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { AccountSummary, Company, DriverProfile, Fleet } from '../types';
+import { formatProtectedIdentifier } from '../uiLabels';
 
 type DriversPageProps = {
   account: AccountSummary;
@@ -223,10 +224,10 @@ export function DriversPage({ account, client }: DriversPageProps) {
             <tbody>
               {drivers.map((driver) => (
                 <tr key={driver.driver_id}>
-                  <td><code>{driver.driver_id}</code></td>
-                  <td><code>{driver.account_id ?? '미연결'}</code></td>
+                  <td><code>{formatProtectedIdentifier(driver.driver_id)}</code></td>
+                  <td><code>{formatProtectedIdentifier(driver.account_id, { missingLabel: '미연결' })}</code></td>
                   <td>{driver.name}</td>
-                  <td>{driver.ev_id}</td>
+                  <td>{formatProtectedIdentifier(driver.ev_id)}</td>
                   <td>
                     <Link className="button ghost small" to={`/drivers/${driver.driver_id}`}>
                       보기

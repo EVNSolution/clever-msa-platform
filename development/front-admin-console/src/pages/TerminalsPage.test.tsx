@@ -105,10 +105,10 @@ describe('Admin TerminalsPage', () => {
 
     render(<TerminalsPage client={{ request: vi.fn() }} />);
 
-    await screen.findByText('356123456789012');
+    await screen.findAllByText('비공개');
     fireEvent.click(screen.getByRole('button', { name: /단말기 수정/i }));
 
-    expect(screen.getByDisplayValue('356123456789012')).toBeInTheDocument();
+    expect(screen.getByLabelText(/^imei$/i)).toHaveValue('356123456789012');
 
     fireEvent.change(screen.getByLabelText(/단말기 상태/i), {
       target: { value: 'inactive' },
@@ -154,7 +154,7 @@ describe('Admin TerminalsPage', () => {
 
     render(<TerminalsPage client={{ request: vi.fn() }} />);
 
-    await screen.findByText('356123456789012');
+    await screen.findAllByText('비공개');
 
     fireEvent.change(screen.getByLabelText(/설치 단말기 id/i), {
       target: { value: '70000000-0000-0000-0000-000000000001' },

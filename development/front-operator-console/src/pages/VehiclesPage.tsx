@@ -6,6 +6,7 @@ import type { VehicleOpsSummary } from '../types';
 import {
   formatInstallationStatusLabel,
   formatLocationStatusLabel,
+  formatProtectedIdentifier,
   formatVehicleStatusLabel,
 } from '../uiLabels';
 
@@ -36,7 +37,7 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
   }
 
   function getCurrentDriverLabel(vehicle: VehicleOpsSummary) {
-    return vehicle.current_assignment?.driver_id ?? '미배정';
+    return formatProtectedIdentifier(vehicle.current_assignment?.driver_id, { missingLabel: '미배정' });
   }
 
   function shortenIdentifier(value: string) {
@@ -45,7 +46,7 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
 
   function getCurrentTerminalLabel(vehicle: VehicleOpsSummary) {
     if (vehicle.current_terminal?.imei) {
-      return vehicle.current_terminal.imei;
+      return formatProtectedIdentifier(vehicle.current_terminal.imei);
     }
     if (vehicle.current_terminal?.terminal_id) {
       return shortenIdentifier(vehicle.current_terminal.terminal_id);
@@ -189,7 +190,7 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
             </div>
             <div>
               <dt>제조사 회사 ID</dt>
-              <dd><code>{selectedVehicle.manufacturer_company.company_id}</code></dd>
+              <dd><code>{formatProtectedIdentifier(selectedVehicle.manufacturer_company.company_id)}</code></dd>
             </div>
             <div>
               <dt>현재 운영사</dt>
@@ -197,7 +198,7 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
             </div>
             <div>
               <dt>운영사 회사 ID</dt>
-              <dd><code>{selectedVehicle.active_operator_company.company_id ?? '미배정'}</code></dd>
+              <dd><code>{formatProtectedIdentifier(selectedVehicle.active_operator_company.company_id, { missingLabel: '미배정' })}</code></dd>
             </div>
             <div>
               <dt>현재 배송원</dt>
@@ -205,11 +206,11 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
             </div>
             <div>
               <dt>현재 배정</dt>
-              <dd><code>{selectedVehicle.current_assignment?.driver_vehicle_assignment_id ?? '미배정'}</code></dd>
+              <dd><code>{formatProtectedIdentifier(selectedVehicle.current_assignment?.driver_vehicle_assignment_id, { missingLabel: '미배정' })}</code></dd>
             </div>
             <div>
               <dt>단말기 ID</dt>
-              <dd><code>{getTerminalDetailValue(selectedVehicle.current_terminal?.terminal_id)}</code></dd>
+              <dd><code>{formatProtectedIdentifier(getTerminalDetailValue(selectedVehicle.current_terminal?.terminal_id), { missingLabel: '미설치' })}</code></dd>
             </div>
             <div>
               <dt>설치 상태</dt>
@@ -227,11 +228,11 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
             </div>
             <div>
               <dt>IMEI</dt>
-              <dd>{getTerminalDetailValue(selectedVehicle.current_terminal?.imei)}</dd>
+              <dd>{formatProtectedIdentifier(getTerminalDetailValue(selectedVehicle.current_terminal?.imei), { missingLabel: '미설치' })}</dd>
             </div>
             <div>
               <dt>ICCID</dt>
-              <dd>{getTerminalDetailValue(selectedVehicle.current_terminal?.iccid)}</dd>
+              <dd>{formatProtectedIdentifier(getTerminalDetailValue(selectedVehicle.current_terminal?.iccid), { missingLabel: '미설치' })}</dd>
             </div>
             <div>
               <dt>펌웨어 버전</dt>

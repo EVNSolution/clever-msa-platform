@@ -7,6 +7,7 @@ import type { Driver360Summary } from '../types';
 import {
   formatBooleanLabel,
   formatPayoutStatusLabel,
+  formatProtectedIdentifier,
   formatRoleLabel,
   formatSettlementStatusLabel,
 } from '../uiLabels';
@@ -84,11 +85,11 @@ export function Driver360Page({ client }: Driver360PageProps) {
               <dl className="detail-list">
                 <div>
                   <dt>배송원 ID</dt>
-                  <dd><code>{summary.driver_id}</code></dd>
+                  <dd><code>{formatProtectedIdentifier(summary.driver_id)}</code></dd>
                 </div>
                 <div>
                   <dt>EV ID</dt>
-                  <dd>{summary.ev_id}</dd>
+                  <dd>{formatProtectedIdentifier(summary.ev_id)}</dd>
                 </div>
                 <div>
                   <dt>연락처</dt>
@@ -113,7 +114,7 @@ export function Driver360Page({ client }: Driver360PageProps) {
                 </div>
                 <div>
                   <dt>회사 ID</dt>
-                  <dd><code>{summary.company_id}</code></dd>
+                  <dd><code>{formatProtectedIdentifier(summary.company_id)}</code></dd>
                 </div>
                 <div>
                   <dt>플릿</dt>
@@ -121,7 +122,7 @@ export function Driver360Page({ client }: Driver360PageProps) {
                 </div>
                 <div>
                   <dt>플릿 ID</dt>
-                  <dd><code>{summary.fleet_id}</code></dd>
+                  <dd><code>{formatProtectedIdentifier(summary.fleet_id)}</code></dd>
                 </div>
               </dl>
             </article>
@@ -137,7 +138,7 @@ export function Driver360Page({ client }: Driver360PageProps) {
                 <dl className="detail-list">
                   <div>
                     <dt>계정 ID</dt>
-                    <dd><code>{summary.account_id}</code></dd>
+                    <dd><code>{formatProtectedIdentifier(summary.account_id)}</code></dd>
                   </div>
                   <div>
                     <dt>이메일</dt>
@@ -166,7 +167,7 @@ export function Driver360Page({ client }: Driver360PageProps) {
                 <dl className="detail-list">
                   <div>
                     <dt>실행 ID</dt>
-                    <dd><code>{summary.latest_settlement_run_id}</code></dd>
+                    <dd><code>{formatProtectedIdentifier(summary.latest_settlement_run_id)}</code></dd>
                   </div>
                   <div>
                     <dt>기간</dt>

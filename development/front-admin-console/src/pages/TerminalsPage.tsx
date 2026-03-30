@@ -12,7 +12,11 @@ import {
 } from '../api/terminals';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { TerminalInstallation, TerminalRegistry } from '../types';
-import { formatInstallationStatusLabel, formatLifecycleStatusLabel } from '../uiLabels';
+import {
+  formatInstallationStatusLabel,
+  formatLifecycleStatusLabel,
+  formatProtectedIdentifier,
+} from '../uiLabels';
 
 type TerminalsPageProps = {
   client: HttpClient;
@@ -219,6 +223,7 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
             <span>IMEI</span>
             <input
               onChange={(event) => setTerminalForm((current) => ({ ...current, imei: event.target.value }))}
+              type="password"
               value={terminalForm.imei}
             />
           </label>
@@ -226,6 +231,7 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
             <span>ICCID</span>
             <input
               onChange={(event) => setTerminalForm((current) => ({ ...current, iccid: event.target.value }))}
+              type="password"
               value={terminalForm.iccid}
             />
           </label>
@@ -301,9 +307,9 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
             <tbody>
               {terminals.map((terminal) => (
                 <tr key={terminal.terminal_id}>
-                  <td><code>{terminal.terminal_id}</code></td>
-                  <td>{terminal.imei}</td>
-                  <td>{terminal.iccid}</td>
+                  <td><code>{formatProtectedIdentifier(terminal.terminal_id)}</code></td>
+                  <td>{formatProtectedIdentifier(terminal.imei)}</td>
+                  <td>{formatProtectedIdentifier(terminal.iccid)}</td>
                   <td>{formatLifecycleStatusLabel(terminal.terminal_status)}</td>
                   <td>
                     <button
@@ -380,8 +386,8 @@ export function TerminalsPage({ client }: TerminalsPageProps) {
             <tbody>
               {installations.map((installation) => (
                 <tr key={installation.terminal_installation_id}>
-                  <td><code>{installation.terminal_id}</code></td>
-                  <td><code>{installation.vehicle_id}</code></td>
+                  <td><code>{formatProtectedIdentifier(installation.terminal_id)}</code></td>
+                  <td><code>{formatProtectedIdentifier(installation.vehicle_id)}</code></td>
                   <td>{formatInstallationStatusLabel(installation.installation_status)}</td>
                   <td>{installation.installed_at}</td>
                   <td>{installation.removed_at ?? '-'}</td>

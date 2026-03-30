@@ -12,7 +12,11 @@ import {
 } from '../api/vehicles';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { VehicleMaster, VehicleOperatorAccess } from '../types';
-import { formatAccessStatusLabel, formatLifecycleStatusLabel } from '../uiLabels';
+import {
+  formatAccessStatusLabel,
+  formatLifecycleStatusLabel,
+  formatProtectedIdentifier,
+} from '../uiLabels';
 
 type VehiclesPageProps = {
   client: HttpClient;
@@ -282,9 +286,9 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
             <tbody>
               {vehicleMasters.map((vehicleMaster) => (
                 <tr key={vehicleMaster.vehicle_id}>
-                  <td><code>{vehicleMaster.vehicle_id}</code></td>
+                  <td><code>{formatProtectedIdentifier(vehicleMaster.vehicle_id)}</code></td>
                   <td>{vehicleMaster.plate_number}</td>
-                  <td><code>{vehicleMaster.manufacturer_company_id}</code></td>
+                  <td><code>{formatProtectedIdentifier(vehicleMaster.manufacturer_company_id)}</code></td>
                   <td>{formatLifecycleStatusLabel(vehicleMaster.vehicle_status)}</td>
                   <td>
                     <button
@@ -359,8 +363,8 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
             <tbody>
               {vehicleOperatorAccesses.map((vehicleOperatorAccess) => (
                 <tr key={vehicleOperatorAccess.vehicle_operator_access_id}>
-                  <td><code>{vehicleOperatorAccess.vehicle_id}</code></td>
-                  <td><code>{vehicleOperatorAccess.operator_company_id}</code></td>
+                  <td><code>{formatProtectedIdentifier(vehicleOperatorAccess.vehicle_id)}</code></td>
+                  <td><code>{formatProtectedIdentifier(vehicleOperatorAccess.operator_company_id)}</code></td>
                   <td>{formatAccessStatusLabel(vehicleOperatorAccess.access_status)}</td>
                   <td>{vehicleOperatorAccess.started_at}</td>
                   <td>{vehicleOperatorAccess.ended_at ?? '-'}</td>

@@ -4,7 +4,7 @@ import { getMe } from '../api/auth';
 import { listCompanies, listFleets } from '../api/organization';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { AccountSummary, Company, Fleet } from '../types';
-import { formatRoleLabel } from '../uiLabels';
+import { formatProtectedIdentifier, formatRoleLabel } from '../uiLabels';
 
 type DashboardPageProps = {
   account: AccountSummary;
@@ -98,7 +98,7 @@ export function DashboardPage({ account, client }: DashboardPageProps) {
                 {companies.map((company) => (
                   <tr key={company.company_id}>
                     <td>{company.name}</td>
-                    <td><code>{company.company_id}</code></td>
+                    <td><code>{formatProtectedIdentifier(company.company_id)}</code></td>
                   </tr>
                 ))}
               </tbody>
@@ -127,7 +127,7 @@ export function DashboardPage({ account, client }: DashboardPageProps) {
                 {fleets.map((fleet) => (
                   <tr key={fleet.fleet_id}>
                     <td>{fleet.name}</td>
-                    <td><code>{fleet.company_id}</code></td>
+                    <td><code>{formatProtectedIdentifier(fleet.company_id)}</code></td>
                   </tr>
                 ))}
               </tbody>

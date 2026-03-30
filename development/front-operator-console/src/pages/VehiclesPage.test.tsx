@@ -148,7 +148,7 @@ describe('VehiclesPage', () => {
     expect(within(table).getByText('Manufacturer Co')).toBeInTheDocument();
     expect(within(table).getByText('Operator Co')).toBeInTheDocument();
     expect(within(table).getByText('10000000-0000-0000-0000-000000000001')).toBeInTheDocument();
-    expect(within(table).getByText('356123456789012')).toBeInTheDocument();
+    expect(within(table).getByText('비공개')).toBeInTheDocument();
     expect(within(table).queryByRole('columnheader', { name: /fleet/i })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /상세 보기/i }));
@@ -166,8 +166,7 @@ describe('VehiclesPage', () => {
     expect(getDetailScope().getByText('70000000-0000-0000-0000-000000000001')).toBeInTheDocument();
     expect(getDetailScope().getByText('설치됨')).toBeInTheDocument();
     expect(getDetailScope().getByText('2026-03-20T09:55:00Z')).toBeInTheDocument();
-    expect(getDetailScope().getByText('356123456789012')).toBeInTheDocument();
-    expect(getDetailScope().getByText('8982123412341234123')).toBeInTheDocument();
+    expect(getDetailScope().getAllByText('비공개').length).toBeGreaterThanOrEqual(2);
     expect(getDetailScope().getByText('2.1')).toBeInTheDocument();
     expect(getDetailScope().getByText('3.4.5')).toBeInTheDocument();
     expect(getDetailScope().getByText('37.5665, 126.978')).toBeInTheDocument();

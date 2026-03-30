@@ -4,6 +4,7 @@ import { createDriver, deleteDriver, listDrivers, updateDriver, type DriverPaylo
 import { listCompanies, listFleets } from '../api/organization';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { AccountSummary, Company, DriverProfile, Fleet } from '../types';
+import { formatProtectedIdentifier } from '../uiLabels';
 
 type DriversPageProps = {
   account: AccountSummary;
@@ -142,9 +143,9 @@ export function DriversPage({ account, client }: DriversPageProps) {
             <tbody>
               {drivers.map((driver) => (
                 <tr key={driver.driver_id}>
-                  <td><code>{driver.driver_id}</code></td>
+                  <td><code>{formatProtectedIdentifier(driver.driver_id)}</code></td>
                   <td>{driver.name}</td>
-                  <td>{driver.ev_id}</td>
+                  <td>{formatProtectedIdentifier(driver.ev_id)}</td>
                   <td><button className="button ghost small" onClick={() => { setEditingDriverId(driver.driver_id); setForm({ account_id: driver.account_id ?? '', company_id: driver.company_id, fleet_id: driver.fleet_id, name: driver.name, ev_id: driver.ev_id, phone_number: driver.phone_number, address: driver.address }); }} type="button">수정</button></td>
                   <td><button className="button ghost small" onClick={() => void handleDelete(driver.driver_id)} type="button">삭제</button></td>
                 </tr>

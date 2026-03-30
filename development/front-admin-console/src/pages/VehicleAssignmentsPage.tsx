@@ -3,7 +3,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { createAssignment, listAssignments, updateAssignment } from '../api/assignments';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { DriverVehicleAssignment } from '../types';
-import { formatAssignmentStatusLabel } from '../uiLabels';
+import { formatAssignmentStatusLabel, formatProtectedIdentifier } from '../uiLabels';
 
 type VehicleAssignmentsPageProps = {
   client: HttpClient;
@@ -159,9 +159,9 @@ export function VehicleAssignmentsPage({ client }: VehicleAssignmentsPageProps) 
             <tbody>
               {assignments.map((assignment) => (
                 <tr key={assignment.driver_vehicle_assignment_id}>
-                  <td><code>{assignment.driver_id}</code></td>
-                  <td><code>{assignment.vehicle_id}</code></td>
-                  <td><code>{assignment.operator_company_id}</code></td>
+                  <td><code>{formatProtectedIdentifier(assignment.driver_id)}</code></td>
+                  <td><code>{formatProtectedIdentifier(assignment.vehicle_id)}</code></td>
+                  <td><code>{formatProtectedIdentifier(assignment.operator_company_id)}</code></td>
                   <td>{formatAssignmentStatusLabel(assignment.assignment_status)}</td>
                   <td>
                     {assignment.assignment_status === 'assigned' ? (
