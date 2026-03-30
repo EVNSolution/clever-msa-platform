@@ -20,6 +20,9 @@ import { LoginPage } from './pages/LoginPage';
 import { SettlementsPage } from './pages/SettlementsPage';
 import { TerminalsPage } from './pages/TerminalsPage';
 import { VehicleAssignmentsPage } from './pages/VehicleAssignmentsPage';
+import { VehicleDetailPage } from './pages/VehicleDetailPage';
+import { VehicleFormPage } from './pages/VehicleFormPage';
+import { VehicleOperatorAccessFormPage } from './pages/VehicleOperatorAccessFormPage';
 import { VehiclesPage } from './pages/VehiclesPage';
 import { clearStoredSession, loadStoredSession, persistSession } from './sessionPersistence';
 
@@ -113,6 +116,10 @@ export default function App() {
             <Route path="/drivers/:driverRef" element={<DriverDetailPage client={client} />} />
             <Route path="/drivers/:driverRef/edit" element={<DriverFormPage account={session.account} client={client} mode="edit" />} />
             <Route path="/vehicles" element={<VehiclesPage client={client} />} />
+            <Route path="/vehicles/new" element={<VehicleFormPage client={client} mode="create" />} />
+            <Route path="/vehicles/:vehicleRef" element={<VehicleDetailPage client={client} />} />
+            <Route path="/vehicles/:vehicleRef/edit" element={<VehicleFormPage client={client} mode="edit" />} />
+            <Route path="/vehicles/:vehicleRef/accesses/new" element={<VehicleOperatorAccessFormPage client={client} />} />
             <Route path="/terminals" element={<TerminalsPage client={client} />} />
             <Route path="/vehicle-assignments" element={<VehicleAssignmentsPage client={client} />} />
             <Route path="/settlements" element={<SettlementsPage client={client} />} />

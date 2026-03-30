@@ -16,8 +16,8 @@
 
 ## 점검 결과 요약
 
-1. `accounts`, `companies`, `fleets`, `drivers`는 규칙에 맞게 정리됐다.
-2. `vehicles`, `terminals`, `vehicle-assignments`, `settlements`는 대부분 `목록 + 입력 + 상태 변경`이 한 페이지에 같이 있다.
+1. `accounts`, `companies`, `fleets`, `drivers`, `vehicles`는 규칙에 맞게 정리됐다.
+2. `terminals`, `vehicle-assignments`, `settlements`는 대부분 `목록 + 입력 + 상태 변경`이 한 페이지에 같이 있다.
 3. 현재 가장 큰 위반 패턴은 `목록/생성/수정 혼합`이다.
 
 ## Operator Audit
@@ -114,13 +114,17 @@
 
 ### 5. `vehicles`
 
-- 상태: 위반
+- 상태: 적합
 - 현재 라우트
   - `/vehicles`
-- 위반 점
-  - 차량 마스터 생성/수정, 운영사 접근 생성/종료, 목록이 한 페이지에 같이 있다.
-  - 서로 다른 리소스가 한 화면에서 동시에 쓰기 동작을 가진다.
-  - 상세 라우트가 없다.
+  - `/vehicles/new`
+  - `/vehicles/:vehicleRef`
+  - `/vehicles/:vehicleRef/edit`
+  - `/vehicles/:vehicleRef/accesses/new`
+- 근거
+  - 차량 목록, 생성, 상세, 수정이 분리돼 있다.
+  - 운영사 접근 생성도 차량 상세 하위 라우트로 분리돼 있다.
+  - 브라우저 URL이 `route_no`를 따른다.
 
 ### 6. `terminals`
 
@@ -152,12 +156,11 @@
 
 ## 우선 정리 순서
 
-1. `admin vehicles`
-2. `admin terminals`
-3. `admin vehicle-assignments`
-4. `admin settlements`
-5. `operator vehicles`
-6. `operator settlements`
+1. `admin terminals`
+2. `admin vehicle-assignments`
+3. `admin settlements`
+4. `operator vehicles`
+5. `operator settlements`
 
 ## 순서 기준
 

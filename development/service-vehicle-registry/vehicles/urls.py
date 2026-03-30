@@ -11,7 +11,7 @@ from vehicles.views import (
 urlpatterns = [
     path("vehicle-masters/", VehicleMasterListCreateView.as_view(), name="vehicle-master-list"),
     path(
-        "vehicle-masters/<uuid:vehicle_id>/",
+        "vehicle-masters/<str:vehicle_ref>/",
         VehicleMasterDetailView.as_view(),
         name="vehicle-master-detail",
     ),

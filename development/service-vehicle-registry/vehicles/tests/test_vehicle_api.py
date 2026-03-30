@@ -132,6 +132,7 @@ class VehicleApiTests(TestCase):
 
         self.assertEqual(response.status_code, 201)
         self.assertIn("vehicle_id", response.data)
+        self.assertIn("route_no", response.data)
         self.assertIn("created_at", response.data)
         self.assertIn("updated_at", response.data)
 
@@ -144,6 +145,7 @@ class VehicleApiTests(TestCase):
         response = self.client.post("/vehicle-masters/", payload, format="json")
 
         self.assertEqual(response.status_code, 201)
+        self.assertIn("route_no", response.data)
         self.assertIsNone(response.data["manufacturer_vehicle_code"])
         self.assertIn("created_at", response.data)
         self.assertIn("updated_at", response.data)
@@ -152,10 +154,10 @@ class VehicleApiTests(TestCase):
         self._authenticate(self.admin_token)
 
         create_response = self._create_vehicle_master()
-        vehicle_id = create_response.data["vehicle_id"]
+        vehicle_ref = create_response.data["route_no"]
 
         update_response = self.client.patch(
-            f"/vehicle-masters/{vehicle_id}/",
+            f"/vehicle-masters/{vehicle_ref}/",
             {"vehicle_status": "inactive"},
             format="json",
         )
@@ -167,10 +169,10 @@ class VehicleApiTests(TestCase):
     def test_vehicle_master_detail_disallows_put_and_does_not_expose_it(self):
         self._authenticate(self.admin_token)
         create_response = self._create_vehicle_master()
-        vehicle_id = create_response.data["vehicle_id"]
+        vehicle_ref = create_response.data["route_no"]
 
         put_response = self.client.put(
-            f"/vehicle-masters/{vehicle_id}/",
+            f"/vehicle-masters/{vehicle_ref}/",
             self._vehicle_master_payload(),
             format="json",
         )
@@ -477,9 +479,11 @@ class VehicleApiTests(TestCase):
         self._authenticate(self.admin_token)
         create_response = self._create_vehicle_master()
         vehicle_id = create_response.data["vehicle_id"]
+        vehicle_ref = create_response.data["route_no"]
 
         self._authenticate(self.user_token)
         self.assertEqual(self.client.get("/vehicle-masters/").status_code, 200)
+        self.assertEqual(self.client.get(f"/vehicle-masters/{vehicle_ref}/").status_code, 200)
         self.assertEqual(self.client.get(f"/vehicle-masters/{vehicle_id}/").status_code, 200)
         self.assertEqual(
             self.client.post(
@@ -491,12 +495,22 @@ class VehicleApiTests(TestCase):
         )
         self.assertEqual(
             self.client.patch(
-                f"/vehicle-masters/{vehicle_id}/",
+                f"/vehicle-masters/{vehicle_ref}/",
                 {"vehicle_status": "inactive"},
                 format="json",
             ).status_code,
             403,
         )
+
+    def test_vehicle_master_detail_accepts_route_no_lookup(self):
+        self._authenticate(self.admin_token)
+        create_response = self._create_vehicle_master()
+        vehicle_ref = create_response.data["route_no"]
+
+        response = self.client.get(f"/vehicle-masters/{vehicle_ref}/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["route_no"], vehicle_ref)
 
     def test_user_cannot_write_vehicle_operator_access(self):
         self._authenticate(self.admin_token)

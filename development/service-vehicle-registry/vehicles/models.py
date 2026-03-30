@@ -1,7 +1,8 @@
 import uuid
 
-from django.db import models
+from django.db import IntegrityError, models, transaction
 from django.db.models import Q
+from django.db.models import Max
 
 
 class VehicleMaster(models.Model):
@@ -11,6 +12,7 @@ class VehicleMaster(models.Model):
         RETIRED = "retired", "retired"
 
     vehicle_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    route_no = models.PositiveIntegerField(unique=True, null=True, editable=False)
     manufacturer_company_id = models.UUIDField()
     plate_number = models.CharField(max_length=64, unique=True)
     vin = models.CharField(max_length=64, unique=True)
@@ -25,6 +27,20 @@ class VehicleMaster(models.Model):
 
     class Meta:
         ordering = ("vehicle_id",)
+
+    def save(self, *args, **kwargs):
+        if self.route_no is not None:
+            return super().save(*args, **kwargs)
+
+        for _ in range(5):
+            self.route_no = (type(self).objects.aggregate(max_route_no=Max("route_no"))["max_route_no"] or 0) + 1
+            try:
+                with transaction.atomic():
+                    return super().save(*args, **kwargs)
+            except IntegrityError:
+                self.route_no = None
+
+        raise IntegrityError("Failed to allocate vehicle route_no.")
 
 
 class VehicleOperatorAccess(models.Model):

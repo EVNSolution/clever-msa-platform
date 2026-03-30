@@ -36,6 +36,7 @@ export type DriverProfile = {
 
 export type VehicleMaster = {
   vehicle_id: string;
+  route_no?: number;
   manufacturer_company_id: string;
   plate_number: string;
   vin: string;

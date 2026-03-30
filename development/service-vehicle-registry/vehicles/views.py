@@ -1,3 +1,4 @@
+import uuid
 from uuid import UUID
 
 try:
@@ -16,9 +17,12 @@ except ModuleNotFoundError:
         return decorator
 
 from rest_framework import generics, mixins, permissions
+from django.db.models import Q
+from django.http import Http404
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
 
 from vehicles.models import VehicleMaster, VehicleOperatorAccess
 from vehicles.permissions import AuthenticatedReadAdminWrite
@@ -53,8 +57,31 @@ class VehicleMasterDetailView(
     queryset = VehicleMaster.objects.all()
     serializer_class = VehicleMasterSerializer
     lookup_field = "vehicle_id"
+    lookup_url_kwarg = "vehicle_ref"
     permission_classes = [AuthenticatedReadAdminWrite]
     http_method_names = ["get", "patch", "options", "head"]
+
+    def get_object(self):
+        lookup_value = self.kwargs[self.lookup_url_kwarg]
+        queryset = self.filter_queryset(self.get_queryset())
+        q_parts: list[Q] = []
+        if lookup_value.isdigit():
+            q_parts.append(Q(route_no=int(lookup_value)))
+        try:
+            q_parts.append(Q(vehicle_id=uuid.UUID(lookup_value)))
+        except ValueError:
+            pass
+
+        if not q_parts:
+            raise Http404
+
+        filters = q_parts[0]
+        for part in q_parts[1:]:
+            filters |= part
+
+        obj = get_object_or_404(queryset, filters)
+        self.check_object_permissions(self.request, obj)
+        return obj
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)

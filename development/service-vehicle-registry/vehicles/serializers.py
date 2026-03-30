@@ -21,6 +21,7 @@ class VehicleMasterSerializer(serializers.ModelSerializer):
         model = VehicleMaster
         fields = (
             "vehicle_id",
+            "route_no",
             "manufacturer_company_id",
             "plate_number",
             "vin",
