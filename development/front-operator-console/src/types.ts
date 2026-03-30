@@ -102,6 +102,22 @@ export type SettlementItem = {
   payout_status: string;
 };
 
+export type LatestSettlementSummary = {
+  settlement_run_id: string;
+  period_start: string;
+  period_end: string;
+  status: string;
+  payout_status: string;
+  amount: string;
+};
+
+export type DriverLatestSettlement = {
+  driver_id: string;
+  delivery_history_present: boolean | null;
+  attendance_inferred_from_delivery_history: boolean | null;
+  latest_settlement: LatestSettlementSummary | null;
+};
+
 export type Driver360Summary = {
   driver_id: string;
   driver_name: string;

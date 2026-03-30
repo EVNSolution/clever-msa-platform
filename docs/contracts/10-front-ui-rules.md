@@ -277,7 +277,7 @@
 
 - `drivers`: 목록 / 상세 / 수정 분리
 - `vehicles`: 목록 / 상세 분리 유지
-- `settlements`: 목록 / 상세 분리 대상
+- `settlements`: shared read-only 조회 화면
 
 ### Admin
 
@@ -288,7 +288,37 @@
 - `vehicles`: 목록 / 생성 / 상세 / 수정 분리
 - `terminals`: 목록 / 생성 / 상세 / 수정 분리
 - `vehicle-assignments`: 목록 / 생성 / 상세 / 수정 분리
-- `settlements`: 목록 / 생성 / 상세 / 수정 분리
+- `settlements`: `기준 / 입력 / 실행 / 결과 / 조회` 분리
+
+## 콘솔 소속과 권한 규칙
+
+### 1. 콘솔 소속과 권한은 분리해서 본다
+
+- `admin / operator`는 페이지가 어느 콘솔에 속하는지 정하는 기준이다.
+- `permission`은 같은 페이지 안에서 무엇을 할 수 있는지 정하는 기준이다.
+- 같은 리소스라도 콘솔 소속과 write 권한을 한 번에 같은 뜻으로 취급하지 않는다.
+
+### 2. Admin은 정산 write owner 화면을 가진다
+
+- `정산 기준`
+- `정산 입력`
+- `정산 실행`
+- `정산 결과`
+
+위 화면은 `front-admin-console`에만 둔다.
+
+### 3. 정산 조회는 shared read 화면으로 본다
+
+- `정산 조회`는 `admin`과 `operator`가 모두 본다.
+- 두 콘솔은 서로 다른 앱이지만, 같은 read contract를 공유한다.
+- shared 정산 조회는 항상 read-only다.
+
+### 4. Shared 정산 조회의 연결 규칙
+
+- shared 정산 조회는 `/api/settlement-ops/`만 사용한다.
+- `operator`는 `/api/settlements/`를 직접 읽지 않는다.
+- `admin`도 조회 화면에서는 payroll direct read 대신 `settlement-ops`를 우선한다.
+- write 화면만 `/api/settlements/`를 사용한다.
 
 ## 현재 적용 메모
 

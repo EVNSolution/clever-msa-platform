@@ -57,6 +57,14 @@ export function formatSettlementStatusLabel(value: string | null | undefined) {
   switch (value) {
     case 'draft':
       return '초안';
+    case 'calculated':
+      return '계산 완료';
+    case 'reviewed':
+      return '검토 완료';
+    case 'approved':
+      return '승인됨';
+    case 'paid':
+      return '지급됨';
     case 'closed':
       return '마감';
     default:
@@ -95,4 +103,12 @@ export function formatLocationStatusLabel(value: string | null | undefined) {
     default:
       return value ?? '-';
   }
+}
+
+export function formatNullableBooleanLabel(value: boolean | null | undefined) {
+  if (value == null) {
+    return '확인 불가';
+  }
+
+  return value ? '예' : '아니오';
 }
