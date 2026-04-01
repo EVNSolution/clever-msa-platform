@@ -52,6 +52,7 @@
 4. `정산 기준 / 입력 / 실행 / 결과`의 생성과 수정은 각 그룹 페이지 안에서 모달로 연다.
 5. settlement 하위 write 리소스의 별도 full-page 생성 화면은 1차 범위에 넣지 않는다.
 6. operator shared read 화면은 별도 계약 문서에서 다룬다.
+7. `정산 입력`의 기본 경로가 무엇인지와 단계 handoff는 별도 UX 계약 문서에서 다시 고정한다.
 
 ## 페이지별 소유 서비스
 
@@ -69,6 +70,10 @@
 - 다루는 리소스:
   - `delivery-record`
   - `daily-delivery-input-snapshot`
+- 기본 UX 경로:
+  - `엑셀 업로드`
+  - `검증 요약`
+  - `실행으로 진행`
 
 ### 3. `정산 실행`
 
@@ -136,5 +141,6 @@
 - `09-integration-rules.md`
 - `10-front-ui-rules.md`
 - `12-settlement-shared-read-pages.md`
+- `14-settlement-upload-first-ux-flow.md`
 - `../rollout/12-settlement-phase-2-api-gates.md`
 - `../decisions/specs/2026-03-23-settlement-phase-2-decomposition-design.md`
