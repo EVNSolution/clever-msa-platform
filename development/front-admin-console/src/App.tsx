@@ -23,7 +23,6 @@ import { SettlementInputsPage } from './pages/SettlementInputsPage';
 import { SettlementOverviewPage } from './pages/SettlementOverviewPage';
 import { SettlementResultsPage } from './pages/SettlementResultsPage';
 import { SettlementRunsPage } from './pages/SettlementRunsPage';
-import { TerminalsPage } from './pages/TerminalsPage';
 import { VehicleAssignmentsPage } from './pages/VehicleAssignmentsPage';
 import { VehicleDetailPage } from './pages/VehicleDetailPage';
 import { VehicleFormPage } from './pages/VehicleFormPage';
@@ -125,7 +124,6 @@ export default function App() {
             <Route path="/vehicles/:vehicleRef" element={<VehicleDetailPage client={client} />} />
             <Route path="/vehicles/:vehicleRef/edit" element={<VehicleFormPage client={client} mode="edit" />} />
             <Route path="/vehicles/:vehicleRef/accesses/new" element={<VehicleOperatorAccessFormPage client={client} />} />
-            <Route path="/terminals" element={<TerminalsPage client={client} />} />
             <Route path="/vehicle-assignments" element={<VehicleAssignmentsPage client={client} />} />
             <Route path="/settlements" element={<SettlementSectionLayout />}>
               <Route index element={<Navigate replace to="/settlements/overview" />} />

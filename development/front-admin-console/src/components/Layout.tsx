@@ -29,9 +29,6 @@ export function Layout({ account, onLogout }: LayoutProps) {
           <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/vehicles">
             차량
           </NavLink>
-          <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/terminals">
-            단말기
-          </NavLink>
           <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/vehicle-assignments">
             차량 배정
           </NavLink>

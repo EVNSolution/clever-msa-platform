@@ -75,6 +75,17 @@ export function formatInstallationStatusLabel(value: string | null | undefined) 
   }
 }
 
+export function formatLocationStatusLabel(value: string | null | undefined) {
+  switch (value) {
+    case 'fresh':
+      return '정상';
+    case 'stale':
+      return '지연';
+    default:
+      return value ?? '-';
+  }
+}
+
 export function formatAssignmentStatusLabel(value: string | null | undefined) {
   switch (value) {
     case 'assigned':

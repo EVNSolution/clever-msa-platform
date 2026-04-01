@@ -16,10 +16,9 @@
 
 ## 점검 결과 요약
 
-1. `accounts`, `companies`, `fleets`, `drivers`, `settlements`는 현재 계약 기준으로 정리됐다.
-2. `vehicles`는 새 vehicle-centered contract 기준으로 다시 정리해야 한다.
-3. 남은 핵심 위반 화면은 `vehicles`, `vehicle-assignments`다.
-4. `terminals`는 독립 화면을 키우는 방향이 아니라 제거 대상이다.
+1. `accounts`, `companies`, `fleets`, `drivers`, `vehicles`, `settlements`는 현재 계약 기준으로 정리됐다.
+2. `terminals`는 browser target에서 제거됐다.
+3. 남은 핵심 위반 화면은 `vehicle-assignments`다.
 
 ## Operator Audit
 
@@ -115,7 +114,7 @@
 
 ### 5. `vehicles`
 
-- 상태: 부분 적합
+- 상태: 적합
 - 현재 라우트
   - `/vehicles`
   - `/vehicles/new`
@@ -125,18 +124,16 @@
 - 근거
   - 차량 목록, 상세, 수정 분리는 되어 있다.
   - 브라우저 URL이 `route_no`를 따른다.
-  - 하지만 새 current truth는 `vehicle detail`이 terminal/live 정보를 함께 소유해야 한다.
-  - 현재는 terminal 관리가 별도 페이지에 남아 있어 vehicle-centered contract를 아직 만족하지 않는다.
+  - `vehicle detail`이 terminal/live 정보를 함께 소유한다.
+  - standalone terminal browser page를 사용하지 않는다.
 
 ### 6. `terminals`
 
-- 상태: 제거 대상
-- 현재 라우트
-  - `/terminals`
+- 상태: 제거 완료
 - 판단
-  - 새 current truth에서는 browser 독립 terminal page를 target으로 두지 않는다.
-  - terminal 정보와 live 상태는 `vehicle detail`로 흡수한다.
-  - 웹 수동 설치/해제 흐름도 target UI에서 제외한다.
+  - browser 독립 terminal page는 제거됐다.
+  - terminal 정보와 live 상태는 `vehicle detail`로 흡수됐다.
+  - 웹 수동 설치/해제 흐름은 target UI에 남기지 않는다.
 
 ### 7. `vehicle-assignments`
 
@@ -162,9 +159,7 @@
 
 ## 우선 정리 순서
 
-1. `admin vehicles`의 terminal/live 흡수
-2. `admin terminals` 제거
-3. `admin vehicle-assignments`
+1. `admin vehicle-assignments`
 
 ## 순서 기준
 

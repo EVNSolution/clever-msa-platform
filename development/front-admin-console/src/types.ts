@@ -58,6 +58,54 @@ export type VehicleOperatorAccess = {
   updated_at: string;
 };
 
+export type VehicleOpsSummary = {
+  vehicle_id: string;
+  route_no?: number;
+  plate_number: string;
+  vin: string;
+  vehicle_status: string;
+  manufacturer_company: {
+    company_id: string;
+    company_name: string | null;
+  };
+  active_operator_company: {
+    company_id: string | null;
+    company_name: string | null;
+    access_status: 'active' | 'suspended' | 'ended' | null;
+  };
+  current_assignment: {
+    driver_vehicle_assignment_id: string;
+    driver_id: string;
+    assignment_status: 'assigned';
+    assigned_at: string | null;
+  } | null;
+  current_terminal: {
+    terminal_id: string;
+    installation_status: 'installed' | 'removed';
+    installed_at: string | null;
+    imei: string | null;
+    iccid: string | null;
+    firmware_version: string | null;
+    protocol_version: string | null;
+    app_version: string | null;
+  } | null;
+  telemetry: {
+    latest_location: {
+      lat: number | null;
+      lng: number | null;
+      captured_at: string | null;
+      snapshot_status: 'fresh' | 'stale' | 'unavailable' | null;
+    };
+    latest_diagnostic: {
+      event_code: string | null;
+      severity: 'info' | 'warning' | 'critical' | null;
+      event_status: 'open' | 'cleared' | null;
+      captured_at: string | null;
+    };
+  };
+  warnings: string[];
+};
+
 export type TerminalRegistry = {
   terminal_id: string;
   manufacturer_company_id: string;

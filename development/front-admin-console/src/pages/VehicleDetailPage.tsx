@@ -1,16 +1,21 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
+import { getVehicleOps } from '../api/vehicleOps';
 import {
-  getVehicleMaster,
   listVehicleOperatorAccesses,
   updateVehicleOperatorAccess,
 } from '../api/vehicles';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { listCompanies } from '../api/organization';
 import { getVehicleRouteRef } from '../routeRefs';
-import type { Company, VehicleMaster, VehicleOperatorAccess } from '../types';
-import { formatAccessStatusLabel, formatLifecycleStatusLabel } from '../uiLabels';
+import type { Company, VehicleOperatorAccess, VehicleOpsSummary } from '../types';
+import {
+  formatAccessStatusLabel,
+  formatInstallationStatusLabel,
+  formatLifecycleStatusLabel,
+  formatLocationStatusLabel,
+} from '../uiLabels';
 
 type VehicleDetailPageProps = {
   client: HttpClient;
@@ -22,7 +27,7 @@ function createTimestamp() {
 
 export function VehicleDetailPage({ client }: VehicleDetailPageProps) {
   const { vehicleRef } = useParams();
-  const [vehicle, setVehicle] = useState<VehicleMaster | null>(null);
+  const [vehicle, setVehicle] = useState<VehicleOpsSummary | null>(null);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [accesses, setAccesses] = useState<VehicleOperatorAccess[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -44,7 +49,7 @@ export function VehicleDetailPage({ client }: VehicleDetailPageProps) {
       setErrorMessage(null);
       try {
         const [vehicleResponse, companyResponse] = await Promise.all([
-          getVehicleMaster(client, selectedVehicleRef),
+          getVehicleOps(client, selectedVehicleRef),
           listCompanies(client),
         ]);
         const accessResponse = await listVehicleOperatorAccesses(client, {
@@ -77,6 +82,50 @@ export function VehicleDetailPage({ client }: VehicleDetailPageProps) {
 
   function getCompanyName(companyId: string) {
     return companies.find((company) => company.company_id === companyId)?.name ?? '미확인 회사';
+  }
+
+  function getManufacturerName(summary: VehicleOpsSummary) {
+    return summary.manufacturer_company.company_name ?? '제조사 미상';
+  }
+
+  function getActiveOperatorName(summary: VehicleOpsSummary) {
+    if (summary.active_operator_company.company_name) {
+      return summary.active_operator_company.company_name;
+    }
+    if (summary.active_operator_company.company_id) {
+      return '운영사 미상';
+    }
+    return '미배정';
+  }
+
+  function getCurrentDriverLabel(summary: VehicleOpsSummary) {
+    if (summary.current_assignment?.driver_id) {
+      return '배정됨';
+    }
+    return '미배정';
+  }
+
+  function getTerminalDetailValue(
+    summary: VehicleOpsSummary,
+    value: string | null | undefined,
+    { missingLabel = '확인 불가' }: { missingLabel?: string } = {},
+  ) {
+    if (summary.current_terminal == null) {
+      return '미설치';
+    }
+    return value ?? missingLabel;
+  }
+
+  function getLatestLocationLabel(summary: VehicleOpsSummary) {
+    const latestLocation = summary.telemetry.latest_location;
+    if (latestLocation.lat == null || latestLocation.lng == null) {
+      return '확인 불가';
+    }
+    return `${latestLocation.lat}, ${latestLocation.lng}`;
+  }
+
+  function getLatestDiagnosticLabel(summary: VehicleOpsSummary) {
+    return summary.telemetry.latest_diagnostic.event_code ?? '확인 불가';
   }
 
   async function handleEndAccess(vehicleOperatorAccessId: string) {
@@ -126,20 +175,67 @@ export function VehicleDetailPage({ client }: VehicleDetailPageProps) {
                 <dd>{vehicle.plate_number}</dd>
               </div>
               <div>
-                <dt>모델명</dt>
-                <dd>{vehicle.model_name}</dd>
+                <dt>제조사</dt>
+                <dd>{getManufacturerName(vehicle)}</dd>
               </div>
               <div>
-                <dt>제조사 회사</dt>
-                <dd>{getCompanyName(vehicle.manufacturer_company_id)}</dd>
+                <dt>현재 운영사</dt>
+                <dd>{getActiveOperatorName(vehicle)}</dd>
+              </div>
+              <div>
+                <dt>현재 배송원</dt>
+                <dd>{getCurrentDriverLabel(vehicle)}</dd>
+              </div>
+              <div>
+                <dt>배정 상태</dt>
+                <dd>{vehicle.current_assignment ? '배정됨' : '미배정'}</dd>
+              </div>
+              <div>
+                <dt>설치 상태</dt>
+                <dd>
+                  {getTerminalDetailValue(
+                    vehicle,
+                    vehicle.current_terminal?.installation_status
+                      ? formatInstallationStatusLabel(vehicle.current_terminal.installation_status)
+                      : null,
+                  )}
+                </dd>
+              </div>
+              <div>
+                <dt>설치 시각</dt>
+                <dd>{getTerminalDetailValue(vehicle, vehicle.current_terminal?.installed_at)}</dd>
+              </div>
+              <div>
+                <dt>펌웨어 버전</dt>
+                <dd>{getTerminalDetailValue(vehicle, vehicle.current_terminal?.firmware_version)}</dd>
+              </div>
+              <div>
+                <dt>프로토콜 버전</dt>
+                <dd>{getTerminalDetailValue(vehicle, vehicle.current_terminal?.protocol_version)}</dd>
+              </div>
+              <div>
+                <dt>앱 버전</dt>
+                <dd>{getTerminalDetailValue(vehicle, vehicle.current_terminal?.app_version)}</dd>
+              </div>
+              <div>
+                <dt>최신 위치</dt>
+                <dd>{getLatestLocationLabel(vehicle)}</dd>
+              </div>
+              <div>
+                <dt>위치 상태</dt>
+                <dd>
+                  {vehicle.telemetry.latest_location.snapshot_status
+                    ? formatLocationStatusLabel(vehicle.telemetry.latest_location.snapshot_status)
+                    : '확인 불가'}
+                </dd>
+              </div>
+              <div>
+                <dt>최신 진단</dt>
+                <dd>{getLatestDiagnosticLabel(vehicle)}</dd>
               </div>
               <div>
                 <dt>VIN</dt>
                 <dd>{vehicle.vin}</dd>
-              </div>
-              <div>
-                <dt>제조사 차량 코드</dt>
-                <dd>{vehicle.manufacturer_vehicle_code ?? '-'}</dd>
               </div>
               <div>
                 <dt>차량 상태</dt>
@@ -154,6 +250,13 @@ export function VehicleDetailPage({ client }: VehicleDetailPageProps) {
                 운영사 접근 생성
               </Link>
             </div>
+            {vehicle.warnings.length ? (
+              <div className="error-banner">
+                {vehicle.warnings.map((warning) => (
+                  <div key={warning}>{warning}</div>
+                ))}
+              </div>
+            ) : null}
           </div>
         ) : (
           <p className="empty-state">차량을 찾을 수 없습니다.</p>
