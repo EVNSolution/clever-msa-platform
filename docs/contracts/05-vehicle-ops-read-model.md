@@ -134,11 +134,19 @@
 ### 목록
 
 - `front /vehicles`는 `Vehicle Ops` 목록 contract만 사용한다.
-- `Terminal` 컬럼은 `imei` 우선, 없으면 축약 `terminal_id`, 설치가 없으면 `Uninstalled`를 보여준다.
+- `front /vehicles`는 browser에서 terminal을 별도 리소스로 분리하지 않는다.
+- vehicle row는 terminal 연결 상태와 telemetry freshness를 함께 요약할 수 있어야 한다.
+- terminal이 없으면 `미연결`, freshness가 떨어지면 `지연` 같은 상태를 차량 행 안에서 표현한다.
 
 ### 상세
 
-아래 terminal 필드를 함께 노출한다.
+차량 상세는 아래 블록을 같은 화면에서 함께 노출한다.
+
+- 기본 차량 정보
+- terminal 정보
+- telemetry freshness / latest 상태
+
+아래 terminal 필드를 차량 상세 안에서 함께 노출한다.
 
 - `Terminal ID`
 - `Installation Status`
@@ -148,6 +156,14 @@
 - `Firmware Version`
 - `Protocol Version`
 - `App Version`
+
+브라우저 규칙:
+
+- 별도 browser `terminal` 상세 페이지를 기본 운영 흐름으로 두지 않는다.
+- browser에서 terminal 설치/해제를 수동으로 실행하지 않는다.
+- terminal과 vehicle의 연결은 MQTT ingress와 `vin` 기준 시스템 연결 결과로 본다.
+- UI는 수동 새로고침 없이 terminal/telemetry 상태 변화를 반영해야 한다.
+- UI는 항상 마지막 수집 시각과 freshness 상태를 보여줘야 한다.
 
 `admin-front`는 계속 각 정본 서비스의 write API를 사용한다. `Vehicle Ops`는 admin write 경로를 대체하지 않는다.
 

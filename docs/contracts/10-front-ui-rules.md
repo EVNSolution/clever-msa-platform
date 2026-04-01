@@ -207,6 +207,40 @@
 - `fleet` 수정도 `company` 하위 라우트에서만 연다.
 - 전역 `fleet` 입력 화면은 두지 않는다.
 
+## Vehicle / Terminal 규칙
+
+### 1. 브라우저 정보 구조는 vehicle 중심이다
+
+- 브라우저에서는 `terminal`을 독립 관리 리소스로 노출하지 않는다.
+- 차량 상세가 terminal 정보와 live 상태를 함께 보여주는 중심 화면이다.
+- `terminal`은 browser information architecture에서 `vehicle` 하위 정보로 본다.
+
+### 2. Vehicle은 일반 CRUD 규칙의 예외를 가진다
+
+- `vehicle`의 `C/R/D` 진입은 `vehicle list`가 가진다.
+- `vehicle`의 `U` 진입은 `vehicle detail`만 가진다.
+- `vehicle list`는 테이블 기반 운영 화면으로 유지한다.
+- `vehicle`은 일반 리소스처럼 `new` full-page form을 기본으로 강제하지 않는다.
+
+### 3. Vehicle 상세가 보여야 할 내용
+
+- 기본 차량 정보
+- terminal 정보
+- live telemetry freshness
+- 연결 경고와 상태 변화 요약
+
+### 4. Terminal 연결은 웹 수동 설치 흐름으로 만들지 않는다
+
+- 브라우저에서 `vehicle`에 `terminal`을 수동 설치/해제하는 화면을 두지 않는다.
+- terminal과 vehicle의 연결은 MQTT ingress와 `vin` 기준 시스템 연결로 본다.
+- 브라우저는 그 결과를 읽기만 한다.
+
+### 5. 실시간 UI 규칙이 필요하다
+
+- `vehicle list`와 `vehicle detail`은 수동 새로고침 없이 상태 변화를 반영해야 한다.
+- 구현 방식은 live subscription 또는 bounded auto-refresh 중 하나를 택할 수 있다.
+- 어떤 방식이든 사용자는 마지막 수집 시각과 freshness 상태를 항상 볼 수 있어야 한다.
+
 ## 라우트 규칙
 
 ### 1. 리소스 화면은 아래 역할로 분리한다
@@ -285,8 +319,7 @@
 - `companies`: 목록 / 생성 / 상세 / 수정 분리
 - `fleets`: `company` 하위 상세 / 생성 / 수정으로만 분리
 - `drivers`: 목록 / 생성 / 상세 / 수정 분리
-- `vehicles`: 목록 / 생성 / 상세 / 수정 분리
-- `terminals`: 목록 / 생성 / 상세 / 수정 분리
+- `vehicles`: 목록 중심, 상세 소유, terminal/live info 포함
 - `vehicle-assignments`: 목록 / 생성 / 상세 / 수정 분리
 - `settlements`: `기준 / 입력 / 실행 / 결과 / 조회` 분리
 
@@ -338,7 +371,6 @@
 - `admin companies`
 - `admin fleets`
 - `admin drivers`
-- `admin vehicles`
 - `admin settlements`
 - `operator drivers`
 - `operator driver detail`
@@ -347,7 +379,8 @@
 
 ### 2. 아직 정리 중인 화면
 
-- `admin terminals`
+- `admin vehicles`의 vehicle-centered terminal/live 재구성
+- `admin terminals` 제거
 - `admin vehicle-assignments`
 
 ## 금지 규칙
