@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 
 import { listDrivers } from '../api/drivers';
 import { FormModal } from '../components/FormModal';
+import { useSettlementFlow } from '../components/SettlementFlowContext';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { listCompanies, listFleets } from '../api/organization';
 import {
@@ -28,6 +29,7 @@ const DEFAULT_ITEM_FORM: SettlementItemPayload = {
 };
 
 export function SettlementResultsPage({ client }: SettlementResultsPageProps) {
+  const { selectedCompanyId, selectedFleetId } = useSettlementFlow();
   const [items, setItems] = useState<SettlementItem[]>([]);
   const [runs, setRuns] = useState<SettlementRun[]>([]);
   const [drivers, setDrivers] = useState<DriverProfile[]>([]);
@@ -183,9 +185,63 @@ export function SettlementResultsPage({ client }: SettlementResultsPageProps) {
     selectItem(item);
   }
 
+  const filteredRuns = runs.filter((run) => {
+    if (selectedCompanyId && run.company_id !== selectedCompanyId) {
+      return false;
+    }
+    if (selectedFleetId && run.fleet_id !== selectedFleetId) {
+      return false;
+    }
+    return true;
+  });
+  const filteredRunIds = new Set(filteredRuns.map((run) => run.settlement_run_id));
+  const filteredItems = items.filter((item) => filteredRunIds.has(item.settlement_run_id));
+  const totalAmount = filteredItems.reduce((sum, item) => sum + Number.parseFloat(item.amount), 0);
+  const currentContextLabel =
+    selectedCompanyId && selectedFleetId
+      ? `${getCompanyName(companies, selectedCompanyId)} / ${getFleetName(fleets, selectedFleetId)}`
+      : '문맥 미선택';
+
   return (
     <div className="stack large-gap">
       {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
+
+      <section className="panel">
+        <div className="panel-header">
+          <p className="panel-kicker">결과 handoff</p>
+          <h2>결과 요약</h2>
+          <p className="empty-state">실행이 끝난 뒤에는 현재 문맥 기준 결과만 확인합니다.</p>
+        </div>
+        <div className="settlement-flow-shell">
+          <article className="shell-card">
+            <strong>현재 문맥</strong>
+            <span>{currentContextLabel}</span>
+            <dl className="shell-metric-list">
+              <div>
+                <dt>정산 실행</dt>
+                <dd>{filteredRuns.length}</dd>
+              </div>
+              <div>
+                <dt>정산 항목</dt>
+                <dd>{filteredItems.length}</dd>
+              </div>
+              <div>
+                <dt>총 금액</dt>
+                <dd>{totalAmount.toFixed(2)}</dd>
+              </div>
+            </dl>
+          </article>
+          <article className="shell-card">
+            <strong>예외 보정</strong>
+            <span>결과 수정이 필요할 때만 항목 생성/수정을 사용합니다.</span>
+            <div className="inline-actions">
+              <button className="button primary" onClick={openCreateItemModal} type="button">
+                정산 항목 생성
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
 
       <section className="panel">
         <div className="panel-header panel-header-inline">
@@ -199,7 +255,7 @@ export function SettlementResultsPage({ client }: SettlementResultsPageProps) {
         </div>
         {isLoading ? (
           <p className="empty-state">정산 항목을 불러오는 중입니다...</p>
-        ) : items.length ? (
+        ) : filteredItems.length ? (
           <table className="table compact">
             <thead>
               <tr>
@@ -211,7 +267,7 @@ export function SettlementResultsPage({ client }: SettlementResultsPageProps) {
               </tr>
             </thead>
             <tbody>
-              {items.map((item) => (
+              {filteredItems.map((item) => (
                 <tr
                   key={item.settlement_item_id}
                   className={`interactive-row${editingItemId === item.settlement_item_id ? ' is-selected' : ''}`}
@@ -240,7 +296,7 @@ export function SettlementResultsPage({ client }: SettlementResultsPageProps) {
             </tbody>
           </table>
         ) : (
-          <p className="empty-state">정산 항목이 없습니다.</p>
+          <p className="empty-state">현재 문맥에 정산 항목이 없습니다.</p>
         )}
       </section>
 

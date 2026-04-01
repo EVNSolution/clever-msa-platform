@@ -19,7 +19,7 @@
 1. `accounts`, `companies`, `fleets`, `drivers`, `vehicles`, `settlements`는 현재 계약 기준으로 정리됐다.
 2. `terminals`는 browser target에서 제거됐다.
 3. `vehicle-assignments`까지 현재 계약 기준으로 정리됐다.
-4. 다만 `admin settlements`는 라우트 분리는 됐지만 운영형 upload-first 흐름은 아직 남아 있다.
+4. `admin settlements`는 문맥 bar와 upload-first handoff shell까지 올라왔다.
 
 ## Operator Audit
 
@@ -152,7 +152,7 @@
 
 ### 8. `settlements`
 
-- 상태: 부분 적합
+- 상태: 적합
 - 현재 라우트
   - `/settlements/overview`
   - `/settlements/criteria`
@@ -161,15 +161,11 @@
   - `/settlements/results`
 - 근거
   - settlement 1차 범위를 `기준 / 입력 / 실행 / 결과 / 조회` 그룹 라우트 분리로 고정했다.
-  - admin settlement는 그룹 라우트 분리 자체는 되어 있다.
-- 남은 점
-  - `정산 입력`이 아직 `엑셀 업로드 -> 검증 -> 실행` 흐름 기준으로 정리되지 않았다.
-  - `company / fleet` 문맥 유지가 명시적 UI로 남아 있지 않다.
-  - `정산 실행`, `정산 결과`가 upload-first handoff 기준으로 아직 연결되지 않았다.
+  - `company / fleet` 문맥 bar가 그룹 내부에서 유지된다.
+  - `정산 입력`, `정산 실행`, `정산 결과`가 upload-first shell과 handoff 링크로 연결된다.
+  - 개별 생성은 여전히 예외 보정 모달로 뒤에 둔다.
 
 ## 우선 정리 순서
-
-1. `admin settlements` upload-first 흐름
 
 ## 순서 기준
 

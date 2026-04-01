@@ -139,7 +139,7 @@ export default function App() {
               path="/vehicle-assignments/:assignmentRef/edit"
               element={<VehicleAssignmentFormPage client={client} mode="edit" />}
             />
-            <Route path="/settlements" element={<SettlementSectionLayout />}>
+            <Route path="/settlements" element={<SettlementSectionLayout client={client} />}>
               <Route index element={<Navigate replace to="/settlements/overview" />} />
               <Route path="overview" element={<SettlementOverviewPage client={client} />} />
               <Route path="criteria" element={<SettlementCriteriaPage client={client} />} />

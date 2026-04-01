@@ -302,6 +302,57 @@ textarea:focus {
   color: var(--accent);
 }
 
+.settlement-context-panel {
+  padding-top: 1.2rem;
+}
+
+.settlement-context-grid,
+.settlement-flow-shell {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.shell-card {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(28, 32, 43, 0.08);
+  min-width: 0;
+}
+
+.shell-card strong,
+.shell-card span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.shell-metric-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.shell-metric-list div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.shell-metric-list dt {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.shell-metric-list dd {
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
 .account-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -594,7 +645,10 @@ textarea:focus {
   .data-grid.two-columns.wide-left,
   .sub-grid.three-columns,
   .relationship-grid,
-  .metric-grid {
+  .metric-grid,
+  .settlement-context-grid,
+  .settlement-flow-shell,
+  .shell-metric-list {
     grid-template-columns: 1fr;
   }
 

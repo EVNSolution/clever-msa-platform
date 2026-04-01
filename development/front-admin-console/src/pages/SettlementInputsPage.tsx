@@ -1,7 +1,9 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 
 import { listDrivers } from '../api/drivers';
 import { FormModal } from '../components/FormModal';
+import { useSettlementFlow } from '../components/SettlementFlowContext';
 import {
   createDailyDeliveryInputSnapshot,
   createDeliveryRecord,
@@ -66,6 +68,7 @@ const DEFAULT_SNAPSHOT_FORM = {
 };
 
 export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
+  const { selectedCompanyId, selectedFleetId } = useSettlementFlow();
   const [records, setRecords] = useState<DeliveryRecord[]>([]);
   const [snapshots, setSnapshots] = useState<DailyDeliveryInputSnapshot[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -230,8 +233,12 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
   }
 
   function resetRecordForm() {
-    const companyId = companies[0]?.company_id ?? '';
-    const fleetId = getFleetOptions(fleets, companyId)[0]?.fleet_id ?? fleets[0]?.fleet_id ?? '';
+    const companyId = selectedCompanyId || companies[0]?.company_id || '';
+    const fleetId =
+      selectedFleetId ||
+      getFleetOptions(fleets, companyId)[0]?.fleet_id ||
+      fleets[0]?.fleet_id ||
+      '';
     setEditingRecordId(null);
     setRecordForm({
       ...DEFAULT_RECORD_FORM,
@@ -242,8 +249,12 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
   }
 
   function resetSnapshotForm() {
-    const companyId = companies[0]?.company_id ?? '';
-    const fleetId = getFleetOptions(fleets, companyId)[0]?.fleet_id ?? fleets[0]?.fleet_id ?? '';
+    const companyId = selectedCompanyId || companies[0]?.company_id || '';
+    const fleetId =
+      selectedFleetId ||
+      getFleetOptions(fleets, companyId)[0]?.fleet_id ||
+      fleets[0]?.fleet_id ||
+      '';
     setEditingSnapshotId(null);
     setSnapshotForm({
       ...DEFAULT_SNAPSHOT_FORM,
@@ -448,9 +459,76 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
     selectSnapshot(snapshot);
   }
 
+  const filteredRecords = records.filter((record) => {
+    if (selectedCompanyId && record.company_id !== selectedCompanyId) {
+      return false;
+    }
+    if (selectedFleetId && record.fleet_id !== selectedFleetId) {
+      return false;
+    }
+    return true;
+  });
+
+  const filteredSnapshots = snapshots.filter((snapshot) => {
+    if (selectedCompanyId && snapshot.company_id !== selectedCompanyId) {
+      return false;
+    }
+    if (selectedFleetId && snapshot.fleet_id !== selectedFleetId) {
+      return false;
+    }
+    return true;
+  });
+
+  const confirmedRecordCount = filteredRecords.filter((record) => record.status === 'confirmed').length;
+  const activeSnapshotCount = filteredSnapshots.filter((snapshot) => snapshot.status === 'active').length;
+  const readyDriverCount = new Set(filteredSnapshots.map((snapshot) => snapshot.driver_id)).size;
+
   return (
     <div className="stack large-gap">
       {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
+
+      <section className="panel">
+        <div className="panel-header">
+          <p className="panel-kicker">입력 기본 경로</p>
+          <h2>엑셀 업로드</h2>
+          <p className="empty-state">
+            정산 입력은 업로드부터 시작합니다. 기본 운영 경로는 업로드와 검증입니다.
+          </p>
+        </div>
+        <div className="settlement-flow-shell">
+          <article className="shell-card">
+            <strong>검증 요약</strong>
+            <span>현재 문맥에서 확인된 입력 준비 상태를 먼저 봅니다.</span>
+            <dl className="shell-metric-list">
+              <div>
+                <dt>확정 record</dt>
+                <dd>{confirmedRecordCount}</dd>
+              </div>
+              <div>
+                <dt>활성 snapshot</dt>
+                <dd>{activeSnapshotCount}</dd>
+              </div>
+              <div>
+                <dt>대상 배송원</dt>
+                <dd>{readyDriverCount}</dd>
+              </div>
+            </dl>
+          </article>
+          <article className="shell-card">
+            <strong>업로드 흐름</strong>
+            <span>운영 기준 입력은 엑셀 업로드로 묶고, 검증 통과 후 실행으로 넘깁니다.</span>
+            <div className="inline-actions">
+              <button className="button primary" type="button">
+                업로드 준비 중
+              </button>
+              <Link className="button ghost" to="/settlements/runs">
+                정산 실행으로 이동
+              </Link>
+            </div>
+            <p className="empty-state">수동 입력은 예외 보정 경로로만 유지합니다.</p>
+          </article>
+        </div>
+      </section>
 
       <section className="panel">
         <div className="panel-header">
@@ -463,18 +541,18 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
           <div className="metric-grid">
             <article className="metric-card">
               <span className="panel-kicker">Record</span>
-              <strong>{records.length}</strong>
-              <span className="empty-state">배송 원천 record 수</span>
+              <strong>{filteredRecords.length}</strong>
+              <span className="empty-state">현재 문맥 배송 원천 record 수</span>
             </article>
             <article className="metric-card">
               <span className="panel-kicker">Snapshot</span>
-              <strong>{snapshots.length}</strong>
-              <span className="empty-state">일별 snapshot 수</span>
+              <strong>{filteredSnapshots.length}</strong>
+              <span className="empty-state">현재 문맥 일별 snapshot 수</span>
             </article>
             <article className="metric-card">
               <span className="panel-kicker">Driver</span>
-              <strong>{drivers.length}</strong>
-              <span className="empty-state">연결 가능한 배송원 수</span>
+              <strong>{readyDriverCount}</strong>
+              <span className="empty-state">입력이 잡힌 배송원 수</span>
             </article>
           </div>
         )}
@@ -483,7 +561,7 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
       <section className="panel">
         <div className="panel-header panel-header-inline">
           <div className="stack">
-            <p className="panel-kicker">Delivery Record List</p>
+            <p className="panel-kicker">수동 보정</p>
             <h2>배송 원천 입력 목록</h2>
           </div>
           <button className="button primary" onClick={openCreateRecordModal} type="button">
@@ -492,7 +570,7 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
         </div>
         {isLoading ? (
           <p className="empty-state">배송 원천 입력을 불러오는 중입니다...</p>
-        ) : records.length ? (
+        ) : filteredRecords.length ? (
           <table className="table compact">
             <thead>
               <tr>
@@ -506,7 +584,7 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
               </tr>
             </thead>
             <tbody>
-              {records.map((record) => (
+              {filteredRecords.map((record) => (
                 <tr
                   key={record.delivery_record_id}
                   className={`interactive-row${editingRecordId === record.delivery_record_id ? ' is-selected' : ''}`}
@@ -537,14 +615,14 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
             </tbody>
           </table>
         ) : (
-          <p className="empty-state">배송 원천 입력이 없습니다.</p>
+          <p className="empty-state">현재 문맥에 배송 원천 입력이 없습니다.</p>
         )}
       </section>
 
       <section className="panel">
         <div className="panel-header panel-header-inline">
           <div className="stack">
-            <p className="panel-kicker">Snapshot List</p>
+            <p className="panel-kicker">수동 보정</p>
             <h2>일별 snapshot 목록</h2>
           </div>
           <button className="button primary" onClick={openCreateSnapshotModal} type="button">
@@ -553,7 +631,7 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
         </div>
         {isLoading ? (
           <p className="empty-state">일별 snapshot을 불러오는 중입니다...</p>
-        ) : snapshots.length ? (
+        ) : filteredSnapshots.length ? (
           <table className="table compact">
             <thead>
               <tr>
@@ -567,7 +645,7 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
               </tr>
             </thead>
             <tbody>
-              {snapshots.map((snapshot) => (
+              {filteredSnapshots.map((snapshot) => (
                 <tr
                   key={snapshot.daily_delivery_input_snapshot_id}
                   className={`interactive-row${
@@ -600,7 +678,7 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
             </tbody>
           </table>
         ) : (
-          <p className="empty-state">일별 snapshot이 없습니다.</p>
+          <p className="empty-state">현재 문맥에 일별 snapshot이 없습니다.</p>
         )}
       </section>
 

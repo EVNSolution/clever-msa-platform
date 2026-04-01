@@ -1,5 +1,10 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 
+import {
+  listDailyDeliveryInputSnapshots,
+  listDeliveryRecords,
+} from '../api/deliveryRecords';
 import {
   createSettlementRun,
   deleteSettlementRun,
@@ -8,9 +13,10 @@ import {
   type SettlementRunPayload,
 } from '../api/settlements';
 import { FormModal } from '../components/FormModal';
+import { useSettlementFlow } from '../components/SettlementFlowContext';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { listCompanies, listFleets } from '../api/organization';
-import type { Company, Fleet, SettlementRun } from '../types';
+import type { Company, DailyDeliveryInputSnapshot, DeliveryRecord, Fleet, SettlementRun } from '../types';
 import { formatSettlementStatusLabel } from '../uiLabels';
 import { getCompanyName, getFleetName, getFleetOptions } from './settlementAdminHelpers';
 
@@ -27,7 +33,10 @@ const DEFAULT_RUN_FORM: SettlementRunPayload = {
 };
 
 export function SettlementRunsPage({ client }: SettlementRunsPageProps) {
+  const { selectedCompanyId, selectedFleetId } = useSettlementFlow();
   const [runs, setRuns] = useState<SettlementRun[]>([]);
+  const [records, setRecords] = useState<DeliveryRecord[]>([]);
+  const [snapshots, setSnapshots] = useState<DailyDeliveryInputSnapshot[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [fleets, setFleets] = useState<Fleet[]>([]);
   const [runForm, setRunForm] = useState<SettlementRunPayload>(DEFAULT_RUN_FORM);
@@ -37,13 +46,17 @@ export function SettlementRunsPage({ client }: SettlementRunsPageProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   async function loadAll() {
-    const [runResponse, companyResponse, fleetResponse] = await Promise.all([
+    const [runResponse, recordResponse, snapshotResponse, companyResponse, fleetResponse] = await Promise.all([
       listSettlementRuns(client),
+      listDeliveryRecords(client),
+      listDailyDeliveryInputSnapshots(client),
       listCompanies(client),
       listFleets(client),
     ]);
 
     setRuns(runResponse);
+    setRecords(recordResponse);
+    setSnapshots(snapshotResponse);
     setCompanies(companyResponse);
     setFleets(fleetResponse);
 
@@ -71,8 +84,10 @@ export function SettlementRunsPage({ client }: SettlementRunsPageProps) {
       setIsLoading(true);
       setErrorMessage(null);
       try {
-        const [runResponse, companyResponse, fleetResponse] = await Promise.all([
+        const [runResponse, recordResponse, snapshotResponse, companyResponse, fleetResponse] = await Promise.all([
           listSettlementRuns(client),
+          listDeliveryRecords(client),
+          listDailyDeliveryInputSnapshots(client),
           listCompanies(client),
           listFleets(client),
         ]);
@@ -80,6 +95,8 @@ export function SettlementRunsPage({ client }: SettlementRunsPageProps) {
           return;
         }
         setRuns(runResponse);
+        setRecords(recordResponse);
+        setSnapshots(snapshotResponse);
         setCompanies(companyResponse);
         setFleets(fleetResponse);
         setRunForm((current) => {
@@ -115,12 +132,16 @@ export function SettlementRunsPage({ client }: SettlementRunsPageProps) {
   }, [client]);
 
   function resetRunForm() {
-    const companyId = companies[0]?.company_id ?? '';
+    const companyId = selectedCompanyId || companies[0]?.company_id || '';
     setEditingRunId(null);
     setRunForm({
       ...DEFAULT_RUN_FORM,
       company_id: companyId,
-      fleet_id: getFleetOptions(fleets, companyId)[0]?.fleet_id ?? fleets[0]?.fleet_id ?? '',
+      fleet_id:
+        selectedFleetId ||
+        getFleetOptions(fleets, companyId)[0]?.fleet_id ||
+        fleets[0]?.fleet_id ||
+        '',
     });
   }
 
@@ -196,9 +217,85 @@ export function SettlementRunsPage({ client }: SettlementRunsPageProps) {
     selectRun(run);
   }
 
+  const filteredRuns = runs.filter((run) => {
+    if (selectedCompanyId && run.company_id !== selectedCompanyId) {
+      return false;
+    }
+    if (selectedFleetId && run.fleet_id !== selectedFleetId) {
+      return false;
+    }
+    return true;
+  });
+
+  const confirmedRecordCount = records.filter((record) => {
+    if (record.status !== 'confirmed') {
+      return false;
+    }
+    if (selectedCompanyId && record.company_id !== selectedCompanyId) {
+      return false;
+    }
+    if (selectedFleetId && record.fleet_id !== selectedFleetId) {
+      return false;
+    }
+    return true;
+  }).length;
+
+  const activeSnapshotCount = snapshots.filter((snapshot) => {
+    if (snapshot.status !== 'active') {
+      return false;
+    }
+    if (selectedCompanyId && snapshot.company_id !== selectedCompanyId) {
+      return false;
+    }
+    if (selectedFleetId && snapshot.fleet_id !== selectedFleetId) {
+      return false;
+    }
+    return true;
+  }).length;
+
   return (
     <div className="stack large-gap">
       {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
+
+      <section className="panel">
+        <div className="panel-header">
+          <p className="panel-kicker">실행 handoff</p>
+          <h2>실행 준비</h2>
+          <p className="empty-state">업로드와 검증이 끝난 입력만 정산 실행으로 넘깁니다.</p>
+        </div>
+        <div className="settlement-flow-shell">
+          <article className="shell-card">
+            <strong>유효한 입력</strong>
+            <span>현재 문맥에서 실행 가능한 입력 준비 상태입니다.</span>
+            <dl className="shell-metric-list">
+              <div>
+                <dt>확정 record</dt>
+                <dd>{confirmedRecordCount}</dd>
+              </div>
+              <div>
+                <dt>활성 snapshot</dt>
+                <dd>{activeSnapshotCount}</dd>
+              </div>
+              <div>
+                <dt>기존 run</dt>
+                <dd>{filteredRuns.length}</dd>
+              </div>
+            </dl>
+          </article>
+          <article className="shell-card">
+            <strong>실행 후 handoff</strong>
+            <span>run 생성 뒤에는 결과 페이지에서 기사별 항목과 지급 상태를 확인합니다.</span>
+            <div className="inline-actions">
+              <button className="button primary" onClick={openCreateRunModal} type="button">
+                정산 실행 생성
+              </button>
+              <Link className="button ghost" to="/settlements/results">
+                정산 결과로 이동
+              </Link>
+            </div>
+          </article>
+        </div>
+      </section>
 
       <section className="panel">
         <div className="panel-header panel-header-inline">
@@ -212,7 +309,7 @@ export function SettlementRunsPage({ client }: SettlementRunsPageProps) {
         </div>
         {isLoading ? (
           <p className="empty-state">정산 실행을 불러오는 중입니다...</p>
-        ) : runs.length ? (
+        ) : filteredRuns.length ? (
           <table className="table compact">
             <thead>
               <tr>
@@ -224,7 +321,7 @@ export function SettlementRunsPage({ client }: SettlementRunsPageProps) {
               </tr>
             </thead>
             <tbody>
-              {runs.map((run) => (
+              {filteredRuns.map((run) => (
                 <tr
                   key={run.settlement_run_id}
                   className={`interactive-row${editingRunId === run.settlement_run_id ? ' is-selected' : ''}`}
@@ -255,7 +352,7 @@ export function SettlementRunsPage({ client }: SettlementRunsPageProps) {
             </tbody>
           </table>
         ) : (
-          <p className="empty-state">정산 실행이 없습니다.</p>
+          <p className="empty-state">현재 문맥에 정산 실행이 없습니다.</p>
         )}
       </section>
 
