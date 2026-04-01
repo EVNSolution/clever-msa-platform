@@ -105,6 +105,7 @@ class DriverVehicleAssignmentApiTests(TestCase):
 
         self.assertEqual(response.status_code, 201)
         self.assertIn("driver_vehicle_assignment_id", response.data)
+        self.assertIn("route_no", response.data)
         self.assertEqual(response.data["operator_company_id"], payload["operator_company_id"])
 
     def test_driver_id_is_required(self):
@@ -186,6 +187,28 @@ class DriverVehicleAssignmentApiTests(TestCase):
         self.assertEqual(detail_response.status_code, 200)
         self.assertEqual(detail_response.data["assignment_status"], "unassigned")
         self.assertEqual(detail_response.data["unassigned_at"], "2026-03-21T00:00:00Z")
+
+    def test_assignment_detail_accepts_route_no_lookup(self):
+        self._authenticate(self.admin_token)
+        payload = self._payload()
+        with patch(
+            "assignments.services.source_clients.SourceClients.get_vehicle",
+            return_value=self._vehicle_response(payload),
+        ), patch(
+            "assignments.services.source_clients.SourceClients.list_vehicle_operator_accesses",
+            return_value=self._operator_accesses_response(payload),
+        ), patch(
+            "assignments.services.source_clients.SourceClients.get_driver",
+            return_value=self._driver_response(payload),
+        ):
+            create_response = self.client.post("/assignments/", payload, format="json")
+        self.assertEqual(create_response.status_code, 201)
+        assignment_ref = create_response.data["route_no"]
+
+        detail_response = self.client.get(f"/assignments/{assignment_ref}/")
+
+        self.assertEqual(detail_response.status_code, 200)
+        self.assertEqual(detail_response.data["route_no"], assignment_ref)
 
     def test_patch_to_unassigned_sets_unassigned_at_when_omitted(self):
         self._authenticate(self.admin_token)

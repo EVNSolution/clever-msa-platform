@@ -18,7 +18,7 @@
 
 1. `accounts`, `companies`, `fleets`, `drivers`, `vehicles`, `settlements`는 현재 계약 기준으로 정리됐다.
 2. `terminals`는 browser target에서 제거됐다.
-3. 남은 핵심 위반 화면은 `vehicle-assignments`다.
+3. `vehicle-assignments`까지 현재 계약 기준으로 정리됐다.
 
 ## Operator Audit
 
@@ -137,12 +137,17 @@
 
 ### 7. `vehicle-assignments`
 
-- 상태: 위반
+- 상태: 적합
 - 현재 라우트
   - `/vehicle-assignments`
-- 위반 점
-  - 목록과 생성이 같은 화면에 있다.
-  - 상세와 수정 라우트가 없다.
+  - `/vehicle-assignments/new`
+  - `/vehicle-assignments/:assignmentRef`
+  - `/vehicle-assignments/:assignmentRef/edit`
+- 근거
+  - 목록, 생성, 상세, 수정이 분리돼 있다.
+  - 목록은 row click으로만 상세에 진입한다.
+  - 브라우저 URL이 `route_no`를 따른다.
+  - `배정 해제`는 상세 화면에서만 연다.
 
 ### 8. `settlements`
 
@@ -159,7 +164,7 @@
 
 ## 우선 정리 순서
 
-1. `admin vehicle-assignments`
+1. 없음
 
 ## 순서 기준
 

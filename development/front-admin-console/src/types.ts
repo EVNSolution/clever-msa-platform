@@ -132,6 +132,7 @@ export type TerminalInstallation = {
 
 export type DriverVehicleAssignment = {
   driver_vehicle_assignment_id: string;
+  route_no?: number;
   driver_id: string;
   vehicle_id: string;
   operator_company_id: string;

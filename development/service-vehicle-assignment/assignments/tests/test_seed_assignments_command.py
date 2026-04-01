@@ -38,6 +38,7 @@ class SeedAssignmentsCommandTests(TestCase):
             "30000000-0000-0000-0000-000000000001",
         )
         self.assertEqual(assignment.assignment_status, "assigned")
+        self.assertEqual(assignment.route_no, 1)
         self.assertEqual(
             assignment.assigned_at,
             datetime(2026, 1, 2, tzinfo=timezone.utc),

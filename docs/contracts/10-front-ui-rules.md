@@ -371,6 +371,8 @@
 - `admin companies`
 - `admin fleets`
 - `admin drivers`
+- `admin vehicles`
+- `admin vehicle-assignments`
 - `admin settlements`
 - `operator drivers`
 - `operator driver detail`
@@ -379,9 +381,7 @@
 
 ### 2. 아직 정리 중인 화면
 
-- `admin vehicles`의 vehicle-centered terminal/live 재구성
-- `admin terminals` 제거
-- `admin vehicle-assignments`
+- 없음
 
 ## 금지 규칙
 

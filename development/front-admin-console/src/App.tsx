@@ -23,6 +23,8 @@ import { SettlementInputsPage } from './pages/SettlementInputsPage';
 import { SettlementOverviewPage } from './pages/SettlementOverviewPage';
 import { SettlementResultsPage } from './pages/SettlementResultsPage';
 import { SettlementRunsPage } from './pages/SettlementRunsPage';
+import { VehicleAssignmentDetailPage } from './pages/VehicleAssignmentDetailPage';
+import { VehicleAssignmentFormPage } from './pages/VehicleAssignmentFormPage';
 import { VehicleAssignmentsPage } from './pages/VehicleAssignmentsPage';
 import { VehicleDetailPage } from './pages/VehicleDetailPage';
 import { VehicleFormPage } from './pages/VehicleFormPage';
@@ -125,6 +127,18 @@ export default function App() {
             <Route path="/vehicles/:vehicleRef/edit" element={<VehicleFormPage client={client} mode="edit" />} />
             <Route path="/vehicles/:vehicleRef/accesses/new" element={<VehicleOperatorAccessFormPage client={client} />} />
             <Route path="/vehicle-assignments" element={<VehicleAssignmentsPage client={client} />} />
+            <Route
+              path="/vehicle-assignments/new"
+              element={<VehicleAssignmentFormPage client={client} mode="create" />}
+            />
+            <Route
+              path="/vehicle-assignments/:assignmentRef"
+              element={<VehicleAssignmentDetailPage client={client} />}
+            />
+            <Route
+              path="/vehicle-assignments/:assignmentRef/edit"
+              element={<VehicleAssignmentFormPage client={client} mode="edit" />}
+            />
             <Route path="/settlements" element={<SettlementSectionLayout />}>
               <Route index element={<Navigate replace to="/settlements/overview" />} />
               <Route path="overview" element={<SettlementOverviewPage client={client} />} />

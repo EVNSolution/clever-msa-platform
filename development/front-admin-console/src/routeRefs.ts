@@ -1,4 +1,4 @@
-import type { AccountSummary, Company, DriverProfile, Fleet } from './types';
+import type { AccountSummary, Company, DriverProfile, DriverVehicleAssignment, Fleet } from './types';
 
 function requireRouteNo(routeNo: number | undefined, resourceLabel: string): string {
   if (routeNo == null) {
@@ -25,4 +25,10 @@ export function getDriverRouteRef(driver: Pick<DriverProfile, 'route_no'>): stri
 
 export function getVehicleRouteRef(vehicle: { route_no?: number }): string {
   return requireRouteNo(vehicle.route_no, 'vehicle');
+}
+
+export function getAssignmentRouteRef(
+  assignment: Pick<DriverVehicleAssignment, 'route_no'>,
+): string {
+  return requireRouteNo(assignment.route_no, 'assignment');
 }

@@ -35,6 +35,7 @@ class DriverVehicleAssignmentSerializer(serializers.ModelSerializer):
         model = DriverVehicleAssignment
         fields = (
             "driver_vehicle_assignment_id",
+            "route_no",
             "driver_id",
             "vehicle_id",
             "operator_company_id",
@@ -44,6 +45,7 @@ class DriverVehicleAssignmentSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         )
+        read_only_fields = ("route_no",)
 
     def validate(self, attrs):
         request = self.context.get("request")

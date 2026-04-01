@@ -1,6 +1,7 @@
 import uuid
 
-from django.db import models
+from django.db import IntegrityError, models, transaction
+from django.db.models import Max
 from django.db.models import Q
 
 
@@ -14,6 +15,7 @@ class DriverVehicleAssignment(models.Model):
         default=uuid.uuid4,
         editable=False,
     )
+    route_no = models.PositiveIntegerField(unique=True, null=True, editable=False)
     driver_id = models.UUIDField()
     vehicle_id = models.UUIDField()
     operator_company_id = models.UUIDField()
@@ -35,3 +37,20 @@ class DriverVehicleAssignment(models.Model):
                 name="unique_assigned_vehicle_id",
             )
         ]
+
+    def save(self, *args, **kwargs):
+        if self.route_no is not None:
+            return super().save(*args, **kwargs)
+
+        for _ in range(5):
+            self.route_no = (
+                type(self).objects.aggregate(max_route_no=Max("route_no"))["max_route_no"]
+                or 0
+            ) + 1
+            try:
+                with transaction.atomic():
+                    return super().save(*args, **kwargs)
+            except IntegrityError:
+                self.route_no = None
+
+        raise IntegrityError("Failed to allocate assignment route_no.")

@@ -16,7 +16,7 @@
 - `front-admin-console`
 - `service-vehicle-registry`
 - `service-vehicle-operations-view`
-- `service-driver-vehicle-assignment`
+- `service-vehicle-assignment`
 - `service-terminal-registry`
 - `service-telemetry-hub`
 
@@ -125,21 +125,37 @@
 1. `/vehicle-assignments`
    - 배정 목록만 보여준다.
    - row click으로 상세에 이동한다.
+   - 생성 버튼만 둔다.
+   - 인라인 생성 폼을 같이 두지 않는다.
 
 2. `/vehicle-assignments/new`
    - 배정 생성 1열 폼만 둔다.
+   - 저장과 취소만 둔다.
 
 3. `/vehicle-assignments/:assignmentRef`
    - 배정 읽기 전용 상세 화면이다.
    - 수정 버튼과 `배정 해제` 진입은 이 화면에만 둔다.
+   - driver, vehicle, operator company, assignment 상태, assigned_at, unassigned_at을 보여준다.
+   - vehicle detail과 driver detail로 이동하는 링크를 둘 수 있다.
 
 4. `/vehicle-assignments/:assignmentRef/edit`
    - 배정 수정 1열 폼만 둔다.
+   - 목록이나 다른 입력 폼을 같이 두지 않는다.
+
+### 4.4 상세와 소유권 경계
+
+1. `vehicle detail`은 현재 배정 요약을 보여줄 수 있다.
+2. 하지만 배정 write action은 `vehicle-assignment detail`에서만 연다.
+3. `vehicle detail`은 `assignment detail`로 가는 링크만 가진다.
+4. `driver detail`도 assignment write owner가 아니다.
+5. assignment의 생성, 수정, 해제는 `vehicle-assignment` 화면이 소유한다.
 
 ## 5. route_no 규칙
 
 1. `vehicleRef`와 `assignmentRef`는 `route_no`를 사용한다.
 2. raw UUID는 브라우저 URL에 쓰지 않는다.
+3. `service-vehicle-assignment`는 browser 라우트를 위해 `route_no`를 제공해야 한다.
+4. assignment detail API는 `route_no`와 기존 UUID lookup을 둘 다 받아야 한다.
 
 ## 6. 현재 화면에서 제거할 것
 
@@ -153,7 +169,7 @@
 1. vehicle detail이 terminal/live 정보를 함께 보여주게 만든다.
 2. `/terminals` page를 browser target에서 제거한다.
 3. vehicle list를 `C/R/D entry`, vehicle detail을 `U entry`로 고정한다.
-4. vehicle-assignment는 목록 / 생성 / 상세 / 수정 구조만 먼저 맞춘다.
+4. vehicle-assignment는 `route_no`를 추가한 뒤 목록 / 생성 / 상세 / 수정 구조로 맞춘다.
 
 ## 비스코프
 

@@ -5,7 +5,7 @@ from assignments.views import AssignmentDetailView, AssignmentListCreateView, He
 urlpatterns = [
     path("assignments/", AssignmentListCreateView.as_view(), name="assignment-list"),
     path(
-        "assignments/<uuid:driver_vehicle_assignment_id>/",
+        "assignments/<str:assignment_ref>/",
         AssignmentDetailView.as_view(),
         name="assignment-detail",
     ),
