@@ -90,6 +90,8 @@
 
 - `identity`와 각 account의 연결 이력
 - 사람과 제품 계정의 연결 관계를 기록한다
+- 정본 연결이 아니라 감사/이력용 테이블이다
+- 현재 account의 소유 identity는 각 account의 `identity_id`로 직접 판단한다
 
 ### 8. driver_account_link
 
@@ -104,6 +106,11 @@
 - `archived`
 
 `identity`가 `archived` 되면 연결된 `manager_account`, `driver_account`도 함께 `archived` 된다.
+
+### system_admin_account
+
+- `active`
+- `archived`
 
 ### manager_account / driver_account
 
@@ -152,7 +159,7 @@
 
 ### company_super_admin
 
-- 자기 회사의 `identity`, `manager_account`, `driver_account`, 각 link를 관리할 수 있다
+- 현재 자기 회사의 account 또는 request를 가진 `identity`, `manager_account`, `driver_account`, 각 link를 관리할 수 있다
 - 자기 회사 request를 승인할 수 있다
 
 ### vehicle_manager
