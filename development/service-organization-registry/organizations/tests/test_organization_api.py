@@ -100,6 +100,21 @@ class OrganizationApiTests(TestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
 
+    def test_public_company_list_is_available_without_authentication(self):
+        self._authenticate(self.admin_token)
+        self.client.post("/companies/", {"name": "Alpha Company"}, format="json")
+        self.client.post("/companies/", {"name": "Beta Company"}, format="json")
+        self.client.credentials()
+
+        response = self.client.get("/companies/public/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([item["name"] for item in response.data], ["Alpha Company", "Beta Company"])
+        self.assertEqual(
+            set(response.data[0].keys()),
+            {"company_id", "route_no", "name"},
+        )
+
     def test_missing_resource_returns_404_shape(self):
         self._authenticate(self.admin_token)
 

@@ -3,6 +3,7 @@ import uuid
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -45,6 +46,18 @@ class CompanyViewSet(PublicRefLookupMixin, viewsets.ModelViewSet):
     lookup_url_kwarg = "company_ref"
     raw_id_field = "company_id"
     permission_classes = [AuthenticatedReadAdminWrite]
+
+    @action(
+        detail=False,
+        methods=["get"],
+        authentication_classes=[],
+        permission_classes=[permissions.AllowAny],
+        url_path="public",
+    )
+    def public(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class FleetViewSet(PublicRefLookupMixin, viewsets.ModelViewSet):

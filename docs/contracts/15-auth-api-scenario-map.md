@@ -53,6 +53,7 @@
 
 | 그룹 | Endpoint | 인증 조건 | 핵심 규칙 |
 | --- | --- | --- | --- |
+| Public lookup | `GET /api/org/companies/public/` | 없음 | 웹 public signup/recovery entry에서 회사 검색용으로 active company 목록을 조회한다 |
 | Public intake | `POST /identity-signup-requests/` | 없음 | email/password signup 또는 social provider access token signup으로 identity, credential/login method, consent, signup request를 한 번에 만든다 |
 | Public session | `POST /identity-login/` | 없음 | email/password 또는 social provider access token으로 access token + refresh cookie를 발급한다 |
 | Public session | `POST /identity-refresh/` | refresh cookie | registry에 등록된 refresh token만 회전 가능하다 |
@@ -176,6 +177,14 @@ consent recovery 세션은 `principal_kind=identity_consent_recovery_session`으
 4. `401`이면 `/api/auth/identity-refresh/`를 cookie 기반으로 호출
 5. refresh 성공 시 원 요청 1회 재시도
 6. refresh 실패 시 세션을 비우고 다시 로그인
+
+추가로 public entry는 아래처럼 고정한다.
+
+1. 로그인 화면은 `로그인`, `회원가입 요청`, `identity 복구` 세 진입을 한 화면에서 가진다.
+2. `회원가입 요청`, `identity 복구`는 비로그인 상태에서도 진입 가능하다.
+3. 회원가입 요청 시 회사 선택은 `GET /api/org/companies/public/` 결과를 사용한다.
+4. 로그인은 성공했지만 `active_account`가 아직 없는 경우, 웹은 접근 거부 대신 self-service 전용 `승인 대기` 화면으로 보낸다.
+5. `consent_recovery` 세션이면 일반 화면이 아니라 동의 복구 화면만 허용한다.
 
 ## Signup / Request Workflow 요약
 

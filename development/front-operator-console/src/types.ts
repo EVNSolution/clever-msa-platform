@@ -77,6 +77,7 @@ export type IdentitySignupRequestList = {
 
 export type Company = {
   company_id: string;
+  route_no?: number;
   name: string;
 };
 

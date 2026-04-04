@@ -15,7 +15,7 @@ def generate_fleet_public_ref() -> str:
 
 class Company(models.Model):
     company_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    route_no = models.PositiveIntegerField(unique=True, null=True, editable=False)
+    route_no = models.PositiveIntegerField(unique=True, editable=False)
     public_ref = models.CharField(
         max_length=20,
         unique=True,
@@ -44,7 +44,7 @@ class Company(models.Model):
 
 class Fleet(models.Model):
     fleet_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    route_no = models.PositiveIntegerField(unique=True, null=True, editable=False)
+    route_no = models.PositiveIntegerField(unique=True, editable=False)
     public_ref = models.CharField(
         max_length=20,
         unique=True,
