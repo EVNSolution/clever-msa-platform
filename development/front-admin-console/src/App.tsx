@@ -6,6 +6,7 @@ import { createHttpClient, DEFAULT_API_BASE_URL, getErrorMessage, type HttpClien
 import { Layout } from './components/Layout';
 import { RequireAdmin } from './components/RequireAdmin';
 import { SettlementSectionLayout } from './components/SettlementSectionLayout';
+import { AccountPage } from './pages/AccountPage';
 import { AccountsPage } from './pages/AccountsPage';
 import { CompaniesPage } from './pages/CompaniesPage';
 import { CompanyDetailPage } from './pages/CompanyDetailPage';
@@ -16,6 +17,7 @@ import { DriversPage } from './pages/DriversPage';
 import { FleetDetailPage } from './pages/FleetDetailPage';
 import { FleetFormPage } from './pages/FleetFormPage';
 import { LoginPage } from './pages/LoginPage';
+import { ConsentRecoveryPage } from './pages/ConsentRecoveryPage';
 import { SettlementCriteriaPage } from './pages/SettlementCriteriaPage';
 import { SettlementInputsPage } from './pages/SettlementInputsPage';
 import { SettlementOverviewPage } from './pages/SettlementOverviewPage';
@@ -97,12 +99,38 @@ export default function App() {
     return <LoginPage errorMessage={authError} isSubmitting={isSubmitting} onLogin={handleLogin} />;
   }
 
+  if (session.sessionKind === 'consent_recovery') {
+    return (
+      <ConsentRecoveryPage
+        client={client}
+        onLogout={handleLogout}
+        onRecovered={(nextSession) => {
+          sessionRef.current = nextSession;
+          setSession(nextSession);
+        }}
+      />
+    );
+  }
+
   return (
     <BrowserRouter basename="/admin" future={ROUTER_FUTURE}>
       <RequireAdmin session={session} onLogout={handleLogout}>
         <Routes>
           <Route element={<Layout session={session} onLogout={handleLogout} />}>
             <Route path="/" element={<Navigate replace to="/accounts" />} />
+            <Route
+              path="/account"
+              element={
+                <AccountPage
+                  client={client}
+                  onSessionChange={(nextSession) => {
+                    sessionRef.current = nextSession;
+                    setSession(nextSession);
+                  }}
+                  session={session}
+                />
+              }
+            />
             <Route path="/accounts" element={<AccountsPage client={client} />} />
             <Route path="/organization" element={<Navigate replace to="/companies" />} />
             <Route path="/companies" element={<CompaniesPage client={client} />} />

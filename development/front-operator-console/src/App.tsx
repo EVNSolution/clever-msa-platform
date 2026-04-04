@@ -5,6 +5,8 @@ import { login, logout } from './api/auth';
 import { createHttpClient, DEFAULT_API_BASE_URL, getErrorMessage, type HttpClient, type SessionPayload } from './api/http';
 import { Layout } from './components/Layout';
 import { DashboardPage } from './pages/DashboardPage';
+import { AccountPage } from './pages/AccountPage';
+import { ConsentRecoveryPage } from './pages/ConsentRecoveryPage';
 import { Driver360Page } from './pages/Driver360Page';
 import { DriverFormPage } from './pages/DriverFormPage';
 import { DriversPage } from './pages/DriversPage';
@@ -81,10 +83,36 @@ export default function App() {
     return <LoginPage errorMessage={authError} isSubmitting={isSubmitting} onLogin={handleLogin} />;
   }
 
+  if (session.sessionKind === 'consent_recovery') {
+    return (
+      <ConsentRecoveryPage
+        client={client}
+        onLogout={handleLogout}
+        onRecovered={(nextSession) => {
+          sessionRef.current = nextSession;
+          setSession(nextSession);
+        }}
+      />
+    );
+  }
+
   return (
     <BrowserRouter future={ROUTER_FUTURE}>
       <Routes>
         <Route element={<Layout session={session} onLogout={handleLogout} />}>
+          <Route
+            path="/account"
+            element={
+              <AccountPage
+                client={client}
+                onSessionChange={(nextSession) => {
+                  sessionRef.current = nextSession;
+                  setSession(nextSession);
+                }}
+                session={session}
+              />
+            }
+          />
           <Route path="/" element={<DashboardPage session={session} client={client} />} />
           <Route path="/drivers" element={<DriversPage client={client} />} />
           <Route path="/drivers/new" element={<DriverFormPage client={client} mode="create" />} />

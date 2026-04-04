@@ -21,6 +21,60 @@ export type IdentitySession = {
   availableAccountTypes: string[];
 };
 
+export type IdentityProfile = {
+  identity_id: string;
+  name: string;
+  birth_date: string;
+  status: string;
+};
+
+export type IdentityConsentCurrent = {
+  privacy_policy_version: string;
+  privacy_policy_consented: boolean;
+  privacy_policy_consented_at: string | null;
+  location_policy_version: string;
+  location_policy_consented: boolean;
+  location_policy_consented_at: string | null;
+};
+
+export type IdentityLoginMethod = {
+  identity_login_method_id: string;
+  method_type: 'email' | 'phone' | 'social';
+  verified_at: string | null;
+  value: string | { provider_type: string; provider_subject: string };
+};
+
+export type IdentityLoginMethodList = {
+  methods: IdentityLoginMethod[];
+};
+
+export type IdentitySignupRequestSummary = {
+  identity_signup_request_id: string;
+  identity: {
+    identity_id: string;
+    name: string;
+    birth_date: string;
+    status: string;
+  };
+  request_type: string;
+  request_display_name: string;
+  status: string;
+  status_message: string;
+  company_id: string;
+  requested_at: string;
+};
+
+export type IdentitySignupRequestList = {
+  identity: {
+    identity_id: string;
+    name: string;
+    birth_date: string;
+    status: string;
+  };
+  requests: IdentitySignupRequestSummary[];
+  inquiry_message: string;
+};
+
 export type Company = {
   company_id: string;
   name: string;

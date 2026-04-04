@@ -17,6 +17,9 @@ export function Layout({ session, onLogout }: LayoutProps) {
           <h1 className="brand-title">운영 콘솔</h1>
         </div>
         <nav className="nav-links">
+          <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/account">
+            내 계정
+          </NavLink>
           <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/">
             대시보드
           </NavLink>
