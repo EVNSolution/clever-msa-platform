@@ -759,6 +759,50 @@ class IdentityFinalCutoverApiTests(TestCase):
         self.assertEqual(refresh_response.data["active_account"]["account_type"], "manager")
         self.assertIn("access_token", refresh_response.data)
 
+    def test_identity_me_returns_current_identity_session_shape(self):
+        identity, manager_account = self._provision_vehicle_manager(
+            email="me-final@example.com",
+            password="me-final-pass-123",
+        )
+        login_response = self.client.post(
+            "/identity-login/",
+            {"email": "me-final@example.com", "password": "me-final-pass-123"},
+            format="json",
+        )
+        self.assertEqual(login_response.status_code, 200)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {login_response.data['access_token']}")
+
+        me_response = self.client.get("/identity-me/")
+
+        self.assertEqual(me_response.status_code, 200)
+        self.assertEqual(me_response.data["access_token"], "")
+        self.assertEqual(me_response.data["email"], "me-final@example.com")
+        self.assertEqual(me_response.data["identity"]["identity_id"], str(identity.identity_id))
+        self.assertEqual(me_response.data["active_account"]["account_type"], "manager")
+        self.assertEqual(me_response.data["active_account"]["account_id"], str(manager_account.manager_account_id))
+
+    def test_identity_logout_clears_refresh_cookie_and_invalidates_refresh_token(self):
+        self._provision_vehicle_manager(
+            email="logout-final@example.com",
+            password="logout-final-pass-123",
+        )
+        login_response = self.client.post(
+            "/identity-login/",
+            {"email": "logout-final@example.com", "password": "logout-final-pass-123"},
+            format="json",
+        )
+        self.assertEqual(login_response.status_code, 200)
+        refresh_token = login_response.cookies["refresh_token"].value
+        self.client.cookies["refresh_token"] = refresh_token
+
+        logout_response = self.client.post("/identity-logout/")
+
+        self.assertEqual(logout_response.status_code, 204)
+        self.assertFalse(RefreshRegistry().is_registered(refresh_token))
+
+        refresh_response = self.client.post("/identity-refresh/")
+        self.assertEqual(refresh_response.status_code, 403)
+
     def test_legacy_auth_surface_is_removed(self):
         response_login = self.client.post(
             "/login/",
