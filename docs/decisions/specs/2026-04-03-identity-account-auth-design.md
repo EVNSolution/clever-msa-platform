@@ -72,6 +72,21 @@
 - 기존 `system_admin_account`가 직접 부여한다
 - 웹과 앱 둘 다 사용한다
 
+### 4-1. system_admin bootstrap
+
+- 최초 `system_admin_account` 1개는 일반 가입 흐름이 아니라 bootstrap으로 만든다
+- 로컬/인스턴스/docker 환경에서는 runner로 생성할 수 있다
+- 실제 배포에서는 최초 1회 수동 `direct create`로 만든다
+- 최초 생성 입력은 `email + password`만 받는다
+- 입력값은 `env/secret`로만 주입하고, 생성 후 원본 secret은 즉시 폐기한다
+- 이미 `system_admin_account`가 하나라도 있으면 bootstrap runner는 생성 없이 종료한다
+- bootstrap으로 만든 최초 `identity`는 아래 기본값을 사용한다
+  - `name = System Admin`
+  - `birth_date = 1970-01-01`
+- bootstrap 시 `privacy_policy`, `location_policy` 동의는 자동 수집 처리한다
+- 최초 bootstrap `identity`는 일반 `name + birth_date` self-recovery 예외이며, 기존 `system_admin_account`만 복구할 수 있다
+- 최초 1명 이후의 `system_admin_account` 추가 생성은 기존 `system_admin_account`의 `direct create`만 허용한다
+
 ### 5. manager_account
 
 - `identity`에 속한 회사 소속 관리자 계정
@@ -198,10 +213,14 @@
 
 - 현재 자기 회사의 `active identity`, `active manager_account`, `active driver_account`, `active request`, 각 link를 관리할 수 있다
 - 자기 회사 request를 승인할 수 있다
-- 자기 회사 안에서는 거의 전부 관리한다
+- 자기 자신과 하위 레벨만 관리할 수 있다
+- 같은 회사의 다른 `company_super_admin`는 생성/변경/아카이브할 수 없다
+- 자기 회사의 `vehicle_manager`, `settlement_manager`는 생성/변경/아카이브할 수 있다
+- 마지막 남은 `company_super_admin`라도 자기 자신을 아카이브할 수 있다
 
 ### vehicle_manager
 
+- 자기 자신과 자기 설정을 관리할 수 있다
 - 자기 회사의 차량, 차량 배정, 단말기 정보를 수정할 수 있다
 - 조직 정본은 조회만 가능하다
 - 배송원 정본은 조회만 가능하다
@@ -209,10 +228,24 @@
 
 ### settlement_manager
 
+- 자기 자신과 자기 설정을 관리할 수 있다
 - 자기 회사의 정산, 정산 규칙을 수정할 수 있다
 - 조직 정본은 조회만 가능하다
 - 배송원 정본은 생성/조회/수정할 수 있다
 - `driver_account_link` 연결/해제는 가능하다
+
+## 회사 운영 및 관리자 계층 규칙
+
+1. `company`, `fleet`는 관리자 없이 먼저 존재할 수 있다.
+2. `active company`면 `company_super_admin`가 없어도 가입 검색 결과에 노출한다.
+3. 최초 회사 설정과 최초 `company_super_admin` 지정은 `system_admin_account`가 한다.
+4. `company_super_admin`가 0명인 회사도 유지할 수 있다.
+5. `company_super_admin`가 0명인 회사를 다시 여는 것도 `system_admin_account`가 한다.
+6. 권한 관리는 `자기 자신 + 하위 레벨` 원칙으로 통일한다.
+7. `system_admin_account`는 모든 레벨을 관리할 수 있다.
+8. `company_super_admin`는 자기 자신과 하위 `vehicle_manager`, `settlement_manager`만 관리할 수 있다.
+9. `vehicle_manager`, `settlement_manager`는 자기 자신과 자기 도메인 컨텐츠만 관리할 수 있다.
+10. `driver`는 최하위이며, 자기 자신을 제외한 상위 관리자들이 `driver_account_link`를 관리할 수 있다.
 
 ## 가입 신청 규칙
 
@@ -252,9 +285,11 @@
 6. `manager_account_create` 승인 시 실제 역할은 `awaiting_setup` 단계에서 정한다.
 7. `driver_account_create` 승인 시 `driver_account`만 생성한다.
 8. `driver` 연결은 승인 후 별도 단계다.
-9. request는 사용자가 직접 취소하지 않는다.
-10. 반려된 request는 같은 종류로 다시 신청할 수 있다.
-11. 승인/반려된 request는 이력으로 남긴다.
+9. request는 수정하지 않는다.
+10. 사용자는 승인 대기창에서 자기 `active request`를 취소할 수 있다.
+11. 사용자 취소와 관리자 반려는 모두 `rejected`로 기록하고, 차이는 `reject_reason`으로만 남긴다.
+12. 반려된 request는 같은 종류로 다시 신청할 수 있다.
+13. 승인/반려된 request는 이력으로 남긴다.
 
 ## 승인 대기 규칙
 
@@ -365,6 +400,7 @@
    - 새 `signup_request` 생성
 9. 기존 동의 이력은 남기고, 복구 시 새 동의 이력을 추가한다.
 10. 기존 `signup_request` 이력은 조회용으로 남긴다.
+11. 다만 최초 bootstrap으로 생성된 `system_admin identity`는 예외이며, 일반 self-recovery를 허용하지 않는다.
 
 ## archived 조회 규칙
 
@@ -517,6 +553,9 @@
 - `changed_at`
 
 ## 제외 범위
+
+- 상세 action log / audit schema
+- debug context / impersonation
 
 이번 문서에서 아래는 고정하지 않는다.
 
