@@ -141,11 +141,9 @@ phase 1부터 `Account`는 사람/권한 정본이 아니다.
 현재 웹 콘솔 구조가 아직 `admin / user` 2단계만 알기 때문에 phase 1은 아래처럼 축약한다.
 
 1. `system_admin_account` -> `Account.role = admin`
-2. `manager_account.role_type = company_super_admin` -> `Account.role = admin`
-3. `manager_account.role_type = vehicle_manager` -> `Account.role = user`
-4. `manager_account.role_type = settlement_manager` -> `Account.role = user`
+2. 모든 active `manager_account` -> `Account.role = admin`
 
-이 매핑은 transition 전용이다. 최종 정본 역할은 여전히 `system_admin / company_super_admin / vehicle_manager / settlement_manager`다.
+이 매핑은 transition 전용이다. 최종 정본 역할은 여전히 `system_admin / company_super_admin / vehicle_manager / settlement_manager`다. `vehicle_manager`, `settlement_manager`를 legacy `user`로 내리면 현재 웹 admin console 접근이 막히므로, phase 1 projection에서는 manager 계열을 모두 `admin`으로 본다.
 
 ### projection 식별자
 

@@ -8,6 +8,7 @@ from accounts.models import (
     IdentitySignupRequest,
     ManagerAccount,
 )
+from accounts.services.legacy_account_projection_service import LegacyAccountProjectionService
 
 
 class SignupRequestService:
@@ -207,6 +208,7 @@ class SignupRequestService:
                     "reviewed_by_manager_account",
                 ]
             )
+            LegacyAccountProjectionService().sync_identity(request.identity)
             return request
 
     def _stamp_reviewer(self, principal, request: IdentitySignupRequest) -> None:

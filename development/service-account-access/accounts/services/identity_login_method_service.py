@@ -8,6 +8,7 @@ from accounts.models import (
     PhoneCredential,
     SocialCredential,
 )
+from accounts.services.legacy_account_projection_service import LegacyAccountProjectionService
 from accounts.services.identity_lifecycle_service import IdentityLifecycleService
 
 
@@ -39,6 +40,7 @@ class IdentityLoginMethodService:
                     provider_subject=provider_subject,
                     verified_at=now,
                 )
+        LegacyAccountProjectionService().sync_identity(identity)
         return login_method
 
     def delete_method(self, identity, login_method, *, confirm: bool, current_password: str | None):
@@ -53,6 +55,7 @@ class IdentityLoginMethodService:
             return "archived"
 
         login_method.delete()
+        LegacyAccountProjectionService().sync_identity(identity)
         return "deleted"
 
     def ensure_creatable(self, *, identity, method_type: str, email=None, phone_number=None, provider_type=None, provider_subject=None):

@@ -24,6 +24,13 @@ class Account(models.Model):
         default=generate_account_public_ref,
         editable=False,
     )
+    identity = models.OneToOneField(
+        "Identity",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="legacy_account",
+    )
     email = models.EmailField(unique=True)
     password_hash = models.CharField(max_length=128)
     role = models.CharField(max_length=16, choices=Role.choices, default=Role.USER)

@@ -33,6 +33,7 @@ from accounts.serializers import (
     IdentityConsentCurrentSerializer,
     IdentityConsentRecoverSerializer,
     IdentityConsentWithdrawSerializer,
+    LegacyRegisterGoneSerializer,
     IdentityLoginSerializer,
     IdentityLoginMethodCreateSerializer,
     IdentityLoginMethodDeleteSerializer,
@@ -59,6 +60,7 @@ from accounts.services.identity_auth_service import IdentityAuthService
 from accounts.services.identity_consent_service import IdentityConsentService
 from accounts.services.identity_login_method_service import IdentityLoginMethodService
 from accounts.services.identity_recovery_service import IdentityRecoveryService
+from accounts.services.legacy_account_projection_service import LegacyAccountProjectionService
 from accounts.services.jwt_service import (
     create_access_token,
     create_identity_access_token,
@@ -156,12 +158,16 @@ class RegisterView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
-    @extend_schema(request=RegisterSerializer, responses={201: AccountSerializer})
+    @extend_schema(request=RegisterSerializer, responses={410: LegacyRegisterGoneSerializer})
     def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        account = serializer.save()
-        return Response(AccountSerializer(account).data, status=status.HTTP_201_CREATED)
+        return Response(
+            {
+                "code": "gone",
+                "message": "Legacy register is disabled. Use identity signup requests.",
+                "details": {},
+            },
+            status=status.HTTP_410_GONE,
+        )
 
 
 class IdentitySignupRequestIntakeView(APIView):
@@ -457,6 +463,7 @@ class IdentityPasswordView(APIView):
             identity=request.user.identity,
             defaults={"password_hash": make_password(serializer.validated_data["new_password"])},
         )
+        LegacyAccountProjectionService().sync_identity(request.user.identity)
         return Response({"message": "Password updated."}, status=status.HTTP_200_OK)
 
 

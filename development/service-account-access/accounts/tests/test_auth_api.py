@@ -63,16 +63,16 @@ class AuthApiTests(TestCase):
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
         return account
 
-    def test_register_creates_user_account(self):
+    def test_register_is_blocked_in_transition_phase(self):
         response = self.client.post(
             "/register/",
             {"email": "new-user@example.com", "password": "test-pass-123"},
             format="json",
         )
 
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data["role"], Account.Role.USER)
-        self.assertTrue(Account.objects.filter(email="new-user@example.com").exists())
+        self.assertEqual(response.status_code, 410)
+        self.assertEqual(response.data["code"], "gone")
+        self.assertFalse(Account.objects.filter(email="new-user@example.com").exists())
 
     def test_login_returns_access_token_and_refresh_cookie(self):
         response = self._login(self.admin.email, self.admin_password)
@@ -973,6 +973,181 @@ class IdentityProfileApiTests(TestCase):
         self.assertTrue(
             identity.profile_history.filter(name="수정된 사용자", birth_date="1991-02-03").exists()
         )
+
+
+class LegacyAuthTransitionApiTests(TestCase):
+    def setUp(self) -> None:
+        self.client = APIClient()
+        self.registry = RefreshRegistry()
+        self.registry.client.flushdb()
+        self.company_id = "30000000-0000-0000-0000-000000000001"
+
+    def _create_identity_with_password(
+        self,
+        *,
+        name: str,
+        birth_date: str,
+        email: str,
+        password: str,
+    ) -> Identity:
+        identity = Identity.objects.create(name=name, birth_date=birth_date)
+        now = timezone.now()
+        login_method = IdentityLoginMethod.objects.create(
+            identity=identity,
+            method_type=IdentityLoginMethod.MethodType.EMAIL,
+            verified_at=now,
+        )
+        EmailCredential.objects.create(
+            identity_login_method=login_method,
+            email=email,
+            verified_at=now,
+        )
+        PasswordCredential.objects.create(
+            identity=identity,
+            password_hash=make_password(password),
+        )
+        IdentityConsentCurrent.objects.create(
+            identity=identity,
+            privacy_policy_version="v1.0",
+            privacy_policy_consented=True,
+            privacy_policy_consented_at=now,
+            location_policy_version="v1.0",
+            location_policy_consented=True,
+            location_policy_consented_at=now,
+        )
+        return identity
+
+    def _login_identity(self, email: str, password: str):
+        response = self.client.post(
+            "/identity-login/",
+            {"email": email, "password": password},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {response.data['access_token']}")
+        if "refresh_token" in response.cookies:
+            self.client.cookies["refresh_token"] = response.cookies["refresh_token"].value
+        return response
+
+    def _provision_vehicle_manager(
+        self,
+        *,
+        email: str,
+        password: str,
+    ) -> Identity:
+        approver = self._create_identity_with_password(
+            name="회사 총괄",
+            birth_date="1985-05-05",
+            email="company-admin@example.com",
+            password="company-pass-123",
+        )
+        ManagerAccount.objects.create(
+            identity=approver,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.COMPANY_SUPER_ADMIN,
+        )
+        request_identity = self._create_identity_with_password(
+            name="전환 대상",
+            birth_date="1990-01-02",
+            email=email,
+            password=password,
+        )
+        request = IdentitySignupRequest.objects.create(
+            identity=request_identity,
+            company_id=self.company_id,
+            request_type=IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE,
+            status=IdentitySignupRequest.Status.PENDING,
+        )
+        self._login_identity("company-admin@example.com", "company-pass-123")
+        approve_response = self.client.post(
+            f"/identity-signup-requests/{request.identity_signup_request_id}/approve/",
+            format="json",
+        )
+        self.assertEqual(approve_response.status_code, 200)
+        setup_response = self.client.post(
+            f"/identity-signup-requests/{request.identity_signup_request_id}/complete-setup/",
+            {"role_type": ManagerAccount.RoleType.VEHICLE_MANAGER},
+            format="json",
+        )
+        self.assertEqual(setup_response.status_code, 200)
+        self.client.credentials()
+        self.client.cookies.clear()
+        return request_identity
+
+    def test_manager_setup_creates_legacy_account_projection_and_legacy_login_works(self):
+        identity = self._provision_vehicle_manager(
+            email="transition-manager@example.com",
+            password="transition-pass-123",
+        )
+
+        legacy_account = Account.objects.get(identity=identity)
+        login_response = self.client.post(
+            "/login/",
+            {"email": "transition-manager@example.com", "password": "transition-pass-123"},
+            format="json",
+        )
+
+        self.assertTrue(legacy_account.is_active)
+        self.assertEqual(legacy_account.email, "transition-manager@example.com")
+        self.assertEqual(legacy_account.role, Account.Role.ADMIN)
+        self.assertEqual(login_response.status_code, 200)
+        self.assertEqual(login_response.data["account"]["account_id"], str(legacy_account.account_id))
+        self.assertEqual(login_response.data["account"]["role"], Account.Role.ADMIN)
+
+    def test_identity_password_change_updates_legacy_login_projection(self):
+        identity = self._provision_vehicle_manager(
+            email="projection-password@example.com",
+            password="before-projection-pass-123",
+        )
+        legacy_account = Account.objects.get(identity=identity)
+
+        self._login_identity("projection-password@example.com", "before-projection-pass-123")
+        password_response = self.client.put(
+            "/identity-password/",
+            {
+                "current_password": "before-projection-pass-123",
+                "new_password": "after-projection-pass-123",
+            },
+            format="json",
+        )
+
+        self.assertEqual(password_response.status_code, 200)
+        self.client.credentials()
+        self.client.cookies.clear()
+
+        old_login = self.client.post(
+            "/login/",
+            {"email": legacy_account.email, "password": "before-projection-pass-123"},
+            format="json",
+        )
+        new_login = self.client.post(
+            "/login/",
+            {"email": legacy_account.email, "password": "after-projection-pass-123"},
+            format="json",
+        )
+
+        self.assertEqual(old_login.status_code, 401)
+        self.assertEqual(new_login.status_code, 200)
+
+    def test_deleting_last_login_method_scrubs_and_deactivates_legacy_projection(self):
+        identity = self._provision_vehicle_manager(
+            email="scrub-projection@example.com",
+            password="scrub-pass-123",
+        )
+        legacy_account = Account.objects.get(identity=identity)
+        login_method = identity.login_methods.get()
+
+        self._login_identity("scrub-projection@example.com", "scrub-pass-123")
+        delete_response = self.client.post(
+            f"/identity-login-methods/{login_method.identity_login_method_id}/delete/",
+            {"confirm": True, "current_password": "scrub-pass-123"},
+            format="json",
+        )
+
+        self.assertEqual(delete_response.status_code, 204)
+        legacy_account.refresh_from_db()
+        self.assertFalse(legacy_account.is_active)
+        self.assertNotEqual(legacy_account.email, "scrub-projection@example.com")
 
 
 class IdentityConsentApiTests(TestCase):

@@ -174,6 +174,12 @@ class StatusMessageSerializer(serializers.Serializer):
     message = serializers.CharField()
 
 
+class LegacyRegisterGoneSerializer(serializers.Serializer):
+    code = serializers.CharField()
+    message = serializers.CharField()
+    details = serializers.DictField()
+
+
 class IdentityLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
