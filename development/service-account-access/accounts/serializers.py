@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from accounts.models import Account
+from accounts.models import Account, EmailCredential, IdentitySignupRequest
+from accounts.services.signup_intake_service import SignupIntakeService
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -13,6 +14,87 @@ class AccountSerializer(serializers.ModelSerializer):
 
 class HealthSerializer(serializers.Serializer):
     status = serializers.CharField()
+
+
+class IdentitySignupRequestSummarySerializer(serializers.ModelSerializer):
+    request_display_name = serializers.SerializerMethodField()
+    status_message = serializers.SerializerMethodField()
+
+    class Meta:
+        model = IdentitySignupRequest
+        fields = (
+            "identity_signup_request_id",
+            "request_type",
+            "request_display_name",
+            "status",
+            "status_message",
+            "company_id",
+            "requested_at",
+        )
+
+    def get_request_display_name(self, obj) -> str:
+        if obj.is_re_request:
+            return "회사 변경 요청"
+        if obj.request_type == IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE:
+            return "관리자 계정 신청"
+        return "배송원 계정 신청"
+
+    def get_status_message(self, obj) -> str:
+        if obj.status == IdentitySignupRequest.Status.PENDING:
+            return "검토 중입니다."
+        if obj.status == IdentitySignupRequest.Status.AWAITING_SETUP:
+            return "설정 중입니다."
+        if obj.status == IdentitySignupRequest.Status.APPROVED:
+            return "승인되어 사용할 수 있습니다."
+        return "반려되었습니다."
+
+
+class IdentitySignupIntakeResultSerializer(serializers.Serializer):
+    identity_id = serializers.UUIDField(source="identity.identity_id")
+    name = serializers.CharField(source="identity.name")
+    birth_date = serializers.DateField(source="identity.birth_date")
+    status = serializers.CharField(source="identity.status")
+    requests = IdentitySignupRequestSummarySerializer(many=True)
+
+
+class IdentitySignupIntakeSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=120)
+    birth_date = serializers.DateField()
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True, min_length=8)
+    company_id = serializers.UUIDField()
+    request_types = serializers.ListField(
+        child=serializers.ChoiceField(choices=IdentitySignupRequest.RequestType.choices),
+        allow_empty=False,
+    )
+    privacy_policy_version = serializers.CharField(max_length=32)
+    privacy_policy_consented = serializers.BooleanField()
+    location_policy_version = serializers.CharField(max_length=32)
+    location_policy_consented = serializers.BooleanField()
+
+    def validate_email(self, value):
+        if EmailCredential.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Email is already connected to another identity.")
+        return value
+
+    def validate_request_types(self, value):
+        if len(set(value)) != len(value):
+            raise serializers.ValidationError("Duplicate request types are not allowed.")
+        return value
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        errors = {}
+        if not attrs["privacy_policy_consented"]:
+            errors["privacy_policy_consented"] = ["Privacy policy consent is required."]
+        if not attrs["location_policy_consented"]:
+            errors["location_policy_consented"] = ["Location policy consent is required."]
+        if errors:
+            raise serializers.ValidationError(errors)
+        return attrs
+
+    def create(self, validated_data):
+        return SignupIntakeService().create_signup(validated_data)
 
 
 class AuthSessionSerializer(serializers.Serializer):

@@ -1,11 +1,20 @@
 from unittest.mock import patch
 
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import check_password, make_password
 from django.test import TestCase, override_settings
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIClient
 
-from accounts.models import Account
+from accounts.models import (
+    Account,
+    EmailCredential,
+    Identity,
+    IdentityConsentCurrent,
+    IdentityConsentHistory,
+    IdentityLoginMethod,
+    IdentitySignupRequest,
+    PasswordCredential,
+)
 from accounts.services.refresh_registry import RefreshRegistry
 
 
@@ -369,3 +378,121 @@ class AuthApiTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data["code"], "validation_error")
         self.assertIn("driver_id", response.data["details"])
+
+    def test_signup_request_intake_creates_identity_credentials_consents_and_request(self):
+        response = self.client.post(
+            "/identity-signup-requests/",
+            {
+                "name": "홍길동",
+                "birth_date": "1990-01-02",
+                "email": "hong@example.com",
+                "password": "signup-pass-123",
+                "company_id": "30000000-0000-0000-0000-000000000001",
+                "request_types": [
+                    IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE,
+                ],
+                "privacy_policy_version": "v1.0",
+                "privacy_policy_consented": True,
+                "location_policy_version": "v1.0",
+                "location_policy_consented": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["name"], "홍길동")
+        self.assertEqual(len(response.data["requests"]), 1)
+        self.assertEqual(
+            response.data["requests"][0]["request_type"],
+            IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE,
+        )
+        self.assertEqual(response.data["requests"][0]["status"], IdentitySignupRequest.Status.PENDING)
+
+        identity = Identity.objects.get(identity_id=response.data["identity_id"])
+        self.assertEqual(identity.birth_date.isoformat(), "1990-01-02")
+
+        login_method = IdentityLoginMethod.objects.get(identity=identity)
+        self.assertEqual(login_method.method_type, IdentityLoginMethod.MethodType.EMAIL)
+        self.assertIsNotNone(login_method.verified_at)
+
+        email_credential = EmailCredential.objects.get(identity_login_method=login_method)
+        self.assertEqual(email_credential.email, "hong@example.com")
+
+        password_credential = PasswordCredential.objects.get(identity=identity)
+        self.assertTrue(check_password("signup-pass-123", password_credential.password_hash))
+
+        consent_current = IdentityConsentCurrent.objects.get(identity=identity)
+        self.assertEqual(consent_current.privacy_policy_version, "v1.0")
+        self.assertEqual(consent_current.location_policy_version, "v1.0")
+
+        consent_types = set(
+            IdentityConsentHistory.objects.filter(identity=identity).values_list("consent_type", flat=True)
+        )
+        self.assertEqual(
+            consent_types,
+            {
+                IdentityConsentHistory.ConsentType.PRIVACY_POLICY,
+                IdentityConsentHistory.ConsentType.LOCATION_POLICY,
+            },
+        )
+
+    def test_signup_request_intake_supports_creating_both_manager_and_driver_requests(self):
+        response = self.client.post(
+            "/identity-signup-requests/",
+            {
+                "name": "김둘다",
+                "birth_date": "1992-03-04",
+                "email": "dual@example.com",
+                "password": "signup-pass-123",
+                "company_id": "30000000-0000-0000-0000-000000000001",
+                "request_types": [
+                    IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE,
+                    IdentitySignupRequest.RequestType.DRIVER_ACCOUNT_CREATE,
+                ],
+                "privacy_policy_version": "v1.0",
+                "privacy_policy_consented": True,
+                "location_policy_version": "v1.0",
+                "location_policy_consented": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(len(response.data["requests"]), 2)
+        self.assertEqual(
+            set(
+                IdentitySignupRequest.objects.filter(identity_id=response.data["identity_id"]).values_list(
+                    "request_type",
+                    flat=True,
+                )
+            ),
+            {
+                IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE,
+                IdentitySignupRequest.RequestType.DRIVER_ACCOUNT_CREATE,
+            },
+        )
+
+    def test_signup_request_intake_requires_both_mandatory_consents(self):
+        response = self.client.post(
+            "/identity-signup-requests/",
+            {
+                "name": "동의없음",
+                "birth_date": "1994-05-06",
+                "email": "blocked@example.com",
+                "password": "signup-pass-123",
+                "company_id": "30000000-0000-0000-0000-000000000001",
+                "request_types": [
+                    IdentitySignupRequest.RequestType.DRIVER_ACCOUNT_CREATE,
+                ],
+                "privacy_policy_version": "v1.0",
+                "privacy_policy_consented": True,
+                "location_policy_version": "v1.0",
+                "location_policy_consented": False,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data["code"], "validation_error")
+        self.assertIn("location_policy_consented", response.data["details"])
+        self.assertFalse(Identity.objects.filter(name="동의없음").exists())

@@ -6,6 +6,7 @@ from accounts.views import (
     AccountListCreateView,
     ChangePasswordView,
     HealthView,
+    IdentitySignupRequestIntakeView,
     LoginView,
     LogoutView,
     MeView,
@@ -14,6 +15,7 @@ from accounts.views import (
 )
 
 urlpatterns = [
+    path("identity-signup-requests/", IdentitySignupRequestIntakeView.as_view(), name="identity-signup-request-intake"),
     path("register/", RegisterView.as_view(), name="register"),
     path("login/", LoginView.as_view(), name="login"),
     path("refresh/", RefreshView.as_view(), name="refresh"),

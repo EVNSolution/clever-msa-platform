@@ -27,6 +27,8 @@ from accounts.serializers import (
     AccountWriteSerializer,
     ChangePasswordSerializer,
     HealthSerializer,
+    IdentitySignupIntakeResultSerializer,
+    IdentitySignupIntakeSerializer,
     LoginSerializer,
     RegisterSerializer,
     StatusMessageSerializer,
@@ -77,6 +79,24 @@ class RegisterView(APIView):
         serializer.is_valid(raise_exception=True)
         account = serializer.save()
         return Response(AccountSerializer(account).data, status=status.HTTP_201_CREATED)
+
+
+class IdentitySignupRequestIntakeView(APIView):
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+
+    @extend_schema(
+        request=IdentitySignupIntakeSerializer,
+        responses={201: IdentitySignupIntakeResultSerializer},
+    )
+    def post(self, request):
+        serializer = IdentitySignupIntakeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        result = serializer.save()
+        return Response(
+            IdentitySignupIntakeResultSerializer(result).data,
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class LoginView(APIView):

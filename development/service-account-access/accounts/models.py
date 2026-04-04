@@ -348,6 +348,10 @@ class IdentitySignupRequest(models.Model):
                 {"status": "Driver account requests cannot stay in awaiting_setup status."}
             )
 
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
 
 class IdentityAccountLink(models.Model):
     class AccountType(models.TextChoices):
