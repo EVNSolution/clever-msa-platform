@@ -17,6 +17,7 @@ from accounts.models import (
     ManagerAccount,
     PasswordCredential,
     PhoneCredential,
+    SocialCredential,
     SystemAdminAccount,
 )
 from accounts.session_principal import IdentitySessionPrincipal
@@ -153,6 +154,45 @@ class SignupIntakeApiTests(TestCase):
         self.assertEqual(response.data["code"], "validation_error")
         self.assertIn("location_policy_consented", response.data["details"])
         self.assertFalse(Identity.objects.filter(name="동의없음").exists())
+
+    @patch("accounts.serializers.SocialProviderService.resolve_subject")
+    def test_signup_request_intake_supports_social_only_identity(self, resolve_subject):
+        resolve_subject.return_value = {
+            "provider_type": SocialCredential.ProviderType.KAKAO,
+            "provider_subject": "kakao-user-123",
+        }
+
+        response = self.client.post(
+            "/identity-signup-requests/",
+            {
+                "name": "카카오신규",
+                "birth_date": "1993-04-05",
+                "company_id": "30000000-0000-0000-0000-000000000001",
+                "request_types": [
+                    IdentitySignupRequest.RequestType.DRIVER_ACCOUNT_CREATE,
+                ],
+                "provider_type": SocialCredential.ProviderType.KAKAO,
+                "provider_access_token": "kakao-access-token",
+                "privacy_policy_version": "v1.0",
+                "privacy_policy_consented": True,
+                "location_policy_version": "v1.0",
+                "location_policy_consented": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+        identity = Identity.objects.get(identity_id=response.data["identity_id"])
+        login_method = IdentityLoginMethod.objects.get(identity=identity)
+        self.assertEqual(login_method.method_type, IdentityLoginMethod.MethodType.SOCIAL)
+        self.assertTrue(
+            SocialCredential.objects.filter(
+                identity_login_method=login_method,
+                provider_type=SocialCredential.ProviderType.KAKAO,
+                provider_subject="kakao-user-123",
+            ).exists()
+        )
+        self.assertFalse(PasswordCredential.objects.filter(identity=identity).exists())
 
 
 class IdentityRequestApiTests(TestCase):
@@ -1800,6 +1840,40 @@ class IdentityLoginMethodApiTests(TestCase):
             ).exists()
         )
 
+    @patch("accounts.serializers.SocialProviderService.resolve_subject")
+    def test_identity_user_can_add_social_login_method_with_provider_access_token(self, resolve_subject):
+        resolve_subject.return_value = {
+            "provider_type": SocialCredential.ProviderType.KAKAO,
+            "provider_subject": "kakao-linked-123",
+        }
+        identity = self._create_identity_with_password(
+            name="소셜추가 사용자",
+            birth_date="1990-01-02",
+            email="social-add@example.com",
+            password="social-add-pass-123",
+        )
+        self._login_identity("social-add@example.com", "social-add-pass-123")
+
+        response = self.client.post(
+            "/identity-login-methods/",
+            {
+                "method_type": IdentityLoginMethod.MethodType.SOCIAL,
+                "provider_type": SocialCredential.ProviderType.KAKAO,
+                "provider_access_token": "kakao-access-token",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["method_type"], IdentityLoginMethod.MethodType.SOCIAL)
+        self.assertTrue(
+            SocialCredential.objects.filter(
+                identity_login_method__identity=identity,
+                provider_type=SocialCredential.ProviderType.KAKAO,
+                provider_subject="kakao-linked-123",
+            ).exists()
+        )
+
     def test_identity_user_cannot_add_email_already_connected_to_another_identity(self):
         self._create_identity_with_password(
             name="기존 이메일 소유자",
@@ -1932,4 +2006,46 @@ class IdentityLoginMethodApiTests(TestCase):
             ).exists()
         )
         self.assertTrue(PasswordCredential.objects.filter(identity=identity).exists())
+        self.assertEqual(response.data["session_kind"], "normal")
+
+    @patch("accounts.services.identity_auth_service.SocialProviderService.resolve_subject")
+    def test_identity_login_supports_social_login_for_existing_identity(self, resolve_subject):
+        resolve_subject.return_value = {
+            "provider_type": SocialCredential.ProviderType.KAKAO,
+            "provider_subject": "kakao-existing-123",
+        }
+        identity = Identity.objects.create(name="카카오 사용자", birth_date="1990-01-02")
+        now = timezone.now()
+        login_method = IdentityLoginMethod.objects.create(
+            identity=identity,
+            method_type=IdentityLoginMethod.MethodType.SOCIAL,
+            verified_at=now,
+        )
+        SocialCredential.objects.create(
+            identity_login_method=login_method,
+            provider_type=SocialCredential.ProviderType.KAKAO,
+            provider_subject="kakao-existing-123",
+            verified_at=now,
+        )
+        IdentityConsentCurrent.objects.create(
+            identity=identity,
+            privacy_policy_version="v1.0",
+            privacy_policy_consented=True,
+            privacy_policy_consented_at=now,
+            location_policy_version="v1.0",
+            location_policy_consented=True,
+            location_policy_consented_at=now,
+        )
+
+        response = self.client.post(
+            "/identity-login/",
+            {
+                "provider_type": SocialCredential.ProviderType.KAKAO,
+                "provider_access_token": "kakao-access-token",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["identity"]["identity_id"], str(identity.identity_id))
         self.assertEqual(response.data["session_kind"], "normal")

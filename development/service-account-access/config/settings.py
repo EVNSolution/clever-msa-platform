@@ -110,3 +110,9 @@ DRIVER_PROFILE_BASE_URL = os.environ.get(
     "DRIVER_PROFILE_BASE_URL",
     "http://driver-profile-api:8000",
 )
+KAKAO_REST_API_KEY = os.environ.get("KAKAO_REST_API_KEY", "")
+KAKAO_CLIENT_SECRET = os.environ.get("KAKAO_CLIENT_SECRET", "")
+KAKAO_USER_INFO_URL = os.environ.get(
+    "KAKAO_USER_INFO_URL",
+    "https://kapi.kakao.com/v2/user/me",
+)

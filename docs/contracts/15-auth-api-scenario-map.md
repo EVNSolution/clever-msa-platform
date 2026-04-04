@@ -53,8 +53,8 @@
 
 | 그룹 | Endpoint | 인증 조건 | 핵심 규칙 |
 | --- | --- | --- | --- |
-| Public intake | `POST /identity-signup-requests/` | 없음 | identity, email credential, password, consent, signup request를 한 번에 만든다 |
-| Public session | `POST /identity-login/` | 없음 | email/password 검증 후 access token + refresh cookie를 발급한다 |
+| Public intake | `POST /identity-signup-requests/` | 없음 | email/password signup 또는 social provider access token signup으로 identity, credential/login method, consent, signup request를 한 번에 만든다 |
+| Public session | `POST /identity-login/` | 없음 | email/password 또는 social provider access token으로 access token + refresh cookie를 발급한다 |
 | Public session | `POST /identity-refresh/` | refresh cookie | registry에 등록된 refresh token만 회전 가능하다 |
 | Public session | `POST /identity-logout/` | 없음 | refresh registry에서 제거하고 cookie를 지운다 |
 | Public recovery | `POST /identity-recovery/` | 없음 | archived identity를 새 email/password로 self-recover 한다 |
@@ -63,7 +63,7 @@
 | Identity self-service | `GET /identity-consent/` | identity session | consent recovery 세션도 읽을 수 있다 |
 | Identity self-service | `POST /identity-consent/withdraw/` | full identity session | 필수 동의 철회 시 recovery session으로 강등된다 |
 | Identity self-service | `POST /identity-consent/recover/` | identity session | 두 필수 동의를 다시 받으면 normal session으로 복구된다 |
-| Identity self-service | `GET/POST /identity-login-methods/` | full identity session | email/phone/social login method를 관리한다 |
+| Identity self-service | `GET/POST /identity-login-methods/` | full identity session | email/phone/social login method를 관리하고, social은 provider access token으로 연결한다 |
 | Identity self-service | `POST /identity-login-methods/:id/delete/` | full identity session | 마지막 login method를 지우면 identity와 account를 archive한다 |
 | Identity self-service | `PUT /identity-password/` | full identity session | shared password credential을 갱신한다 |
 | Request self-service | `GET/POST /identity-signup-requests/me/` | full identity session | 자기 request 조회와 신규 request 생성을 한다 |
@@ -96,12 +96,23 @@
 
 ### 로그인
 
-`POST /identity-login/`은 `IdentityAuthService.authenticate_email_password()`를 호출해서 아래를 검증한다.
+`POST /identity-login/`은 아래 두 경로 중 하나를 탄다.
+
+1. `email/password`
+2. `social provider access token`
+
+email/password 경로는 `IdentityAuthService.authenticate_email_password()`를 호출해서 아래를 검증한다.
 
 1. email credential 존재
 2. login method가 archived 아니고 verified 상태
 3. identity가 `active`
 4. password credential 일치
+
+social 경로는 `SocialProviderService`로 provider subject를 해석한 뒤 `IdentityAuthService.authenticate_social_subject()`로 아래를 검증한다.
+
+1. linked `social_credential` 존재
+2. login method가 archived 아니고 verified 상태
+3. identity가 `active`
 
 이후 `IdentityConsentService.is_fully_consented()` 결과에 따라 아래 두 세션 중 하나를 만든다.
 
@@ -170,12 +181,17 @@ consent recovery 세션은 `principal_kind=identity_consent_recovery_session`으
 
 ### public intake
 
-`POST /identity-signup-requests/`는 아래를 한 트랜잭션 흐름으로 만든다.
+`POST /identity-signup-requests/`는 signup method에 따라 아래 두 흐름 중 하나를 탄다.
+
+1. `email/password`
+2. `social provider access token`
+
+공통으로 아래를 한 트랜잭션 흐름으로 만든다.
 
 1. `identity`
-2. `identity_login_method(email)`
-3. `email_credential`
-4. `password_credential`
+2. `identity_login_method(email 또는 social)`
+3. 해당 credential (`email_credential` 또는 `social_credential`)
+4. `password_credential`는 email/password signup일 때만 생성
 5. `identity_consent_current`
 6. `identity_consent_history`
 7. `identity_signup_request` 1개 이상

@@ -14,8 +14,10 @@ from accounts.models import (
     IdentitySignupRequest,
     ManagerAccount,
     PasswordCredential,
+    SocialCredential,
 )
 from accounts.services.identity_login_method_service import IdentityLoginMethodService
+from accounts.services.social_provider_service import SocialProviderService
 from accounts.services.signup_intake_service import SignupIntakeService
 from accounts.services.signup_request_service import SignupRequestService
 
@@ -167,8 +169,13 @@ class IdentitySignupIntakeResultSerializer(serializers.Serializer):
 class IdentitySignupIntakeSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=120)
     birth_date = serializers.DateField()
-    email = serializers.EmailField()
-    password = serializers.CharField(write_only=True, min_length=8)
+    email = serializers.EmailField(required=False)
+    password = serializers.CharField(write_only=True, min_length=8, required=False)
+    provider_type = serializers.ChoiceField(
+        choices=SocialCredential.ProviderType.choices,
+        required=False,
+    )
+    provider_access_token = serializers.CharField(write_only=True, required=False)
     company_id = serializers.UUIDField()
     request_types = serializers.ListField(
         child=serializers.ChoiceField(choices=IdentitySignupRequest.RequestType.choices),
@@ -178,11 +185,6 @@ class IdentitySignupIntakeSerializer(serializers.Serializer):
     privacy_policy_consented = serializers.BooleanField()
     location_policy_version = serializers.CharField(max_length=32)
     location_policy_consented = serializers.BooleanField()
-
-    def validate_email(self, value):
-        if EmailCredential.objects.filter(email=value).exists():
-            raise serializers.ValidationError("Email is already connected to another identity.")
-        return value
 
     def validate_request_types(self, value):
         if len(set(value)) != len(value):
@@ -196,6 +198,46 @@ class IdentitySignupIntakeSerializer(serializers.Serializer):
             errors["privacy_policy_consented"] = ["Privacy policy consent is required."]
         if not attrs["location_policy_consented"]:
             errors["location_policy_consented"] = ["Location policy consent is required."]
+
+        has_email_password = bool(attrs.get("email") or attrs.get("password"))
+        has_social = bool(attrs.get("provider_type") or attrs.get("provider_access_token"))
+
+        if has_email_password and has_social:
+            errors["non_field_errors"] = [
+                "Choose either email/password signup or social signup."
+            ]
+        elif has_email_password:
+            if not attrs.get("email"):
+                errors["email"] = ["Email is required."]
+            elif EmailCredential.objects.filter(email=attrs["email"]).exists():
+                errors["email"] = ["Email is already connected to another identity."]
+
+            if not attrs.get("password"):
+                errors["password"] = ["Password is required."]
+        elif has_social:
+            if not attrs.get("provider_type"):
+                errors["provider_type"] = ["Provider type is required."]
+            if not attrs.get("provider_access_token"):
+                errors["provider_access_token"] = ["Provider access token is required."]
+            if not errors:
+                social_identity = SocialProviderService().resolve_subject(
+                    provider_type=attrs["provider_type"],
+                    access_token=attrs["provider_access_token"],
+                )
+                if SocialCredential.objects.filter(
+                    provider_type=social_identity["provider_type"],
+                    provider_subject=social_identity["provider_subject"],
+                ).exists():
+                    errors["provider_access_token"] = [
+                        "Social account is already connected to another identity."
+                    ]
+                else:
+                    attrs["resolved_social_identity"] = social_identity
+        else:
+            errors["non_field_errors"] = [
+                "Email/password or social provider access token is required."
+            ]
+
         if errors:
             raise serializers.ValidationError(errors)
         return attrs
@@ -217,8 +259,49 @@ class StatusMessageSerializer(serializers.Serializer):
 
 
 class IdentityLoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    password = serializers.CharField(write_only=True)
+    email = serializers.EmailField(required=False)
+    password = serializers.CharField(write_only=True, required=False)
+    provider_type = serializers.ChoiceField(
+        choices=SocialCredential.ProviderType.choices,
+        required=False,
+    )
+    provider_access_token = serializers.CharField(write_only=True, required=False)
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        has_email_password = bool(attrs.get("email") or attrs.get("password"))
+        has_social = bool(attrs.get("provider_type") or attrs.get("provider_access_token"))
+
+        errors = {}
+        if has_email_password and has_social:
+            errors["non_field_errors"] = [
+                "Choose either email/password login or social login."
+            ]
+        elif has_email_password:
+            if not attrs.get("email"):
+                errors["email"] = ["Email is required."]
+            if not attrs.get("password"):
+                errors["password"] = ["Password is required."]
+            attrs["login_type"] = "email_password"
+        elif has_social:
+            if not attrs.get("provider_type"):
+                errors["provider_type"] = ["Provider type is required."]
+            if not attrs.get("provider_access_token"):
+                errors["provider_access_token"] = ["Provider access token is required."]
+            if not errors:
+                attrs["resolved_social_identity"] = SocialProviderService().resolve_subject(
+                    provider_type=attrs["provider_type"],
+                    access_token=attrs["provider_access_token"],
+                )
+                attrs["login_type"] = "social"
+        else:
+            errors["non_field_errors"] = [
+                "Email/password or social provider access token is required."
+            ]
+
+        if errors:
+            raise serializers.ValidationError(errors)
+        return attrs
 
 
 class SignupRequestListSerializer(serializers.Serializer):
@@ -320,9 +403,26 @@ class IdentityLoginMethodCreateSerializer(serializers.Serializer):
     phone_number = serializers.CharField(required=False)
     provider_type = serializers.CharField(required=False)
     provider_subject = serializers.CharField(required=False)
+    provider_access_token = serializers.CharField(write_only=True, required=False)
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
+        if attrs["method_type"] == IdentityLoginMethod.MethodType.SOCIAL:
+            has_provider_access_token = bool(attrs.get("provider_access_token"))
+            has_provider_subject = bool(attrs.get("provider_subject"))
+            if has_provider_access_token:
+                if not attrs.get("provider_type"):
+                    raise serializers.ValidationError({"provider_type": ["Provider type is required."]})
+                attrs.update(
+                    SocialProviderService().resolve_subject(
+                        provider_type=attrs["provider_type"],
+                        access_token=attrs["provider_access_token"],
+                    )
+                )
+            elif not has_provider_subject:
+                raise serializers.ValidationError(
+                    {"provider_access_token": ["Provider access token is required."]}
+                )
         IdentityLoginMethodService().ensure_creatable(
             identity=self.context["identity"],
             method_type=attrs["method_type"],

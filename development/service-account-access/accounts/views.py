@@ -167,10 +167,16 @@ class IdentityLoginView(APIView):
         serializer = IdentityLoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        principal = IdentityAuthService().authenticate_email_password(
-            email=serializer.validated_data["email"],
-            password=serializer.validated_data["password"],
-        )
+        if serializer.validated_data["login_type"] == "social":
+            principal = IdentityAuthService().authenticate_social_subject(
+                provider_type=serializer.validated_data["resolved_social_identity"]["provider_type"],
+                provider_subject=serializer.validated_data["resolved_social_identity"]["provider_subject"],
+            )
+        else:
+            principal = IdentityAuthService().authenticate_email_password(
+                email=serializer.validated_data["email"],
+                password=serializer.validated_data["password"],
+            )
         access_token = create_identity_access_token(principal)
         refresh_token = create_identity_refresh_token(principal)
         RefreshRegistry().register_refresh_token(refresh_token)
