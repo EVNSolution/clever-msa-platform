@@ -214,7 +214,7 @@
 ### company_super_admin
 
 - 현재 자기 회사의 `active identity`, `active manager_account`, `active driver_account`, `active request`, 각 link를 관리할 수 있다
-- 자기 회사 request를 승인할 수 있다
+- 자기보다 하위 레벨의 request를 승인/반려/설정 완료까지 처리할 수 있다
 - 자기 자신과 하위 레벨만 관리할 수 있다
 - 같은 회사의 다른 `company_super_admin`는 생성/변경/아카이브할 수 없다
 - 자기 회사의 `vehicle_manager`, `settlement_manager`는 생성/변경/아카이브할 수 있다
@@ -227,6 +227,7 @@
 - 조직 정본은 조회만 가능하다
 - 배송원 정본은 조회만 가능하다
 - `driver_account_link` 연결/해제는 가능하다
+- 자기보다 하위인 `driver_account` request는 승인/반려/설정 완료까지 처리할 수 있다
 
 ### settlement_manager
 
@@ -235,6 +236,7 @@
 - 조직 정본은 조회만 가능하다
 - 배송원 정본은 생성/조회/수정할 수 있다
 - `driver_account_link` 연결/해제는 가능하다
+- 자기보다 하위인 `driver_account` request는 승인/반려/설정 완료까지 처리할 수 있다
 
 ## 관리자 self-service 규칙
 
@@ -293,23 +295,24 @@
 
 ## 승인 규칙
 
-1. `company_super_admin`은 자기 회사 request를 승인할 수 있다.
+1. request 처리 권한도 `자기 자신 + 하위 레벨` 원칙을 따른다.
 2. `system_admin_account`는 모든 회사 request를 직접 승인할 수 있다.
-3. `manager_account_create` request는 `pending -> awaiting_setup -> approved`로 처리한다.
-4. `driver_account_create` request는 `pending -> approved`로 처리한다.
-5. `manager_account_create` request의 `awaiting_setup` 마무리는 아래 둘이 할 수 있다.
-   - `새 회사 company_super_admin`
-   - `system_admin_account`
-6. `manager_account_create` 승인 시 실제 역할은 `awaiting_setup` 단계에서 정한다.
-7. `company_super_admin`도 별도 invite가 아니라 같은 `manager_account_create` request 흐름으로 만든다.
-8. 최초 `company_super_admin`도 `system_admin_account`가 같은 request 흐름에서 역할을 지정해 연다.
-9. `driver_account_create` 승인 시 `driver_account`만 생성한다.
-10. `driver` 연결은 승인 후 별도 단계다.
-11. request는 수정하지 않는다.
-12. 사용자는 승인 대기창에서 자기 `active request`를 취소할 수 있다.
-13. 사용자 취소와 관리자 반려는 모두 `rejected`로 기록하고, 차이는 `reject_reason`으로만 남긴다.
-14. 반려된 request는 같은 종류로 다시 신청할 수 있다.
-15. 승인/반려된 request는 이력으로 남긴다.
+3. `company_super_admin`는 자기 회사의 하위 레벨 request를 승인할 수 있다.
+4. `vehicle_manager`, `settlement_manager`는 자기보다 하위인 `driver_account` request를 승인할 수 있다.
+5. 같은 레벨이나 상위 레벨 request는 처리하지 않는다.
+6. `manager_account_create` request는 `pending -> awaiting_setup -> approved`로 처리한다.
+7. `driver_account_create` request는 `pending -> approved`로 처리한다.
+8. `manager_account_create` request의 `awaiting_setup`은 해당 계층의 상위 관리자 또는 `system_admin_account`가 마무리한다.
+9. `manager_account_create` 승인 시 실제 역할은 `awaiting_setup` 단계에서 정한다.
+10. `company_super_admin`도 별도 invite가 아니라 같은 `manager_account_create` request 흐름으로 만든다.
+11. 최초 `company_super_admin`도 `system_admin_account`가 같은 request 흐름에서 역할을 지정해 연다.
+12. `driver_account_create` 승인 시 `driver_account`만 생성한다.
+13. `driver` 연결은 승인 후 별도 단계다.
+14. request는 수정하지 않는다.
+15. 사용자는 승인 대기창에서 자기 `active request`를 취소할 수 있다.
+16. 사용자 취소와 관리자 반려는 모두 `rejected`로 기록하고, 차이는 `reject_reason`으로만 남긴다.
+17. 반려된 request는 같은 종류로 다시 신청할 수 있다.
+18. 승인/반려된 request는 이력으로 남긴다.
 
 ## 승인 대기 규칙
 
@@ -331,21 +334,22 @@
 
 1. 사용자 앱에는 `승인 대기 화면` 1개만 둔다.
 2. 관리자는 `요청 관리 화면` 1개에서 request를 관리한다.
-3. 관리 화면 상단에는 아래 상태 탭 또는 필터를 둔다.
+3. 이 화면은 모든 관리자 레벨에 둘 수 있지만, 각 관리자는 자기 자신보다 하위 레벨 request만 본다.
+4. 관리 화면 상단에는 아래 상태 탭 또는 필터를 둔다.
    - `대기`
    - `설정 중`
    - `승인됨`
    - `반려됨`
-4. 상태별로 별도 페이지를 쪼개지 않는다.
-5. 관리자 목록 row에는 아래를 보여주면 충분하다.
+5. 상태별로 별도 페이지를 쪼개지 않는다.
+6. 관리자 목록 row에는 아래를 보여주면 충분하다.
    - `identity`
    - `회사`
    - `요청 종류`
    - `현재 단계`
    - `요청 시각`
    - `처리 액션`
-6. `요청 종류`는 내부 코드 대신 목적 중심 표시명으로 보여준다.
-7. 기본 표시명은 아래처럼 본다.
+7. `요청 종류`는 내부 코드 대신 목적 중심 표시명으로 보여준다.
+8. 기본 표시명은 아래처럼 본다.
    - `manager_account_create`: `관리자 계정 신청`
    - `driver_account_create`: `배송원 계정 신청`
    - `is_re_request = true`: `회사 변경 요청`
