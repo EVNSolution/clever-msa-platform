@@ -350,6 +350,154 @@ class IdentityRequestApiTests(TestCase):
         self.assertTrue(created_request.is_re_request)
         self.assertEqual(str(created_request.from_company_id), self.company_id)
 
+    def test_manager_company_change_rerequest_archives_old_accounts_and_creates_new_driver_account(self):
+        system_identity = self._create_identity_with_password(
+            name="시스템 관리자",
+            birth_date="1980-01-01",
+            email="sys-rerequest@example.com",
+            password="sys-rerequest-pass-123",
+        )
+        SystemAdminAccount.objects.create(identity=system_identity)
+        request_identity = self._create_identity_with_password(
+            name="회사 이동 사용자",
+            birth_date="1990-01-02",
+            email="company-change@example.com",
+            password="company-change-pass-123",
+        )
+        old_manager = ManagerAccount.objects.create(
+            identity=request_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.VEHICLE_MANAGER,
+        )
+        IdentityAccountLink.objects.create(
+            identity=request_identity,
+            account_type=IdentityAccountLink.AccountType.MANAGER,
+            account_id=old_manager.manager_account_id,
+        )
+        old_driver = DriverAccount.objects.create(
+            identity=request_identity,
+            company_id=self.company_id,
+            status=DriverAccount.Status.ACTIVE,
+        )
+        IdentityAccountLink.objects.create(
+            identity=request_identity,
+            account_type=IdentityAccountLink.AccountType.DRIVER,
+            account_id=old_driver.driver_account_id,
+        )
+        DriverAccountLink.objects.create(
+            driver_account=old_driver,
+            driver_id="50000000-0000-0000-0000-000000000001",
+        )
+        request = self._create_request(
+            identity=request_identity,
+            company_id=self.other_company_id,
+            request_type=IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE,
+        )
+        request.is_re_request = True
+        request.from_company_id = self.company_id
+        request.save(update_fields=["is_re_request", "from_company_id"])
+        self._login_identity("sys-rerequest@example.com", "sys-rerequest-pass-123")
+
+        approve_response = self.client.post(
+            f"/identity-signup-requests/{request.identity_signup_request_id}/approve/",
+            format="json",
+        )
+
+        self.assertEqual(approve_response.status_code, 200)
+        request.refresh_from_db()
+        self.assertEqual(request.status, IdentitySignupRequest.Status.AWAITING_SETUP)
+
+        old_manager.refresh_from_db()
+        old_driver.refresh_from_db()
+        self.assertEqual(old_manager.status, ManagerAccount.Status.ARCHIVED)
+        self.assertEqual(old_driver.status, DriverAccount.Status.ARCHIVED)
+
+        manager_link = IdentityAccountLink.objects.get(
+            identity=request_identity,
+            account_type=IdentityAccountLink.AccountType.MANAGER,
+            account_id=old_manager.manager_account_id,
+        )
+        driver_identity_link = IdentityAccountLink.objects.get(
+            identity=request_identity,
+            account_type=IdentityAccountLink.AccountType.DRIVER,
+            account_id=old_driver.driver_account_id,
+        )
+        self.assertIsNotNone(manager_link.unlinked_at)
+        self.assertIsNotNone(driver_identity_link.unlinked_at)
+
+        old_driver_link = DriverAccountLink.objects.get(driver_account=old_driver)
+        self.assertIsNotNone(old_driver_link.unlinked_at)
+        self.assertEqual(old_driver_link.unlink_reason, "company_changed")
+
+        new_driver = DriverAccount.objects.get(identity=request_identity, status=DriverAccount.Status.ACTIVE)
+        self.assertEqual(str(new_driver.company_id), self.other_company_id)
+        self.assertFalse(
+            ManagerAccount.objects.filter(identity=request_identity, status=ManagerAccount.Status.ACTIVE).exists()
+        )
+
+    def test_company_change_approval_invalidates_old_manager_session(self):
+        system_identity = self._create_identity_with_password(
+            name="시스템 관리자",
+            birth_date="1980-01-01",
+            email="sys-session-cut@example.com",
+            password="sys-session-cut-pass-123",
+        )
+        SystemAdminAccount.objects.create(identity=system_identity)
+        request_identity = self._create_identity_with_password(
+            name="세션 종료 사용자",
+            birth_date="1990-01-02",
+            email="session-cut@example.com",
+            password="session-cut-pass-123",
+        )
+        manager_account = ManagerAccount.objects.create(
+            identity=request_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.VEHICLE_MANAGER,
+        )
+        IdentityAccountLink.objects.create(
+            identity=request_identity,
+            account_type=IdentityAccountLink.AccountType.MANAGER,
+            account_id=manager_account.manager_account_id,
+        )
+        request = self._create_request(
+            identity=request_identity,
+            company_id=self.other_company_id,
+            request_type=IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE,
+        )
+        request.is_re_request = True
+        request.from_company_id = self.company_id
+        request.save(update_fields=["is_re_request", "from_company_id"])
+
+        requester_client = APIClient()
+        login_response = requester_client.post(
+            "/identity-login/",
+            {"email": "session-cut@example.com", "password": "session-cut-pass-123"},
+            format="json",
+        )
+        self.assertEqual(login_response.status_code, 200)
+        requester_client.credentials(HTTP_AUTHORIZATION=f"Bearer {login_response.data['access_token']}")
+        requester_client.cookies["refresh_token"] = login_response.cookies["refresh_token"].value
+
+        admin_client = APIClient()
+        admin_login_response = admin_client.post(
+            "/identity-login/",
+            {"email": "sys-session-cut@example.com", "password": "sys-session-cut-pass-123"},
+            format="json",
+        )
+        self.assertEqual(admin_login_response.status_code, 200)
+        admin_client.credentials(HTTP_AUTHORIZATION=f"Bearer {admin_login_response.data['access_token']}")
+        approve_response = admin_client.post(
+            f"/identity-signup-requests/{request.identity_signup_request_id}/approve/",
+            format="json",
+        )
+        self.assertEqual(approve_response.status_code, 200)
+
+        me_response = requester_client.get("/identity-me/")
+        refresh_response = requester_client.post("/identity-refresh/")
+
+        self.assertIn(me_response.status_code, {401, 403})
+        self.assertIn(refresh_response.status_code, {401, 403})
+
     def test_system_admin_can_list_all_requests_and_approve_driver_request(self):
         system_identity = self._create_identity_with_password(
             name="시스템 관리자",
@@ -544,6 +692,359 @@ class IdentityRequestApiTests(TestCase):
         self.assertEqual(driver_request.reject_reason, "admin_rejected")
 
         self.assertEqual(approve_manager_response.status_code, 403)
+
+
+class ManagerAccountManagementApiTests(TestCase):
+    def setUp(self) -> None:
+        self.client = APIClient()
+        self.registry = RefreshRegistry()
+        self.registry.client.flushdb()
+        self.company_id = "30000000-0000-0000-0000-000000000001"
+        self.other_company_id = "30000000-0000-0000-0000-000000000002"
+
+    def _create_identity_with_password(
+        self,
+        *,
+        name: str,
+        birth_date: str,
+        email: str,
+        password: str,
+    ) -> Identity:
+        identity = Identity.objects.create(name=name, birth_date=birth_date)
+        now = timezone.now()
+        login_method = IdentityLoginMethod.objects.create(
+            identity=identity,
+            method_type=IdentityLoginMethod.MethodType.EMAIL,
+            verified_at=now,
+        )
+        EmailCredential.objects.create(
+            identity_login_method=login_method,
+            email=email,
+            verified_at=now,
+        )
+        PasswordCredential.objects.create(
+            identity=identity,
+            password_hash=make_password(password),
+        )
+        IdentityConsentCurrent.objects.create(
+            identity=identity,
+            privacy_policy_version="v1.0",
+            privacy_policy_consented=True,
+            privacy_policy_consented_at=now,
+            location_policy_version="v1.0",
+            location_policy_consented=True,
+            location_policy_consented_at=now,
+        )
+        return identity
+
+    def _login_identity(self, email: str, password: str):
+        response = self.client.post(
+            "/identity-login/",
+            {"email": email, "password": password},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {response.data['access_token']}")
+        return response
+
+    def _create_manager_account(
+        self,
+        *,
+        identity: Identity,
+        company_id: str,
+        role_type: str,
+        status: str = ManagerAccount.Status.ACTIVE,
+    ) -> ManagerAccount:
+        manager_account = ManagerAccount.objects.create(
+            identity=identity,
+            company_id=company_id,
+            role_type=role_type,
+            status=status,
+        )
+        IdentityAccountLink.objects.create(
+            identity=identity,
+            account_type=IdentityAccountLink.AccountType.MANAGER,
+            account_id=manager_account.manager_account_id,
+        )
+        return manager_account
+
+    def test_system_admin_can_list_all_active_manager_accounts(self):
+        system_identity = self._create_identity_with_password(
+            name="시스템 관리자",
+            birth_date="1980-01-01",
+            email="sys-manage@example.com",
+            password="sys-pass-123",
+        )
+        SystemAdminAccount.objects.create(identity=system_identity)
+        first_identity = self._create_identity_with_password(
+            name="총괄 관리자",
+            birth_date="1985-05-05",
+            email="company-super@example.com",
+            password="company-super-pass-123",
+        )
+        second_identity = self._create_identity_with_password(
+            name="차량 관리자",
+            birth_date="1990-01-02",
+            email="vehicle-manage@example.com",
+            password="vehicle-manage-pass-123",
+        )
+        archived_identity = self._create_identity_with_password(
+            name="보관 관리자",
+            birth_date="1988-08-08",
+            email="archived-manage@example.com",
+            password="archived-manage-pass-123",
+        )
+        first_manager = self._create_manager_account(
+            identity=first_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.COMPANY_SUPER_ADMIN,
+        )
+        second_manager = self._create_manager_account(
+            identity=second_identity,
+            company_id=self.other_company_id,
+            role_type=ManagerAccount.RoleType.VEHICLE_MANAGER,
+        )
+        self._create_manager_account(
+            identity=archived_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.SETTLEMENT_MANAGER,
+            status=ManagerAccount.Status.ARCHIVED,
+        )
+
+        self._login_identity("sys-manage@example.com", "sys-pass-123")
+        response = self.client.get("/manager-accounts/manage/")
+
+        self.assertEqual(response.status_code, 200)
+        returned_ids = {row["manager_account_id"] for row in response.data["accounts"]}
+        self.assertEqual(
+            returned_ids,
+            {
+                str(first_manager.manager_account_id),
+                str(second_manager.manager_account_id),
+            },
+        )
+
+    def test_company_super_admin_lists_self_and_lower_managers_only(self):
+        super_identity = self._create_identity_with_password(
+            name="회사 총괄 A",
+            birth_date="1980-01-01",
+            email="company-super-a@example.com",
+            password="company-super-a-pass-123",
+        )
+        peer_super_identity = self._create_identity_with_password(
+            name="회사 총괄 B",
+            birth_date="1981-01-01",
+            email="company-super-b@example.com",
+            password="company-super-b-pass-123",
+        )
+        vehicle_identity = self._create_identity_with_password(
+            name="차량 관리자",
+            birth_date="1990-01-02",
+            email="company-vehicle@example.com",
+            password="company-vehicle-pass-123",
+        )
+        settlement_identity = self._create_identity_with_password(
+            name="정산 관리자",
+            birth_date="1991-01-02",
+            email="company-settlement@example.com",
+            password="company-settlement-pass-123",
+        )
+        other_identity = self._create_identity_with_password(
+            name="타사 관리자",
+            birth_date="1992-01-02",
+            email="other-company-manager@example.com",
+            password="other-company-manager-pass-123",
+        )
+        super_account = self._create_manager_account(
+            identity=super_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.COMPANY_SUPER_ADMIN,
+        )
+        peer_super_account = self._create_manager_account(
+            identity=peer_super_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.COMPANY_SUPER_ADMIN,
+        )
+        vehicle_account = self._create_manager_account(
+            identity=vehicle_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.VEHICLE_MANAGER,
+        )
+        settlement_account = self._create_manager_account(
+            identity=settlement_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.SETTLEMENT_MANAGER,
+        )
+        self._create_manager_account(
+            identity=other_identity,
+            company_id=self.other_company_id,
+            role_type=ManagerAccount.RoleType.VEHICLE_MANAGER,
+        )
+
+        self._login_identity("company-super-a@example.com", "company-super-a-pass-123")
+        response = self.client.get("/manager-accounts/manage/")
+
+        self.assertEqual(response.status_code, 200)
+        returned_ids = {row["manager_account_id"] for row in response.data["accounts"]}
+        self.assertEqual(
+            returned_ids,
+            {
+                str(super_account.manager_account_id),
+                str(vehicle_account.manager_account_id),
+                str(settlement_account.manager_account_id),
+            },
+        )
+        self.assertNotIn(str(peer_super_account.manager_account_id), returned_ids)
+
+    def test_vehicle_manager_lists_only_self(self):
+        vehicle_identity = self._create_identity_with_password(
+            name="차량 관리자",
+            birth_date="1990-01-02",
+            email="list-self@example.com",
+            password="list-self-pass-123",
+        )
+        other_identity = self._create_identity_with_password(
+            name="정산 관리자",
+            birth_date="1991-01-02",
+            email="list-other@example.com",
+            password="list-other-pass-123",
+        )
+        vehicle_account = self._create_manager_account(
+            identity=vehicle_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.VEHICLE_MANAGER,
+        )
+        self._create_manager_account(
+            identity=other_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.SETTLEMENT_MANAGER,
+        )
+
+        self._login_identity("list-self@example.com", "list-self-pass-123")
+        response = self.client.get("/manager-accounts/manage/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data["accounts"]), 1)
+        self.assertEqual(response.data["accounts"][0]["manager_account_id"], str(vehicle_account.manager_account_id))
+
+    def test_company_super_admin_can_change_lower_manager_role_in_place(self):
+        super_identity = self._create_identity_with_password(
+            name="역할 전환 총괄",
+            birth_date="1980-01-01",
+            email="change-role-super@example.com",
+            password="change-role-super-pass-123",
+        )
+        lower_identity = self._create_identity_with_password(
+            name="역할 전환 대상",
+            birth_date="1990-01-02",
+            email="change-role-target@example.com",
+            password="change-role-target-pass-123",
+        )
+        self._create_manager_account(
+            identity=super_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.COMPANY_SUPER_ADMIN,
+        )
+        lower_account = self._create_manager_account(
+            identity=lower_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.VEHICLE_MANAGER,
+        )
+
+        self._login_identity("change-role-super@example.com", "change-role-super-pass-123")
+        response = self.client.post(
+            f"/manager-accounts/{lower_account.manager_account_id}/change-role/",
+            {"role_type": ManagerAccount.RoleType.SETTLEMENT_MANAGER},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        lower_account.refresh_from_db()
+        self.assertEqual(lower_account.role_type, ManagerAccount.RoleType.SETTLEMENT_MANAGER)
+        self.assertEqual(response.data["manager_account_id"], str(lower_account.manager_account_id))
+
+    def test_vehicle_manager_cannot_change_own_role(self):
+        vehicle_identity = self._create_identity_with_password(
+            name="자기 역할 변경 불가",
+            birth_date="1990-01-02",
+            email="self-role-change@example.com",
+            password="self-role-change-pass-123",
+        )
+        vehicle_account = self._create_manager_account(
+            identity=vehicle_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.VEHICLE_MANAGER,
+        )
+
+        self._login_identity("self-role-change@example.com", "self-role-change-pass-123")
+        response = self.client.post(
+            f"/manager-accounts/{vehicle_account.manager_account_id}/change-role/",
+            {"role_type": ManagerAccount.RoleType.SETTLEMENT_MANAGER},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_vehicle_manager_can_archive_self_and_close_active_identity_link(self):
+        vehicle_identity = self._create_identity_with_password(
+            name="자기 아카이브",
+            birth_date="1990-01-02",
+            email="self-archive@example.com",
+            password="self-archive-pass-123",
+        )
+        vehicle_account = self._create_manager_account(
+            identity=vehicle_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.VEHICLE_MANAGER,
+        )
+
+        self._login_identity("self-archive@example.com", "self-archive-pass-123")
+        response = self.client.post(
+            f"/manager-accounts/{vehicle_account.manager_account_id}/archive/",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        vehicle_account.refresh_from_db()
+        self.assertEqual(vehicle_account.status, ManagerAccount.Status.ARCHIVED)
+        link = IdentityAccountLink.objects.get(
+            identity=vehicle_identity,
+            account_type=IdentityAccountLink.AccountType.MANAGER,
+            account_id=vehicle_account.manager_account_id,
+        )
+        self.assertIsNotNone(link.unlinked_at)
+
+    def test_company_super_admin_cannot_archive_peer_company_super_admin(self):
+        super_identity = self._create_identity_with_password(
+            name="총괄 A",
+            birth_date="1980-01-01",
+            email="archive-super-a@example.com",
+            password="archive-super-a-pass-123",
+        )
+        peer_identity = self._create_identity_with_password(
+            name="총괄 B",
+            birth_date="1981-01-01",
+            email="archive-super-b@example.com",
+            password="archive-super-b-pass-123",
+        )
+        self._create_manager_account(
+            identity=super_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.COMPANY_SUPER_ADMIN,
+        )
+        peer_account = self._create_manager_account(
+            identity=peer_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.COMPANY_SUPER_ADMIN,
+        )
+
+        self._login_identity("archive-super-a@example.com", "archive-super-a-pass-123")
+        response = self.client.post(
+            f"/manager-accounts/{peer_account.manager_account_id}/archive/",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 403)
 
 
 class IdentityProfileApiTests(TestCase):

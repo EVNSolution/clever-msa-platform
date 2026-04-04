@@ -6,6 +6,7 @@
 - ID dictionary
 - state dictionary
 - integration rules
+- auth API scenario map and session / authorization contract
 - read model output contract
 - front UI routing, layout, state, and session rules
 - admin settlement group/page contract

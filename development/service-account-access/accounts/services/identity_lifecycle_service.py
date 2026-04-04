@@ -4,6 +4,7 @@ from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
 from accounts.models import DriverAccount, Identity, PasswordCredential
+from accounts.services.product_account_lifecycle_service import ProductAccountLifecycleService
 
 
 class IdentityLifecycleService:
@@ -14,24 +15,12 @@ class IdentityLifecycleService:
             identity.archived_at = now
             identity.save(update_fields=["status", "archived_at"])
 
-            identity.system_admin_accounts.filter(status="active").update(
-                status="archived",
-                archived_at=now,
-            )
-            identity.manager_accounts.filter(status="active").update(
-                status="archived",
-                archived_at=now,
-            )
-            active_driver_accounts = list(identity.driver_accounts.filter(status="active"))
-            identity.driver_accounts.filter(status="active").update(
-                status="archived",
-                archived_at=now,
-            )
-            for driver_account in active_driver_accounts:
-                driver_account.driver_links.filter(unlinked_at__isnull=True).update(
-                    unlinked_at=now,
-                    unlink_reason="identity_archived",
-                )
+            identity.system_admin_accounts.filter(status="active").update(status="archived", archived_at=now)
+            lifecycle = ProductAccountLifecycleService()
+            for manager_account in identity.manager_accounts.filter(status="active"):
+                lifecycle.archive_manager_account(manager_account, unlink_reason="identity_archived")
+            for driver_account in identity.driver_accounts.filter(status="active"):
+                lifecycle.archive_driver_account(driver_account, unlink_reason="identity_archived")
 
             identity.login_methods.all().delete()
             PasswordCredential.objects.filter(identity=identity).delete()

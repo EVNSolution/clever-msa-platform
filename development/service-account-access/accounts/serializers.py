@@ -66,6 +66,29 @@ class ActiveAccountSerializer(serializers.Serializer):
     role_type = serializers.CharField(required=False, allow_null=True)
 
 
+class ManagerAccountSummarySerializer(serializers.ModelSerializer):
+    identity = IdentitySummarySerializer(read_only=True)
+
+    class Meta:
+        model = ManagerAccount
+        fields = (
+            "manager_account_id",
+            "identity",
+            "company_id",
+            "role_type",
+            "status",
+            "created_at",
+        )
+
+
+class ManagerAccountListSerializer(serializers.Serializer):
+    accounts = ManagerAccountSummarySerializer(many=True)
+
+
+class ManagerAccountRoleChangeSerializer(serializers.Serializer):
+    role_type = serializers.ChoiceField(choices=ManagerAccount.RoleType.choices)
+
+
 class IdentitySignupRequestSummarySerializer(serializers.ModelSerializer):
     request_display_name = serializers.SerializerMethodField()
     status_message = serializers.SerializerMethodField()

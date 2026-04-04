@@ -72,3 +72,11 @@ class RefreshRegistry:
 
     def active_session_count(self, account_id: str) -> int:
         return int(self.client.scard(self._sessions_key(account_id)))
+
+    def revoke_account_sessions(self, account_id: str) -> None:
+        session_key = self._sessions_key(account_id)
+        refresh_jtis = self.client.smembers(session_key)
+        if refresh_jtis:
+            self.client.delete(*[self._refresh_key(jti) for jti in refresh_jtis])
+        self.client.delete(session_key)
+        self.client.delete(self._meta_key(account_id))

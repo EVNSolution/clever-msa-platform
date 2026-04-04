@@ -22,6 +22,9 @@ from accounts.views import (
     IdentitySignupRequestManagementListView,
     IdentitySignupRequestRejectView,
     IdentitySignupRequestSelfListView,
+    ManagerAccountArchiveView,
+    ManagerAccountChangeRoleView,
+    ManagerAccountManagementListView,
 )
 
 urlpatterns = [
@@ -44,6 +47,9 @@ urlpatterns = [
     path("identity-login-methods/<uuid:method_id>/delete/", IdentityLoginMethodDeleteView.as_view(), name="identity-login-method-delete"),
     path("identity-password/", IdentityPasswordView.as_view(), name="identity-password"),
     path("identity-recovery/", IdentityRecoveryView.as_view(), name="identity-recovery"),
+    path("manager-accounts/manage/", ManagerAccountManagementListView.as_view(), name="manager-account-management-list"),
+    path("manager-accounts/<uuid:manager_account_id>/change-role/", ManagerAccountChangeRoleView.as_view(), name="manager-account-change-role"),
+    path("manager-accounts/<uuid:manager_account_id>/archive/", ManagerAccountArchiveView.as_view(), name="manager-account-archive"),
     path("driver-account-links/", DriverAccountLinkListView.as_view(), name="driver-account-link-list"),
     path("health/", HealthView.as_view(), name="health"),
 ]

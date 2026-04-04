@@ -34,6 +34,9 @@ from accounts.serializers import (
     IdentityProfileSerializer,
     IdentityProfileUpdateSerializer,
     IdentityRecoverySerializer,
+    ManagerAccountListSerializer,
+    ManagerAccountRoleChangeSerializer,
+    ManagerAccountSummarySerializer,
     IdentitySignupRequestCreateSerializer,
     IdentitySignupRequestSummarySerializer,
     IdentitySignupIntakeResultSerializer,
@@ -48,6 +51,7 @@ from accounts.services.identity_auth_service import IdentityAuthService
 from accounts.services.identity_consent_service import IdentityConsentService
 from accounts.services.identity_login_method_service import IdentityLoginMethodService
 from accounts.services.identity_recovery_service import IdentityRecoveryService
+from accounts.services.manager_account_service import ManagerAccountService
 from accounts.services.jwt_service import (
     create_identity_access_token,
     create_identity_refresh_token,
@@ -210,6 +214,9 @@ class IdentityRefreshView(APIView):
             else "normal"
         )
         session_principal = IdentitySessionPrincipal.from_identity(identity, session_kind=session_kind)
+        payload_account_id = payload.get("active_account_id")
+        if payload_account_id and session_principal.active_account_id != payload_account_id:
+            raise AuthenticationFailed("Session is no longer active.")
 
         access_token = create_identity_access_token(session_principal)
         new_refresh_token = create_identity_refresh_token(session_principal)
@@ -545,6 +552,45 @@ class IdentitySignupRequestCompleteSetupView(APIView):
             role_type=serializer.validated_data["role_type"],
         )
         return Response(IdentitySignupRequestSummarySerializer(updated).data, status=status.HTTP_200_OK)
+
+
+class ManagerAccountManagementListView(APIView):
+    permission_classes = [IsAuthenticatedAccount]
+
+    @extend_schema(responses={200: ManagerAccountListSerializer})
+    def get(self, request):
+        _require_full_identity_session(request)
+        accounts = ManagerAccountService().list_manageable_accounts(request.user)
+        serializer = ManagerAccountListSerializer({"accounts": accounts})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ManagerAccountChangeRoleView(APIView):
+    permission_classes = [IsAuthenticatedAccount]
+
+    @extend_schema(request=ManagerAccountRoleChangeSerializer, responses={200: ManagerAccountSummarySerializer})
+    def post(self, request, manager_account_id):
+        _require_full_identity_session(request)
+        serializer = ManagerAccountRoleChangeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        target_account = ManagerAccountService().get_manageable_account(request.user, manager_account_id)
+        updated = ManagerAccountService().change_role(
+            request.user,
+            target_account,
+            role_type=serializer.validated_data["role_type"],
+        )
+        return Response(ManagerAccountSummarySerializer(updated).data, status=status.HTTP_200_OK)
+
+
+class ManagerAccountArchiveView(APIView):
+    permission_classes = [IsAuthenticatedAccount]
+
+    @extend_schema(responses={200: ManagerAccountSummarySerializer})
+    def post(self, request, manager_account_id):
+        _require_full_identity_session(request)
+        target_account = ManagerAccountService().get_manageable_account(request.user, manager_account_id)
+        updated = ManagerAccountService().archive_account(request.user, target_account)
+        return Response(ManagerAccountSummarySerializer(updated).data, status=status.HTTP_200_OK)
 
 
 class DriverAccountLinkListView(APIView):

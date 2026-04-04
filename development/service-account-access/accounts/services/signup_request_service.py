@@ -8,6 +8,7 @@ from accounts.models import (
     IdentitySignupRequest,
     ManagerAccount,
 )
+from accounts.services.product_account_lifecycle_service import ProductAccountLifecycleService
 
 
 class SignupRequestService:
@@ -19,6 +20,28 @@ class SignupRequestService:
         request_type: str,
         is_re_request: bool,
     ) -> None:
+        active_manager = ManagerAccount.objects.filter(
+            identity=identity,
+            status=ManagerAccount.Status.ACTIVE,
+        ).first()
+        active_driver = DriverAccount.objects.filter(
+            identity=identity,
+            status=DriverAccount.Status.ACTIVE,
+        ).first()
+        if (
+            is_re_request
+            and request_type == IdentitySignupRequest.RequestType.DRIVER_ACCOUNT_CREATE
+            and active_manager is not None
+            and active_driver is not None
+        ):
+            raise ValidationError(
+                {
+                    "request_type": [
+                        "Combined company change for manager and driver accounts must use manager_account_create."
+                    ]
+                }
+            )
+
         if IdentitySignupRequest.objects.filter(
             identity=identity,
             company_id=company_id,
@@ -105,19 +128,54 @@ class SignupRequestService:
         if request.status != IdentitySignupRequest.Status.PENDING:
             raise ValidationError({"status": ["Only pending requests can be approved."]})
 
+        lifecycle = ProductAccountLifecycleService()
         if request.request_type == IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE:
-            request.status = IdentitySignupRequest.Status.AWAITING_SETUP
-            self._stamp_reviewer(principal, request)
-            request.save(
-                update_fields=[
-                    "status",
-                    "reviewed_by_system_admin_account",
-                    "reviewed_by_manager_account",
-                ]
-            )
-            return request
+            with transaction.atomic():
+                if request.is_re_request:
+                    active_manager = ManagerAccount.objects.filter(
+                        identity=request.identity,
+                        status=ManagerAccount.Status.ACTIVE,
+                    ).first()
+                    if active_manager is not None:
+                        lifecycle.archive_manager_account(active_manager, unlink_reason="company_changed")
+
+                    active_driver = DriverAccount.objects.filter(
+                        identity=request.identity,
+                        status=DriverAccount.Status.ACTIVE,
+                    ).first()
+                    if active_driver is not None:
+                        lifecycle.archive_driver_account(active_driver, unlink_reason="company_changed")
+                        new_driver_account = DriverAccount.objects.create(
+                            identity=request.identity,
+                            company_id=request.company_id,
+                            status=DriverAccount.Status.ACTIVE,
+                        )
+                        IdentityAccountLink.objects.create(
+                            identity=request.identity,
+                            account_type=IdentityAccountLink.AccountType.DRIVER,
+                            account_id=new_driver_account.driver_account_id,
+                        )
+
+                request.status = IdentitySignupRequest.Status.AWAITING_SETUP
+                self._stamp_reviewer(principal, request)
+                request.save(
+                    update_fields=[
+                        "status",
+                        "reviewed_by_system_admin_account",
+                        "reviewed_by_manager_account",
+                    ]
+                )
+                return request
 
         with transaction.atomic():
+            if request.is_re_request:
+                active_driver = DriverAccount.objects.filter(
+                    identity=request.identity,
+                    status=DriverAccount.Status.ACTIVE,
+                ).first()
+                if active_driver is not None:
+                    lifecycle.archive_driver_account(active_driver, unlink_reason="company_changed")
+
             driver_account = DriverAccount.objects.create(
                 identity=request.identity,
                 company_id=request.company_id,

@@ -37,4 +37,8 @@ class JWTAuthentication(BaseAuthentication):
             or not IdentityConsentService().is_fully_consented(identity)
             else "normal"
         )
-        return IdentitySessionPrincipal.from_identity(identity, session_kind=session_kind), payload
+        principal = IdentitySessionPrincipal.from_identity(identity, session_kind=session_kind)
+        payload_account_id = payload.get("active_account_id")
+        if payload_account_id and principal.active_account_id != payload_account_id:
+            raise AuthenticationFailed("Session is no longer active.")
+        return principal, payload
