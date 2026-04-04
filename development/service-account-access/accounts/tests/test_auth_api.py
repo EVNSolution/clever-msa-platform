@@ -612,6 +612,93 @@ class IdentityRequestApiTests(TestCase):
         self.assertEqual(request.status, IdentitySignupRequest.Status.REJECTED)
         self.assertEqual(request.reject_reason, "user_cancelled")
 
+    def test_identity_user_can_create_new_driver_request_for_selected_company(self):
+        identity = self._create_identity_with_password(
+            name="신규 요청자",
+            birth_date="1990-01-02",
+            email="new-request@example.com",
+            password="new-request-pass-123",
+        )
+        self._login_identity("new-request@example.com", "new-request-pass-123")
+
+        response = self.client.post(
+            "/identity-signup-requests/me/",
+            {
+                "company_id": self.company_id,
+                "request_type": IdentitySignupRequest.RequestType.DRIVER_ACCOUNT_CREATE,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["identity"]["identity_id"], str(identity.identity_id))
+        self.assertEqual(response.data["request_type"], IdentitySignupRequest.RequestType.DRIVER_ACCOUNT_CREATE)
+        self.assertEqual(response.data["company_id"], self.company_id)
+        self.assertEqual(response.data["status"], IdentitySignupRequest.Status.PENDING)
+
+    def test_identity_user_cannot_create_duplicate_pending_request_for_same_scope(self):
+        identity = self._create_identity_with_password(
+            name="중복 요청자",
+            birth_date="1990-01-02",
+            email="duplicate-request@example.com",
+            password="duplicate-request-pass-123",
+        )
+        self._create_request(
+            identity=identity,
+            company_id=self.company_id,
+            request_type=IdentitySignupRequest.RequestType.DRIVER_ACCOUNT_CREATE,
+        )
+        self._login_identity("duplicate-request@example.com", "duplicate-request-pass-123")
+
+        response = self.client.post(
+            "/identity-signup-requests/me/",
+            {
+                "company_id": self.company_id,
+                "request_type": IdentitySignupRequest.RequestType.DRIVER_ACCOUNT_CREATE,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data["code"], "validation_error")
+        self.assertIn("request_type", response.data["details"])
+
+    def test_identity_user_creates_company_change_rerequest_for_existing_manager_account(self):
+        identity = self._create_identity_with_password(
+            name="회사 변경 관리자",
+            birth_date="1990-01-02",
+            email="manager-rerequest@example.com",
+            password="manager-rerequest-pass-123",
+        )
+        ManagerAccount.objects.create(
+            identity=identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.VEHICLE_MANAGER,
+        )
+        self._login_identity("manager-rerequest@example.com", "manager-rerequest-pass-123")
+
+        response = self.client.post(
+            "/identity-signup-requests/me/",
+            {
+                "company_id": self.other_company_id,
+                "request_type": IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE,
+                "is_re_request": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["request_type"], IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE)
+        self.assertEqual(response.data["company_id"], self.other_company_id)
+
+        created_request = IdentitySignupRequest.objects.get(
+            identity=identity,
+            company_id=self.other_company_id,
+            request_type=IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE,
+        )
+        self.assertTrue(created_request.is_re_request)
+        self.assertEqual(str(created_request.from_company_id), self.company_id)
+
     def test_system_admin_can_list_all_requests_and_approve_driver_request(self):
         system_identity = self._create_identity_with_password(
             name="시스템 관리자",
@@ -806,3 +893,82 @@ class IdentityRequestApiTests(TestCase):
         self.assertEqual(driver_request.reject_reason, "admin_rejected")
 
         self.assertEqual(approve_manager_response.status_code, 403)
+
+
+class IdentityProfileApiTests(TestCase):
+    def setUp(self) -> None:
+        self.client = APIClient()
+        self.registry = RefreshRegistry()
+        self.registry.client.flushdb()
+
+    def _create_identity_with_password(
+        self,
+        *,
+        name: str,
+        birth_date: str,
+        email: str,
+        password: str,
+    ) -> Identity:
+        identity = Identity.objects.create(name=name, birth_date=birth_date)
+        now = timezone.now()
+        login_method = IdentityLoginMethod.objects.create(
+            identity=identity,
+            method_type=IdentityLoginMethod.MethodType.EMAIL,
+            verified_at=now,
+        )
+        EmailCredential.objects.create(
+            identity_login_method=login_method,
+            email=email,
+            verified_at=now,
+        )
+        PasswordCredential.objects.create(
+            identity=identity,
+            password_hash=make_password(password),
+        )
+        IdentityConsentCurrent.objects.create(
+            identity=identity,
+            privacy_policy_version="v1.0",
+            privacy_policy_consented_at=now,
+            location_policy_version="v1.0",
+            location_policy_consented_at=now,
+        )
+        return identity
+
+    def _login_identity(self, email: str, password: str):
+        response = self.client.post(
+            "/identity-login/",
+            {"email": email, "password": password},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {response.data['access_token']}")
+        return response
+
+    def test_identity_user_can_read_and_update_own_profile(self):
+        identity = self._create_identity_with_password(
+            name="프로필 사용자",
+            birth_date="1990-01-02",
+            email="profile@example.com",
+            password="profile-pass-123",
+        )
+        self._login_identity("profile@example.com", "profile-pass-123")
+
+        get_response = self.client.get("/identity-profile/")
+        patch_response = self.client.patch(
+            "/identity-profile/",
+            {"name": "수정된 사용자", "birth_date": "1991-02-03"},
+            format="json",
+        )
+
+        self.assertEqual(get_response.status_code, 200)
+        self.assertEqual(get_response.data["name"], "프로필 사용자")
+        self.assertEqual(patch_response.status_code, 200)
+        self.assertEqual(patch_response.data["name"], "수정된 사용자")
+        self.assertEqual(patch_response.data["birth_date"], "1991-02-03")
+
+        identity.refresh_from_db()
+        self.assertEqual(identity.name, "수정된 사용자")
+        self.assertEqual(str(identity.birth_date), "1991-02-03")
+        self.assertTrue(
+            identity.profile_history.filter(name="수정된 사용자", birth_date="1991-02-03").exists()
+        )

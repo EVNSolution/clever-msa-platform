@@ -1,7 +1,15 @@
 from rest_framework import serializers
 
-from accounts.models import Account, EmailCredential, Identity, IdentitySignupRequest, ManagerAccount
+from accounts.models import (
+    Account,
+    EmailCredential,
+    Identity,
+    IdentityProfileHistory,
+    IdentitySignupRequest,
+    ManagerAccount,
+)
 from accounts.services.signup_intake_service import SignupIntakeService
+from accounts.services.signup_request_service import SignupRequestService
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -20,6 +28,36 @@ class IdentitySummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = Identity
         fields = ("identity_id", "name", "birth_date", "status")
+
+
+class IdentityProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Identity
+        fields = ("identity_id", "name", "birth_date", "status")
+        read_only_fields = ("identity_id", "status")
+
+
+class IdentityProfileUpdateSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=120, required=False)
+    birth_date = serializers.DateField(required=False)
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        if not attrs:
+            raise serializers.ValidationError("At least one field must be provided.")
+        return attrs
+
+    def save(self, **kwargs):
+        identity = self.context["identity"]
+        for field, value in self.validated_data.items():
+            setattr(identity, field, value)
+        identity.save(update_fields=[*self.validated_data.keys()])
+        IdentityProfileHistory.objects.create(
+            identity=identity,
+            name=identity.name,
+            birth_date=identity.birth_date,
+        )
+        return identity
 
 
 class ActiveAccountSerializer(serializers.Serializer):
@@ -137,6 +175,30 @@ class SignupRequestListSerializer(serializers.Serializer):
     identity = IdentitySummarySerializer()
     requests = IdentitySignupRequestSummarySerializer(many=True)
     inquiry_message = serializers.CharField(allow_blank=True)
+
+
+class IdentitySignupRequestCreateSerializer(serializers.Serializer):
+    company_id = serializers.UUIDField()
+    request_type = serializers.ChoiceField(choices=IdentitySignupRequest.RequestType.choices)
+    is_re_request = serializers.BooleanField(required=False, default=False)
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        SignupRequestService().validate_creatable_request(
+            self.context["identity"],
+            company_id=attrs["company_id"],
+            request_type=attrs["request_type"],
+            is_re_request=attrs["is_re_request"],
+        )
+        return attrs
+
+    def create(self, validated_data):
+        return SignupRequestService().create_request(
+            self.context["identity"],
+            company_id=validated_data["company_id"],
+            request_type=validated_data["request_type"],
+            is_re_request=validated_data["is_re_request"],
+        )
 
 
 class SignupRequestActionSerializer(serializers.Serializer):

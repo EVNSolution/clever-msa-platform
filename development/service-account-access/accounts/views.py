@@ -30,6 +30,9 @@ from accounts.serializers import (
     HealthSerializer,
     IdentityAuthSessionSerializer,
     IdentityLoginSerializer,
+    IdentityProfileSerializer,
+    IdentityProfileUpdateSerializer,
+    IdentitySignupRequestCreateSerializer,
     IdentitySignupRequestSummarySerializer,
     IdentitySignupIntakeResultSerializer,
     IdentitySignupIntakeSerializer,
@@ -235,6 +238,28 @@ class IdentityMeView(APIView):
         )
 
 
+class IdentityProfileView(APIView):
+    permission_classes = [IsAuthenticatedAccount]
+
+    @extend_schema(responses={200: IdentityProfileSerializer})
+    def get(self, request):
+        if not hasattr(request.user, "identity"):
+            raise AuthenticationFailed("Identity session is required.")
+        return Response(IdentityProfileSerializer(request.user.identity).data, status=status.HTTP_200_OK)
+
+    @extend_schema(request=IdentityProfileUpdateSerializer, responses={200: IdentityProfileSerializer})
+    def patch(self, request):
+        if not hasattr(request.user, "identity"):
+            raise AuthenticationFailed("Identity session is required.")
+        serializer = IdentityProfileUpdateSerializer(
+            data=request.data,
+            context={"identity": request.user.identity},
+        )
+        serializer.is_valid(raise_exception=True)
+        identity = serializer.save()
+        return Response(IdentityProfileSerializer(identity).data, status=status.HTTP_200_OK)
+
+
 class LoginView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
@@ -359,6 +384,24 @@ class IdentitySignupRequestSelfListView(APIView):
             }
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @extend_schema(
+        request=IdentitySignupRequestCreateSerializer,
+        responses={201: IdentitySignupRequestSummarySerializer},
+    )
+    def post(self, request):
+        if not hasattr(request.user, "identity"):
+            raise AuthenticationFailed("Identity session is required.")
+        serializer = IdentitySignupRequestCreateSerializer(
+            data=request.data,
+            context={"identity": request.user.identity},
+        )
+        serializer.is_valid(raise_exception=True)
+        created_request = serializer.save()
+        return Response(
+            IdentitySignupRequestSummarySerializer(created_request).data,
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class IdentitySignupRequestCancelView(APIView):

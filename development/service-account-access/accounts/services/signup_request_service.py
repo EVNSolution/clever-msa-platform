@@ -11,6 +11,50 @@ from accounts.models import (
 
 
 class SignupRequestService:
+    def validate_creatable_request(
+        self,
+        identity,
+        *,
+        company_id,
+        request_type: str,
+        is_re_request: bool,
+    ) -> None:
+        if IdentitySignupRequest.objects.filter(
+            identity=identity,
+            company_id=company_id,
+            request_type=request_type,
+            status=IdentitySignupRequest.Status.PENDING,
+        ).exists():
+            raise ValidationError({"request_type": ["Pending request already exists for this scope."]})
+
+        active_account = self._get_active_account(identity, request_type=request_type)
+        if active_account is None:
+            if is_re_request:
+                raise ValidationError({"is_re_request": ["Re-request requires an active account."]})
+            return
+
+        if str(active_account.company_id) == str(company_id):
+            raise ValidationError({"request_type": ["Active account already exists for this company."]})
+        if not is_re_request:
+            raise ValidationError({"is_re_request": ["Company change must be created as a re-request."]})
+
+    def create_request(
+        self,
+        identity,
+        *,
+        company_id,
+        request_type: str,
+        is_re_request: bool,
+    ) -> IdentitySignupRequest:
+        active_account = self._get_active_account(identity, request_type=request_type)
+        return IdentitySignupRequest.objects.create(
+            identity=identity,
+            company_id=company_id,
+            request_type=request_type,
+            is_re_request=is_re_request,
+            from_company_id=getattr(active_account, "company_id", None) if is_re_request else None,
+        )
+
     def list_manageable_requests(self, principal, *, status_value: str | None = None):
         queryset = IdentitySignupRequest.objects.select_related("identity").order_by("-requested_at")
         if getattr(principal, "system_admin_account", None) is not None:
@@ -168,3 +212,14 @@ class SignupRequestService:
     def _stamp_reviewer(self, principal, request: IdentitySignupRequest) -> None:
         request.reviewed_by_system_admin_account = getattr(principal, "system_admin_account", None)
         request.reviewed_by_manager_account = getattr(principal, "manager_account", None)
+
+    def _get_active_account(self, identity, *, request_type: str):
+        if request_type == IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE:
+            return ManagerAccount.objects.filter(
+                identity=identity,
+                status=ManagerAccount.Status.ACTIVE,
+            ).first()
+        return DriverAccount.objects.filter(
+            identity=identity,
+            status=DriverAccount.Status.ACTIVE,
+        ).first()
