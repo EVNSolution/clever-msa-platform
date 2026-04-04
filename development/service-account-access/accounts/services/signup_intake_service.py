@@ -52,8 +52,10 @@ class SignupIntakeService:
             IdentityConsentCurrent.objects.create(
                 identity=identity,
                 privacy_policy_version=privacy_policy_version,
+                privacy_policy_consented=True,
                 privacy_policy_consented_at=now,
                 location_policy_version=location_policy_version,
+                location_policy_consented=True,
                 location_policy_consented_at=now,
             )
             IdentityConsentHistory.objects.bulk_create(

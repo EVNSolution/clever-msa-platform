@@ -9,6 +9,7 @@ class IdentitySessionPrincipal:
     system_admin_account: SystemAdminAccount | None = None
     manager_account: ManagerAccount | None = None
     driver_account: DriverAccount | None = None
+    session_kind: str = "normal"
 
     @property
     def is_authenticated(self) -> bool:
@@ -28,6 +29,10 @@ class IdentitySessionPrincipal:
         if self.driver_account is not None:
             types.append("driver")
         return types
+
+    @property
+    def is_consent_recovery(self) -> bool:
+        return self.session_kind == "consent_recovery"
 
     @property
     def active_account_type(self) -> str | None:
@@ -50,7 +55,12 @@ class IdentitySessionPrincipal:
         return None
 
     @classmethod
-    def from_identity(cls, identity: Identity) -> "IdentitySessionPrincipal":
+    def from_identity(
+        cls,
+        identity: Identity,
+        *,
+        session_kind: str = "normal",
+    ) -> "IdentitySessionPrincipal":
         return cls(
             identity=identity,
             system_admin_account=SystemAdminAccount.objects.filter(
@@ -65,4 +75,5 @@ class IdentitySessionPrincipal:
                 identity=identity,
                 status=DriverAccount.Status.ACTIVE,
             ).first(),
+            session_kind=session_kind,
         )

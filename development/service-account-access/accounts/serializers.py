@@ -1,13 +1,20 @@
 from rest_framework import serializers
 
+from django.contrib.auth.hashers import check_password
+
 from accounts.models import (
     Account,
     EmailCredential,
     Identity,
+    IdentityConsentCurrent,
+    IdentityConsentHistory,
+    IdentityLoginMethod,
     IdentityProfileHistory,
     IdentitySignupRequest,
     ManagerAccount,
+    PasswordCredential,
 )
+from accounts.services.identity_login_method_service import IdentityLoginMethodService
 from accounts.services.signup_intake_service import SignupIntakeService
 from accounts.services.signup_request_service import SignupRequestService
 
@@ -157,6 +164,7 @@ class AuthSessionSerializer(serializers.Serializer):
 
 class IdentityAuthSessionSerializer(serializers.Serializer):
     access_token = serializers.CharField()
+    session_kind = serializers.CharField()
     identity = IdentitySummarySerializer()
     active_account = ActiveAccountSerializer(allow_null=True)
     available_account_types = serializers.ListField(child=serializers.CharField())
@@ -203,6 +211,143 @@ class IdentitySignupRequestCreateSerializer(serializers.Serializer):
 
 class SignupRequestActionSerializer(serializers.Serializer):
     reject_reason = serializers.CharField(required=False, allow_blank=False)
+
+
+class IdentityConsentCurrentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IdentityConsentCurrent
+        fields = (
+            "privacy_policy_version",
+            "privacy_policy_consented",
+            "privacy_policy_consented_at",
+            "location_policy_version",
+            "location_policy_consented",
+            "location_policy_consented_at",
+        )
+
+
+class IdentityConsentWithdrawSerializer(serializers.Serializer):
+    consent_type = serializers.ChoiceField(choices=IdentityConsentHistory.ConsentType.choices)
+
+
+class IdentityConsentRecoverSerializer(serializers.Serializer):
+    privacy_policy_version = serializers.CharField(max_length=32)
+    privacy_policy_consented = serializers.BooleanField()
+    location_policy_version = serializers.CharField(max_length=32)
+    location_policy_consented = serializers.BooleanField()
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        errors = {}
+        if not attrs["privacy_policy_consented"]:
+            errors["privacy_policy_consented"] = ["Privacy policy consent is required."]
+        if not attrs["location_policy_consented"]:
+            errors["location_policy_consented"] = ["Location policy consent is required."]
+        if errors:
+            raise serializers.ValidationError(errors)
+        return attrs
+
+
+class IdentityLoginMethodSerializer(serializers.ModelSerializer):
+    value = serializers.SerializerMethodField()
+
+    class Meta:
+        model = IdentityLoginMethod
+        fields = ("identity_login_method_id", "method_type", "verified_at", "value")
+
+    def get_value(self, obj):
+        if hasattr(obj, "email_credential"):
+            return obj.email_credential.email
+        if hasattr(obj, "phone_credential"):
+            return obj.phone_credential.phone_number
+        if hasattr(obj, "social_credential"):
+            return {
+                "provider_type": obj.social_credential.provider_type,
+                "provider_subject": obj.social_credential.provider_subject,
+            }
+        return None
+
+
+class IdentityLoginMethodListSerializer(serializers.Serializer):
+    methods = IdentityLoginMethodSerializer(many=True)
+
+
+class IdentityLoginMethodCreateSerializer(serializers.Serializer):
+    method_type = serializers.ChoiceField(choices=IdentityLoginMethod.MethodType.choices)
+    email = serializers.EmailField(required=False)
+    phone_number = serializers.CharField(required=False)
+    provider_type = serializers.CharField(required=False)
+    provider_subject = serializers.CharField(required=False)
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        IdentityLoginMethodService().ensure_creatable(
+            identity=self.context["identity"],
+            method_type=attrs["method_type"],
+            email=attrs.get("email"),
+            phone_number=attrs.get("phone_number"),
+            provider_type=attrs.get("provider_type"),
+            provider_subject=attrs.get("provider_subject"),
+        )
+        return attrs
+
+    def create(self, validated_data):
+        return IdentityLoginMethodService().create_method(
+            self.context["identity"],
+            method_type=validated_data["method_type"],
+            email=validated_data.get("email"),
+            phone_number=validated_data.get("phone_number"),
+            provider_type=validated_data.get("provider_type"),
+            provider_subject=validated_data.get("provider_subject"),
+        )
+
+
+class IdentityLoginMethodDeleteSerializer(serializers.Serializer):
+    confirm = serializers.BooleanField(required=False, default=False)
+    current_password = serializers.CharField(required=False, allow_blank=False)
+
+
+class IdentityRecoverySerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=120)
+    birth_date = serializers.DateField()
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True, min_length=8)
+    privacy_policy_version = serializers.CharField(max_length=32)
+    privacy_policy_consented = serializers.BooleanField()
+    location_policy_version = serializers.CharField(max_length=32)
+    location_policy_consented = serializers.BooleanField()
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        errors = {}
+        if not attrs["privacy_policy_consented"]:
+            errors["privacy_policy_consented"] = ["Privacy policy consent is required."]
+        if not attrs["location_policy_consented"]:
+            errors["location_policy_consented"] = ["Location policy consent is required."]
+        if errors:
+            raise serializers.ValidationError(errors)
+        return attrs
+
+
+class IdentityPasswordSerializer(serializers.Serializer):
+    current_password = serializers.CharField(required=False, allow_blank=False)
+    new_password = serializers.CharField(write_only=True, min_length=8)
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        identity = self.context["identity"]
+        password_credential = PasswordCredential.objects.filter(identity=identity).first()
+        current_password = attrs.get("current_password")
+        if password_credential is not None:
+            if not current_password:
+                raise serializers.ValidationError(
+                    {"current_password": ["Current password is required."]}
+                )
+            if not check_password(current_password, password_credential.password_hash):
+                raise serializers.ValidationError(
+                    {"current_password": ["Current password is incorrect."]}
+                )
+        return attrs
 
 
 class SignupRequestSetupSerializer(serializers.Serializer):

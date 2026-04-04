@@ -2,6 +2,7 @@ from django.contrib.auth.hashers import check_password
 from rest_framework.exceptions import AuthenticationFailed
 
 from accounts.models import EmailCredential, Identity, PasswordCredential
+from accounts.services.identity_consent_service import IdentityConsentService
 from accounts.session_principal import IdentitySessionPrincipal
 
 
@@ -26,4 +27,9 @@ class IdentityAuthService:
         if password_credential is None or not check_password(password, password_credential.password_hash):
             raise AuthenticationFailed("Invalid email or password.")
 
-        return IdentitySessionPrincipal.from_identity(identity)
+        session_kind = (
+            "normal"
+            if IdentityConsentService().is_fully_consented(identity)
+            else "consent_recovery"
+        )
+        return IdentitySessionPrincipal.from_identity(identity, session_kind=session_kind)

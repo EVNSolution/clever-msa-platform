@@ -37,9 +37,14 @@ def create_refresh_token(account) -> str:
 
 def _identity_payload(principal, token_type: str, lifetime):
     now = _utcnow()
+    principal_kind = (
+        "identity_consent_recovery_session"
+        if getattr(principal, "session_kind", "normal") == "consent_recovery"
+        else "identity_session"
+    )
     return {
         "sub": str(principal.identity.identity_id),
-        "principal_kind": "identity_session",
+        "principal_kind": principal_kind,
         "iss": settings.JWT_ISSUER,
         "aud": settings.JWT_AUDIENCE,
         "iat": int(now.timestamp()),

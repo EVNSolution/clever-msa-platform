@@ -391,8 +391,10 @@ class IdentityConsentCurrent(models.Model):
         related_name="consent_current",
     )
     privacy_policy_version = models.CharField(max_length=32)
+    privacy_policy_consented = models.BooleanField(default=True)
     privacy_policy_consented_at = models.DateTimeField()
     location_policy_version = models.CharField(max_length=32)
+    location_policy_consented = models.BooleanField(default=True)
     location_policy_consented_at = models.DateTimeField()
 
 

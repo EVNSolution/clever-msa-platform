@@ -2,6 +2,7 @@ from rest_framework.authentication import BaseAuthentication, get_authorization_
 from rest_framework.exceptions import AuthenticationFailed
 
 from accounts.models import Account, Identity
+from accounts.services.identity_consent_service import IdentityConsentService
 from accounts.session_principal import IdentitySessionPrincipal
 from accounts.services.jwt_service import decode_token
 
@@ -20,14 +21,21 @@ class JWTAuthentication(BaseAuthentication):
             raise AuthenticationFailed("Invalid authorization header.")
 
         payload = decode_token(parts[1], "access")
-        if payload.get("principal_kind") == "identity_session":
+        principal_kind = payload.get("principal_kind")
+        if principal_kind in {"identity_session", "identity_consent_recovery_session"}:
             identity = Identity.objects.filter(
                 identity_id=payload["sub"],
                 status=Identity.Status.ACTIVE,
             ).first()
             if identity is None:
                 raise AuthenticationFailed("Identity not found.")
-            return IdentitySessionPrincipal.from_identity(identity), payload
+            session_kind = (
+                "consent_recovery"
+                if principal_kind == "identity_consent_recovery_session"
+                or not IdentityConsentService().is_fully_consented(identity)
+                else "normal"
+            )
+            return IdentitySessionPrincipal.from_identity(identity, session_kind=session_kind), payload
 
         account = Account.objects.filter(account_id=payload["sub"], is_active=True).first()
         if account is None:

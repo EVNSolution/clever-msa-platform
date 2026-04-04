@@ -1,10 +1,11 @@
 import uuid
 
 from django.conf import settings
+from django.contrib.auth.hashers import make_password
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
-from rest_framework.exceptions import APIException, AuthenticationFailed
+from rest_framework.exceptions import APIException, AuthenticationFailed, PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -17,7 +18,7 @@ except ModuleNotFoundError:
 
         return decorator
 
-from accounts.models import Account, Identity
+from accounts.models import Account, Identity, PasswordCredential
 from accounts.permissions import IsAdminRole, IsAuthenticatedAccount
 from accounts.session_principal import IdentitySessionPrincipal
 from accounts.serializers import (
@@ -29,9 +30,18 @@ from accounts.serializers import (
     ChangePasswordSerializer,
     HealthSerializer,
     IdentityAuthSessionSerializer,
+    IdentityConsentCurrentSerializer,
+    IdentityConsentRecoverSerializer,
+    IdentityConsentWithdrawSerializer,
     IdentityLoginSerializer,
+    IdentityLoginMethodCreateSerializer,
+    IdentityLoginMethodDeleteSerializer,
+    IdentityLoginMethodListSerializer,
+    IdentityLoginMethodSerializer,
+    IdentityPasswordSerializer,
     IdentityProfileSerializer,
     IdentityProfileUpdateSerializer,
+    IdentityRecoverySerializer,
     IdentitySignupRequestCreateSerializer,
     IdentitySignupRequestSummarySerializer,
     IdentitySignupIntakeResultSerializer,
@@ -46,6 +56,9 @@ from accounts.serializers import (
 )
 from accounts.services.driver_link_service import DriverLinkService
 from accounts.services.identity_auth_service import IdentityAuthService
+from accounts.services.identity_consent_service import IdentityConsentService
+from accounts.services.identity_login_method_service import IdentityLoginMethodService
+from accounts.services.identity_recovery_service import IdentityRecoveryService
 from accounts.services.jwt_service import (
     create_access_token,
     create_identity_access_token,
@@ -107,10 +120,36 @@ def _serialize_active_account(principal):
 def _identity_session_payload(principal, access_token: str) -> dict:
     return {
         "access_token": access_token,
+        "session_kind": principal.session_kind,
         "identity": IdentitySummarySerializer(principal.identity).data,
         "active_account": _serialize_active_account(principal),
         "available_account_types": principal.available_account_types,
     }
+
+
+def _require_full_identity_session(request):
+    if not hasattr(request.user, "identity"):
+        raise AuthenticationFailed("Identity session is required.")
+    if getattr(request.user, "is_consent_recovery", False):
+        raise PermissionDenied("Consent recovery is required.")
+
+
+def _rotate_identity_session(request, principal):
+    access_token = create_identity_access_token(principal)
+    new_refresh_token = create_identity_refresh_token(principal)
+    current_refresh_token = request.COOKIES.get(settings.REFRESH_COOKIE_NAME)
+    registry = RefreshRegistry()
+    if current_refresh_token and registry.is_registered(current_refresh_token):
+        registry.rotate_refresh_token(current_refresh_token, new_refresh_token)
+    else:
+        registry.register_refresh_token(new_refresh_token)
+
+    response = Response(
+        _identity_session_payload(principal, access_token),
+        status=status.HTTP_200_OK,
+    )
+    _set_refresh_cookie(response, new_refresh_token)
+    return response
 
 
 class RegisterView(APIView):
@@ -183,13 +222,22 @@ class IdentityRefreshView(APIView):
             raise AuthenticationFailed("Refresh token is not registered.")
 
         payload = decode_token(refresh_token, "refresh")
-        if payload.get("principal_kind") != "identity_session":
+        if payload.get("principal_kind") not in {
+            "identity_session",
+            "identity_consent_recovery_session",
+        }:
             raise AuthenticationFailed("Refresh token is not valid for identity session.")
 
         identity = Identity.objects.filter(identity_id=payload["sub"], status=Identity.Status.ACTIVE).first()
         if identity is None:
             raise AuthenticationFailed("Identity not found.")
-        session_principal = IdentitySessionPrincipal.from_identity(identity)
+        session_kind = (
+            "consent_recovery"
+            if payload.get("principal_kind") == "identity_consent_recovery_session"
+            or not IdentityConsentService().is_fully_consented(identity)
+            else "normal"
+        )
+        session_principal = IdentitySessionPrincipal.from_identity(identity, session_kind=session_kind)
 
         access_token = create_identity_access_token(session_principal)
         new_refresh_token = create_identity_refresh_token(session_principal)
@@ -243,14 +291,12 @@ class IdentityProfileView(APIView):
 
     @extend_schema(responses={200: IdentityProfileSerializer})
     def get(self, request):
-        if not hasattr(request.user, "identity"):
-            raise AuthenticationFailed("Identity session is required.")
+        _require_full_identity_session(request)
         return Response(IdentityProfileSerializer(request.user.identity).data, status=status.HTTP_200_OK)
 
     @extend_schema(request=IdentityProfileUpdateSerializer, responses={200: IdentityProfileSerializer})
     def patch(self, request):
-        if not hasattr(request.user, "identity"):
-            raise AuthenticationFailed("Identity session is required.")
+        _require_full_identity_session(request)
         serializer = IdentityProfileUpdateSerializer(
             data=request.data,
             context={"identity": request.user.identity},
@@ -258,6 +304,160 @@ class IdentityProfileView(APIView):
         serializer.is_valid(raise_exception=True)
         identity = serializer.save()
         return Response(IdentityProfileSerializer(identity).data, status=status.HTTP_200_OK)
+
+
+class IdentityConsentView(APIView):
+    permission_classes = [IsAuthenticatedAccount]
+
+    @extend_schema(responses={200: IdentityConsentCurrentSerializer})
+    def get(self, request):
+        if not hasattr(request.user, "identity"):
+            raise AuthenticationFailed("Identity session is required.")
+        return Response(
+            IdentityConsentCurrentSerializer(request.user.identity.consent_current).data,
+            status=status.HTTP_200_OK,
+        )
+
+
+class IdentityConsentWithdrawView(APIView):
+    permission_classes = [IsAuthenticatedAccount]
+
+    @extend_schema(request=IdentityConsentWithdrawSerializer, responses={200: IdentityAuthSessionSerializer})
+    def post(self, request):
+        _require_full_identity_session(request)
+        serializer = IdentityConsentWithdrawSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        IdentityConsentService().withdraw(
+            request.user.identity,
+            consent_type=serializer.validated_data["consent_type"],
+        )
+        recovery_principal = IdentitySessionPrincipal.from_identity(
+            request.user.identity,
+            session_kind="consent_recovery",
+        )
+        return _rotate_identity_session(request, recovery_principal)
+
+
+class IdentityConsentRecoverView(APIView):
+    permission_classes = [IsAuthenticatedAccount]
+
+    @extend_schema(request=IdentityConsentRecoverSerializer, responses={200: IdentityAuthSessionSerializer})
+    def post(self, request):
+        if not hasattr(request.user, "identity"):
+            raise AuthenticationFailed("Identity session is required.")
+        serializer = IdentityConsentRecoverSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        IdentityConsentService().recover(
+            request.user.identity,
+            privacy_policy_version=serializer.validated_data["privacy_policy_version"],
+            location_policy_version=serializer.validated_data["location_policy_version"],
+        )
+        principal = IdentitySessionPrincipal.from_identity(request.user.identity, session_kind="normal")
+        return _rotate_identity_session(request, principal)
+
+
+class IdentityLoginMethodListCreateView(APIView):
+    permission_classes = [IsAuthenticatedAccount]
+
+    @extend_schema(responses={200: IdentityLoginMethodListSerializer})
+    def get(self, request):
+        _require_full_identity_session(request)
+        methods = request.user.identity.login_methods.select_related(
+            "email_credential",
+            "phone_credential",
+            "social_credential",
+        ).order_by("method_type", "identity_login_method_id")
+        return Response(
+            IdentityLoginMethodListSerializer({"methods": methods}).data,
+            status=status.HTTP_200_OK,
+        )
+
+    @extend_schema(request=IdentityLoginMethodCreateSerializer, responses={201: IdentityLoginMethodSerializer})
+    def post(self, request):
+        _require_full_identity_session(request)
+        serializer = IdentityLoginMethodCreateSerializer(
+            data=request.data,
+            context={"identity": request.user.identity},
+        )
+        serializer.is_valid(raise_exception=True)
+        login_method = serializer.save()
+        return Response(IdentityLoginMethodSerializer(login_method).data, status=status.HTTP_201_CREATED)
+
+
+class IdentityLoginMethodDeleteView(APIView):
+    permission_classes = [IsAuthenticatedAccount]
+
+    @extend_schema(request=IdentityLoginMethodDeleteSerializer, responses={204: None})
+    def post(self, request, method_id):
+        _require_full_identity_session(request)
+        serializer = IdentityLoginMethodDeleteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        login_method = get_object_or_404(
+            request.user.identity.login_methods,
+            identity_login_method_id=method_id,
+        )
+        result = IdentityLoginMethodService().delete_method(
+            request.user.identity,
+            login_method,
+            confirm=serializer.validated_data.get("confirm", False),
+            current_password=serializer.validated_data.get("current_password"),
+        )
+        response = Response(status=status.HTTP_204_NO_CONTENT)
+        if result == "archived":
+            refresh_token = request.COOKIES.get(settings.REFRESH_COOKIE_NAME)
+            if refresh_token:
+                try:
+                    RefreshRegistry().remove_refresh_token(refresh_token)
+                except AuthenticationFailed:
+                    pass
+            _clear_refresh_cookie(response)
+        return response
+
+
+class IdentityRecoveryView(APIView):
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+
+    @extend_schema(request=IdentityRecoverySerializer, responses={200: IdentityAuthSessionSerializer})
+    def post(self, request):
+        serializer = IdentityRecoverySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        identity = IdentityRecoveryService().recover_with_email_password(
+            name=serializer.validated_data["name"],
+            birth_date=serializer.validated_data["birth_date"],
+            email=serializer.validated_data["email"],
+            password=serializer.validated_data["password"],
+            privacy_policy_version=serializer.validated_data["privacy_policy_version"],
+            location_policy_version=serializer.validated_data["location_policy_version"],
+        )
+        principal = IdentitySessionPrincipal.from_identity(identity, session_kind="normal")
+        access_token = create_identity_access_token(principal)
+        refresh_token = create_identity_refresh_token(principal)
+        RefreshRegistry().register_refresh_token(refresh_token)
+        response = Response(
+            _identity_session_payload(principal, access_token),
+            status=status.HTTP_200_OK,
+        )
+        _set_refresh_cookie(response, refresh_token)
+        return response
+
+
+class IdentityPasswordView(APIView):
+    permission_classes = [IsAuthenticatedAccount]
+
+    @extend_schema(request=IdentityPasswordSerializer, responses={200: StatusMessageSerializer})
+    def put(self, request):
+        _require_full_identity_session(request)
+        serializer = IdentityPasswordSerializer(
+            data=request.data,
+            context={"identity": request.user.identity},
+        )
+        serializer.is_valid(raise_exception=True)
+        PasswordCredential.objects.update_or_create(
+            identity=request.user.identity,
+            defaults={"password_hash": make_password(serializer.validated_data["new_password"])},
+        )
+        return Response({"message": "Password updated."}, status=status.HTTP_200_OK)
 
 
 class LoginView(APIView):
@@ -373,8 +573,7 @@ class IdentitySignupRequestSelfListView(APIView):
 
     @extend_schema(responses={200: SignupRequestListSerializer})
     def get(self, request):
-        if not hasattr(request.user, "identity"):
-            raise AuthenticationFailed("Identity session is required.")
+        _require_full_identity_session(request)
         requests = request.user.identity.signup_requests.select_related("identity").order_by("-requested_at")
         serializer = SignupRequestListSerializer(
             {
@@ -390,8 +589,7 @@ class IdentitySignupRequestSelfListView(APIView):
         responses={201: IdentitySignupRequestSummarySerializer},
     )
     def post(self, request):
-        if not hasattr(request.user, "identity"):
-            raise AuthenticationFailed("Identity session is required.")
+        _require_full_identity_session(request)
         serializer = IdentitySignupRequestCreateSerializer(
             data=request.data,
             context={"identity": request.user.identity},
@@ -409,8 +607,7 @@ class IdentitySignupRequestCancelView(APIView):
 
     @extend_schema(responses={200: IdentitySignupRequestSummarySerializer})
     def post(self, request, request_id):
-        if not hasattr(request.user, "identity"):
-            raise AuthenticationFailed("Identity session is required.")
+        _require_full_identity_session(request)
         signup_request = get_object_or_404(
             request.user.identity.signup_requests,
             identity_signup_request_id=request_id,
@@ -424,8 +621,7 @@ class IdentitySignupRequestManagementListView(APIView):
 
     @extend_schema(responses={200: SignupRequestListSerializer})
     def get(self, request):
-        if not hasattr(request.user, "identity"):
-            raise AuthenticationFailed("Identity session is required.")
+        _require_full_identity_session(request)
         requests = SignupRequestService().list_manageable_requests(
             request.user,
             status_value=request.query_params.get("status"),
@@ -445,8 +641,7 @@ class IdentitySignupRequestApproveView(APIView):
 
     @extend_schema(responses={200: IdentitySignupRequestSummarySerializer})
     def post(self, request, request_id):
-        if not hasattr(request.user, "identity"):
-            raise AuthenticationFailed("Identity session is required.")
+        _require_full_identity_session(request)
         signup_request = SignupRequestService().get_manageable_request(request.user, request_id)
         updated = SignupRequestService().approve_request(request.user, signup_request)
         return Response(IdentitySignupRequestSummarySerializer(updated).data, status=status.HTTP_200_OK)
@@ -457,8 +652,7 @@ class IdentitySignupRequestRejectView(APIView):
 
     @extend_schema(request=SignupRequestActionSerializer, responses={200: IdentitySignupRequestSummarySerializer})
     def post(self, request, request_id):
-        if not hasattr(request.user, "identity"):
-            raise AuthenticationFailed("Identity session is required.")
+        _require_full_identity_session(request)
         serializer = SignupRequestActionSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         signup_request = SignupRequestService().get_manageable_request(request.user, request_id)
@@ -475,8 +669,7 @@ class IdentitySignupRequestCompleteSetupView(APIView):
 
     @extend_schema(request=SignupRequestSetupSerializer, responses={200: IdentitySignupRequestSummarySerializer})
     def post(self, request, request_id):
-        if not hasattr(request.user, "identity"):
-            raise AuthenticationFailed("Identity session is required.")
+        _require_full_identity_session(request)
         serializer = SignupRequestSetupSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         signup_request = SignupRequestService().get_manageable_request(request.user, request_id)

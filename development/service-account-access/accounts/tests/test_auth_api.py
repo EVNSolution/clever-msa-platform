@@ -18,6 +18,7 @@ from accounts.models import (
     IdentitySignupRequest,
     ManagerAccount,
     PasswordCredential,
+    PhoneCredential,
     SystemAdminAccount,
 )
 from accounts.services.refresh_registry import RefreshRegistry
@@ -972,3 +973,359 @@ class IdentityProfileApiTests(TestCase):
         self.assertTrue(
             identity.profile_history.filter(name="수정된 사용자", birth_date="1991-02-03").exists()
         )
+
+
+class IdentityConsentApiTests(TestCase):
+    def setUp(self) -> None:
+        self.client = APIClient()
+        self.registry = RefreshRegistry()
+        self.registry.client.flushdb()
+
+    def _create_identity_with_password(
+        self,
+        *,
+        name: str,
+        birth_date: str,
+        email: str,
+        password: str,
+    ) -> Identity:
+        identity = Identity.objects.create(name=name, birth_date=birth_date)
+        now = timezone.now()
+        login_method = IdentityLoginMethod.objects.create(
+            identity=identity,
+            method_type=IdentityLoginMethod.MethodType.EMAIL,
+            verified_at=now,
+        )
+        EmailCredential.objects.create(
+            identity_login_method=login_method,
+            email=email,
+            verified_at=now,
+        )
+        PasswordCredential.objects.create(
+            identity=identity,
+            password_hash=make_password(password),
+        )
+        IdentityConsentCurrent.objects.create(
+            identity=identity,
+            privacy_policy_version="v1.0",
+            privacy_policy_consented=True,
+            privacy_policy_consented_at=now,
+            location_policy_version="v1.0",
+            location_policy_consented=True,
+            location_policy_consented_at=now,
+        )
+        return identity
+
+    def _login_identity(self, email: str, password: str):
+        response = self.client.post(
+            "/identity-login/",
+            {"email": email, "password": password},
+            format="json",
+        )
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {response.data['access_token']}")
+        if "refresh_token" in response.cookies:
+            self.client.cookies["refresh_token"] = response.cookies["refresh_token"].value
+        return response
+
+    def test_identity_login_returns_consent_recovery_session_when_required_consent_is_missing(self):
+        identity = self._create_identity_with_password(
+            name="동의 복구 사용자",
+            birth_date="1990-01-02",
+            email="consent-recovery@example.com",
+            password="consent-recovery-pass-123",
+        )
+        identity.consent_current.location_policy_consented = False
+        identity.consent_current.save(update_fields=["location_policy_consented"])
+
+        response = self._login_identity("consent-recovery@example.com", "consent-recovery-pass-123")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["session_kind"], "consent_recovery")
+
+    def test_consent_recovery_session_can_read_current_consent_but_cannot_open_profile(self):
+        identity = self._create_identity_with_password(
+            name="차단 사용자",
+            birth_date="1990-01-02",
+            email="blocked-by-consent@example.com",
+            password="blocked-by-consent-pass-123",
+        )
+        identity.consent_current.location_policy_consented = False
+        identity.consent_current.save(update_fields=["location_policy_consented"])
+        self._login_identity("blocked-by-consent@example.com", "blocked-by-consent-pass-123")
+
+        consent_response = self.client.get("/identity-consent/")
+        profile_response = self.client.get("/identity-profile/")
+
+        self.assertEqual(consent_response.status_code, 200)
+        self.assertFalse(consent_response.data["location_policy_consented"])
+        self.assertEqual(profile_response.status_code, 403)
+
+    def test_withdrawing_required_consent_rotates_into_recovery_session(self):
+        identity = self._create_identity_with_password(
+            name="철회 사용자",
+            birth_date="1990-01-02",
+            email="withdraw-consent@example.com",
+            password="withdraw-consent-pass-123",
+        )
+        self._login_identity("withdraw-consent@example.com", "withdraw-consent-pass-123")
+
+        response = self.client.post(
+            "/identity-consent/withdraw/",
+            {"consent_type": "location_policy"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["session_kind"], "consent_recovery")
+        identity.consent_current.refresh_from_db()
+        self.assertFalse(identity.consent_current.location_policy_consented)
+
+    def test_reconsenting_restores_normal_session(self):
+        identity = self._create_identity_with_password(
+            name="재동의 사용자",
+            birth_date="1990-01-02",
+            email="reconsent@example.com",
+            password="reconsent-pass-123",
+        )
+        identity.consent_current.privacy_policy_consented = False
+        identity.consent_current.location_policy_consented = False
+        identity.consent_current.save(
+            update_fields=["privacy_policy_consented", "location_policy_consented"]
+        )
+        self._login_identity("reconsent@example.com", "reconsent-pass-123")
+
+        response = self.client.post(
+            "/identity-consent/recover/",
+            {
+                "privacy_policy_version": "v2.0",
+                "privacy_policy_consented": True,
+                "location_policy_version": "v2.0",
+                "location_policy_consented": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["session_kind"], "normal")
+        identity.consent_current.refresh_from_db()
+        self.assertTrue(identity.consent_current.privacy_policy_consented)
+        self.assertTrue(identity.consent_current.location_policy_consented)
+
+
+class IdentityLoginMethodApiTests(TestCase):
+    def setUp(self) -> None:
+        self.client = APIClient()
+        self.registry = RefreshRegistry()
+        self.registry.client.flushdb()
+        self.company_id = "30000000-0000-0000-0000-000000000001"
+
+    def _create_identity_with_password(
+        self,
+        *,
+        name: str,
+        birth_date: str,
+        email: str,
+        password: str,
+    ) -> Identity:
+        identity = Identity.objects.create(name=name, birth_date=birth_date)
+        now = timezone.now()
+        login_method = IdentityLoginMethod.objects.create(
+            identity=identity,
+            method_type=IdentityLoginMethod.MethodType.EMAIL,
+            verified_at=now,
+        )
+        EmailCredential.objects.create(
+            identity_login_method=login_method,
+            email=email,
+            verified_at=now,
+        )
+        PasswordCredential.objects.create(
+            identity=identity,
+            password_hash=make_password(password),
+        )
+        IdentityConsentCurrent.objects.create(
+            identity=identity,
+            privacy_policy_version="v1.0",
+            privacy_policy_consented=True,
+            privacy_policy_consented_at=now,
+            location_policy_version="v1.0",
+            location_policy_consented=True,
+            location_policy_consented_at=now,
+        )
+        return identity
+
+    def _login_identity(self, email: str, password: str):
+        response = self.client.post(
+            "/identity-login/",
+            {"email": email, "password": password},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {response.data['access_token']}")
+        if "refresh_token" in response.cookies:
+            self.client.cookies["refresh_token"] = response.cookies["refresh_token"].value
+        return response
+
+    def test_identity_user_can_list_methods_and_add_phone_method(self):
+        identity = self._create_identity_with_password(
+            name="로그인 수단 사용자",
+            birth_date="1990-01-02",
+            email="methods@example.com",
+            password="methods-pass-123",
+        )
+        self._login_identity("methods@example.com", "methods-pass-123")
+
+        list_response = self.client.get("/identity-login-methods/")
+        create_response = self.client.post(
+            "/identity-login-methods/",
+            {
+                "method_type": IdentityLoginMethod.MethodType.PHONE,
+                "phone_number": "01012341234",
+            },
+            format="json",
+        )
+
+        self.assertEqual(list_response.status_code, 200)
+        self.assertEqual(len(list_response.data["methods"]), 1)
+        self.assertEqual(create_response.status_code, 201)
+        self.assertEqual(create_response.data["method_type"], IdentityLoginMethod.MethodType.PHONE)
+        self.assertTrue(
+            PhoneCredential.objects.filter(
+                identity_login_method__identity=identity,
+                phone_number="01012341234",
+            ).exists()
+        )
+
+    def test_identity_user_cannot_add_email_already_connected_to_another_identity(self):
+        self._create_identity_with_password(
+            name="기존 이메일 소유자",
+            birth_date="1990-01-02",
+            email="taken@example.com",
+            password="taken-pass-123",
+        )
+        self._create_identity_with_password(
+            name="다른 사용자",
+            birth_date="1991-02-03",
+            email="other@example.com",
+            password="other-pass-123",
+        )
+        self._login_identity("other@example.com", "other-pass-123")
+
+        response = self.client.post(
+            "/identity-login-methods/",
+            {
+                "method_type": IdentityLoginMethod.MethodType.EMAIL,
+                "email": "taken@example.com",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data["code"], "validation_error")
+        self.assertIn("email", response.data["details"])
+
+    def test_identity_user_can_change_shared_password(self):
+        self._create_identity_with_password(
+            name="비밀번호 사용자",
+            birth_date="1990-01-02",
+            email="password-owner@example.com",
+            password="before-password-123",
+        )
+        self._login_identity("password-owner@example.com", "before-password-123")
+
+        response = self.client.put(
+            "/identity-password/",
+            {
+                "current_password": "before-password-123",
+                "new_password": "after-password-123",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        fresh_client = APIClient()
+        failed_login = fresh_client.post(
+            "/identity-login/",
+            {"email": "password-owner@example.com", "password": "before-password-123"},
+            format="json",
+        )
+        succeeded_login = fresh_client.post(
+            "/identity-login/",
+            {"email": "password-owner@example.com", "password": "after-password-123"},
+            format="json",
+        )
+
+        self.assertNotEqual(failed_login.status_code, 200)
+        self.assertEqual(succeeded_login.status_code, 200)
+
+    def test_deleting_last_login_method_archives_identity_and_accounts(self):
+        identity = self._create_identity_with_password(
+            name="마지막 수단 사용자",
+            birth_date="1990-01-02",
+            email="last-method@example.com",
+            password="last-method-pass-123",
+        )
+        ManagerAccount.objects.create(
+            identity=identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.VEHICLE_MANAGER,
+        )
+        login_method = identity.login_methods.get()
+        self._login_identity("last-method@example.com", "last-method-pass-123")
+
+        response = self.client.post(
+            f"/identity-login-methods/{login_method.identity_login_method_id}/delete/",
+            {
+                "confirm": True,
+                "current_password": "last-method-pass-123",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 204)
+        identity.refresh_from_db()
+        self.assertEqual(identity.status, Identity.Status.ARCHIVED)
+        self.assertFalse(identity.login_methods.exists())
+        self.assertFalse(PasswordCredential.objects.filter(identity=identity).exists())
+        self.assertEqual(identity.manager_accounts.get().status, ManagerAccount.Status.ARCHIVED)
+
+    def test_archived_identity_can_self_recover_with_new_email_and_password(self):
+        identity = self._create_identity_with_password(
+            name="복구 대상",
+            birth_date="1990-01-02",
+            email="before-recovery@example.com",
+            password="before-recovery-pass-123",
+        )
+        identity.status = Identity.Status.ARCHIVED
+        identity.archived_at = timezone.now()
+        identity.save(update_fields=["status", "archived_at"])
+        identity.login_methods.all().delete()
+        PasswordCredential.objects.filter(identity=identity).delete()
+
+        response = self.client.post(
+            "/identity-recovery/",
+            {
+                "name": "복구 대상",
+                "birth_date": "1990-01-02",
+                "email": "after-recovery@example.com",
+                "password": "after-recovery-pass-123",
+                "privacy_policy_version": "v2.0",
+                "privacy_policy_consented": True,
+                "location_policy_version": "v2.0",
+                "location_policy_consented": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        identity.refresh_from_db()
+        self.assertEqual(identity.status, Identity.Status.ACTIVE)
+        self.assertTrue(
+            EmailCredential.objects.filter(
+                identity_login_method__identity=identity,
+                email="after-recovery@example.com",
+            ).exists()
+        )
+        self.assertTrue(PasswordCredential.objects.filter(identity=identity).exists())
+        self.assertEqual(response.data["session_kind"], "normal")
