@@ -2,6 +2,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.test import TestCase
 from django.utils import timezone
 from rest_framework.test import APIClient
+from unittest.mock import patch
 
 from accounts.models import (
     DriverAccount,
@@ -1045,6 +1046,230 @@ class ManagerAccountManagementApiTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 403)
+
+
+class DriverAccountManagementApiTests(TestCase):
+    def setUp(self) -> None:
+        self.client = APIClient()
+        self.registry = RefreshRegistry()
+        self.registry.client.flushdb()
+        self.company_id = "30000000-0000-0000-0000-000000000001"
+        self.other_company_id = "30000000-0000-0000-0000-000000000002"
+
+    def _create_identity_with_password(
+        self,
+        *,
+        name: str,
+        birth_date: str,
+        email: str,
+        password: str,
+    ) -> Identity:
+        identity = Identity.objects.create(name=name, birth_date=birth_date)
+        now = timezone.now()
+        login_method = IdentityLoginMethod.objects.create(
+            identity=identity,
+            method_type=IdentityLoginMethod.MethodType.EMAIL,
+            verified_at=now,
+        )
+        EmailCredential.objects.create(
+            identity_login_method=login_method,
+            email=email,
+            verified_at=now,
+        )
+        PasswordCredential.objects.create(
+            identity=identity,
+            password_hash=make_password(password),
+        )
+        IdentityConsentCurrent.objects.create(
+            identity=identity,
+            privacy_policy_version="v1.0",
+            privacy_policy_consented=True,
+            privacy_policy_consented_at=now,
+            location_policy_version="v1.0",
+            location_policy_consented=True,
+            location_policy_consented_at=now,
+        )
+        return identity
+
+    def _login_identity(self, email: str, password: str):
+        response = self.client.post(
+            "/identity-login/",
+            {"email": email, "password": password},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {response.data['access_token']}")
+        return response
+
+    def _create_driver_account(
+        self,
+        *,
+        identity: Identity,
+        company_id: str,
+        status: str = DriverAccount.Status.ACTIVE,
+    ) -> DriverAccount:
+        driver_account = DriverAccount.objects.create(
+            identity=identity,
+            company_id=company_id,
+            status=status,
+        )
+        IdentityAccountLink.objects.create(
+            identity=identity,
+            account_type=IdentityAccountLink.AccountType.DRIVER,
+            account_id=driver_account.driver_account_id,
+        )
+        return driver_account
+
+    def test_company_super_admin_can_list_same_company_driver_accounts(self):
+        super_identity = self._create_identity_with_password(
+            name="회사 총괄",
+            birth_date="1980-01-01",
+            email="driver-list-super@example.com",
+            password="driver-list-super-pass-123",
+        )
+        ManagerAccount.objects.create(
+            identity=super_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.COMPANY_SUPER_ADMIN,
+        )
+        own_identity = self._create_identity_with_password(
+            name="같은 회사 배송원 계정",
+            birth_date="1990-01-02",
+            email="same-driver-account@example.com",
+            password="same-driver-account-pass-123",
+        )
+        other_identity = self._create_identity_with_password(
+            name="다른 회사 배송원 계정",
+            birth_date="1991-01-02",
+            email="other-driver-account@example.com",
+            password="other-driver-account-pass-123",
+        )
+        own_driver_account = self._create_driver_account(
+            identity=own_identity,
+            company_id=self.company_id,
+        )
+        self._create_driver_account(
+            identity=other_identity,
+            company_id=self.other_company_id,
+        )
+
+        self._login_identity("driver-list-super@example.com", "driver-list-super-pass-123")
+        response = self.client.get("/driver-accounts/manage/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data["accounts"]), 1)
+        self.assertEqual(response.data["accounts"][0]["driver_account_id"], str(own_driver_account.driver_account_id))
+
+    @patch("accounts.services.driver_account_link_service.DriverProfileCompanyLookupClient.get_driver_company_id")
+    def test_vehicle_manager_can_link_driver_account_to_driver(self, get_driver_company_id):
+        get_driver_company_id.return_value = self.company_id
+        vehicle_identity = self._create_identity_with_password(
+            name="차량 관리자",
+            birth_date="1990-01-02",
+            email="driver-link-vehicle@example.com",
+            password="driver-link-vehicle-pass-123",
+        )
+        ManagerAccount.objects.create(
+            identity=vehicle_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.VEHICLE_MANAGER,
+        )
+        driver_identity = self._create_identity_with_password(
+            name="배송원 계정",
+            birth_date="1991-01-02",
+            email="driver-link-target@example.com",
+            password="driver-link-target-pass-123",
+        )
+        driver_account = self._create_driver_account(
+            identity=driver_identity,
+            company_id=self.company_id,
+        )
+
+        self._login_identity("driver-link-vehicle@example.com", "driver-link-vehicle-pass-123")
+        response = self.client.post(
+            "/driver-account-links/",
+            {
+                "driver_account_id": str(driver_account.driver_account_id),
+                "driver_id": "50000000-0000-0000-0000-000000000001",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+        link = DriverAccountLink.objects.get(driver_account=driver_account, unlinked_at__isnull=True)
+        self.assertEqual(str(link.driver_id), "50000000-0000-0000-0000-000000000001")
+
+    @patch("accounts.services.driver_account_link_service.DriverProfileCompanyLookupClient.get_driver_company_id")
+    def test_link_rejects_company_mismatch(self, get_driver_company_id):
+        get_driver_company_id.return_value = self.other_company_id
+        vehicle_identity = self._create_identity_with_password(
+            name="차량 관리자",
+            birth_date="1990-01-02",
+            email="driver-link-mismatch@example.com",
+            password="driver-link-mismatch-pass-123",
+        )
+        ManagerAccount.objects.create(
+            identity=vehicle_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.VEHICLE_MANAGER,
+        )
+        driver_identity = self._create_identity_with_password(
+            name="배송원 계정",
+            birth_date="1991-01-02",
+            email="driver-link-mismatch-target@example.com",
+            password="driver-link-mismatch-target-pass-123",
+        )
+        driver_account = self._create_driver_account(identity=driver_identity, company_id=self.company_id)
+
+        self._login_identity("driver-link-mismatch@example.com", "driver-link-mismatch-pass-123")
+        response = self.client.post(
+            "/driver-account-links/",
+            {
+                "driver_account_id": str(driver_account.driver_account_id),
+                "driver_id": "50000000-0000-0000-0000-000000000001",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("driver_id", response.data["details"])
+
+    @patch("accounts.services.driver_account_link_service.DriverProfileCompanyLookupClient.get_driver_company_id")
+    def test_settlement_manager_can_unlink_driver_account(self, get_driver_company_id):
+        get_driver_company_id.return_value = self.company_id
+        settlement_identity = self._create_identity_with_password(
+            name="정산 관리자",
+            birth_date="1990-01-02",
+            email="driver-unlink-settlement@example.com",
+            password="driver-unlink-settlement-pass-123",
+        )
+        ManagerAccount.objects.create(
+            identity=settlement_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.SETTLEMENT_MANAGER,
+        )
+        driver_identity = self._create_identity_with_password(
+            name="배송원 계정",
+            birth_date="1991-01-02",
+            email="driver-unlink-target@example.com",
+            password="driver-unlink-target-pass-123",
+        )
+        driver_account = self._create_driver_account(identity=driver_identity, company_id=self.company_id)
+        link = DriverAccountLink.objects.create(
+            driver_account=driver_account,
+            driver_id="50000000-0000-0000-0000-000000000001",
+        )
+
+        self._login_identity("driver-unlink-settlement@example.com", "driver-unlink-settlement-pass-123")
+        response = self.client.post(
+            f"/driver-account-links/{link.driver_account_link_id}/unlink/",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        link.refresh_from_db()
+        self.assertIsNotNone(link.unlinked_at)
+        self.assertEqual(link.unlink_reason, "admin_unlinked")
 
 
 class IdentityProfileApiTests(TestCase):

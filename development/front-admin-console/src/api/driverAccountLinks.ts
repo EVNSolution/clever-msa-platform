@@ -23,3 +23,19 @@ export function listDriverAccountLinks(client: HttpClient, query: DriverAccountL
   const path = queryString ? `/auth/driver-account-links/?${queryString}` : '/auth/driver-account-links/';
   return client.request<DriverAccountLinkSummary[]>(path);
 }
+
+export function createDriverAccountLink(client: HttpClient, driverAccountId: string, driverId: string) {
+  return client.request<DriverAccountLinkSummary>('/auth/driver-account-links/', {
+    method: 'POST',
+    body: JSON.stringify({
+      driver_account_id: driverAccountId,
+      driver_id: driverId,
+    }),
+  });
+}
+
+export function unlinkDriverAccountLink(client: HttpClient, linkId: string) {
+  return client.request<DriverAccountLinkSummary>(`/auth/driver-account-links/${linkId}/unlink/`, {
+    method: 'POST',
+  });
+}

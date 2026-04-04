@@ -75,7 +75,10 @@
 | Account management | `GET /manager-accounts/manage/` | full identity session | system admin/all, company super admin/self+lower, vehicle-settlement manager/self only |
 | Account management | `POST /manager-accounts/:id/change-role/` | full identity session | lower manager(`vehicle_manager`/`settlement_manager`) 사이 전환만 같은 account에서 허용한다 |
 | Account management | `POST /manager-accounts/:id/archive/` | full identity session | system admin/all, company super admin/self+lower, vehicle-settlement manager/self only |
+| Account management | `GET /driver-accounts/manage/` | full identity session | system admin/all, manager/same company active driver account만 조회한다 |
 | Admin helper | `GET /driver-account-links/` | system admin 또는 manager account | driver_id, driver_account_id, active_only 필터를 지원한다 |
+| Admin helper | `POST /driver-account-links/` | system admin 또는 manager account | driver_account와 driver의 회사 일치, active link 중복 금지를 검사하고 연결을 만든다 |
+| Admin helper | `POST /driver-account-links/:id/unlink/` | system admin 또는 manager account | 같은 scope의 active link만 수동 해제한다 |
 | Health | `GET /health/` | 없음 | health check 전용 |
 
 추가로 아래 legacy surface는 current truth에서 제거됐다.
@@ -257,6 +260,46 @@ role 제한은 아래다.
 ### 아카이브
 
 `POST /manager-accounts/:id/archive/`는 물리 삭제가 아니라 lifecycle 종료다.
+
+## Driver Account Link Management
+
+### 목록 범위
+
+`GET /driver-accounts/manage/`의 current truth는 아래다.
+
+- `system_admin_account`: 모든 active driver account
+- `manager_account`: 자기 회사의 active driver account
+- `driver_account` 또는 account 미보유 identity: 관리 불가
+
+응답에는 현재 연결 상태를 바로 읽을 수 있도록 아래를 같이 준다.
+
+- `driver_account_id`
+- `identity`
+- `company_id`
+- `status`
+- `created_at`
+- `active_driver_id`
+
+### 연결
+
+`POST /driver-account-links/`는 active `driver_account_link` 정본을 만든다.
+
+검사는 아래 순서로 고정한다.
+
+1. caller가 관리 가능한 `driver_account`여야 한다
+2. 해당 `driver_account`에 active link가 없어야 한다
+3. 대상 `driver_id`에도 active link가 없어야 한다
+4. `driver_profile` 조회 기준 `driver.company_id == driver_account.company_id`여야 한다
+
+생성되면 `driver_account_link` row가 하나 생기고 `linked_at`이 채워진다.
+
+### 해제
+
+`POST /driver-account-links/:id/unlink/`는 active link를 수동 종료한다.
+
+- scope는 `GET /driver-account-links/`와 동일하게 caller의 관리 범위 안에서만 허용한다
+- 이미 종료된 link는 다시 종료할 수 없다
+- 수동 해제 시 `unlink_reason = admin_unlinked`로 남긴다
 
 - `system_admin_account`: 모든 manager account archive 가능
 - `company_super_admin`: 자기 자신 + 하위 manager account archive 가능

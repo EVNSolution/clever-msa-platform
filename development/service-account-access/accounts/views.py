@@ -19,6 +19,8 @@ from accounts.models import DriverAccountLink, Identity, PasswordCredential
 from accounts.permissions import IsAuthenticatedAccount
 from accounts.session_principal import IdentitySessionPrincipal
 from accounts.serializers import (
+    DriverAccountLinkCreateSerializer,
+    DriverAccountListSerializer,
     DriverAccountLinkSummarySerializer,
     HealthSerializer,
     IdentityAuthSessionSerializer,
@@ -51,6 +53,7 @@ from accounts.services.identity_auth_service import IdentityAuthService
 from accounts.services.identity_consent_service import IdentityConsentService
 from accounts.services.identity_login_method_service import IdentityLoginMethodService
 from accounts.services.identity_recovery_service import IdentityRecoveryService
+from accounts.services.driver_account_link_service import DriverAccountLinkService
 from accounts.services.manager_account_service import ManagerAccountService
 from accounts.services.jwt_service import (
     create_identity_access_token,
@@ -593,6 +596,17 @@ class ManagerAccountArchiveView(APIView):
         return Response(ManagerAccountSummarySerializer(updated).data, status=status.HTTP_200_OK)
 
 
+class DriverAccountManagementListView(APIView):
+    permission_classes = [IsAuthenticatedAccount]
+
+    @extend_schema(responses={200: DriverAccountListSerializer})
+    def get(self, request):
+        _require_full_identity_session(request)
+        accounts = DriverAccountLinkService().list_manageable_driver_accounts(request.user)
+        serializer = DriverAccountListSerializer({"accounts": accounts})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class DriverAccountLinkListView(APIView):
     permission_classes = [IsAuthenticatedAccount]
 
@@ -602,7 +616,7 @@ class DriverAccountLinkListView(APIView):
         if request.user.active_account_type not in {"system_admin", "manager"}:
             raise PermissionDenied("Driver account links are visible only to admin accounts.")
 
-        queryset = DriverAccountLink.objects.select_related("driver_account__identity").order_by("-linked_at")
+        queryset = DriverAccountLinkService().list_manageable_links(request.user)
         driver_id = request.query_params.get("driver_id")
         if driver_id:
             queryset = queryset.filter(driver_id=driver_id)
@@ -621,6 +635,33 @@ class DriverAccountLinkListView(APIView):
             DriverAccountLinkSummarySerializer(queryset, many=True).data,
             status=status.HTTP_200_OK,
         )
+
+    @extend_schema(request=DriverAccountLinkCreateSerializer, responses={201: DriverAccountLinkSummarySerializer})
+    def post(self, request):
+        _require_full_identity_session(request)
+        if request.user.active_account_type not in {"system_admin", "manager"}:
+            raise PermissionDenied("Driver account links are manageable only by admin accounts.")
+        serializer = DriverAccountLinkCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        link = DriverAccountLinkService().create_link(
+            request.user,
+            driver_account_id=str(serializer.validated_data["driver_account_id"]),
+            driver_id=str(serializer.validated_data["driver_id"]),
+        )
+        return Response(DriverAccountLinkSummarySerializer(link).data, status=status.HTTP_201_CREATED)
+
+
+class DriverAccountLinkUnlinkView(APIView):
+    permission_classes = [IsAuthenticatedAccount]
+
+    @extend_schema(responses={200: DriverAccountLinkSummarySerializer})
+    def post(self, request, link_id):
+        _require_full_identity_session(request)
+        if request.user.active_account_type not in {"system_admin", "manager"}:
+            raise PermissionDenied("Driver account links are manageable only by admin accounts.")
+        link = DriverAccountLinkService().get_manageable_link(request.user, link_id)
+        updated = DriverAccountLinkService().unlink(request.user, link)
+        return Response(DriverAccountLinkSummarySerializer(updated).data, status=status.HTTP_200_OK)
 
 
 class HealthView(APIView):

@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth.hashers import check_password
 
 from accounts.models import (
+    DriverAccount,
     DriverAccountLink,
     EmailCredential,
     Identity,
@@ -87,6 +88,37 @@ class ManagerAccountListSerializer(serializers.Serializer):
 
 class ManagerAccountRoleChangeSerializer(serializers.Serializer):
     role_type = serializers.ChoiceField(choices=ManagerAccount.RoleType.choices)
+
+
+class DriverAccountSummarySerializer(serializers.ModelSerializer):
+    identity = IdentitySummarySerializer(read_only=True)
+    active_driver_id = serializers.SerializerMethodField()
+
+    class Meta:
+        model = DriverAccount
+        fields = (
+            "driver_account_id",
+            "identity",
+            "company_id",
+            "status",
+            "created_at",
+            "active_driver_id",
+        )
+
+    def get_active_driver_id(self, obj):
+        active_link = obj.driver_links.filter(unlinked_at__isnull=True).order_by("-linked_at").first()
+        if active_link is None:
+            return None
+        return str(active_link.driver_id)
+
+
+class DriverAccountListSerializer(serializers.Serializer):
+    accounts = DriverAccountSummarySerializer(many=True)
+
+
+class DriverAccountLinkCreateSerializer(serializers.Serializer):
+    driver_account_id = serializers.UUIDField()
+    driver_id = serializers.UUIDField()
 
 
 class IdentitySignupRequestSummarySerializer(serializers.ModelSerializer):

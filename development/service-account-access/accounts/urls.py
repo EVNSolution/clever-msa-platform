@@ -2,6 +2,8 @@ from django.urls import path
 
 from accounts.views import (
     DriverAccountLinkListView,
+    DriverAccountLinkUnlinkView,
+    DriverAccountManagementListView,
     HealthView,
     IdentityConsentRecoverView,
     IdentityConsentView,
@@ -50,6 +52,8 @@ urlpatterns = [
     path("manager-accounts/manage/", ManagerAccountManagementListView.as_view(), name="manager-account-management-list"),
     path("manager-accounts/<uuid:manager_account_id>/change-role/", ManagerAccountChangeRoleView.as_view(), name="manager-account-change-role"),
     path("manager-accounts/<uuid:manager_account_id>/archive/", ManagerAccountArchiveView.as_view(), name="manager-account-archive"),
+    path("driver-accounts/manage/", DriverAccountManagementListView.as_view(), name="driver-account-management-list"),
     path("driver-account-links/", DriverAccountLinkListView.as_view(), name="driver-account-link-list"),
+    path("driver-account-links/<uuid:link_id>/unlink/", DriverAccountLinkUnlinkView.as_view(), name="driver-account-link-unlink"),
     path("health/", HealthView.as_view(), name="health"),
 ]

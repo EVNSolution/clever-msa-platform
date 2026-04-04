@@ -48,6 +48,24 @@ export type IdentitySignupRequestList = {
   inquiry_message: string;
 };
 
+export type ManagerAccountSummary = {
+  manager_account_id: string;
+  identity: {
+    identity_id: string;
+    name: string;
+    birth_date: string;
+    status: string;
+  };
+  company_id: string;
+  role_type: string;
+  status: string;
+  created_at: string;
+};
+
+export type ManagerAccountList = {
+  accounts: ManagerAccountSummary[];
+};
+
 export type Company = {
   company_id: string;
   route_no?: number;
@@ -84,6 +102,24 @@ export type DriverAccountLinkSummary = {
   account_status: string;
   linked_at: string;
   unlinked_at: string | null;
+};
+
+export type DriverAccountSummary = {
+  driver_account_id: string;
+  identity: {
+    identity_id: string;
+    name: string;
+    birth_date: string;
+    status: string;
+  };
+  company_id: string;
+  status: string;
+  created_at: string;
+  active_driver_id: string | null;
+};
+
+export type DriverAccountList = {
+  accounts: DriverAccountSummary[];
 };
 
 export type VehicleMaster = {
