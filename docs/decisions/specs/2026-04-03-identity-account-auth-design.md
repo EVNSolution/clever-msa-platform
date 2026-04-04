@@ -301,13 +301,15 @@
    - `새 회사 company_super_admin`
    - `system_admin_account`
 6. `manager_account_create` 승인 시 실제 역할은 `awaiting_setup` 단계에서 정한다.
-7. `driver_account_create` 승인 시 `driver_account`만 생성한다.
-8. `driver` 연결은 승인 후 별도 단계다.
-9. request는 수정하지 않는다.
-10. 사용자는 승인 대기창에서 자기 `active request`를 취소할 수 있다.
-11. 사용자 취소와 관리자 반려는 모두 `rejected`로 기록하고, 차이는 `reject_reason`으로만 남긴다.
-12. 반려된 request는 같은 종류로 다시 신청할 수 있다.
-13. 승인/반려된 request는 이력으로 남긴다.
+7. `company_super_admin`도 별도 invite가 아니라 같은 `manager_account_create` request 흐름으로 만든다.
+8. 최초 `company_super_admin`도 `system_admin_account`가 같은 request 흐름에서 역할을 지정해 연다.
+9. `driver_account_create` 승인 시 `driver_account`만 생성한다.
+10. `driver` 연결은 승인 후 별도 단계다.
+11. request는 수정하지 않는다.
+12. 사용자는 승인 대기창에서 자기 `active request`를 취소할 수 있다.
+13. 사용자 취소와 관리자 반려는 모두 `rejected`로 기록하고, 차이는 `reject_reason`으로만 남긴다.
+14. 반려된 request는 같은 종류로 다시 신청할 수 있다.
+15. 승인/반려된 request는 이력으로 남긴다.
 
 ## 승인 대기 규칙
 
@@ -467,14 +469,9 @@
 
 ## invite 규칙
 
-1. 1차 기본 가입 흐름은 아니다.
-2. 후속 확장으로 추가한다.
-3. invite는 `1회용`, `12시간` 유효다.
-4. 대상은 아래 둘만 허용한다.
-   - `system_admin_account`
-   - `company_super_admin`
-5. invite는 별도 회원가입 경로를 연다.
-6. 실제 회원가입과 신청이 완료될 때 `identity_signup_request`가 생성된다.
+1. invite는 current truth가 아니다.
+2. `company_super_admin`도 현재는 일반 `manager_account_create` request 흐름을 그대로 따른다.
+3. invite는 후속 확장 과제로만 보류한다.
 
 ## 최소 필드 원칙
 
