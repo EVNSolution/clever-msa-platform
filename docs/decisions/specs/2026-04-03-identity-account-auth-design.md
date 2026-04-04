@@ -437,6 +437,23 @@
     - `driver_account_link` 종료
     - `identity_login_method`, 각 credential 완전 삭제
 
+## social provider 참고 범위
+
+1. 소셜 로그인 구현 시 legacy/reference source로 `ev-dashboard-server/src/social_auth/`를 참고할 수 있다.
+2. 참고 범위는 `provider adapter`에 한정한다.
+3. 즉 아래만 참고한다.
+   - provider `access_token` 검증 방식
+   - provider 사용자 정보 응답 파싱
+   - provider 고유 식별자 저장 방식
+4. 아래는 참고하지 않는다.
+   - legacy `User` 생성 흐름
+   - 회사 귀속/권한 부여 로직
+   - 승인/활성화 상태 분기
+   - DRF token 기반 인증 방식
+   - OTP 기반 가입 완료 로직
+5. 우리 current truth는 항상 이 문서의 `identity + login_method + credential + account + request` 구조가 우선이다.
+6. 즉 social provider 연동은 이 구조 위에 provider adapter를 추가하는 작업으로만 본다.
+
 ## identity 복구 규칙
 
 1. 사용자는 스스로 `identity` 복구를 요청할 수 있다.

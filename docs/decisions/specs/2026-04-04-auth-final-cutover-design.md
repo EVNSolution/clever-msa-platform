@@ -221,3 +221,5 @@ legacy `account` 요약 payload는 최종 current truth에서 제거한다.
 2. invite 도입
 3. 감사/디버그 전용 debug context
 4. support/notification domain의 actor field 이름 정리
+
+social login provider 실제 연동은 이번 phase에서 구현하지 않는다. 다만 후속 상용 구현 시 legacy/reference source인 `ev-dashboard-server/src/social_auth/`를 `provider adapter` 참고용으로만 사용한다. 회사 귀속, 승인, 계정 생성, 세션/토큰, 제품 workflow는 이 문서와 `Identity Account Auth Design`의 current truth를 그대로 따른다.
