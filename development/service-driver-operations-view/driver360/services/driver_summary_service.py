@@ -2,7 +2,6 @@ from rest_framework.exceptions import APIException, NotFound
 
 from driver360.services.source_clients import (
     SourceClients,
-    SourceNotFoundError,
     SourceServiceError,
 )
 
@@ -36,8 +35,8 @@ class DriverSummaryService:
             warnings.append(f"Fleet not found for fleet_id={driver['fleet_id']}.")
             cleanup_blockers.append("Fleet scope is missing.")
 
-        account = self._get_account(
-            account_id=driver.get("account_id"),
+        driver_account_link = self._get_driver_account_link(
+            driver_id=driver_id,
             authorization=authorization,
             warnings=warnings,
         )
@@ -49,10 +48,8 @@ class DriverSummaryService:
             cleanup_blockers.append(
                 f"Qualification status is {driver['qualification_status']}."
             )
-        if not driver.get("account_id"):
-            cleanup_blockers.append("Linked account is missing.")
-        elif account is None:
-            cleanup_blockers.append(f"Linked account record not found for account_id={driver['account_id']}.")
+        if driver_account_link is None:
+            cleanup_blockers.append("Linked driver account is missing.")
 
         personnel_documents = self._get_personnel_documents(
             driver_id=driver_id,
@@ -102,10 +99,11 @@ class DriverSummaryService:
             "fleet_name": fleet["name"] if fleet else None,
             "employment_status": driver["employment_status"],
             "qualification_status": driver["qualification_status"],
-            "account_id": account["account_id"] if account else None,
-            "account_email": account["email"] if account else None,
-            "account_role": account["role"] if account else None,
-            "account_is_active": account["is_active"] if account else None,
+            "driver_account_link_id": driver_account_link["driver_account_link_id"] if driver_account_link else None,
+            "driver_account_id": driver_account_link["driver_account_id"] if driver_account_link else None,
+            "driver_account_identity_name": driver_account_link["identity_name"] if driver_account_link else None,
+            "driver_account_email": driver_account_link["email"] if driver_account_link else None,
+            "driver_account_status": driver_account_link["account_status"] if driver_account_link else None,
             "latest_settlement_run_id": latest_settlement["settlement_run_id"] if latest_settlement else None,
             "latest_settlement_period_start": latest_settlement["period_start"] if latest_settlement else None,
             "latest_settlement_period_end": latest_settlement["period_end"] if latest_settlement else None,
@@ -132,21 +130,18 @@ class DriverSummaryService:
             raise NotFound("Driver not found.")
         return driver
 
-    def _get_account(self, *, account_id: str | None, authorization: str, warnings: list[str]):
-        if not account_id:
-            return None
+    def _get_driver_account_link(self, *, driver_id: str, authorization: str, warnings: list[str]):
         try:
-            account = self.source_clients.get_account(account_id=account_id, authorization=authorization)
-        except SourceNotFoundError:
-            warnings.append(f"Account not found for account_id={account_id}.")
-            return None
+            links = self.source_clients.list_driver_account_links(
+                driver_id=driver_id,
+                authorization=authorization,
+            )
         except SourceServiceError:
-            warnings.append("Account source unavailable.")
+            warnings.append("Driver account link source unavailable.")
             return None
-        if not account:
-            warnings.append(f"Account not found for account_id={account_id}.")
+        if not links:
             return None
-        return account
+        return links[0]
 
     def _get_latest_settlement(self, *, driver_id: str, authorization: str, warnings: list[str]):
         try:

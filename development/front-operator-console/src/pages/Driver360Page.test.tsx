@@ -37,10 +37,11 @@ describe('Driver360Page', () => {
       company_name: 'EVN Company',
       fleet_id: '30000000-0000-0000-0000-000000000001',
       fleet_name: 'Central Fleet',
-      account_id: '40000000-0000-0000-0000-000000000001',
-      account_email: 'driver@example.com',
-      account_role: 'user',
-      account_is_active: true,
+      driver_account_link_id: '41000000-0000-0000-0000-000000000001',
+      driver_account_id: '40000000-0000-0000-0000-000000000001',
+      driver_account_identity_name: 'Kim Driver',
+      driver_account_email: 'driver@example.com',
+      driver_account_status: 'active',
       latest_settlement_run_id: '50000000-0000-0000-0000-000000000001',
       latest_settlement_period_start: '2026-03-01',
       latest_settlement_period_end: '2026-03-31',
@@ -71,10 +72,11 @@ describe('Driver360Page', () => {
       company_name: null,
       fleet_id: '30000000-0000-0000-0000-000000000001',
       fleet_name: null,
-      account_id: null,
-      account_email: null,
-      account_role: null,
-      account_is_active: null,
+      driver_account_link_id: null,
+      driver_account_id: null,
+      driver_account_identity_name: null,
+      driver_account_email: null,
+      driver_account_status: null,
       latest_settlement_run_id: null,
       latest_settlement_period_start: null,
       latest_settlement_period_end: null,
@@ -86,7 +88,7 @@ describe('Driver360Page', () => {
 
     renderPage();
 
-    expect(await screen.findByText(/연결된 계정이 없습니다/i)).toBeInTheDocument();
+    expect(await screen.findByText(/연결된 배송원 계정이 없습니다/i)).toBeInTheDocument();
     expect(screen.getByText(/정산 정보가 없습니다/i)).toBeInTheDocument();
     expect(screen.getByText(/company not found/i)).toBeInTheDocument();
   });

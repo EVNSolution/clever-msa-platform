@@ -4,14 +4,9 @@ import { describe, expect, it, vi } from 'vitest';
 import { DashboardPage } from './DashboardPage';
 
 const apiMocks = vi.hoisted(() => ({
-  getMe: vi.fn(),
   listCompanies: vi.fn(),
   listFleets: vi.fn(),
   listOrgUnits: vi.fn(),
-}));
-
-vi.mock('../api/auth', () => ({
-  getMe: apiMocks.getMe,
 }));
 
 vi.mock('../api/organization', () => ({
@@ -22,12 +17,6 @@ vi.mock('../api/organization', () => ({
 
 describe('DashboardPage', () => {
   it('loads only company and fleet summaries for the trimmed organization scope', async () => {
-    apiMocks.getMe.mockResolvedValue({
-      account_id: '10000000-0000-0000-0000-000000000001',
-      email: 'admin@example.com',
-      role: 'admin',
-      is_active: true,
-    });
     apiMocks.listCompanies.mockResolvedValue([{ company_id: '30000000-0000-0000-0000-000000000001', name: 'Seed Company' }]);
     apiMocks.listFleets.mockResolvedValue([
       {
@@ -40,11 +29,23 @@ describe('DashboardPage', () => {
 
     render(
       <DashboardPage
-        account={{
-          account_id: '10000000-0000-0000-0000-000000000001',
-          email: 'admin@example.com',
-          role: 'admin',
-          is_active: true,
+        session={{
+          accessToken: 'token',
+          sessionKind: 'normal',
+          email: 'manager@example.com',
+          identity: {
+            identityId: '10000000-0000-0000-0000-000000000001',
+            name: '운영자',
+            birthDate: '1990-01-01',
+            status: 'active',
+          },
+          activeAccount: {
+            accountType: 'manager',
+            accountId: '20000000-0000-0000-0000-000000000001',
+            companyId: '30000000-0000-0000-0000-000000000001',
+            roleType: 'vehicle_manager',
+          },
+          availableAccountTypes: ['manager'],
         }}
         client={{ request: vi.fn() }}
       />,

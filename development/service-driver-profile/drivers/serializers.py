@@ -17,7 +17,6 @@ class DriverProfileSerializer(serializers.ModelSerializer):
         fields = (
             "driver_id",
             "route_no",
-            "account_id",
             "company_id",
             "fleet_id",
             "name",

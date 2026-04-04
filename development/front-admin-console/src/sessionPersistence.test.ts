@@ -25,22 +25,40 @@ describe('sessionPersistence', () => {
   it('stores and restores a valid admin session payload', () => {
     persistSession({
       accessToken: 'token-value',
-      account: {
-        account_id: '10000000-0000-0000-0000-000000000001',
-        email: 'admin@example.com',
-        role: 'admin',
-        is_active: true,
+      sessionKind: 'normal',
+      email: 'admin@example.com',
+      identity: {
+        identityId: '10000000-0000-0000-0000-000000000001',
+        name: '관리자',
+        birthDate: '1970-01-01',
+        status: 'active',
       },
+      activeAccount: {
+        accountType: 'manager',
+        accountId: '20000000-0000-0000-0000-000000000001',
+        companyId: '30000000-0000-0000-0000-000000000001',
+        roleType: 'company_super_admin',
+      },
+      availableAccountTypes: ['manager'],
     });
 
     expect(loadStoredSession()).toEqual({
       accessToken: 'token-value',
-      account: {
-        account_id: '10000000-0000-0000-0000-000000000001',
-        email: 'admin@example.com',
-        role: 'admin',
-        is_active: true,
+      sessionKind: 'normal',
+      email: 'admin@example.com',
+      identity: {
+        identityId: '10000000-0000-0000-0000-000000000001',
+        name: '관리자',
+        birthDate: '1970-01-01',
+        status: 'active',
       },
+      activeAccount: {
+        accountType: 'manager',
+        accountId: '20000000-0000-0000-0000-000000000001',
+        companyId: '30000000-0000-0000-0000-000000000001',
+        roleType: 'company_super_admin',
+      },
+      availableAccountTypes: ['manager'],
     });
   });
 
@@ -53,12 +71,21 @@ describe('sessionPersistence', () => {
   it('clears the stored session', () => {
     persistSession({
       accessToken: 'token-value',
-      account: {
-        account_id: '10000000-0000-0000-0000-000000000001',
-        email: 'admin@example.com',
-        role: 'admin',
-        is_active: true,
+      sessionKind: 'normal',
+      email: 'admin@example.com',
+      identity: {
+        identityId: '10000000-0000-0000-0000-000000000001',
+        name: '관리자',
+        birthDate: '1970-01-01',
+        status: 'active',
       },
+      activeAccount: {
+        accountType: 'manager',
+        accountId: '20000000-0000-0000-0000-000000000001',
+        companyId: '30000000-0000-0000-0000-000000000001',
+        roleType: 'company_super_admin',
+      },
+      availableAccountTypes: ['manager'],
     });
 
     clearStoredSession();

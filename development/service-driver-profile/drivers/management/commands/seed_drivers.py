@@ -6,7 +6,6 @@ from drivers.models import DriverProfile
 
 
 SAMPLE_DRIVER_ID = UUID("10000000-0000-0000-0000-000000000001")
-SAMPLE_ACCOUNT_ID = UUID("20000000-0000-0000-0000-000000000001")
 SAMPLE_COMPANY_ID = UUID("30000000-0000-0000-0000-000000000001")
 SAMPLE_FLEET_ID = UUID("40000000-0000-0000-0000-000000000001")
 
@@ -18,7 +17,6 @@ class Command(BaseCommand):
         DriverProfile.objects.update_or_create(
             driver_id=SAMPLE_DRIVER_ID,
             defaults={
-                "account_id": SAMPLE_ACCOUNT_ID,
                 "company_id": SAMPLE_COMPANY_ID,
                 "fleet_id": SAMPLE_FLEET_ID,
                 "name": "Seed Driver",

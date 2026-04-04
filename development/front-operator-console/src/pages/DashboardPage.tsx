@@ -1,18 +1,17 @@
 import { useEffect, useState } from 'react';
 
-import { getMe } from '../api/auth';
 import { listCompanies, listFleets } from '../api/organization';
 import { getErrorMessage, type HttpClient } from '../api/http';
-import type { AccountSummary, Company, Fleet } from '../types';
+import type { SessionPayload } from '../api/http';
+import type { Company, Fleet } from '../types';
 import { formatRoleLabel } from '../uiLabels';
 
 type DashboardPageProps = {
-  account: AccountSummary;
+  session: SessionPayload;
   client: HttpClient;
 };
 
-export function DashboardPage({ account, client }: DashboardPageProps) {
-  const [me, setMe] = useState<AccountSummary>(account);
+export function DashboardPage({ session, client }: DashboardPageProps) {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [fleets, setFleets] = useState<Fleet[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -29,15 +28,10 @@ export function DashboardPage({ account, client }: DashboardPageProps) {
       setIsLoading(true);
       setErrorMessage(null);
       try {
-        const [meResponse, companyResponse, fleetResponse] = await Promise.all([
-          getMe(client),
-          listCompanies(client),
-          listFleets(client),
-        ]);
+        const [companyResponse, fleetResponse] = await Promise.all([listCompanies(client), listFleets(client)]);
         if (ignore) {
           return;
         }
-        setMe(meResponse);
         setCompanies(companyResponse);
         setFleets(fleetResponse);
       } catch (error) {
@@ -62,10 +56,11 @@ export function DashboardPage({ account, client }: DashboardPageProps) {
       <section className="hero-card panel">
         <div>
           <p className="panel-kicker">운영 요약</p>
-          <h2>{me.email}</h2>
+          <h2>{session.email}</h2>
           <p className="hero-copy">
-            현재 <strong>{formatRoleLabel(me.role)}</strong> 권한으로 로그인되어 있습니다. 조직 데이터는 게이트웨이를
-            거친 읽기 API에서 바로 불러옵니다.
+            현재{' '}
+            <strong>{formatRoleLabel(session.activeAccount?.roleType ?? session.activeAccount?.accountType)}</strong>{' '}
+            권한으로 로그인되어 있습니다. 조직 데이터는 게이트웨이를 거친 읽기 API에서 바로 불러옵니다.
           </p>
         </div>
         <div className="grid-cards">

@@ -1,10 +1,7 @@
 from django.urls import path
 
 from accounts.views import (
-    AccountDetailView,
-    AccountDriverLinkView,
-    AccountListCreateView,
-    ChangePasswordView,
+    DriverAccountLinkListView,
     HealthView,
     IdentityConsentRecoverView,
     IdentityConsentView,
@@ -25,11 +22,6 @@ from accounts.views import (
     IdentitySignupRequestManagementListView,
     IdentitySignupRequestRejectView,
     IdentitySignupRequestSelfListView,
-    LoginView,
-    LogoutView,
-    MeView,
-    RefreshView,
-    RegisterView,
 )
 
 urlpatterns = [
@@ -52,14 +44,6 @@ urlpatterns = [
     path("identity-login-methods/<uuid:method_id>/delete/", IdentityLoginMethodDeleteView.as_view(), name="identity-login-method-delete"),
     path("identity-password/", IdentityPasswordView.as_view(), name="identity-password"),
     path("identity-recovery/", IdentityRecoveryView.as_view(), name="identity-recovery"),
-    path("register/", RegisterView.as_view(), name="register"),
-    path("login/", LoginView.as_view(), name="login"),
-    path("refresh/", RefreshView.as_view(), name="refresh"),
-    path("logout/", LogoutView.as_view(), name="logout"),
-    path("me/", MeView.as_view(), name="me"),
-    path("change-password/", ChangePasswordView.as_view(), name="change-password"),
-    path("account-driver-links/", AccountDriverLinkView.as_view(), name="account-driver-link"),
-    path("accounts/", AccountListCreateView.as_view(), name="account-list"),
-    path("accounts/<str:account_ref>/", AccountDetailView.as_view(), name="account-detail"),
+    path("driver-account-links/", DriverAccountLinkListView.as_view(), name="driver-account-link-list"),
     path("health/", HealthView.as_view(), name="health"),
 ]

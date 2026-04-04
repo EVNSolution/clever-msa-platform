@@ -1,14 +1,10 @@
-import type { AccountSummary, Company, DriverProfile, DriverVehicleAssignment, Fleet } from './types';
+import type { Company, DriverProfile, DriverVehicleAssignment, Fleet } from './types';
 
 function requireRouteNo(routeNo: number | undefined, resourceLabel: string): string {
   if (routeNo == null) {
     throw new Error(`${resourceLabel} route_no is required for browser routes.`);
   }
   return String(routeNo);
-}
-
-export function getAccountRouteRef(account: Pick<AccountSummary, 'route_no'>): string {
-  return requireRouteNo(account.route_no, 'account');
 }
 
 export function getCompanyRouteRef(company: Pick<Company, 'route_no'>): string {

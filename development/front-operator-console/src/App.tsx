@@ -84,12 +84,12 @@ export default function App() {
   return (
     <BrowserRouter future={ROUTER_FUTURE}>
       <Routes>
-        <Route element={<Layout account={session.account} onLogout={handleLogout} />}>
-          <Route path="/" element={<DashboardPage account={session.account} client={client} />} />
-          <Route path="/drivers" element={<DriversPage account={session.account} client={client} />} />
-          <Route path="/drivers/new" element={<DriverFormPage account={session.account} client={client} mode="create" />} />
+        <Route element={<Layout session={session} onLogout={handleLogout} />}>
+          <Route path="/" element={<DashboardPage session={session} client={client} />} />
+          <Route path="/drivers" element={<DriversPage client={client} />} />
+          <Route path="/drivers/new" element={<DriverFormPage client={client} mode="create" />} />
           <Route path="/drivers/:driverRef" element={<Driver360Page client={client} />} />
-          <Route path="/drivers/:driverRef/edit" element={<DriverFormPage account={session.account} client={client} mode="edit" />} />
+          <Route path="/drivers/:driverRef/edit" element={<DriverFormPage client={client} mode="edit" />} />
           <Route path="/vehicles" element={<VehiclesPage client={client} />} />
           <Route path="/vehicles/:vehicleRef" element={<VehicleDetailPage client={client} />} />
           <Route path="/settlements" element={<SettlementsPage client={client} />} />

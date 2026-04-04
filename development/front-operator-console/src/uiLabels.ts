@@ -1,5 +1,17 @@
 export function formatRoleLabel(role: string | null | undefined) {
   switch (role) {
+    case 'system_admin':
+      return '시스템 관리자';
+    case 'company_super_admin':
+      return '회사 전체 관리자';
+    case 'vehicle_manager':
+      return '차량 관리자';
+    case 'settlement_manager':
+      return '정산 관리자';
+    case 'manager':
+      return '관리자';
+    case 'driver':
+      return '배송원';
     case 'admin':
       return '관리자';
     case 'user':
@@ -38,6 +50,17 @@ export function formatBooleanLabel(value: boolean | null | undefined) {
     return '-';
   }
   return value ? '예' : '아니오';
+}
+
+export function formatAccountStatusLabel(value: string | null | undefined) {
+  switch (value) {
+    case 'active':
+      return '활성';
+    case 'archived':
+      return '보관';
+    default:
+      return value ?? '-';
+  }
 }
 
 export function formatVehicleStatusLabel(value: string | null | undefined) {

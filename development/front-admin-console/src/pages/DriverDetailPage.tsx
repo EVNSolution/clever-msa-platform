@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import { listAccounts } from '../api/accounts';
+import { listDriverAccountLinks } from '../api/driverAccountLinks';
 import { deleteDriver, getDriver } from '../api/drivers';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { listCompanies, listFleets } from '../api/organization';
 import { getDriverRouteRef } from '../routeRefs';
-import type { AccountSummary, Company, DriverProfile, Fleet } from '../types';
+import type { Company, DriverAccountLinkSummary, DriverProfile, Fleet } from '../types';
+import { formatAccountStatusLabel } from '../uiLabels';
 
 type DriverDetailPageProps = {
   client: HttpClient;
@@ -16,7 +17,7 @@ export function DriverDetailPage({ client }: DriverDetailPageProps) {
   const navigate = useNavigate();
   const { driverRef } = useParams();
   const [driver, setDriver] = useState<DriverProfile | null>(null);
-  const [accounts, setAccounts] = useState<AccountSummary[]>([]);
+  const [driverAccountLinks, setDriverAccountLinks] = useState<DriverAccountLinkSummary[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [fleets, setFleets] = useState<Fleet[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -37,9 +38,8 @@ export function DriverDetailPage({ client }: DriverDetailPageProps) {
       setIsLoading(true);
       setErrorMessage(null);
       try {
-        const [driverResponse, accountResponse, companyResponse, fleetResponse] = await Promise.all([
+        const [driverResponse, companyResponse, fleetResponse] = await Promise.all([
           getDriver(client, selectedDriverRef),
-          listAccounts(client),
           listCompanies(client),
           listFleets(client),
         ]);
@@ -47,9 +47,12 @@ export function DriverDetailPage({ client }: DriverDetailPageProps) {
           return;
         }
         setDriver(driverResponse);
-        setAccounts(accountResponse);
         setCompanies(companyResponse);
         setFleets(fleetResponse);
+        const driverAccountLinkResponse = await listDriverAccountLinks(client, { driverId: driverResponse.driver_id });
+        if (!ignore) {
+          setDriverAccountLinks(driverAccountLinkResponse);
+        }
       } catch (error) {
         if (!ignore) {
           setErrorMessage(getErrorMessage(error));
@@ -67,13 +70,6 @@ export function DriverDetailPage({ client }: DriverDetailPageProps) {
     };
   }, [client, driverRef]);
 
-  function getAccountEmail(accountId: string | null) {
-    if (!accountId) {
-      return '미연결';
-    }
-    return accounts.find((entry) => entry.account_id === accountId)?.email ?? '미확인 계정';
-  }
-
   function getCompanyName(companyId: string) {
     return companies.find((company) => company.company_id === companyId)?.name ?? '미확인 회사';
   }
@@ -81,6 +77,8 @@ export function DriverDetailPage({ client }: DriverDetailPageProps) {
   function getFleetName(fleetId: string) {
     return fleets.find((fleet) => fleet.fleet_id === fleetId)?.name ?? '미확인 플릿';
   }
+
+  const activeDriverAccountLink = driverAccountLinks[0] ?? null;
 
   async function handleDelete() {
     if (!driverRef || !driver) {
@@ -126,8 +124,16 @@ export function DriverDetailPage({ client }: DriverDetailPageProps) {
         <div className="stack">
           <dl className="detail-list">
             <div>
-              <dt>계정</dt>
-              <dd>{getAccountEmail(driver.account_id)}</dd>
+              <dt>배송원 계정</dt>
+              <dd>{activeDriverAccountLink?.email ?? '미연결'}</dd>
+            </div>
+            <div>
+              <dt>계정 이름</dt>
+              <dd>{activeDriverAccountLink?.identity_name ?? '미연결'}</dd>
+            </div>
+            <div>
+              <dt>계정 상태</dt>
+              <dd>{formatAccountStatusLabel(activeDriverAccountLink?.account_status)}</dd>
             </div>
             <div>
               <dt>회사</dt>

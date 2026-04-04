@@ -10,31 +10,6 @@ def _utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 
-def _base_payload(account, token_type: str, lifetime):
-    now = _utcnow()
-    return {
-        "sub": str(account.account_id),
-        "email": account.email,
-        "role": account.role,
-        "iss": settings.JWT_ISSUER,
-        "aud": settings.JWT_AUDIENCE,
-        "iat": int(now.timestamp()),
-        "exp": int((now + lifetime).timestamp()),
-        "jti": str(uuid4()),
-        "type": token_type,
-    }
-
-
-def create_access_token(account) -> str:
-    payload = _base_payload(account, "access", settings.ACCESS_TOKEN_LIFETIME)
-    return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
-
-
-def create_refresh_token(account) -> str:
-    payload = _base_payload(account, "refresh", settings.REFRESH_TOKEN_LIFETIME)
-    return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
-
-
 def _identity_payload(principal, token_type: str, lifetime):
     now = _utcnow()
     principal_kind = (
@@ -42,9 +17,12 @@ def _identity_payload(principal, token_type: str, lifetime):
         if getattr(principal, "session_kind", "normal") == "consent_recovery"
         else "identity_session"
     )
-    return {
-        "sub": str(principal.identity.identity_id),
+    payload = {
+        "sub": principal.account_id,
         "principal_kind": principal_kind,
+        "identity_id": str(principal.identity.identity_id),
+        "email": principal.email,
+        "role": principal.role,
         "iss": settings.JWT_ISSUER,
         "aud": settings.JWT_AUDIENCE,
         "iat": int(now.timestamp()),
@@ -52,6 +30,14 @@ def _identity_payload(principal, token_type: str, lifetime):
         "jti": str(uuid4()),
         "type": token_type,
     }
+    if principal.active_account_id is not None:
+        payload["active_account_id"] = principal.active_account_id
+        payload["active_account_type"] = principal.active_account_type
+    if principal.company_id is not None:
+        payload["company_id"] = principal.company_id
+    if principal.role_type is not None:
+        payload["role_type"] = principal.role_type
+    return payload
 
 
 def create_identity_access_token(principal) -> str:

@@ -4,13 +4,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { listDrivers } from '../api/drivers';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { getDriverRouteRef } from '../routeRefs';
-import type { AccountSummary, DriverProfile } from '../types';
+import type { DriverProfile } from '../types';
 type DriversPageProps = {
-  account: AccountSummary;
   client: HttpClient;
 };
 
-export function DriversPage({ account, client }: DriversPageProps) {
+export function DriversPage({ client }: DriversPageProps) {
   const navigate = useNavigate();
   const [drivers, setDrivers] = useState<DriverProfile[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -58,7 +57,7 @@ export function DriversPage({ account, client }: DriversPageProps) {
       <div className="panel-header panel-header-inline">
         <div>
           <p className="panel-kicker">배송원 목록</p>
-          <h2>{account.email}</h2>
+          <h2>배송원 운영 화면</h2>
         </div>
         <Link className="button primary" to="/drivers/new">
           배송원 생성
@@ -73,7 +72,6 @@ export function DriversPage({ account, client }: DriversPageProps) {
             <tr>
               <th>이름</th>
               <th>연락처</th>
-              <th>계정 연결</th>
             </tr>
           </thead>
           <tbody>
@@ -91,7 +89,6 @@ export function DriversPage({ account, client }: DriversPageProps) {
                 >
                   <td>{driver.name}</td>
                   <td>{driver.phone_number}</td>
-                  <td>{driver.account_id ? '연결됨' : '미연결'}</td>
                 </tr>
               );
             })}

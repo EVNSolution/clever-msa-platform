@@ -4,7 +4,6 @@ from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
 from accounts.models import DriverAccount, Identity, PasswordCredential
-from accounts.services.legacy_account_projection_service import LegacyAccountProjectionService
 
 
 class IdentityLifecycleService:
@@ -36,14 +35,12 @@ class IdentityLifecycleService:
 
             identity.login_methods.all().delete()
             PasswordCredential.objects.filter(identity=identity).delete()
-            LegacyAccountProjectionService().sync_identity(identity)
         return identity
 
     def recover_identity(self, identity: Identity) -> Identity:
         identity.status = Identity.Status.ACTIVE
         identity.archived_at = None
         identity.save(update_fields=["status", "archived_at"])
-        LegacyAccountProjectionService().sync_identity(identity)
         return identity
 
     def validate_last_method_deletion(self, identity: Identity, *, confirm: bool, current_password: str | None):

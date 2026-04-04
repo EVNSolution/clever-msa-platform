@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { DriversPage } from './DriversPage';
 
 const apiMocks = vi.hoisted(() => ({
-  listAccounts: vi.fn(),
+  listDriverAccountLinks: vi.fn(),
   listDrivers: vi.fn(),
   createDriver: vi.fn(),
   deleteDriver: vi.fn(),
@@ -14,8 +14,8 @@ const apiMocks = vi.hoisted(() => ({
   listFleets: vi.fn(),
 }));
 
-vi.mock('../api/accounts', () => ({
-  listAccounts: apiMocks.listAccounts,
+vi.mock('../api/driverAccountLinks', () => ({
+  listDriverAccountLinks: apiMocks.listDriverAccountLinks,
 }));
 
 vi.mock('../api/drivers', () => ({
@@ -36,7 +36,6 @@ describe('Admin DriversPage', () => {
       {
         driver_id: '90000000-0000-0000-0000-000000000001',
         route_no: 1,
-        account_id: '20000000-0000-0000-0000-000000000001',
         company_id: '30000000-0000-0000-0000-000000000001',
         fleet_id: '40000000-0000-0000-0000-000000000001',
         name: 'Kim Driver',
@@ -45,12 +44,17 @@ describe('Admin DriversPage', () => {
         address: 'Seoul',
       },
     ]);
-    apiMocks.listAccounts.mockResolvedValue([
+    apiMocks.listDriverAccountLinks.mockResolvedValue([
       {
-        account_id: '20000000-0000-0000-0000-000000000001',
+        driver_account_link_id: '21000000-0000-0000-0000-000000000001',
+        driver_account_id: '20000000-0000-0000-0000-000000000001',
+        driver_id: '90000000-0000-0000-0000-000000000001',
+        identity_id: '22000000-0000-0000-0000-000000000001',
+        identity_name: 'Kim Driver',
         email: 'driver@example.com',
-        role: 'user',
-        is_active: true,
+        account_status: 'active',
+        linked_at: '2026-04-01T00:00:00Z',
+        unlinked_at: null,
       },
     ]);
     apiMocks.listCompanies.mockResolvedValue([{ company_id: '30000000-0000-0000-0000-000000000001', name: 'Seed Company' }]);

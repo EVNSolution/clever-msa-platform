@@ -5,20 +5,18 @@ import { createDriver, getDriver, updateDriver, type DriverPayload } from '../ap
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { listCompanies, listFleets } from '../api/organization';
 import { getDriverRouteRef } from '../routeRefs';
-import type { AccountSummary, Company, Fleet } from '../types';
+import type { Company, Fleet } from '../types';
 
 type DriverFormPageProps = {
-  account: AccountSummary;
   client: HttpClient;
   mode: 'create' | 'edit';
 };
 
-function createEmptyForm(accountId: string, companies: Company[], fleets: Fleet[]): DriverPayload {
+function createEmptyForm(companies: Company[], fleets: Fleet[]): DriverPayload {
   const defaultCompanyId = companies[0]?.company_id ?? '';
   const fleetOptions = fleets.filter((fleet) => fleet.company_id === defaultCompanyId);
 
   return {
-    account_id: accountId,
     company_id: defaultCompanyId,
     fleet_id: fleetOptions[0]?.fleet_id ?? fleets[0]?.fleet_id ?? '',
     name: '',
@@ -28,14 +26,13 @@ function createEmptyForm(accountId: string, companies: Company[], fleets: Fleet[
   };
 }
 
-export function DriverFormPage({ account, client, mode }: DriverFormPageProps) {
+export function DriverFormPage({ client, mode }: DriverFormPageProps) {
   const navigate = useNavigate();
   const { driverRef } = useParams();
   const isEdit = mode === 'edit';
   const [companies, setCompanies] = useState<Company[]>([]);
   const [fleets, setFleets] = useState<Fleet[]>([]);
-  const [accountDisplay, setAccountDisplay] = useState(account.email);
-  const [form, setForm] = useState<DriverPayload>(createEmptyForm(account.account_id, [], []));
+  const [form, setForm] = useState<DriverPayload>(createEmptyForm([], []));
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -62,7 +59,6 @@ export function DriverFormPage({ account, client, mode }: DriverFormPageProps) {
 
         if (driverResponse) {
           setForm({
-            account_id: driverResponse.account_id,
             company_id: driverResponse.company_id,
             fleet_id: driverResponse.fleet_id,
             name: driverResponse.name,
@@ -70,12 +66,10 @@ export function DriverFormPage({ account, client, mode }: DriverFormPageProps) {
             phone_number: driverResponse.phone_number,
             address: driverResponse.address,
           });
-          setAccountDisplay(driverResponse.account_id === account.account_id ? account.email : '연결 계정 유지');
           return;
         }
 
-        setAccountDisplay(account.email);
-        setForm(createEmptyForm(account.account_id, companyResponse, fleetResponse));
+        setForm(createEmptyForm(companyResponse, fleetResponse));
       } catch (error) {
         if (!ignore) {
           setErrorMessage(getErrorMessage(error));
@@ -99,7 +93,7 @@ export function DriverFormPage({ account, client, mode }: DriverFormPageProps) {
     return () => {
       ignore = true;
     };
-  }, [account.account_id, account.email, client, driverRef, isEdit]);
+  }, [client, driverRef, isEdit]);
 
   function getFleetOptions(companyId: string) {
     return fleets.filter((fleet) => fleet.company_id === companyId);
@@ -149,10 +143,6 @@ export function DriverFormPage({ account, client, mode }: DriverFormPageProps) {
         <p className="empty-state">배송원 정보를 불러오는 중입니다...</p>
       ) : (
         <form className="form-stack" onSubmit={handleSubmit}>
-          <label className="field">
-            <span>계정</span>
-            <input readOnly value={accountDisplay} />
-          </label>
           <label className="field">
             <span>회사</span>
             <select onChange={(event) => handleCompanyChange(event.target.value)} value={form.company_id}>

@@ -20,8 +20,7 @@ class DriverProfile(models.Model):
         REVOKED = "revoked", "revoked"
 
     driver_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    route_no = models.PositiveIntegerField(unique=True, null=True, editable=False)
-    account_id = models.UUIDField(null=True, blank=True)
+    route_no = models.PositiveIntegerField(unique=True, editable=False)
     company_id = models.UUIDField()
     fleet_id = models.UUIDField()
     name = models.CharField(max_length=255)

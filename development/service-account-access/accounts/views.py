@@ -1,11 +1,8 @@
-import uuid
-
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
-from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, permissions, status
-from rest_framework.exceptions import APIException, AuthenticationFailed, PermissionDenied
+from rest_framework import permissions, status
+from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -18,22 +15,16 @@ except ModuleNotFoundError:
 
         return decorator
 
-from accounts.models import Account, Identity, PasswordCredential
-from accounts.permissions import IsAdminRole, IsAuthenticatedAccount
+from accounts.models import DriverAccountLink, Identity, PasswordCredential
+from accounts.permissions import IsAuthenticatedAccount
 from accounts.session_principal import IdentitySessionPrincipal
 from accounts.serializers import (
-    AccountDriverLinkResultSerializer,
-    AccountDriverLinkSerializer,
-    AccountSerializer,
-    AuthSessionSerializer,
-    AccountWriteSerializer,
-    ChangePasswordSerializer,
+    DriverAccountLinkSummarySerializer,
     HealthSerializer,
     IdentityAuthSessionSerializer,
     IdentityConsentCurrentSerializer,
     IdentityConsentRecoverSerializer,
     IdentityConsentWithdrawSerializer,
-    LegacyRegisterGoneSerializer,
     IdentityLoginSerializer,
     IdentityLoginMethodCreateSerializer,
     IdentityLoginMethodDeleteSerializer,
@@ -48,37 +39,22 @@ from accounts.serializers import (
     IdentitySignupIntakeResultSerializer,
     IdentitySignupIntakeSerializer,
     IdentitySummarySerializer,
-    LoginSerializer,
-    RegisterSerializer,
     SignupRequestActionSerializer,
     SignupRequestListSerializer,
     SignupRequestSetupSerializer,
     StatusMessageSerializer,
 )
-from accounts.services.driver_link_service import DriverLinkService
 from accounts.services.identity_auth_service import IdentityAuthService
 from accounts.services.identity_consent_service import IdentityConsentService
 from accounts.services.identity_login_method_service import IdentityLoginMethodService
 from accounts.services.identity_recovery_service import IdentityRecoveryService
-from accounts.services.legacy_account_projection_service import LegacyAccountProjectionService
 from accounts.services.jwt_service import (
-    create_access_token,
     create_identity_access_token,
     create_identity_refresh_token,
-    create_refresh_token,
     decode_token,
 )
-from accounts.services.lockout_service import LockoutService
 from accounts.services.refresh_registry import RefreshRegistry
 from accounts.services.signup_request_service import SignupRequestService
-
-
-class UnauthorizedLogin(APIException):
-    status_code = status.HTTP_401_UNAUTHORIZED
-    default_code = "authentication_failed"
-    default_detail = "Invalid email or password."
-
-
 def _set_refresh_cookie(response: Response, token: str) -> None:
     response.set_cookie(
         settings.REFRESH_COOKIE_NAME,
@@ -106,14 +82,16 @@ def _serialize_active_account(principal):
 
     payload = {
         "account_type": principal.active_account_type,
-        "account_id": getattr(
-            active_account,
-            f"{principal.active_account_type}_account_id",
-            getattr(active_account, "manager_account_id", None),
+        "account_id": str(
+            getattr(
+                active_account,
+                f"{principal.active_account_type}_account_id",
+                getattr(active_account, "manager_account_id", None),
+            )
         ),
     }
     if hasattr(active_account, "company_id"):
-        payload["company_id"] = active_account.company_id
+        payload["company_id"] = str(active_account.company_id)
     if hasattr(active_account, "role_type"):
         payload["role_type"] = active_account.role_type
     return payload
@@ -123,6 +101,7 @@ def _identity_session_payload(principal, access_token: str) -> dict:
     return {
         "access_token": access_token,
         "session_kind": principal.session_kind,
+        "email": principal.email,
         "identity": IdentitySummarySerializer(principal.identity).data,
         "active_account": _serialize_active_account(principal),
         "available_account_types": principal.available_account_types,
@@ -152,22 +131,6 @@ def _rotate_identity_session(request, principal):
     )
     _set_refresh_cookie(response, new_refresh_token)
     return response
-
-
-class RegisterView(APIView):
-    authentication_classes = []
-    permission_classes = [permissions.AllowAny]
-
-    @extend_schema(request=RegisterSerializer, responses={410: LegacyRegisterGoneSerializer})
-    def post(self, request):
-        return Response(
-            {
-                "code": "gone",
-                "message": "Legacy register is disabled. Use identity signup requests.",
-                "details": {},
-            },
-            status=status.HTTP_410_GONE,
-        )
 
 
 class IdentitySignupRequestIntakeView(APIView):
@@ -234,7 +197,10 @@ class IdentityRefreshView(APIView):
         }:
             raise AuthenticationFailed("Refresh token is not valid for identity session.")
 
-        identity = Identity.objects.filter(identity_id=payload["sub"], status=Identity.Status.ACTIVE).first()
+        identity = Identity.objects.filter(
+            identity_id=payload.get("identity_id", payload["sub"]),
+            status=Identity.Status.ACTIVE,
+        ).first()
         if identity is None:
             raise AuthenticationFailed("Identity not found.")
         session_kind = (
@@ -284,6 +250,8 @@ class IdentityMeView(APIView):
         return Response(
             {
                 "access_token": "",
+                "session_kind": request.user.session_kind,
+                "email": request.user.email,
                 "identity": IdentitySummarySerializer(request.user.identity).data,
                 "active_account": _serialize_active_account(request.user),
                 "available_account_types": request.user.available_account_types,
@@ -463,115 +431,6 @@ class IdentityPasswordView(APIView):
             identity=request.user.identity,
             defaults={"password_hash": make_password(serializer.validated_data["new_password"])},
         )
-        LegacyAccountProjectionService().sync_identity(request.user.identity)
-        return Response({"message": "Password updated."}, status=status.HTTP_200_OK)
-
-
-class LoginView(APIView):
-    authentication_classes = []
-    permission_classes = [permissions.AllowAny]
-
-    @extend_schema(request=LoginSerializer, responses={200: AuthSessionSerializer})
-    def post(self, request):
-        serializer = LoginSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        email = serializer.validated_data["email"]
-        lockout_service = LockoutService()
-        if lockout_service.is_locked(email):
-            raise UnauthorizedLogin("Account is temporarily locked. Try again later.")
-
-        account = Account.objects.filter(email=email, is_active=True).first()
-        if account is None or not account.check_password(serializer.validated_data["password"]):
-            lockout_service.record_failure(email)
-            raise UnauthorizedLogin("Invalid email or password.")
-
-        lockout_service.clear_failures(email)
-
-        access_token = create_access_token(account)
-        refresh_token = create_refresh_token(account)
-        RefreshRegistry().register_refresh_token(refresh_token)
-
-        response = Response(
-            {
-                "access_token": access_token,
-                "account": AccountSerializer(account).data,
-            },
-            status=status.HTTP_200_OK,
-        )
-        _set_refresh_cookie(response, refresh_token)
-        return response
-
-
-class RefreshView(APIView):
-    authentication_classes = []
-    permission_classes = [permissions.AllowAny]
-
-    @extend_schema(responses={200: AuthSessionSerializer})
-    def post(self, request):
-        refresh_token = request.COOKIES.get(settings.REFRESH_COOKIE_NAME)
-        if not refresh_token:
-            raise AuthenticationFailed("Refresh token is required.")
-
-        registry = RefreshRegistry()
-        if not registry.is_registered(refresh_token):
-            raise AuthenticationFailed("Refresh token is not registered.")
-
-        payload = decode_token(refresh_token, "refresh")
-        account = Account.objects.filter(account_id=payload["sub"], is_active=True).first()
-        if account is None:
-            raise AuthenticationFailed("Account not found.")
-
-        access_token = create_access_token(account)
-        new_refresh_token = create_refresh_token(account)
-        registry.rotate_refresh_token(refresh_token, new_refresh_token)
-
-        response = Response(
-            {
-                "access_token": access_token,
-                "account": AccountSerializer(account).data,
-            },
-            status=status.HTTP_200_OK,
-        )
-        _set_refresh_cookie(response, new_refresh_token)
-        return response
-
-
-class LogoutView(APIView):
-    authentication_classes = []
-    permission_classes = [permissions.AllowAny]
-
-    @extend_schema(responses={204: None})
-    def post(self, request):
-        refresh_token = request.COOKIES.get(settings.REFRESH_COOKIE_NAME)
-        if refresh_token:
-            try:
-                RefreshRegistry().remove_refresh_token(refresh_token)
-            except AuthenticationFailed:
-                pass
-        response = Response(status=status.HTTP_204_NO_CONTENT)
-        _clear_refresh_cookie(response)
-        return response
-
-
-class MeView(APIView):
-    permission_classes = [IsAuthenticatedAccount]
-
-    @extend_schema(responses={200: AccountSerializer})
-    def get(self, request):
-        return Response(AccountSerializer(request.user).data, status=status.HTTP_200_OK)
-
-
-class ChangePasswordView(APIView):
-    permission_classes = [IsAuthenticatedAccount]
-
-    @extend_schema(request=ChangePasswordSerializer, responses={200: StatusMessageSerializer})
-    def post(self, request):
-        serializer = ChangePasswordSerializer(
-            data=request.data,
-            context={"account": request.user},
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
         return Response({"message": "Password updated."}, status=status.HTTP_200_OK)
 
 
@@ -688,78 +547,34 @@ class IdentitySignupRequestCompleteSetupView(APIView):
         return Response(IdentitySignupRequestSummarySerializer(updated).data, status=status.HTTP_200_OK)
 
 
-class AccountDriverLinkView(APIView):
-    permission_classes = [IsAdminRole]
+class DriverAccountLinkListView(APIView):
+    permission_classes = [IsAuthenticatedAccount]
 
-    @extend_schema(
-        request=AccountDriverLinkSerializer,
-        responses={200: AccountDriverLinkResultSerializer},
-    )
-    def post(self, request):
-        serializer = AccountDriverLinkSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+    @extend_schema(responses={200: DriverAccountLinkSummarySerializer(many=True)})
+    def get(self, request):
+        _require_full_identity_session(request)
+        if request.user.active_account_type not in {"system_admin", "manager"}:
+            raise PermissionDenied("Driver account links are visible only to admin accounts.")
 
-        account_id = str(serializer.validated_data["account_id"])
-        driver_id = str(serializer.validated_data["driver_id"])
-        DriverLinkService().link_account_to_driver(
-            account_id=account_id,
-            driver_id=driver_id,
-            authorization=request.META.get("HTTP_AUTHORIZATION", ""),
-        )
+        queryset = DriverAccountLink.objects.select_related("driver_account__identity").order_by("-linked_at")
+        driver_id = request.query_params.get("driver_id")
+        if driver_id:
+            queryset = queryset.filter(driver_id=driver_id)
+        driver_account_id = request.query_params.get("driver_account_id")
+        if driver_account_id:
+            queryset = queryset.filter(driver_account_id=driver_account_id)
+        active_only = request.query_params.get("active_only", "true").lower() != "false"
+        if active_only:
+            queryset = queryset.filter(
+                unlinked_at__isnull=True,
+                driver_account__status="active",
+                driver_account__identity__status="active",
+            )
+
         return Response(
-            {"account_id": account_id, "driver_id": driver_id},
+            DriverAccountLinkSummarySerializer(queryset, many=True).data,
             status=status.HTTP_200_OK,
         )
-
-
-class AccountListCreateView(generics.ListCreateAPIView):
-    queryset = Account.objects.all()
-    permission_classes = [IsAdminRole]
-
-    def get_serializer_class(self):
-        if self.request.method == "POST":
-            return AccountWriteSerializer
-        return AccountSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        account = serializer.save()
-        return Response(AccountSerializer(account).data, status=status.HTTP_201_CREATED)
-
-
-class AccountDetailView(generics.RetrieveUpdateAPIView):
-    queryset = Account.objects.all()
-    lookup_field = "public_ref"
-    lookup_url_kwarg = "account_ref"
-    permission_classes = [IsAdminRole]
-
-    def get_object(self):
-        lookup_value = self.kwargs[self.lookup_url_kwarg]
-        queryset = self.filter_queryset(self.get_queryset())
-        filters = Q(public_ref=lookup_value)
-        if lookup_value.isdigit():
-            filters |= Q(route_no=int(lookup_value))
-        try:
-            filters |= Q(account_id=uuid.UUID(lookup_value))
-        except ValueError:
-            pass
-
-        account = get_object_or_404(queryset, filters)
-        self.check_object_permissions(self.request, account)
-        return account
-
-    def get_serializer_class(self):
-        if self.request.method == "PATCH":
-            return AccountWriteSerializer
-        return AccountSerializer
-
-    def update(self, request, *args, **kwargs):
-        account = self.get_object()
-        serializer = self.get_serializer(account, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        account = serializer.save()
-        return Response(AccountSerializer(account).data, status=status.HTTP_200_OK)
 
 
 class HealthView(APIView):

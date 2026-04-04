@@ -1,25 +1,22 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import { listAccounts } from '../api/accounts';
 import { createDriver, getDriver, updateDriver, type DriverPayload } from '../api/drivers';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { listCompanies, listFleets } from '../api/organization';
 import { getDriverRouteRef } from '../routeRefs';
-import type { AccountSummary, Company, Fleet } from '../types';
+import type { Company, Fleet } from '../types';
 
 type DriverFormPageProps = {
-  account: AccountSummary;
   client: HttpClient;
   mode: 'create' | 'edit';
 };
 
-function createEmptyForm(currentAccountId: string, accounts: AccountSummary[], companies: Company[], fleets: Fleet[]): DriverPayload {
+function createEmptyForm(companies: Company[], fleets: Fleet[]): DriverPayload {
   const defaultCompanyId = companies[0]?.company_id ?? '';
   const fleetOptions = fleets.filter((fleet) => fleet.company_id === defaultCompanyId);
 
   return {
-    account_id: accounts[0]?.account_id ?? currentAccountId,
     company_id: defaultCompanyId,
     fleet_id: fleetOptions[0]?.fleet_id ?? fleets[0]?.fleet_id ?? '',
     name: '',
@@ -29,14 +26,13 @@ function createEmptyForm(currentAccountId: string, accounts: AccountSummary[], c
   };
 }
 
-export function DriverFormPage({ account, client, mode }: DriverFormPageProps) {
+export function DriverFormPage({ client, mode }: DriverFormPageProps) {
   const navigate = useNavigate();
   const { driverRef } = useParams();
   const isEdit = mode === 'edit';
-  const [accounts, setAccounts] = useState<AccountSummary[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [fleets, setFleets] = useState<Fleet[]>([]);
-  const [form, setForm] = useState<DriverPayload>(createEmptyForm(account.account_id, [], [], []));
+  const [form, setForm] = useState<DriverPayload>(createEmptyForm([], []));
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -49,8 +45,7 @@ export function DriverFormPage({ account, client, mode }: DriverFormPageProps) {
       setIsLoading(true);
       setErrorMessage(null);
       try {
-        const [accountResponse, companyResponse, fleetResponse, driverResponse] = await Promise.all([
-          listAccounts(client),
+        const [companyResponse, fleetResponse, driverResponse] = await Promise.all([
           listCompanies(client),
           listFleets(client),
           isEdit && selectedDriverRef ? getDriver(client, selectedDriverRef) : Promise.resolve(null),
@@ -59,13 +54,11 @@ export function DriverFormPage({ account, client, mode }: DriverFormPageProps) {
           return;
         }
 
-        setAccounts(accountResponse);
         setCompanies(companyResponse);
         setFleets(fleetResponse);
 
         if (driverResponse) {
           setForm({
-            account_id: driverResponse.account_id,
             company_id: driverResponse.company_id,
             fleet_id: driverResponse.fleet_id,
             name: driverResponse.name,
@@ -76,7 +69,7 @@ export function DriverFormPage({ account, client, mode }: DriverFormPageProps) {
           return;
         }
 
-        setForm(createEmptyForm(account.account_id, accountResponse, companyResponse, fleetResponse));
+        setForm(createEmptyForm(companyResponse, fleetResponse));
       } catch (error) {
         if (!ignore) {
           setErrorMessage(getErrorMessage(error));
@@ -100,7 +93,7 @@ export function DriverFormPage({ account, client, mode }: DriverFormPageProps) {
     return () => {
       ignore = true;
     };
-  }, [account.account_id, client, driverRef, isEdit]);
+  }, [client, driverRef, isEdit]);
 
   function getFleetOptions(companyId: string) {
     return fleets.filter((fleet) => fleet.company_id === companyId);
@@ -150,16 +143,6 @@ export function DriverFormPage({ account, client, mode }: DriverFormPageProps) {
         <p className="empty-state">배송원 정보를 불러오는 중입니다...</p>
       ) : (
         <form className="form-stack" onSubmit={handleSubmit}>
-          <label className="field">
-            <span>계정</span>
-            <select onChange={(event) => setForm((current) => ({ ...current, account_id: event.target.value }))} value={form.account_id ?? ''}>
-              {accounts.map((entry) => (
-                <option key={entry.account_id} value={entry.account_id}>
-                  {entry.email}
-                </option>
-              ))}
-            </select>
-          </label>
           <label className="field">
             <span>회사</span>
             <select onChange={(event) => handleCompanyChange(event.target.value)} value={form.company_id}>

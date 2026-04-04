@@ -5,9 +5,8 @@ import { getDriver360 } from '../api/driver360';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import type { Driver360Summary } from '../types';
 import {
-  formatBooleanLabel,
+  formatAccountStatusLabel,
   formatPayoutStatusLabel,
-  formatRoleLabel,
   formatSettlementStatusLabel,
 } from '../uiLabels';
 
@@ -123,26 +122,26 @@ export function Driver360Page({ client }: Driver360PageProps) {
           <section className="data-grid two-columns">
             <article className="panel">
               <div className="panel-header">
-                <p className="panel-kicker">계정</p>
-                <h3>연결 계정 요약</h3>
+                <p className="panel-kicker">배송원 계정</p>
+                <h3>연결된 배송원 계정</h3>
               </div>
-              {summary.account_id ? (
+              {summary.driver_account_id ? (
                 <dl className="detail-list">
                   <div>
+                    <dt>이름</dt>
+                    <dd>{summary.driver_account_identity_name}</dd>
+                  </div>
+                  <div>
                     <dt>이메일</dt>
-                    <dd>{summary.account_email}</dd>
+                    <dd>{summary.driver_account_email}</dd>
                   </div>
                   <div>
-                    <dt>권한</dt>
-                    <dd>{formatRoleLabel(summary.account_role)}</dd>
-                  </div>
-                  <div>
-                    <dt>활성</dt>
-                    <dd>{formatBooleanLabel(summary.account_is_active)}</dd>
+                    <dt>상태</dt>
+                    <dd>{formatAccountStatusLabel(summary.driver_account_status)}</dd>
                   </div>
                 </dl>
               ) : (
-                <p className="empty-state">연결된 계정이 없습니다.</p>
+                <p className="empty-state">연결된 배송원 계정이 없습니다.</p>
               )}
             </article>
 

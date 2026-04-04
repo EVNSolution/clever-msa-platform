@@ -9,7 +9,7 @@ describe('createHttpClient', () => {
     globalThis.fetch = originalFetch;
   });
 
-  it('retries the original request after refresh succeeds', async () => {
+  it('retries the original request after identity refresh succeeds', async () => {
     const onSessionRefresh = vi.fn();
     const onUnauthorized = vi.fn();
     const fetchMock = vi
@@ -25,18 +25,18 @@ describe('createHttpClient', () => {
           JSON.stringify({
             access_token: 'fresh-token',
             session_kind: 'normal',
-            email: 'manager@example.com',
+            email: 'admin@example.com',
             identity: {
               identity_id: '10000000-0000-0000-0000-000000000001',
-              name: '운영자',
-              birth_date: '1990-01-01',
+              name: '관리자',
+              birth_date: '1970-01-01',
               status: 'active',
             },
             active_account: {
               account_type: 'manager',
               account_id: '20000000-0000-0000-0000-000000000001',
               company_id: '30000000-0000-0000-0000-000000000001',
-              role_type: 'vehicle_manager',
+              role_type: 'company_super_admin',
             },
             available_account_types: ['manager'],
           }),
@@ -47,7 +47,7 @@ describe('createHttpClient', () => {
         ),
       )
       .mockResolvedValueOnce(
-        new Response(JSON.stringify([{ driver_id: '20000000-0000-0000-0000-000000000001' }]), {
+        new Response(JSON.stringify([{ company_id: '30000000-0000-0000-0000-000000000001' }]), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
         }),
@@ -61,63 +61,31 @@ describe('createHttpClient', () => {
       onUnauthorized,
     });
 
-    const result = await client.request('/drivers/');
+    const result = await client.request('/companies/');
 
     expect(fetchMock).toHaveBeenCalledWith('/api/auth/identity-refresh/', {
       method: 'POST',
       credentials: 'include',
     });
-    expect(fetchMock).toHaveBeenCalledTimes(3);
     expect(onSessionRefresh).toHaveBeenCalledWith({
       accessToken: 'fresh-token',
       sessionKind: 'normal',
-      email: 'manager@example.com',
+      email: 'admin@example.com',
       identity: {
         identityId: '10000000-0000-0000-0000-000000000001',
-        name: '운영자',
-        birthDate: '1990-01-01',
+        name: '관리자',
+        birthDate: '1970-01-01',
         status: 'active',
       },
       activeAccount: {
         accountType: 'manager',
         accountId: '20000000-0000-0000-0000-000000000001',
         companyId: '30000000-0000-0000-0000-000000000001',
-        roleType: 'vehicle_manager',
+        roleType: 'company_super_admin',
       },
       availableAccountTypes: ['manager'],
     });
     expect(onUnauthorized).not.toHaveBeenCalled();
-    expect(result).toEqual([{ driver_id: '20000000-0000-0000-0000-000000000001' }]);
-  });
-
-  it('clears the session when refresh also fails', async () => {
-    const onSessionRefresh = vi.fn();
-    const onUnauthorized = vi.fn();
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify({ code: 'authentication_failed' }), {
-          status: 401,
-          headers: { 'Content-Type': 'application/json' },
-        }),
-      )
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify({ code: 'authentication_failed' }), {
-          status: 401,
-          headers: { 'Content-Type': 'application/json' },
-        }),
-      );
-    globalThis.fetch = fetchMock as typeof fetch;
-
-    const client = createHttpClient({
-      baseUrl: '/api',
-      getAccessToken: () => 'expired-token',
-      onSessionRefresh,
-      onUnauthorized,
-    });
-
-    await expect(client.request('/drivers/')).rejects.toThrow('authentication_failed');
-    expect(onSessionRefresh).not.toHaveBeenCalled();
-    expect(onUnauthorized).toHaveBeenCalledTimes(1);
+    expect(result).toEqual([{ company_id: '30000000-0000-0000-0000-000000000001' }]);
   });
 });

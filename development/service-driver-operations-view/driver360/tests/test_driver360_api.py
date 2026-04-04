@@ -25,10 +25,11 @@ class Driver360ApiTests(TestCase):
             "fleet_name": "Central Fleet",
             "employment_status": "active",
             "qualification_status": "qualified",
-            "account_id": "40000000-0000-0000-0000-000000000001",
-            "account_email": "driver@example.com",
-            "account_role": "user",
-            "account_is_active": True,
+            "driver_account_link_id": "41000000-0000-0000-0000-000000000001",
+            "driver_account_id": "40000000-0000-0000-0000-000000000001",
+            "driver_account_identity_name": "Kim Driver",
+            "driver_account_email": "driver@example.com",
+            "driver_account_status": "active",
             "latest_settlement_run_id": "50000000-0000-0000-0000-000000000001",
             "latest_settlement_period_start": "2026-03-01",
             "latest_settlement_period_end": "2026-03-31",
@@ -83,6 +84,7 @@ class Driver360ApiTests(TestCase):
         self.assertEqual(response.data["company_name"], "EVN Company")
         self.assertEqual(response.data["employment_status"], "active")
         self.assertEqual(response.data["qualification_status"], "qualified")
+        self.assertEqual(response.data["driver_account_email"], "driver@example.com")
         self.assertEqual(response.data["latest_settlement_amount"], "125000.50")
         self.assertEqual(response.data["driver_cleanup_status"], "ready")
         mock_build_summary.assert_called_once_with(

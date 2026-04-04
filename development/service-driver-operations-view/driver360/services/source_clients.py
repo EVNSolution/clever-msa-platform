@@ -55,12 +55,17 @@ class SourceClients:
             authorization=authorization,
         )
 
-    def get_account(self, *, account_id: str, authorization: str):
-        return self._request_json(
-            url=self._build_url(settings.ACCOUNT_AUTH_BASE_URL, f"/accounts/{account_id}/"),
+    def list_driver_account_links(self, *, driver_id: str, authorization: str):
+        payload = self._request_json(
+            url=self._build_url(
+                settings.ACCOUNT_AUTH_BASE_URL,
+                f"/driver-account-links/?driver_id={driver_id}",
+            ),
             authorization=authorization,
-            allow_not_found=True,
         )
+        if not isinstance(payload, list):
+            raise SourceServiceError("Upstream request failed: malformed driver account link payload.")
+        return payload
 
     def get_latest_settlement(self, *, driver_id: str, authorization: str):
         payload = self._request_json(

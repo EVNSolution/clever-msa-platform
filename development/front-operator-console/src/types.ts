@@ -1,8 +1,24 @@
-export type AccountSummary = {
-  account_id: string;
+export type IdentitySummary = {
+  identityId: string;
+  name: string;
+  birthDate: string;
+  status: string;
+};
+
+export type ActiveAccountSummary = {
+  accountType: 'system_admin' | 'manager' | 'driver';
+  accountId: string;
+  companyId?: string | null;
+  roleType?: string | null;
+};
+
+export type IdentitySession = {
+  accessToken: string;
+  sessionKind: string;
   email: string;
-  role: string;
-  is_active: boolean;
+  identity: IdentitySummary;
+  activeAccount: ActiveAccountSummary | null;
+  availableAccountTypes: string[];
 };
 
 export type Company = {
@@ -19,7 +35,6 @@ export type Fleet = {
 export type DriverProfile = {
   driver_id: string;
   route_no?: number;
-  account_id: string | null;
   company_id: string;
   fleet_id: string;
   name: string;
@@ -128,10 +143,11 @@ export type Driver360Summary = {
   company_name: string | null;
   fleet_id: string;
   fleet_name: string | null;
-  account_id: string | null;
-  account_email: string | null;
-  account_role: string | null;
-  account_is_active: boolean | null;
+  driver_account_link_id: string | null;
+  driver_account_id: string | null;
+  driver_account_identity_name: string | null;
+  driver_account_email: string | null;
+  driver_account_status: string | null;
   latest_settlement_run_id: string | null;
   latest_settlement_period_start: string | null;
   latest_settlement_period_end: string | null;

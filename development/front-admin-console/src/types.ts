@@ -1,10 +1,51 @@
-export type AccountSummary = {
-  account_id: string;
-  route_no?: number;
-  public_ref?: string;
+export type IdentitySummary = {
+  identityId: string;
+  name: string;
+  birthDate: string;
+  status: string;
+};
+
+export type ActiveAccountSummary = {
+  accountType: 'system_admin' | 'manager' | 'driver';
+  accountId: string;
+  companyId?: string | null;
+  roleType?: string | null;
+};
+
+export type IdentitySession = {
+  accessToken: string;
+  sessionKind: string;
   email: string;
-  role: string;
-  is_active: boolean;
+  identity: IdentitySummary;
+  activeAccount: ActiveAccountSummary | null;
+  availableAccountTypes: string[];
+};
+
+export type IdentitySignupRequestSummary = {
+  identity_signup_request_id: string;
+  identity: {
+    identity_id: string;
+    name: string;
+    birth_date: string;
+    status: string;
+  };
+  request_type: string;
+  request_display_name: string;
+  status: string;
+  status_message: string;
+  company_id: string;
+  requested_at: string;
+};
+
+export type IdentitySignupRequestList = {
+  identity: {
+    identity_id: string;
+    name: string;
+    birth_date: string;
+    status: string;
+  };
+  requests: IdentitySignupRequestSummary[];
+  inquiry_message: string;
 };
 
 export type Company = {
@@ -25,13 +66,24 @@ export type Fleet = {
 export type DriverProfile = {
   driver_id: string;
   route_no?: number;
-  account_id: string | null;
   company_id: string;
   fleet_id: string;
   name: string;
   ev_id: string;
   phone_number: string;
   address: string;
+};
+
+export type DriverAccountLinkSummary = {
+  driver_account_link_id: string;
+  driver_account_id: string;
+  driver_id: string;
+  identity_id: string;
+  identity_name: string;
+  email: string;
+  account_status: string;
+  linked_at: string;
+  unlinked_at: string | null;
 };
 
 export type VehicleMaster = {

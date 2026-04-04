@@ -21,6 +21,23 @@ def fake_response(body: str):
 
 
 class SourceClientsTests(TestCase):
+    @override_settings(ACCOUNT_AUTH_BASE_URL="http://account-auth-api:8000")
+    @patch("driver360.services.source_clients.urlopen")
+    def test_list_driver_account_links_builds_driver_filtered_url(self, mock_urlopen):
+        mock_urlopen.return_value = fake_response("[]")
+
+        payload = SourceClients().list_driver_account_links(
+            driver_id="10000000-0000-0000-0000-000000000001",
+            authorization="Bearer token",
+        )
+
+        self.assertEqual(payload, [])
+        self.assertEqual(
+            mock_urlopen.call_args.args[0].full_url,
+            "http://account-auth-api:8000/driver-account-links/?driver_id=10000000-0000-0000-0000-000000000001",
+        )
+        self.assertEqual(mock_urlopen.call_args.args[0].headers["Authorization"], "Bearer token")
+
     @override_settings(SETTLEMENT_OPS_BASE_URL="http://settlement-ops-api:8000")
     @patch("driver360.services.source_clients.urlopen")
     def test_get_latest_settlement_builds_driver_scoped_ops_url(self, mock_urlopen):

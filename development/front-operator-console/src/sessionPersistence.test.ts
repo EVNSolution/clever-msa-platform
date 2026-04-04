@@ -25,22 +25,40 @@ describe('sessionPersistence', () => {
   it('stores and restores a valid session payload', () => {
     persistSession({
       accessToken: 'token-value',
-      account: {
-        account_id: '10000000-0000-0000-0000-000000000001',
-        email: 'user@example.com',
-        role: 'user',
-        is_active: true,
+      sessionKind: 'normal',
+      email: 'manager@example.com',
+      identity: {
+        identityId: '10000000-0000-0000-0000-000000000001',
+        name: '운영자',
+        birthDate: '1990-01-01',
+        status: 'active',
       },
+      activeAccount: {
+        accountType: 'manager',
+        accountId: '20000000-0000-0000-0000-000000000001',
+        companyId: '30000000-0000-0000-0000-000000000001',
+        roleType: 'vehicle_manager',
+      },
+      availableAccountTypes: ['manager'],
     });
 
     expect(loadStoredSession()).toEqual({
       accessToken: 'token-value',
-      account: {
-        account_id: '10000000-0000-0000-0000-000000000001',
-        email: 'user@example.com',
-        role: 'user',
-        is_active: true,
+      sessionKind: 'normal',
+      email: 'manager@example.com',
+      identity: {
+        identityId: '10000000-0000-0000-0000-000000000001',
+        name: '운영자',
+        birthDate: '1990-01-01',
+        status: 'active',
       },
+      activeAccount: {
+        accountType: 'manager',
+        accountId: '20000000-0000-0000-0000-000000000001',
+        companyId: '30000000-0000-0000-0000-000000000001',
+        roleType: 'vehicle_manager',
+      },
+      availableAccountTypes: ['manager'],
     });
   });
 
@@ -53,12 +71,21 @@ describe('sessionPersistence', () => {
   it('clears the stored session', () => {
     persistSession({
       accessToken: 'token-value',
-      account: {
-        account_id: '10000000-0000-0000-0000-000000000001',
-        email: 'user@example.com',
-        role: 'user',
-        is_active: true,
+      sessionKind: 'normal',
+      email: 'manager@example.com',
+      identity: {
+        identityId: '10000000-0000-0000-0000-000000000001',
+        name: '운영자',
+        birthDate: '1990-01-01',
+        status: 'active',
       },
+      activeAccount: {
+        accountType: 'manager',
+        accountId: '20000000-0000-0000-0000-000000000001',
+        companyId: '30000000-0000-0000-0000-000000000001',
+        roleType: 'vehicle_manager',
+      },
+      availableAccountTypes: ['manager'],
     });
 
     clearStoredSession();

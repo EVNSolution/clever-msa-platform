@@ -9,20 +9,35 @@ function isSessionPayload(value: unknown): value is SessionPayload {
 
   const payload = value as {
     accessToken?: unknown;
-    account?: {
-      account_id?: unknown;
-      email?: unknown;
-      role?: unknown;
-      is_active?: unknown;
+    sessionKind?: unknown;
+    email?: unknown;
+    identity?: {
+      identityId?: unknown;
+      name?: unknown;
+      birthDate?: unknown;
+      status?: unknown;
     };
+    activeAccount?: {
+      accountType?: unknown;
+      accountId?: unknown;
+      companyId?: unknown;
+      roleType?: unknown;
+    } | null;
+    availableAccountTypes?: unknown;
   };
 
   return (
     typeof payload.accessToken === 'string' &&
-    typeof payload.account?.account_id === 'string' &&
-    typeof payload.account.email === 'string' &&
-    typeof payload.account.role === 'string' &&
-    typeof payload.account.is_active === 'boolean'
+    typeof payload.sessionKind === 'string' &&
+    typeof payload.email === 'string' &&
+    typeof payload.identity?.identityId === 'string' &&
+    typeof payload.identity.name === 'string' &&
+    typeof payload.identity.birthDate === 'string' &&
+    typeof payload.identity.status === 'string' &&
+    (payload.activeAccount == null ||
+      (typeof payload.activeAccount.accountType === 'string' &&
+        typeof payload.activeAccount.accountId === 'string')) &&
+    Array.isArray(payload.availableAccountTypes)
   );
 }
 

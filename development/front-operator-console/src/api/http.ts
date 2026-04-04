@@ -1,8 +1,24 @@
-import type { AccountSummary } from '../types';
+import type { ActiveAccountSummary, IdentitySession, IdentitySummary } from '../types';
 
-export type SessionPayload = {
-  accessToken: string;
-  account: AccountSummary;
+export type SessionPayload = IdentitySession;
+
+type IdentitySessionResponse = {
+  access_token: string;
+  session_kind: string;
+  email: string;
+  identity: {
+    identity_id: string;
+    name: string;
+    birth_date: string;
+    status: string;
+  };
+  active_account: {
+    account_type: 'system_admin' | 'manager' | 'driver';
+    account_id: string;
+    company_id?: string | null;
+    role_type?: string | null;
+  } | null;
+  available_account_types: string[];
 };
 
 export type HttpClientConfig = {
@@ -78,6 +94,41 @@ export function getErrorMessage(error: unknown, fallback = 'Request failed.'): s
   return fallback;
 }
 
+function toIdentitySummary(payload: IdentitySessionResponse['identity']): IdentitySummary {
+  return {
+    identityId: payload.identity_id,
+    name: payload.name,
+    birthDate: payload.birth_date,
+    status: payload.status,
+  };
+}
+
+function toActiveAccountSummary(
+  payload: IdentitySessionResponse['active_account'],
+): ActiveAccountSummary | null {
+  if (payload == null) {
+    return null;
+  }
+
+  return {
+    accountType: payload.account_type,
+    accountId: payload.account_id,
+    companyId: payload.company_id ?? null,
+    roleType: payload.role_type ?? null,
+  };
+}
+
+export function deserializeSessionPayload(payload: IdentitySessionResponse): SessionPayload {
+  return {
+    accessToken: payload.access_token,
+    sessionKind: payload.session_kind,
+    email: payload.email,
+    identity: toIdentitySummary(payload.identity),
+    activeAccount: toActiveAccountSummary(payload.active_account),
+    availableAccountTypes: payload.available_account_types,
+  };
+}
+
 export function createHttpClient(config: HttpClientConfig): HttpClient {
   let refreshPromise: Promise<boolean> | null = null;
 
@@ -87,24 +138,27 @@ export function createHttpClient(config: HttpClientConfig): HttpClient {
     }
 
     refreshPromise = (async () => {
-      const response = await fetch(resolveApiUrl(config.baseUrl, '/auth/refresh/'), {
+      const response = await fetch(resolveApiUrl(config.baseUrl, '/auth/identity-refresh/'), {
         method: 'POST',
         credentials: 'include',
       });
       const payload = (await parseApiResponse(response)) as
-        | { access_token: string; account: AccountSummary }
+        | IdentitySessionResponse
         | { code?: string; message?: string; details?: unknown }
         | undefined;
 
-      if (!response.ok || !payload || !('access_token' in payload) || !('account' in payload)) {
+      if (
+        !response.ok ||
+        !payload ||
+        !('access_token' in payload) ||
+        !('session_kind' in payload) ||
+        !('identity' in payload)
+      ) {
         config.onUnauthorized();
         return false;
       }
 
-      config.onSessionRefresh({
-        accessToken: payload.access_token,
-        account: payload.account,
-      });
+      config.onSessionRefresh(deserializeSessionPayload(payload));
       return true;
     })().finally(() => {
       refreshPromise = null;

@@ -33,7 +33,6 @@ class DriverApiTests(TestCase):
 
     def _payload(self):
         return {
-            "account_id": str(uuid4()),
             "company_id": str(uuid4()),
             "fleet_id": str(uuid4()),
             "name": "Kim Driver",
@@ -61,6 +60,7 @@ class DriverApiTests(TestCase):
 
         create_response = self.client.post("/", self._payload(), format="json")
         self.assertEqual(create_response.status_code, 201)
+        self.assertNotIn("account_id", create_response.data)
         driver_id = create_response.data["driver_id"]
         driver_ref = create_response.data["route_no"]
 
@@ -81,6 +81,7 @@ class DriverApiTests(TestCase):
 
         create_response = self.client.post("/", self._payload(), format="json")
         self.assertEqual(create_response.status_code, 201)
+        self.assertNotIn("account_id", create_response.data)
         driver_id = create_response.data["driver_id"]
         driver_ref = create_response.data["route_no"]
 

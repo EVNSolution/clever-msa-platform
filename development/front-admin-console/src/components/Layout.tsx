@@ -1,14 +1,14 @@
 import { NavLink, Outlet } from 'react-router-dom';
 
-import type { AccountSummary } from '../types';
+import type { SessionPayload } from '../api/http';
 import { formatRoleLabel } from '../uiLabels';
 
 type LayoutProps = {
-  account: AccountSummary;
+  session: SessionPayload;
   onLogout: () => void | Promise<void>;
 };
 
-export function Layout({ account, onLogout }: LayoutProps) {
+export function Layout({ session, onLogout }: LayoutProps) {
   return (
     <div className="page-shell admin-shell">
       <header className="topbar admin-topbar">
@@ -18,7 +18,7 @@ export function Layout({ account, onLogout }: LayoutProps) {
         </div>
         <nav className="nav-links admin-nav">
           <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/accounts">
-            계정
+            계정 요청
           </NavLink>
           <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/companies">
             회사
@@ -38,8 +38,10 @@ export function Layout({ account, onLogout }: LayoutProps) {
         </nav>
         <div className="account-card admin-account-card">
           <div className="account-meta">
-            <p className="account-email">{account.email}</p>
-            <p className="account-role">{formatRoleLabel(account.role)}</p>
+            <p className="account-email">{session.email}</p>
+            <p className="account-role">
+              {formatRoleLabel(session.activeAccount?.roleType ?? session.activeAccount?.accountType)}
+            </p>
           </div>
           <button className="button ghost" onClick={() => void onLogout()} type="button">
             로그아웃

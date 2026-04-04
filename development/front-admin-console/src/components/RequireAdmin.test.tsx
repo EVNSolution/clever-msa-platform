@@ -11,11 +11,21 @@ describe('RequireAdmin', () => {
 
     render(
       <RequireAdmin
-        account={{
-          account_id: '10000000-0000-0000-0000-000000000001',
+        session={{
+          accessToken: 'token',
+          sessionKind: 'normal',
           email: 'user@example.com',
-          role: 'user',
-          is_active: true,
+          identity: {
+            identityId: '10000000-0000-0000-0000-000000000001',
+            name: '사용자',
+            birthDate: '1990-01-01',
+            status: 'active',
+          },
+          activeAccount: {
+            accountType: 'driver',
+            accountId: '20000000-0000-0000-0000-000000000001',
+          },
+          availableAccountTypes: ['driver'],
         }}
         onLogout={onLogout}
       >
@@ -32,11 +42,23 @@ describe('RequireAdmin', () => {
   it('renders children for admin accounts', () => {
     render(
       <RequireAdmin
-        account={{
-          account_id: '20000000-0000-0000-0000-000000000001',
+        session={{
+          accessToken: 'token',
+          sessionKind: 'normal',
           email: 'admin@example.com',
-          role: 'admin',
-          is_active: true,
+          identity: {
+            identityId: '10000000-0000-0000-0000-000000000002',
+            name: '관리자',
+            birthDate: '1970-01-01',
+            status: 'active',
+          },
+          activeAccount: {
+            accountType: 'manager',
+            accountId: '20000000-0000-0000-0000-000000000001',
+            companyId: '30000000-0000-0000-0000-000000000001',
+            roleType: 'company_super_admin',
+          },
+          availableAccountTypes: ['manager'],
         }}
         onLogout={() => undefined}
       >

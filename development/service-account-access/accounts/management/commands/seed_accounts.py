@@ -1,29 +1,25 @@
 import os
-from uuid import UUID
+from datetime import date
 
+from django.contrib.auth.hashers import make_password
 from django.core.management.base import BaseCommand
+from django.db import transaction
+from django.utils import timezone
 
-from accounts.models import Account
-
-SEED_DRIVER_ACCOUNT_ID = UUID("20000000-0000-0000-0000-000000000001")
-
-
-def _upsert_account(*, account_id=None, email: str, password: str, role: str) -> Account:
-    lookup = {"email": email} if account_id is None else {"account_id": account_id}
-    account, _ = Account.objects.get_or_create(
-        **lookup,
-        defaults={"email": email, "role": role, "is_active": True, "password_hash": ""},
-    )
-    account.email = email
-    account.role = role
-    account.is_active = True
-    account.set_password(password)
-    account.save()
-    return account
+from accounts.models import (
+    EmailCredential,
+    Identity,
+    IdentityAccountLink,
+    IdentityConsentCurrent,
+    IdentityConsentHistory,
+    IdentityLoginMethod,
+    PasswordCredential,
+    SystemAdminAccount,
+)
 
 
 class Command(BaseCommand):
-    help = "Create or update the seeded admin account."
+    help = "Bootstrap the initial system admin identity/account."
 
     def handle(self, *args, **options):
         email = os.environ.get("SEED_ADMIN_EMAIL")
@@ -31,20 +27,61 @@ class Command(BaseCommand):
         if not email or not password:
             raise ValueError("SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD must be set.")
 
-        account = _upsert_account(
-            email=email,
-            password=password,
-            role=Account.Role.ADMIN,
-        )
+        if SystemAdminAccount.objects.filter(status=SystemAdminAccount.Status.ACTIVE).exists():
+            self.stdout.write(self.style.SUCCESS("Active system admin already exists. Skipping bootstrap."))
+            return
 
-        driver_account_email = os.environ.get("SEED_DRIVER_ACCOUNT_EMAIL", "seed-driver@example.com")
-        driver_account_password = os.environ.get("SEED_DRIVER_ACCOUNT_PASSWORD", "change-me-driver")
-        driver_account = _upsert_account(
-            account_id=SEED_DRIVER_ACCOUNT_ID,
-            email=driver_account_email,
-            password=driver_account_password,
-            role=Account.Role.USER,
-        )
+        now = timezone.now()
+        with transaction.atomic():
+            identity = Identity.objects.create(
+                name="System Admin",
+                birth_date=date(1970, 1, 1),
+                status=Identity.Status.ACTIVE,
+            )
+            login_method = IdentityLoginMethod.objects.create(
+                identity=identity,
+                method_type=IdentityLoginMethod.MethodType.EMAIL,
+                verified_at=now,
+            )
+            EmailCredential.objects.create(
+                identity_login_method=login_method,
+                email=email,
+                verified_at=now,
+            )
+            PasswordCredential.objects.create(
+                identity=identity,
+                password_hash=make_password(password),
+            )
+            IdentityConsentCurrent.objects.create(
+                identity=identity,
+                privacy_policy_version="bootstrap",
+                privacy_policy_consented=True,
+                privacy_policy_consented_at=now,
+                location_policy_version="bootstrap",
+                location_policy_consented=True,
+                location_policy_consented_at=now,
+            )
+            IdentityConsentHistory.objects.bulk_create(
+                [
+                    IdentityConsentHistory(
+                        identity=identity,
+                        consent_type=IdentityConsentHistory.ConsentType.PRIVACY_POLICY,
+                        version="bootstrap",
+                        is_consented=True,
+                    ),
+                    IdentityConsentHistory(
+                        identity=identity,
+                        consent_type=IdentityConsentHistory.ConsentType.LOCATION_POLICY,
+                        version="bootstrap",
+                        is_consented=True,
+                    ),
+                ]
+            )
+            system_admin_account = SystemAdminAccount.objects.create(identity=identity)
+            IdentityAccountLink.objects.create(
+                identity=identity,
+                account_type=IdentityAccountLink.AccountType.SYSTEM_ADMIN,
+                account_id=system_admin_account.system_admin_account_id,
+            )
 
-        self.stdout.write(self.style.SUCCESS(f"Seeded admin account: {account.email}"))
-        self.stdout.write(self.style.SUCCESS(f"Seeded driver-linked account: {driver_account.email}"))
+        self.stdout.write(self.style.SUCCESS(f"Seeded system admin identity: {email}"))

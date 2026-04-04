@@ -29,7 +29,6 @@ describe('DriversPage', () => {
       {
         driver_id: '90000000-0000-0000-0000-000000000001',
         route_no: 1,
-        account_id: '10000000-0000-0000-0000-000000000001',
         company_id: '30000000-0000-0000-0000-000000000001',
         fleet_id: '40000000-0000-0000-0000-000000000001',
         name: 'Kim Driver',
@@ -49,19 +48,11 @@ describe('DriversPage', () => {
 
     render(
       <MemoryRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
-        <DriversPage
-          account={{
-            account_id: '10000000-0000-0000-0000-000000000001',
-            email: 'user@example.com',
-            role: 'user',
-            is_active: true,
-          }}
-          client={{ request: vi.fn() }}
-        />
+        <DriversPage client={{ request: vi.fn() }} />
       </MemoryRouter>,
     );
 
-    await screen.findByRole('heading', { name: /user@example.com/i });
+    await screen.findByRole('heading', { name: /배송원 운영 화면/i });
     await waitFor(() => {
       expect(screen.getByText('Kim Driver').closest('tr')).toHaveAttribute('data-detail-path', '/drivers/1');
     });

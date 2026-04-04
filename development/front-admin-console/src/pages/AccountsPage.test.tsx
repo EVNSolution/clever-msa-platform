@@ -5,24 +5,41 @@ import { describe, expect, it, vi } from 'vitest';
 import { AccountsPage } from './AccountsPage';
 
 const apiMocks = vi.hoisted(() => ({
-  listAccounts: vi.fn(),
+  listManagedRequests: vi.fn(),
 }));
 
-vi.mock('../api/accounts', () => ({
-  listAccounts: apiMocks.listAccounts,
+vi.mock('../api/authRequests', () => ({
+  listManagedRequests: apiMocks.listManagedRequests,
 }));
 
 describe('AccountsPage', () => {
-  it('renders account list without an inline form', async () => {
-    apiMocks.listAccounts.mockResolvedValue([
-      {
-        account_id: '20000000-0000-0000-0000-000000000001',
-        route_no: 2,
-        email: 'admin@example.com',
-        role: 'admin',
-        is_active: true,
+  it('renders request management tabs instead of legacy account creation', async () => {
+    apiMocks.listManagedRequests.mockResolvedValue({
+      identity: {
+        identity_id: '10000000-0000-0000-0000-000000000001',
+        name: '현재 관리자',
+        birth_date: '1970-01-01',
+        status: 'active',
       },
-    ]);
+      inquiry_message: '',
+      requests: [
+        {
+          identity_signup_request_id: '20000000-0000-0000-0000-000000000001',
+          identity: {
+            identity_id: '30000000-0000-0000-0000-000000000001',
+            name: '홍길동',
+            birth_date: '1990-01-01',
+            status: 'active',
+          },
+          request_type: 'manager_account_create',
+          request_display_name: '관리자 계정 신청',
+          status: 'pending',
+          status_message: '검토 중입니다.',
+          company_id: '40000000-0000-0000-0000-000000000001',
+          requested_at: '2026-04-04T09:00:00Z',
+        },
+      ],
+    });
 
     render(
       <MemoryRouter>
@@ -30,12 +47,15 @@ describe('AccountsPage', () => {
       </MemoryRouter>,
     );
 
-    await screen.findByText('admin@example.com');
-    const row = screen.getByText('admin@example.com').closest('tr');
-    expect(screen.getByRole('link', { name: /계정 생성/i })).toHaveAttribute('href', '/accounts/new');
-    expect(row).toHaveAttribute('data-detail-path', '/accounts/2');
-    expect(screen.queryByRole('link', { name: '보기' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: '수정' })).not.toBeInTheDocument();
-    expect(screen.queryByLabelText(/^이메일$/i)).not.toBeInTheDocument();
+    await screen.findByText('홍길동');
+    expect(screen.getByRole('button', { name: '대기' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '설정 중' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '승인됨' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '반려됨' })).toBeInTheDocument();
+    expect(screen.getByText('관리자 계정 신청')).toBeInTheDocument();
+    expect(screen.getByText('검토 중입니다.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '승인' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '반려' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /계정 생성/i })).not.toBeInTheDocument();
   });
 });
