@@ -234,6 +234,22 @@
 - 배송원 정본은 생성/조회/수정할 수 있다
 - `driver_account_link` 연결/해제는 가능하다
 
+## 관리자 self-service 규칙
+
+`company_super_admin`, `vehicle_manager`, `settlement_manager`의 self-service 범위는 동일하게 본다.
+
+1. 자기 `identity` 내용은 수정할 수 있다.
+2. 자기 `company` 변경 request를 올릴 수 있다.
+3. 자기 계정 삭제는 물리 삭제가 아니라 `archived` 처리로 한다.
+
+## 관리자 role transition 규칙
+
+1. `vehicle_manager <-> settlement_manager` 같은 동급 레벨 전환은 같은 `manager_account`에서 처리한다.
+2. 동급 레벨 전환 시 기존 account를 `archived` 하지 않는다.
+3. 동급 레벨 전환 이력은 같은 account의 연속된 role change history로 남긴다.
+4. `company_super_admin <-> 하위 레벨` 같은 상하 레벨 전환은 같은 account에서 바꾸지 않는다.
+5. 상하 레벨 전환은 기존 `manager_account archived + 새 manager_account 생성`으로 처리한다.
+
 ## 회사 운영 및 관리자 계층 규칙
 
 1. `company`, `fleet`는 관리자 없이 먼저 존재할 수 있다.
