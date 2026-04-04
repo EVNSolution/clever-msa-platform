@@ -35,6 +35,30 @@ def create_refresh_token(account) -> str:
     return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
 
+def _identity_payload(principal, token_type: str, lifetime):
+    now = _utcnow()
+    return {
+        "sub": str(principal.identity.identity_id),
+        "principal_kind": "identity_session",
+        "iss": settings.JWT_ISSUER,
+        "aud": settings.JWT_AUDIENCE,
+        "iat": int(now.timestamp()),
+        "exp": int((now + lifetime).timestamp()),
+        "jti": str(uuid4()),
+        "type": token_type,
+    }
+
+
+def create_identity_access_token(principal) -> str:
+    payload = _identity_payload(principal, "access", settings.ACCESS_TOKEN_LIFETIME)
+    return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+
+
+def create_identity_refresh_token(principal) -> str:
+    payload = _identity_payload(principal, "refresh", settings.REFRESH_TOKEN_LIFETIME)
+    return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+
+
 def decode_token(token: str, expected_type: str):
     try:
         payload = jwt.decode(

@@ -17,6 +17,6 @@ class IsAdminRole(BasePermission):
         user = request.user
         if not (user and getattr(user, "is_authenticated", False)):
             raise NotAuthenticated("Authentication credentials were not provided.")
-        if user.role != "admin":
+        if getattr(user, "role", None) != "admin":
             raise PermissionDenied("Admin role required.")
         return True

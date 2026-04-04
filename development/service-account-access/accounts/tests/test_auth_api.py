@@ -2,18 +2,23 @@ from unittest.mock import patch
 
 from django.contrib.auth.hashers import check_password, make_password
 from django.test import TestCase, override_settings
+from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIClient
 
 from accounts.models import (
     Account,
+    DriverAccount,
     EmailCredential,
     Identity,
+    IdentityAccountLink,
     IdentityConsentCurrent,
     IdentityConsentHistory,
     IdentityLoginMethod,
     IdentitySignupRequest,
+    ManagerAccount,
     PasswordCredential,
+    SystemAdminAccount,
 )
 from accounts.services.refresh_registry import RefreshRegistry
 
@@ -496,3 +501,308 @@ class AuthApiTests(TestCase):
         self.assertEqual(response.data["code"], "validation_error")
         self.assertIn("location_policy_consented", response.data["details"])
         self.assertFalse(Identity.objects.filter(name="동의없음").exists())
+
+
+class IdentityRequestApiTests(TestCase):
+    def setUp(self) -> None:
+        self.client = APIClient()
+        self.registry = RefreshRegistry()
+        self.registry.client.flushdb()
+        self.company_id = "30000000-0000-0000-0000-000000000001"
+        self.other_company_id = "30000000-0000-0000-0000-000000000002"
+
+    def _create_identity_with_password(
+        self,
+        *,
+        name: str,
+        birth_date: str,
+        email: str,
+        password: str,
+    ) -> Identity:
+        identity = Identity.objects.create(name=name, birth_date=birth_date)
+        now = timezone.now()
+        login_method = IdentityLoginMethod.objects.create(
+            identity=identity,
+            method_type=IdentityLoginMethod.MethodType.EMAIL,
+            verified_at=now,
+        )
+        EmailCredential.objects.create(
+            identity_login_method=login_method,
+            email=email,
+            verified_at=now,
+        )
+        PasswordCredential.objects.create(
+            identity=identity,
+            password_hash=make_password(password),
+        )
+        IdentityConsentCurrent.objects.create(
+            identity=identity,
+            privacy_policy_version="v1.0",
+            privacy_policy_consented_at=now,
+            location_policy_version="v1.0",
+            location_policy_consented_at=now,
+        )
+        return identity
+
+    def _login_identity(self, email: str, password: str):
+        response = self.client.post(
+            "/identity-login/",
+            {"email": email, "password": password},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {response.data['access_token']}")
+        if "refresh_token" in response.cookies:
+            self.client.cookies["refresh_token"] = response.cookies["refresh_token"].value
+        return response
+
+    def _create_request(
+        self,
+        *,
+        identity: Identity,
+        company_id: str,
+        request_type: str,
+        status: str = IdentitySignupRequest.Status.PENDING,
+    ) -> IdentitySignupRequest:
+        return IdentitySignupRequest.objects.create(
+            identity=identity,
+            company_id=company_id,
+            request_type=request_type,
+            status=status,
+        )
+
+    def test_identity_login_allows_pending_identity_without_active_account(self):
+        self._create_identity_with_password(
+            name="대기 사용자",
+            birth_date="1990-01-02",
+            email="waiting@example.com",
+            password="waiting-pass-123",
+        )
+
+        response = self._login_identity("waiting@example.com", "waiting-pass-123")
+
+        self.assertEqual(response.data["identity"]["name"], "대기 사용자")
+        self.assertIsNone(response.data["active_account"])
+        self.assertEqual(response.data["available_account_types"], [])
+
+    def test_identity_user_can_list_and_cancel_own_active_request(self):
+        identity = self._create_identity_with_password(
+            name="셀프 요청자",
+            birth_date="1990-01-02",
+            email="self@example.com",
+            password="self-pass-123",
+        )
+        request = self._create_request(
+            identity=identity,
+            company_id=self.company_id,
+            request_type=IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE,
+        )
+        self._login_identity("self@example.com", "self-pass-123")
+
+        list_response = self.client.get("/identity-signup-requests/me/")
+        cancel_response = self.client.post(
+            f"/identity-signup-requests/{request.identity_signup_request_id}/cancel/",
+            format="json",
+        )
+
+        self.assertEqual(list_response.status_code, 200)
+        self.assertEqual(len(list_response.data["requests"]), 1)
+        self.assertEqual(cancel_response.status_code, 200)
+        request.refresh_from_db()
+        self.assertEqual(request.status, IdentitySignupRequest.Status.REJECTED)
+        self.assertEqual(request.reject_reason, "user_cancelled")
+
+    def test_system_admin_can_list_all_requests_and_approve_driver_request(self):
+        system_identity = self._create_identity_with_password(
+            name="시스템 관리자",
+            birth_date="1980-01-01",
+            email="sys@example.com",
+            password="sys-pass-123",
+        )
+        SystemAdminAccount.objects.create(identity=system_identity)
+
+        request_identity = self._create_identity_with_password(
+            name="배송원 신청자",
+            birth_date="1993-03-03",
+            email="driver-request@example.com",
+            password="driver-pass-123",
+        )
+        request = self._create_request(
+            identity=request_identity,
+            company_id=self.company_id,
+            request_type=IdentitySignupRequest.RequestType.DRIVER_ACCOUNT_CREATE,
+        )
+        self._login_identity("sys@example.com", "sys-pass-123")
+
+        list_response = self.client.get("/identity-signup-requests/manage/")
+        approve_response = self.client.post(
+            f"/identity-signup-requests/{request.identity_signup_request_id}/approve/",
+            format="json",
+        )
+
+        self.assertEqual(list_response.status_code, 200)
+        self.assertEqual(len(list_response.data["requests"]), 1)
+        self.assertEqual(approve_response.status_code, 200)
+
+        request.refresh_from_db()
+        self.assertEqual(request.status, IdentitySignupRequest.Status.APPROVED)
+        driver_account = DriverAccount.objects.get(identity=request_identity, status=DriverAccount.Status.ACTIVE)
+        self.assertEqual(str(driver_account.company_id), self.company_id)
+        self.assertTrue(
+            IdentityAccountLink.objects.filter(
+                identity=request_identity,
+                account_type=IdentityAccountLink.AccountType.DRIVER,
+                account_id=driver_account.driver_account_id,
+            ).exists()
+        )
+
+    def test_company_super_admin_can_only_see_same_company_requests(self):
+        super_admin_identity = self._create_identity_with_password(
+            name="회사 총괄",
+            birth_date="1985-05-05",
+            email="company-admin@example.com",
+            password="company-pass-123",
+        )
+        ManagerAccount.objects.create(
+            identity=super_admin_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.COMPANY_SUPER_ADMIN,
+        )
+
+        own_request_identity = self._create_identity_with_password(
+            name="같은 회사 요청자",
+            birth_date="1991-01-01",
+            email="same-company@example.com",
+            password="same-pass-123",
+        )
+        other_request_identity = self._create_identity_with_password(
+            name="다른 회사 요청자",
+            birth_date="1991-01-02",
+            email="other-company@example.com",
+            password="other-pass-123",
+        )
+        own_request = self._create_request(
+            identity=own_request_identity,
+            company_id=self.company_id,
+            request_type=IdentitySignupRequest.RequestType.DRIVER_ACCOUNT_CREATE,
+        )
+        self._create_request(
+            identity=other_request_identity,
+            company_id=self.other_company_id,
+            request_type=IdentitySignupRequest.RequestType.DRIVER_ACCOUNT_CREATE,
+        )
+        self._login_identity("company-admin@example.com", "company-pass-123")
+
+        response = self.client.get("/identity-signup-requests/manage/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            [item["identity_signup_request_id"] for item in response.data["requests"]],
+            [str(own_request.identity_signup_request_id)],
+        )
+
+    def test_company_super_admin_approves_manager_request_into_awaiting_setup_then_completes_setup(self):
+        super_admin_identity = self._create_identity_with_password(
+            name="회사 총괄",
+            birth_date="1985-05-05",
+            email="manager-admin@example.com",
+            password="manager-admin-pass-123",
+        )
+        super_admin_account = ManagerAccount.objects.create(
+            identity=super_admin_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.COMPANY_SUPER_ADMIN,
+        )
+
+        request_identity = self._create_identity_with_password(
+            name="매니저 신청자",
+            birth_date="1994-04-04",
+            email="manager-request@example.com",
+            password="manager-request-pass-123",
+        )
+        request = self._create_request(
+            identity=request_identity,
+            company_id=self.company_id,
+            request_type=IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE,
+        )
+        self._login_identity("manager-admin@example.com", "manager-admin-pass-123")
+
+        approve_response = self.client.post(
+            f"/identity-signup-requests/{request.identity_signup_request_id}/approve/",
+            format="json",
+        )
+
+        self.assertEqual(approve_response.status_code, 200)
+        request.refresh_from_db()
+        self.assertEqual(request.status, IdentitySignupRequest.Status.AWAITING_SETUP)
+
+        setup_response = self.client.post(
+            f"/identity-signup-requests/{request.identity_signup_request_id}/complete-setup/",
+            {"role_type": ManagerAccount.RoleType.VEHICLE_MANAGER},
+            format="json",
+        )
+
+        self.assertEqual(setup_response.status_code, 200)
+        request.refresh_from_db()
+        self.assertEqual(request.status, IdentitySignupRequest.Status.APPROVED)
+        created_manager = ManagerAccount.objects.get(
+            identity=request_identity,
+            status=ManagerAccount.Status.ACTIVE,
+        )
+        self.assertEqual(created_manager.role_type, ManagerAccount.RoleType.VEHICLE_MANAGER)
+        self.assertEqual(str(created_manager.company_id), self.company_id)
+        self.assertNotEqual(created_manager.manager_account_id, super_admin_account.manager_account_id)
+
+    def test_vehicle_manager_can_reject_driver_request_but_cannot_approve_manager_request(self):
+        vehicle_manager_identity = self._create_identity_with_password(
+            name="차량 관리자",
+            birth_date="1987-07-07",
+            email="vehicle-manager@example.com",
+            password="vehicle-pass-123",
+        )
+        ManagerAccount.objects.create(
+            identity=vehicle_manager_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.VEHICLE_MANAGER,
+        )
+
+        driver_request_identity = self._create_identity_with_password(
+            name="배송원 요청자",
+            birth_date="1995-05-05",
+            email="driver-only@example.com",
+            password="driver-only-pass-123",
+        )
+        manager_request_identity = self._create_identity_with_password(
+            name="매니저 요청자",
+            birth_date="1996-06-06",
+            email="manager-only@example.com",
+            password="manager-only-pass-123",
+        )
+        driver_request = self._create_request(
+            identity=driver_request_identity,
+            company_id=self.company_id,
+            request_type=IdentitySignupRequest.RequestType.DRIVER_ACCOUNT_CREATE,
+        )
+        manager_request = self._create_request(
+            identity=manager_request_identity,
+            company_id=self.company_id,
+            request_type=IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE,
+        )
+        self._login_identity("vehicle-manager@example.com", "vehicle-pass-123")
+
+        reject_response = self.client.post(
+            f"/identity-signup-requests/{driver_request.identity_signup_request_id}/reject/",
+            {"reject_reason": "admin_rejected"},
+            format="json",
+        )
+        approve_manager_response = self.client.post(
+            f"/identity-signup-requests/{manager_request.identity_signup_request_id}/approve/",
+            format="json",
+        )
+
+        self.assertEqual(reject_response.status_code, 200)
+        driver_request.refresh_from_db()
+        self.assertEqual(driver_request.status, IdentitySignupRequest.Status.REJECTED)
+        self.assertEqual(driver_request.reject_reason, "admin_rejected")
+
+        self.assertEqual(approve_manager_response.status_code, 403)

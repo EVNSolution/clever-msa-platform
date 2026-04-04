@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from accounts.models import Account, EmailCredential, IdentitySignupRequest
+from accounts.models import Account, EmailCredential, Identity, IdentitySignupRequest, ManagerAccount
 from accounts.services.signup_intake_service import SignupIntakeService
 
 
@@ -16,14 +16,29 @@ class HealthSerializer(serializers.Serializer):
     status = serializers.CharField()
 
 
+class IdentitySummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Identity
+        fields = ("identity_id", "name", "birth_date", "status")
+
+
+class ActiveAccountSerializer(serializers.Serializer):
+    account_type = serializers.CharField()
+    account_id = serializers.UUIDField()
+    company_id = serializers.UUIDField(required=False, allow_null=True)
+    role_type = serializers.CharField(required=False, allow_null=True)
+
+
 class IdentitySignupRequestSummarySerializer(serializers.ModelSerializer):
     request_display_name = serializers.SerializerMethodField()
     status_message = serializers.SerializerMethodField()
+    identity = IdentitySummarySerializer(read_only=True)
 
     class Meta:
         model = IdentitySignupRequest
         fields = (
             "identity_signup_request_id",
+            "identity",
             "request_type",
             "request_display_name",
             "status",
@@ -102,8 +117,34 @@ class AuthSessionSerializer(serializers.Serializer):
     account = AccountSerializer()
 
 
+class IdentityAuthSessionSerializer(serializers.Serializer):
+    access_token = serializers.CharField()
+    identity = IdentitySummarySerializer()
+    active_account = ActiveAccountSerializer(allow_null=True)
+    available_account_types = serializers.ListField(child=serializers.CharField())
+
+
 class StatusMessageSerializer(serializers.Serializer):
     message = serializers.CharField()
+
+
+class IdentityLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+
+
+class SignupRequestListSerializer(serializers.Serializer):
+    identity = IdentitySummarySerializer()
+    requests = IdentitySignupRequestSummarySerializer(many=True)
+    inquiry_message = serializers.CharField(allow_blank=True)
+
+
+class SignupRequestActionSerializer(serializers.Serializer):
+    reject_reason = serializers.CharField(required=False, allow_blank=False)
+
+
+class SignupRequestSetupSerializer(serializers.Serializer):
+    role_type = serializers.ChoiceField(choices=ManagerAccount.RoleType.choices)
 
 
 class RegisterSerializer(serializers.Serializer):
