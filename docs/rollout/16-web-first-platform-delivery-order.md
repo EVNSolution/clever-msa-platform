@@ -56,10 +56,11 @@
 
 ### 2. Dispatch web
 
-- [ ] `service-dispatch-registry`를 기준으로 admin web write 경로를 닫기
-- [ ] `service-dispatch-operations-view`를 기준으로 operator/admin read 화면을 닫기
-- [ ] 계획, 슬롯, 배정 현황, read/write 경계를 웹에서 확정하기
-- [ ] route, detail, action 위치를 front 계약으로 고정하기
+- [ ] `front-admin-console` 기준 `company + fleet + dispatch_date` 배차 보드 흐름을 닫기
+- [ ] `dispatch_plan`의 예상 물량 입력/수정 화면을 닫기
+- [ ] 날짜별 `dispatch unit board`와 배차 CRUD를 웹에서 운영 가능하게 만들기
+- [ ] 용차 기사와 날짜 예외(`휴무`, `특근`) 입력을 배차 보드에 붙이기
+- [ ] 정본과 read-model/broker 경계를 문서와 구현에서 일치시키기
 
 이 단계는 차량, 배송원, 정산 다음 운영 핵심을 웹에서 닫기 위한 우선순위 1위 도메인이다.
 

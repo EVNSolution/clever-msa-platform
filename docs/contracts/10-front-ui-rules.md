@@ -241,6 +241,37 @@
 - 구현 방식은 live subscription 또는 bounded auto-refresh 중 하나를 택할 수 있다.
 - 어떤 방식이든 사용자는 마지막 수집 시각과 freshness 상태를 항상 볼 수 있어야 한다.
 
+## Dispatch 규칙
+
+### 1. 배차 상위 컨텍스트는 company + fleet + dispatch_date 이다
+
+- `fleet`는 배차의 단순 필터가 아니라 계획 상위 축이다.
+- 배차 보드는 항상 `company + fleet + dispatch_date` 문맥에서 연다.
+
+### 2. 배차 row는 dispatch unit 기준이다
+
+- 배차 화면은 `vehicle` 단독 row를 기본으로 두지 않는다.
+- 날짜 기준 유효한 `vehicle + driver` 결합체를 `dispatch unit` row로 본다.
+- 사용자는 차량 조건과 배송원 조건을 같이 읽어야 한다.
+
+### 3. 배차는 목록 / 상세 / 예상 물량 수정으로 분리한다
+
+- `/dispatch/boards`
+- `/dispatch/boards/:dispatchPlanRef`
+- `/dispatch/plans/:dispatchPlanRef/edit`
+
+이 구조를 기본으로 본다.
+
+### 4. 예상 물량 수정은 별도 라우트로 둔다
+
+- `dispatch_plan`의 `예상 물량` 수정은 별도 수정 라우트에서 처리한다.
+- 배차 상세 화면 안에 긴 planning form을 같이 두지 않는다.
+
+### 5. 용차 기사와 날짜 예외는 배차 보드 운영 입력이다
+
+- `용차 기사`는 `driver` 정본 화면이 아니라 배차 보드에서만 다룬다.
+- `휴무`, `특근`은 날짜 예외 입력이며 `driver` 정본 스케줄을 직접 수정하지 않는다.
+
 ## 라우트 규칙
 
 ### 1. 리소스 화면은 아래 역할로 분리한다

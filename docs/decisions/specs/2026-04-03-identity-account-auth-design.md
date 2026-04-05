@@ -97,6 +97,7 @@
   - `company_super_admin`
   - `vehicle_manager`
   - `settlement_manager`
+  - `fleet_manager`
 
 ### 6. driver_account
 
@@ -210,6 +211,9 @@
 1. `company_super_admin`
 2. `vehicle_manager`
 3. `settlement_manager`
+4. `fleet_manager`
+
+`fleet_manager`는 dispatch 1차에서 추가되는 역할 이름이며, 1차 권한 범위는 `settlement_manager`와 완전히 동일하게 둔다.
 
 ### company_super_admin
 
@@ -218,6 +222,7 @@
 - 자기 자신과 하위 레벨만 관리할 수 있다
 - 같은 회사의 다른 `company_super_admin`는 생성/변경/아카이브할 수 없다
 - 자기 회사의 `vehicle_manager`, `settlement_manager`는 생성/변경/아카이브할 수 있다
+- 자기 회사의 `fleet_manager`도 생성/변경/아카이브할 수 있다
 - 마지막 남은 `company_super_admin`라도 자기 자신을 아카이브할 수 있다
 
 ### vehicle_manager
@@ -238,9 +243,15 @@
 - `driver_account_link` 연결/해제는 가능하다
 - 자기보다 하위인 `driver_account` request는 승인/반려/설정 완료까지 처리할 수 있다
 
+### fleet_manager
+
+- 1차 권한 범위는 `settlement_manager`와 완전히 동일하다
+- 차이는 권한 이름과 업무 명칭만 다르고, 실제 접근 범위와 액션은 같다
+- 배차 1차에서는 `예상 물량`, `배차 운영` 담당자로 해석한다
+
 ## 관리자 self-service 규칙
 
-`company_super_admin`, `vehicle_manager`, `settlement_manager`의 self-service 범위는 동일하게 본다.
+`company_super_admin`, `vehicle_manager`, `settlement_manager`, `fleet_manager`의 self-service 범위는 동일하게 본다.
 
 1. 자기 `identity` 내용은 수정할 수 있다.
 2. 자기 `company` 변경 request를 올릴 수 있다.
@@ -248,7 +259,7 @@
 
 ## 관리자 role transition 규칙
 
-1. `vehicle_manager <-> settlement_manager` 같은 동급 레벨 전환은 같은 `manager_account`에서 처리한다.
+1. `vehicle_manager <-> settlement_manager <-> fleet_manager` 같은 동급 레벨 전환은 같은 `manager_account`에서 처리한다.
 2. 동급 레벨 전환 시 기존 account를 `archived` 하지 않는다.
 3. 동급 레벨 전환 이력은 같은 account의 연속된 role change history로 남긴다.
 4. `company_super_admin <-> 하위 레벨` 같은 상하 레벨 전환은 같은 account에서 바꾸지 않는다.
@@ -263,8 +274,8 @@
 5. `company_super_admin`가 0명인 회사를 다시 여는 것도 `system_admin_account`가 한다.
 6. 권한 관리는 `자기 자신 + 하위 레벨` 원칙으로 통일한다.
 7. `system_admin_account`는 모든 레벨을 관리할 수 있다.
-8. `company_super_admin`는 자기 자신과 하위 `vehicle_manager`, `settlement_manager`만 관리할 수 있다.
-9. `vehicle_manager`, `settlement_manager`는 자기 자신과 자기 도메인 컨텐츠만 관리할 수 있다.
+8. `company_super_admin`는 자기 자신과 하위 `vehicle_manager`, `settlement_manager`, `fleet_manager`만 관리할 수 있다.
+9. `vehicle_manager`, `settlement_manager`, `fleet_manager`는 자기 자신과 자기 도메인 컨텐츠만 관리할 수 있다.
 10. `driver`는 최하위이며, 자기 자신을 제외한 상위 관리자들이 `driver_account_link`를 관리할 수 있다.
 
 ## 가입 신청 규칙
