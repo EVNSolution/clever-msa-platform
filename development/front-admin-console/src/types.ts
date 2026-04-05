@@ -119,6 +119,20 @@ export type DispatchPlan = {
   updated_at: string;
 };
 
+export type OutsourcedDriver = {
+  outsourced_driver_id: string;
+  dispatch_plan_id: string;
+  company_id: string;
+  fleet_id: string;
+  dispatch_date: string;
+  name: string;
+  contact_number: string;
+  vehicle_note: string;
+  memo: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type VehicleSchedule = {
   vehicle_schedule_id: string;
   vehicle_id: string;
@@ -136,7 +150,8 @@ export type DispatchAssignment = {
   dispatch_assignment_id: string;
   vehicle_schedule_id: string;
   vehicle_id: string;
-  driver_id: string;
+  driver_id: string | null;
+  outsourced_driver_id: string | null;
   operator_company_id: string;
   dispatch_date: string;
   shift_slot: string;
@@ -154,6 +169,8 @@ export type DispatchBoardRow = {
   shift_slot: string | null;
   vehicle_id: string | null;
   plate_number: string | null;
+  planned_driver_kind: 'internal' | 'outsourced' | null;
+  outsourced_driver_id: string | null;
   planned_driver_id: string | null;
   planned_driver_name: string | null;
   current_driver_id: string | null;

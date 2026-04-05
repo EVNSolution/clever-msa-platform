@@ -35,6 +35,13 @@ class DispatchBoardService:
             self.source_clients.list_vehicle_masters(authorization=authorization)
         )
         drivers = self._normalize_items(self.source_clients.list_drivers(authorization=authorization))
+        outsourced_drivers = self._normalize_items(
+            self.source_clients.list_outsourced_drivers(
+                dispatch_date=dispatch_date,
+                fleet_id=fleet_id,
+                authorization=authorization,
+            )
+        )
 
         vehicle_map = {
             str(vehicle["vehicle_id"]): vehicle
@@ -45,6 +52,11 @@ class DispatchBoardService:
             str(driver["driver_id"]): driver
             for driver in drivers
             if isinstance(driver, dict) and driver.get("driver_id")
+        }
+        outsourced_driver_map = {
+            str(driver["outsourced_driver_id"]): driver
+            for driver in outsourced_drivers
+            if isinstance(driver, dict) and driver.get("outsourced_driver_id")
         }
         current_assignment_map = {}
         for current_assignment in current_assignments:
@@ -65,9 +77,14 @@ class DispatchBoardService:
         for assignment in assignments:
             vehicle_id = self._string_or_none(assignment.get("vehicle_id"))
             planned_driver_id = self._string_or_none(assignment.get("driver_id"))
+            outsourced_driver_id = self._string_or_none(assignment.get("outsourced_driver_id"))
+            planned_driver_kind = "outsourced" if outsourced_driver_id else "internal"
             planned_vehicle_ids.add(vehicle_id)
             vehicle = vehicle_map.get(vehicle_id) if vehicle_id else None
             planned_driver = driver_map.get(planned_driver_id) if planned_driver_id else None
+            outsourced_driver = (
+                outsourced_driver_map.get(outsourced_driver_id) if outsourced_driver_id else None
+            )
             current_assignment = current_assignment_map.get(vehicle_id) if vehicle_id else None
             current_driver_id = self._string_or_none(
                 current_assignment.get("driver_id") if current_assignment else None
@@ -78,6 +95,8 @@ class DispatchBoardService:
                 warnings.append("vehicle_lookup_failed")
             if planned_driver_id and planned_driver is None:
                 warnings.append("planned_driver_lookup_failed")
+            if outsourced_driver_id and outsourced_driver is None:
+                warnings.append("planned_outsourced_driver_lookup_failed")
             if current_driver_id and current_driver is None:
                 warnings.append("current_driver_lookup_failed")
             if current_assignment_source_unavailable:
@@ -103,8 +122,16 @@ class DispatchBoardService:
                     "shift_slot": assignment.get("shift_slot"),
                     "vehicle_id": vehicle_id,
                     "plate_number": vehicle.get("plate_number") if vehicle else None,
+                    "planned_driver_kind": planned_driver_kind,
+                    "outsourced_driver_id": outsourced_driver_id,
                     "planned_driver_id": planned_driver_id,
-                    "planned_driver_name": planned_driver.get("name") if planned_driver else None,
+                    "planned_driver_name": (
+                        planned_driver.get("name")
+                        if planned_driver
+                        else outsourced_driver.get("name")
+                        if outsourced_driver
+                        else None
+                    ),
                     "current_driver_id": current_driver_id,
                     "current_driver_name": current_driver.get("name") if current_driver else None,
                     "dispatch_status": dispatch_status,
@@ -134,6 +161,8 @@ class DispatchBoardService:
                     "shift_slot": None,
                     "vehicle_id": vehicle_id,
                     "plate_number": vehicle.get("plate_number") if vehicle else None,
+                    "planned_driver_kind": None,
+                    "outsourced_driver_id": None,
                     "planned_driver_id": None,
                     "planned_driver_name": None,
                     "current_driver_id": current_driver_id,

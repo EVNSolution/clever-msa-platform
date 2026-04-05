@@ -7,16 +7,19 @@ except ModuleNotFoundError:
 
         return decorator
 
+from django.db.models import ProtectedError
 from rest_framework import generics, mixins, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import status
 
-from dispatch.models import DispatchAssignment, DispatchPlan, VehicleSchedule
+from dispatch.models import DispatchAssignment, DispatchPlan, OutsourcedDriver, VehicleSchedule
 from dispatch.permissions import AuthenticatedReadAdminWrite
 from dispatch.serializers import (
     DispatchAssignmentSerializer,
     DispatchPlanSerializer,
     HealthSerializer,
+    OutsourcedDriverSerializer,
     VehicleScheduleSerializer,
 )
 
@@ -116,6 +119,7 @@ class DispatchAssignmentListCreateView(generics.ListCreateAPIView):
         vehicle_schedule_id = self.request.query_params.get("vehicle_schedule_id")
         vehicle_id = self.request.query_params.get("vehicle_id")
         driver_id = self.request.query_params.get("driver_id")
+        outsourced_driver_id = self.request.query_params.get("outsourced_driver_id")
         if dispatch_date:
             queryset = queryset.filter(dispatch_date=dispatch_date)
         if assignment_status:
@@ -126,6 +130,8 @@ class DispatchAssignmentListCreateView(generics.ListCreateAPIView):
             queryset = queryset.filter(vehicle_id=vehicle_id)
         if driver_id:
             queryset = queryset.filter(driver_id=driver_id)
+        if outsourced_driver_id:
+            queryset = queryset.filter(outsourced_driver_id=outsourced_driver_id)
         return queryset
 
 
@@ -145,3 +151,57 @@ class DispatchAssignmentDetailView(
 
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
+
+
+class OutsourcedDriverListCreateView(generics.ListCreateAPIView):
+    queryset = OutsourcedDriver.objects.select_related("dispatch_plan").all()
+    serializer_class = OutsourcedDriverSerializer
+    permission_classes = [AuthenticatedReadAdminWrite]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        dispatch_plan_id = self.request.query_params.get("dispatch_plan_id")
+        company_id = self.request.query_params.get("company_id")
+        fleet_id = self.request.query_params.get("fleet_id")
+        dispatch_date = self.request.query_params.get("dispatch_date")
+        if dispatch_plan_id:
+            queryset = queryset.filter(dispatch_plan_id=dispatch_plan_id)
+        if company_id:
+            queryset = queryset.filter(dispatch_plan__company_id=company_id)
+        if fleet_id:
+            queryset = queryset.filter(dispatch_plan__fleet_id=fleet_id)
+        if dispatch_date:
+            queryset = queryset.filter(dispatch_plan__dispatch_date=dispatch_date)
+        return queryset
+
+
+class OutsourcedDriverDetailView(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    generics.GenericAPIView,
+):
+    queryset = OutsourcedDriver.objects.select_related("dispatch_plan").all()
+    serializer_class = OutsourcedDriverSerializer
+    lookup_field = "outsourced_driver_id"
+    permission_classes = [AuthenticatedReadAdminWrite]
+    http_method_names = ["get", "patch", "delete", "options", "head"]
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        try:
+            return self.destroy(request, *args, **kwargs)
+        except ProtectedError:
+            return Response(
+                {
+                    "code": "outsourced_driver_in_use",
+                    "message": "Referenced outsourced driver cannot be deleted.",
+                    "details": {},
+                },
+                status=status.HTTP_409_CONFLICT,
+            )

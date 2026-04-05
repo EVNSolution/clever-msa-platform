@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from dispatch.models import DispatchAssignment, DispatchPlan, VehicleSchedule
+from dispatch.models import DispatchAssignment, DispatchPlan, OutsourcedDriver, VehicleSchedule
 from dispatch.services.dispatch_rule_service import DispatchRuleService, DispatchRuleViolation
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -95,6 +95,13 @@ class DispatchAssignmentSerializer(serializers.ModelSerializer):
         queryset=VehicleSchedule.objects.all(),
         source="vehicle_schedule",
     )
+    driver_id = serializers.UUIDField(allow_null=True, required=False)
+    outsourced_driver_id = serializers.PrimaryKeyRelatedField(
+        queryset=OutsourcedDriver.objects.all(),
+        source="outsourced_driver",
+        allow_null=True,
+        required=False,
+    )
     assigned_at = serializers.DateTimeField(format=DATETIME_FORMAT)
     unassigned_at = serializers.DateTimeField(
         format=DATETIME_FORMAT,
@@ -111,6 +118,7 @@ class DispatchAssignmentSerializer(serializers.ModelSerializer):
             "vehicle_schedule_id",
             "vehicle_id",
             "driver_id",
+            "outsourced_driver_id",
             "operator_company_id",
             "dispatch_date",
             "shift_slot",
@@ -124,6 +132,9 @@ class DispatchAssignmentSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data["vehicle_schedule_id"] = str(instance.vehicle_schedule_id)
+        data["outsourced_driver_id"] = (
+            str(instance.outsourced_driver_id) if instance.outsourced_driver_id else None
+        )
         return data
 
     def validate(self, attrs):
@@ -138,6 +149,58 @@ class DispatchAssignmentSerializer(serializers.ModelSerializer):
             return _validate_model_instance(DispatchAssignment, attrs, instance=self.instance)
         except DispatchRuleViolation as exc:
             raise serializers.ValidationError(exc.details) from exc
+        except Exception as exc:
+            from django.core.exceptions import ValidationError as DjangoValidationError
+
+            if isinstance(exc, DjangoValidationError):
+                raise serializers.ValidationError(exc.message_dict) from exc
+            raise
+
+
+class OutsourcedDriverSerializer(serializers.ModelSerializer):
+    dispatch_plan_id = serializers.PrimaryKeyRelatedField(
+        queryset=DispatchPlan.objects.all(),
+        source="dispatch_plan",
+    )
+    company_id = serializers.SerializerMethodField()
+    fleet_id = serializers.SerializerMethodField()
+    dispatch_date = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(format=DATETIME_FORMAT, read_only=True)
+    updated_at = serializers.DateTimeField(format=DATETIME_FORMAT, read_only=True)
+
+    class Meta:
+        model = OutsourcedDriver
+        fields = (
+            "outsourced_driver_id",
+            "dispatch_plan_id",
+            "company_id",
+            "fleet_id",
+            "dispatch_date",
+            "name",
+            "contact_number",
+            "vehicle_note",
+            "memo",
+            "created_at",
+            "updated_at",
+        )
+
+    def get_company_id(self, instance):
+        return str(instance.dispatch_plan.company_id)
+
+    def get_fleet_id(self, instance):
+        return str(instance.dispatch_plan.fleet_id)
+
+    def get_dispatch_date(self, instance):
+        return str(instance.dispatch_plan.dispatch_date)
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data["dispatch_plan_id"] = str(instance.dispatch_plan_id)
+        return data
+
+    def validate(self, attrs):
+        try:
+            return _validate_model_instance(OutsourcedDriver, attrs, instance=self.instance)
         except Exception as exc:
             from django.core.exceptions import ValidationError as DjangoValidationError
 

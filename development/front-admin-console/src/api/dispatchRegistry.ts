@@ -1,4 +1,4 @@
-import type { DispatchAssignment, DispatchPlan, VehicleSchedule } from '../types';
+import type { DispatchAssignment, DispatchPlan, OutsourcedDriver, VehicleSchedule } from '../types';
 import type { HttpClient } from './http';
 
 export type DispatchPlanPayload = Pick<
@@ -16,12 +16,18 @@ export type DispatchAssignmentPayload = Pick<
   | 'vehicle_schedule_id'
   | 'vehicle_id'
   | 'driver_id'
+  | 'outsourced_driver_id'
   | 'operator_company_id'
   | 'dispatch_date'
   | 'shift_slot'
   | 'assignment_status'
   | 'assigned_at'
   | 'unassigned_at'
+>;
+
+export type OutsourcedDriverPayload = Pick<
+  OutsourcedDriver,
+  'dispatch_plan_id' | 'name' | 'contact_number' | 'vehicle_note' | 'memo'
 >;
 
 export function listDispatchPlans(
@@ -82,6 +88,41 @@ export function listVehicleSchedules(
   return client.request<VehicleSchedule[]>(path);
 }
 
+export function listOutsourcedDrivers(
+  client: HttpClient,
+  filters?: Partial<Pick<OutsourcedDriver, 'dispatch_plan_id' | 'company_id' | 'fleet_id' | 'dispatch_date'>>,
+) {
+  const query = new URLSearchParams();
+  if (filters?.dispatch_plan_id) {
+    query.set('dispatch_plan_id', filters.dispatch_plan_id);
+  }
+  if (filters?.company_id) {
+    query.set('company_id', filters.company_id);
+  }
+  if (filters?.fleet_id) {
+    query.set('fleet_id', filters.fleet_id);
+  }
+  if (filters?.dispatch_date) {
+    query.set('dispatch_date', filters.dispatch_date);
+  }
+  const queryString = query.toString();
+  const path = queryString ? `/dispatch/outsourced-drivers/?${queryString}` : '/dispatch/outsourced-drivers/';
+  return client.request<OutsourcedDriver[]>(path);
+}
+
+export function createOutsourcedDriver(client: HttpClient, payload: OutsourcedDriverPayload) {
+  return client.request<OutsourcedDriver>('/dispatch/outsourced-drivers/', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function removeOutsourcedDriver(client: HttpClient, outsourcedDriverId: string) {
+  return client.request<void>(`/dispatch/outsourced-drivers/${outsourcedDriverId}/`, {
+    method: 'DELETE',
+  });
+}
+
 export function createVehicleSchedule(client: HttpClient, payload: VehicleSchedulePayload) {
   return client.request<VehicleSchedule>('/dispatch/vehicle-schedules/', {
     method: 'POST',
@@ -105,7 +146,12 @@ export function listDispatchAssignments(
   filters?: Partial<
     Pick<
       DispatchAssignment,
-      'dispatch_date' | 'assignment_status' | 'vehicle_schedule_id' | 'vehicle_id' | 'driver_id'
+      | 'dispatch_date'
+      | 'assignment_status'
+      | 'vehicle_schedule_id'
+      | 'vehicle_id'
+      | 'driver_id'
+      | 'outsourced_driver_id'
     >
   >,
 ) {
@@ -124,6 +170,9 @@ export function listDispatchAssignments(
   }
   if (filters?.driver_id) {
     query.set('driver_id', filters.driver_id);
+  }
+  if (filters?.outsourced_driver_id) {
+    query.set('outsourced_driver_id', filters.outsourced_driver_id);
   }
   const queryString = query.toString();
   const path = queryString ? `/dispatch/assignments/?${queryString}` : '/dispatch/assignments/';

@@ -3,8 +3,12 @@ import { Link, useParams } from 'react-router-dom';
 
 import {
   createDispatchAssignment,
+  createOutsourcedDriver,
+  listDispatchPlans,
+  listOutsourcedDrivers,
   createVehicleSchedule,
   listVehicleSchedules,
+  removeOutsourcedDriver,
   updateDispatchAssignment,
 } from '../api/dispatchRegistry';
 import { getDispatchBoard, getDispatchSummary } from '../api/dispatchOps';
@@ -17,7 +21,9 @@ import type {
   Company,
   DispatchBoardRow,
   DispatchBoardSummary,
+  DispatchPlan,
   DriverProfile,
+  OutsourcedDriver,
   Fleet,
   VehicleMaster,
   VehicleSchedule,
@@ -37,13 +43,21 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
   const [boardRows, setBoardRows] = useState<DispatchBoardRow[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [fleet, setFleet] = useState<Fleet | null>(null);
+  const [dispatchPlan, setDispatchPlan] = useState<DispatchPlan | null>(null);
   const [vehicleSchedules, setVehicleSchedules] = useState<VehicleSchedule[]>([]);
   const [vehicles, setVehicles] = useState<VehicleMaster[]>([]);
   const [drivers, setDrivers] = useState<DriverProfile[]>([]);
+  const [outsourcedDrivers, setOutsourcedDrivers] = useState<OutsourcedDriver[]>([]);
   const [newScheduleVehicleId, setNewScheduleVehicleId] = useState('');
   const [newScheduleShiftSlot, setNewScheduleShiftSlot] = useState('A');
   const [newAssignmentScheduleId, setNewAssignmentScheduleId] = useState('');
+  const [newAssignmentMode, setNewAssignmentMode] = useState<'internal' | 'outsourced'>('internal');
   const [newAssignmentDriverId, setNewAssignmentDriverId] = useState('');
+  const [newAssignmentOutsourcedDriverId, setNewAssignmentOutsourcedDriverId] = useState('');
+  const [newOutsourcedDriverName, setNewOutsourcedDriverName] = useState('');
+  const [newOutsourcedDriverContactNumber, setNewOutsourcedDriverContactNumber] = useState('');
+  const [newOutsourcedDriverVehicleNote, setNewOutsourcedDriverVehicleNote] = useState('');
+  const [newOutsourcedDriverMemo, setNewOutsourcedDriverMemo] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -67,17 +81,32 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
           getFleet(client, selectedFleetRef),
           listCompanies(client),
         ]);
-        const [summaryResponse, boardResponse, scheduleResponse, vehicleResponse, driverResponse] =
-          await Promise.all([
-            getDispatchSummary(client, selectedDispatchDate, fleetResponse.fleet_id),
-            getDispatchBoard(client, selectedDispatchDate, fleetResponse.fleet_id),
-            listVehicleSchedules(client, {
-              fleet_id: fleetResponse.fleet_id,
-              dispatch_date: selectedDispatchDate,
-            }),
-            listVehicleMasters(client),
-            listDrivers(client),
-          ]);
+        const [
+          summaryResponse,
+          boardResponse,
+          planResponse,
+          scheduleResponse,
+          vehicleResponse,
+          driverResponse,
+          outsourcedDriverResponse,
+        ] = await Promise.all([
+          getDispatchSummary(client, selectedDispatchDate, fleetResponse.fleet_id),
+          getDispatchBoard(client, selectedDispatchDate, fleetResponse.fleet_id),
+          listDispatchPlans(client, {
+            fleet_id: fleetResponse.fleet_id,
+            dispatch_date: selectedDispatchDate,
+          }),
+          listVehicleSchedules(client, {
+            fleet_id: fleetResponse.fleet_id,
+            dispatch_date: selectedDispatchDate,
+          }),
+          listVehicleMasters(client),
+          listDrivers(client),
+          listOutsourcedDrivers(client, {
+            fleet_id: fleetResponse.fleet_id,
+            dispatch_date: selectedDispatchDate,
+          }),
+        ]);
         if (ignore) {
           return;
         }
@@ -85,12 +114,15 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
         setCompanies(companyResponse);
         setSummary(summaryResponse);
         setBoardRows(boardResponse);
+        setDispatchPlan(planResponse[0] ?? null);
         setVehicleSchedules(scheduleResponse);
         setVehicles(vehicleResponse);
         setDrivers(driverResponse);
+        setOutsourcedDrivers(outsourcedDriverResponse);
         setNewScheduleVehicleId(vehicleResponse[0]?.vehicle_id ?? '');
         setNewAssignmentScheduleId(scheduleResponse[0]?.vehicle_schedule_id ?? '');
         setNewAssignmentDriverId(driverResponse[0]?.driver_id ?? '');
+        setNewAssignmentOutsourcedDriverId(outsourcedDriverResponse[0]?.outsourced_driver_id ?? '');
       } catch (error) {
         if (!ignore) {
           setErrorMessage(getErrorMessage(error));
@@ -123,15 +155,20 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
       return;
     }
 
-    const [summaryResponse, boardResponse, scheduleResponse] = await Promise.all([
+    const [summaryResponse, boardResponse, planResponse, scheduleResponse, outsourcedDriverResponse] = await Promise.all([
       getDispatchSummary(client, dispatchDate, fleet.fleet_id),
       getDispatchBoard(client, dispatchDate, fleet.fleet_id),
+      listDispatchPlans(client, { fleet_id: fleet.fleet_id, dispatch_date: dispatchDate }),
       listVehicleSchedules(client, { fleet_id: fleet.fleet_id, dispatch_date: dispatchDate }),
+      listOutsourcedDrivers(client, { fleet_id: fleet.fleet_id, dispatch_date: dispatchDate }),
     ]);
     setSummary(summaryResponse);
     setBoardRows(boardResponse);
+    setDispatchPlan(planResponse[0] ?? null);
     setVehicleSchedules(scheduleResponse);
+    setOutsourcedDrivers(outsourcedDriverResponse);
     setNewAssignmentScheduleId(scheduleResponse[0]?.vehicle_schedule_id ?? '');
+    setNewAssignmentOutsourcedDriverId(outsourcedDriverResponse[0]?.outsourced_driver_id ?? '');
   }
 
   async function handleCreateSchedule(event: FormEvent<HTMLFormElement>) {
@@ -161,7 +198,13 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
 
   async function handleCreateAssignment(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!fleet || !dispatchDate || !newAssignmentScheduleId || !newAssignmentDriverId) {
+    const isInternalAssignment = newAssignmentMode === 'internal';
+    if (
+      !fleet ||
+      !dispatchDate ||
+      !newAssignmentScheduleId ||
+      (isInternalAssignment ? !newAssignmentDriverId : !newAssignmentOutsourcedDriverId)
+    ) {
       return;
     }
     const selectedSchedule = vehicleSchedules.find(
@@ -176,7 +219,8 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
       await createDispatchAssignment(client, {
         vehicle_schedule_id: selectedSchedule.vehicle_schedule_id,
         vehicle_id: selectedSchedule.vehicle_id,
-        driver_id: newAssignmentDriverId,
+        driver_id: isInternalAssignment ? newAssignmentDriverId : null,
+        outsourced_driver_id: isInternalAssignment ? null : newAssignmentOutsourcedDriverId,
         operator_company_id: fleet.company_id,
         dispatch_date: dispatchDate,
         shift_slot: selectedSchedule.shift_slot,
@@ -184,6 +228,46 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
         assigned_at: createTimestamp(),
         unassigned_at: null,
       });
+      await reloadBoard();
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleCreateOutsourcedDriver(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!dispatchPlan || !newOutsourcedDriverName || !newOutsourcedDriverContactNumber) {
+      return;
+    }
+    setIsSaving(true);
+    setErrorMessage(null);
+    try {
+      await createOutsourcedDriver(client, {
+        dispatch_plan_id: dispatchPlan.dispatch_plan_id,
+        name: newOutsourcedDriverName,
+        contact_number: newOutsourcedDriverContactNumber,
+        vehicle_note: newOutsourcedDriverVehicleNote,
+        memo: newOutsourcedDriverMemo,
+      });
+      setNewOutsourcedDriverName('');
+      setNewOutsourcedDriverContactNumber('');
+      setNewOutsourcedDriverVehicleNote('');
+      setNewOutsourcedDriverMemo('');
+      await reloadBoard();
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleRemoveOutsourcedDriver(outsourcedDriverId: string) {
+    setIsSaving(true);
+    setErrorMessage(null);
+    try {
+      await removeOutsourcedDriver(client, outsourcedDriverId);
       await reloadBoard();
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
@@ -279,6 +363,10 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
               {boardRows.map((row) => {
                 const vehicle = row.vehicle_id ? vehicleMap.get(row.vehicle_id) : null;
                 const driver = row.planned_driver_id ? driverMap.get(row.planned_driver_id) : null;
+                const plannedDriverLabel =
+                  row.planned_driver_kind === 'outsourced'
+                    ? `용차 · ${row.planned_driver_name ?? '미배정'}`
+                    : row.planned_driver_name ?? '미배정';
 
                 return (
                   <tr key={`${row.vehicle_schedule_id ?? 'unplanned'}:${row.vehicle_id ?? 'none'}:${row.shift_slot ?? '-'}`}>
@@ -294,8 +382,8 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
                     </td>
                     <td>
                       <div className="stack tight">
-                        <span>{row.planned_driver_name ?? '미배정'}</span>
-                        {driver?.route_no != null ? (
+                        <span>{plannedDriverLabel}</span>
+                        {row.planned_driver_kind === 'internal' && driver?.route_no != null ? (
                           <Link className="inline-link" to={`/drivers/${getDriverRouteRef(driver)}`}>
                             배송원 관리로 이동
                           </Link>
@@ -361,6 +449,72 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
 
         <section className="panel form-panel">
           <div className="panel-header">
+            <p className="panel-kicker">용차 기사</p>
+            <h2>외부 배송인력 입력</h2>
+          </div>
+          <form className="form-stack" onSubmit={handleCreateOutsourcedDriver}>
+            <label className="field">
+              <span>용차 기사 이름</span>
+              <input onChange={(event) => setNewOutsourcedDriverName(event.target.value)} value={newOutsourcedDriverName} />
+            </label>
+            <label className="field">
+              <span>연락처</span>
+              <input
+                onChange={(event) => setNewOutsourcedDriverContactNumber(event.target.value)}
+                value={newOutsourcedDriverContactNumber}
+              />
+            </label>
+            <label className="field">
+              <span>차량/차종 메모</span>
+              <input
+                onChange={(event) => setNewOutsourcedDriverVehicleNote(event.target.value)}
+                value={newOutsourcedDriverVehicleNote}
+              />
+            </label>
+            <label className="field">
+              <span>메모</span>
+              <textarea onChange={(event) => setNewOutsourcedDriverMemo(event.target.value)} value={newOutsourcedDriverMemo} />
+            </label>
+            <div className="form-actions">
+              <button
+                className="button primary"
+                disabled={isSaving || !dispatchPlan || !newOutsourcedDriverName || !newOutsourcedDriverContactNumber}
+                type="submit"
+              >
+                용차 기사 추가
+              </button>
+            </div>
+          </form>
+          <div className="stack tight">
+            {outsourcedDrivers.length ? (
+              outsourcedDrivers.map((outsourcedDriver) => (
+                <div className="list-card" key={outsourcedDriver.outsourced_driver_id}>
+                  <div className="list-card-header">
+                    <div>
+                      <h3>{outsourcedDriver.name}</h3>
+                      <p>{outsourcedDriver.contact_number}</p>
+                    </div>
+                    <button
+                      className="button ghost small"
+                      disabled={isSaving}
+                      onClick={() => void handleRemoveOutsourcedDriver(outsourcedDriver.outsourced_driver_id)}
+                      type="button"
+                    >
+                      용차 기사 삭제
+                    </button>
+                  </div>
+                  {outsourcedDriver.vehicle_note ? <p>차량/차종: {outsourcedDriver.vehicle_note}</p> : null}
+                  {outsourcedDriver.memo ? <p>메모: {outsourcedDriver.memo}</p> : null}
+                </div>
+              ))
+            ) : (
+              <p className="empty-state">등록된 용차 기사가 없습니다.</p>
+            )}
+          </div>
+        </section>
+
+        <section className="panel form-panel">
+          <div className="panel-header">
             <p className="panel-kicker">기사 배정</p>
             <h2>dispatch assignment 생성</h2>
           </div>
@@ -380,20 +534,67 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
               </select>
             </label>
             <label className="field">
-              <span>배송원</span>
-              <select onChange={(event) => setNewAssignmentDriverId(event.target.value)} value={newAssignmentDriverId}>
-                <option value="">배송원 선택</option>
-                {drivers.map((driver) => (
-                  <option key={driver.driver_id} value={driver.driver_id}>
-                    {driver.name}
-                  </option>
-                ))}
-              </select>
+              <span>배정 대상</span>
+              <div className="inline-actions">
+                <label>
+                  <input
+                    checked={newAssignmentMode === 'internal'}
+                    name="assignment-target-type"
+                    onChange={() => setNewAssignmentMode('internal')}
+                    type="radio"
+                  />
+                  내부 배송원
+                </label>
+                <label aria-label="용차 기사 배정">
+                  <input
+                    checked={newAssignmentMode === 'outsourced'}
+                    name="assignment-target-type"
+                    onChange={() => setNewAssignmentMode('outsourced')}
+                    type="radio"
+                  />
+                  용차 기사
+                </label>
+              </div>
             </label>
+            {newAssignmentMode === 'internal' ? (
+              <label className="field">
+                <span>배송원</span>
+                <select onChange={(event) => setNewAssignmentDriverId(event.target.value)} value={newAssignmentDriverId}>
+                  <option value="">배송원 선택</option>
+                  {drivers.map((driver) => (
+                    <option key={driver.driver_id} value={driver.driver_id}>
+                      {driver.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : (
+              <label className="field">
+                <span>용차 기사 선택</span>
+                <select
+                  aria-label="용차 기사 선택"
+                  onChange={(event) => setNewAssignmentOutsourcedDriverId(event.target.value)}
+                  value={newAssignmentOutsourcedDriverId}
+                >
+                  <option value="">용차 기사 선택</option>
+                  {outsourcedDrivers.map((outsourcedDriver) => (
+                    <option key={outsourcedDriver.outsourced_driver_id} value={outsourcedDriver.outsourced_driver_id}>
+                      {outsourcedDriver.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             <div className="form-actions">
               <button
                 className="button primary"
-                disabled={isSaving || !newAssignmentScheduleId || !newAssignmentDriverId}
+                disabled={
+                  isSaving ||
+                  !newAssignmentScheduleId ||
+                  (newAssignmentMode === 'internal'
+                    ? !newAssignmentDriverId
+                    : !newAssignmentOutsourcedDriverId)
+                }
                 type="submit"
               >
                 기사 배정 추가

@@ -92,6 +92,21 @@ class SourceClients:
         )
         return self._filter_items(payload, dispatch_date=dispatch_date, assignment_status="assigned")
 
+    def list_outsourced_drivers(self, *, dispatch_date, fleet_id, authorization: str):
+        payload = self._request_json(
+            url=self._build_url(
+                settings.DISPATCH_REGISTRY_BASE_URL,
+                "/outsourced-drivers/",
+                {
+                    "dispatch_date": dispatch_date,
+                    "fleet_id": fleet_id,
+                },
+            ),
+            authorization=authorization,
+            expect_list=True,
+        )
+        return self._filter_items(payload, dispatch_date=dispatch_date, fleet_id=fleet_id)
+
     def list_assigned_assignments(self, *, authorization: str):
         payload = self._request_json(
             url=self._build_url(settings.DRIVER_VEHICLE_ASSIGNMENT_BASE_URL, "/assignments/"),

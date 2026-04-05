@@ -16,6 +16,7 @@ class DispatchOpsBoardRowSerializer(serializers.Serializer):
     WARNING_CODES = (
         "vehicle_lookup_failed",
         "planned_driver_lookup_failed",
+        "planned_outsourced_driver_lookup_failed",
         "current_driver_lookup_failed",
         "current_assignment_source_unavailable",
     )
@@ -26,6 +27,8 @@ class DispatchOpsBoardRowSerializer(serializers.Serializer):
     shift_slot = serializers.CharField(allow_null=True, required=False, default=None)
     vehicle_id = serializers.CharField(allow_null=True)
     plate_number = serializers.CharField(allow_null=True, default=None)
+    planned_driver_kind = serializers.CharField(allow_null=True, required=False, default=None)
+    outsourced_driver_id = serializers.CharField(allow_null=True, required=False, default=None)
     planned_driver_id = serializers.CharField(allow_null=True, required=False, default=None)
     planned_driver_name = serializers.CharField(allow_null=True, required=False, default=None)
     current_driver_id = serializers.CharField(allow_null=True, required=False, default=None)

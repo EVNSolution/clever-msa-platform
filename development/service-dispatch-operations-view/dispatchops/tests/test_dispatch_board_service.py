@@ -15,6 +15,7 @@ class FakeSourceClients:
         schedules=None,
         vehicles=None,
         drivers=None,
+        outsourced_drivers=None,
     ):
         self.plans = plans or []
         self.assignments = assignments or []
@@ -22,6 +23,7 @@ class FakeSourceClients:
         self.schedules = schedules or []
         self.vehicles = vehicles or []
         self.drivers = drivers or []
+        self.outsourced_drivers = outsourced_drivers or []
 
     def list_dispatch_plans(self, *, dispatch_date, fleet_id, authorization: str):
         return list(self.plans)
@@ -40,6 +42,9 @@ class FakeSourceClients:
 
     def list_drivers(self, *, authorization: str):
         return list(self.drivers)
+
+    def list_outsourced_drivers(self, *, dispatch_date, fleet_id, authorization: str):
+        return list(self.outsourced_drivers)
 
 
 class UnavailableCurrentAssignmentsSourceClients(FakeSourceClients):
@@ -118,6 +123,8 @@ class DispatchBoardServiceContractTests(TestCase):
                     "shift_slot": "A",
                     "vehicle_id": "vehicle-1",
                     "plate_number": "12가3456",
+                    "planned_driver_kind": "internal",
+                    "outsourced_driver_id": None,
                     "planned_driver_id": "driver-1",
                     "planned_driver_name": "Kim Driver",
                     "current_driver_id": None,
@@ -126,6 +133,81 @@ class DispatchBoardServiceContractTests(TestCase):
                     "warnings": [],
                 }
             ],
+        )
+
+    def test_builds_board_rows_for_outsourced_driver_assignments(self):
+        service = DispatchBoardService(
+            source_clients=FakeSourceClients(
+                plans=[
+                    {
+                        "dispatch_plan_id": "plan-1",
+                        "company_id": "company-1",
+                        "fleet_id": self.fleet_id,
+                        "dispatch_date": "2026-03-24",
+                        "planned_volume": 17,
+                        "dispatch_status": "published",
+                    }
+                ],
+                assignments=[
+                    {
+                        "dispatch_assignment_id": "assignment-1",
+                        "vehicle_schedule_id": "schedule-1",
+                        "vehicle_id": "vehicle-1",
+                        "driver_id": None,
+                        "outsourced_driver_id": "outsourced-1",
+                        "operator_company_id": "company-1",
+                        "dispatch_date": "2026-03-24",
+                        "shift_slot": "A",
+                        "assignment_status": "assigned",
+                        "assigned_at": "2026-03-23T09:00:00+09:00",
+                        "unassigned_at": None,
+                    }
+                ],
+                schedules=[
+                    {
+                        "vehicle_schedule_id": "schedule-1",
+                        "dispatch_date": "2026-03-24",
+                        "fleet_id": self.fleet_id,
+                        "vehicle_id": "vehicle-1",
+                    }
+                ],
+                vehicles=[
+                    {"vehicle_id": "vehicle-1", "plate_number": "12가3456"},
+                ],
+                outsourced_drivers=[
+                    {
+                        "outsourced_driver_id": "outsourced-1",
+                        "dispatch_plan_id": "plan-1",
+                        "name": "외부 기사",
+                    }
+                ],
+            )
+        )
+
+        result = service.build_board(
+            dispatch_date=self.dispatch_date,
+            fleet_id=self.fleet_id,
+            authorization=self.authorization,
+        )
+
+        self.assertEqual(
+            result["board"][0],
+            {
+                "dispatch_date": "2026-03-24",
+                "vehicle_schedule_id": "schedule-1",
+                "dispatch_assignment_id": "assignment-1",
+                "shift_slot": "A",
+                "vehicle_id": "vehicle-1",
+                "plate_number": "12가3456",
+                "planned_driver_kind": "outsourced",
+                "outsourced_driver_id": "outsourced-1",
+                "planned_driver_id": None,
+                "planned_driver_name": "외부 기사",
+                "current_driver_id": None,
+                "current_driver_name": None,
+                "dispatch_status": "not_started",
+                "warnings": [],
+            },
         )
 
     def test_excludes_empty_schedule_slots_without_dispatch_assignment_rows(self):
@@ -413,6 +495,8 @@ class DispatchBoardServiceContractTests(TestCase):
                     "shift_slot": None,
                     "vehicle_id": "vehicle-9",
                     "plate_number": "98다7654",
+                    "planned_driver_kind": None,
+                    "outsourced_driver_id": None,
                     "planned_driver_id": None,
                     "planned_driver_name": None,
                     "current_driver_id": "driver-2",

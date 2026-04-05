@@ -64,6 +64,25 @@ class VehicleSchedule(models.Model):
             raise ValidationError(errors)
 
 
+class OutsourcedDriver(models.Model):
+    outsourced_driver_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    dispatch_plan = models.ForeignKey(
+        DispatchPlan,
+        on_delete=models.CASCADE,
+        related_name="outsourced_drivers",
+        db_column="dispatch_plan_id",
+    )
+    name = models.CharField(max_length=120)
+    contact_number = models.CharField(max_length=32)
+    vehicle_note = models.CharField(max_length=255, blank=True, default="")
+    memo = models.TextField(blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("outsourced_driver_id",)
+
+
 class DispatchAssignment(models.Model):
     class AssignmentStatus(models.TextChoices):
         ASSIGNED = "assigned", "assigned"
@@ -77,7 +96,15 @@ class DispatchAssignment(models.Model):
         db_column="vehicle_schedule_id",
     )
     vehicle_id = models.UUIDField()
-    driver_id = models.UUIDField()
+    driver_id = models.UUIDField(null=True, blank=True)
+    outsourced_driver = models.ForeignKey(
+        OutsourcedDriver,
+        on_delete=models.PROTECT,
+        related_name="dispatch_assignments",
+        db_column="outsourced_driver_id",
+        null=True,
+        blank=True,
+    )
     operator_company_id = models.UUIDField()
     dispatch_date = models.DateField()
     shift_slot = models.CharField(max_length=32)
@@ -99,6 +126,12 @@ class DispatchAssignment(models.Model):
 
     def clean(self):
         errors = {}
+        has_internal_driver = self.driver_id is not None
+        has_outsourced_driver = self.outsourced_driver_id is not None
+        if has_internal_driver == has_outsourced_driver:
+            message = "Exactly one of driver_id or outsourced_driver_id is required."
+            errors["driver_id"] = message
+            errors["outsourced_driver_id"] = message
         if self.vehicle_schedule_id:
             schedule = self.vehicle_schedule
             if self.vehicle_id != schedule.vehicle_id:
@@ -112,6 +145,20 @@ class DispatchAssignment(models.Model):
                 and schedule.schedule_status != VehicleSchedule.ScheduleStatus.PLANNED
             ):
                 errors["vehicle_schedule_id"] = "Assigned dispatch requires a planned vehicle schedule."
+            if self.outsourced_driver_id:
+                dispatch_plan = self.outsourced_driver.dispatch_plan
+                if schedule.fleet_id != dispatch_plan.fleet_id:
+                    errors["outsourced_driver_id"] = (
+                        "outsourced_driver dispatch_plan must match vehicle_schedule fleet."
+                    )
+                if self.dispatch_date != dispatch_plan.dispatch_date:
+                    errors["outsourced_driver_id"] = (
+                        "outsourced_driver dispatch_plan must match dispatch_date."
+                    )
+                if self.operator_company_id != dispatch_plan.company_id:
+                    errors["operator_company_id"] = (
+                        "operator_company_id must match outsourced_driver dispatch_plan company."
+                    )
         if self.assignment_status == self.AssignmentStatus.ASSIGNED and self.unassigned_at is not None:
             errors["unassigned_at"] = "unassigned_at must be empty for assigned records."
         if self.assignment_status == self.AssignmentStatus.UNASSIGNED and self.unassigned_at is None:
