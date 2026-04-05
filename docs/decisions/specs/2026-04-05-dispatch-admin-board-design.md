@@ -154,7 +154,7 @@
 
 1. 1차에서도 `용차 기사`는 메모리 상태가 아니라 persisted entity로 저장되어야 한다.
 2. 저장 문맥은 `dispatch_plan`이다.
-3. 즉 같은 `company + fleet + dispatch_date` 계획 아래에서만 생성/삭제한다.
+3. 즉 같은 `company + fleet + dispatch_date` 계획 아래에서만 생성/수정/삭제한다.
 4. `dispatch_assignment`는 내부 `driver` 대신 이 persisted `용차 기사`를 참조할 수 있어야 한다.
 5. 이미 배차/정산 기록에서 참조 중인 `용차 기사`는 삭제하지 않는다.
 

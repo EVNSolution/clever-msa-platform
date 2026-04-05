@@ -22,6 +22,7 @@ const apiMocks = vi.hoisted(() => ({
   removeDriverDayException: vi.fn(),
   removeDispatchWorkRule: vi.fn(),
   removeOutsourcedDriver: vi.fn(),
+  updateOutsourcedDriver: vi.fn(),
   updateDispatchWorkRule: vi.fn(),
   updateDispatchAssignment: vi.fn(),
 }));
@@ -45,6 +46,7 @@ vi.mock('../api/dispatchRegistry', () => ({
   removeDriverDayException: apiMocks.removeDriverDayException,
   removeDispatchWorkRule: apiMocks.removeDispatchWorkRule,
   removeOutsourcedDriver: apiMocks.removeOutsourcedDriver,
+  updateOutsourcedDriver: apiMocks.updateOutsourcedDriver,
   updateDispatchWorkRule: apiMocks.updateDispatchWorkRule,
   updateDispatchAssignment: apiMocks.updateDispatchAssignment,
 }));
@@ -708,6 +710,96 @@ describe('DispatchBoardDetailPage', () => {
         'work-rule-1',
         expect.objectContaining({
           name: '주말 긴급 특근',
+        }),
+      );
+    });
+  });
+
+  it('updates outsourced driver information from the board', async () => {
+    apiMocks.listDispatchPlans.mockResolvedValue([
+      {
+        dispatch_plan_id: 'dispatch-plan-1',
+        company_id: '30000000-0000-0000-0000-000000000001',
+        fleet_id: '40000000-0000-0000-0000-000000000001',
+        dispatch_date: '2026-03-24',
+        planned_volume: 120,
+        dispatch_status: 'draft',
+      },
+    ]);
+    apiMocks.getDispatchSummary.mockResolvedValue({
+      dispatch_date: '2026-03-24',
+      fleet_id: '40000000-0000-0000-0000-000000000001',
+      planned_volume: 120,
+      planned_assignment_count: 0,
+      matched_count: 0,
+      not_started_count: 0,
+      dispatch_unit_changed_count: 0,
+      unplanned_current_count: 0,
+    });
+    apiMocks.getDispatchBoard.mockResolvedValue([]);
+    apiMocks.listVehicleSchedules.mockResolvedValue([]);
+    apiMocks.listDispatchAssignments.mockResolvedValue([]);
+    apiMocks.listVehicleMasters.mockResolvedValue([]);
+    apiMocks.listDrivers.mockResolvedValue([]);
+    apiMocks.listDispatchWorkRules.mockResolvedValue([]);
+    apiMocks.listDriverDayExceptions.mockResolvedValue([]);
+    apiMocks.listOutsourcedDrivers.mockResolvedValue([
+      {
+        outsourced_driver_id: 'outsourced-1',
+        dispatch_plan_id: 'dispatch-plan-1',
+        company_id: '30000000-0000-0000-0000-000000000001',
+        fleet_id: '40000000-0000-0000-0000-000000000001',
+        dispatch_date: '2026-03-24',
+        name: '외부 기사',
+        contact_number: '010-9999-8888',
+        vehicle_note: '1톤 카고',
+        memo: '월말 정산 대상',
+        created_at: '2026-03-24T09:00:00Z',
+        updated_at: '2026-03-24T09:00:00Z',
+      },
+    ]);
+    apiMocks.updateOutsourcedDriver.mockResolvedValue({
+      outsourced_driver_id: 'outsourced-1',
+      dispatch_plan_id: 'dispatch-plan-1',
+      company_id: '30000000-0000-0000-0000-000000000001',
+      fleet_id: '40000000-0000-0000-0000-000000000001',
+      dispatch_date: '2026-03-24',
+      name: '긴급 용차',
+      contact_number: '010-2222-3333',
+      vehicle_note: '2.5톤 윙바디',
+      memo: '수정된 메모',
+      created_at: '2026-03-24T09:00:00Z',
+      updated_at: '2026-03-24T10:00:00Z',
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/dispatch/boards/41/2026-03-24']}>
+        <Routes>
+          <Route
+            path="/dispatch/boards/:fleetRef/:dispatchDate"
+            element={<DispatchBoardDetailPage client={{ request: vi.fn() }} />}
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    await screen.findByText('외부 기사');
+    fireEvent.click(screen.getByRole('button', { name: '용차 기사 수정' }));
+    fireEvent.change(screen.getByLabelText('수정 용차 기사 이름'), { target: { value: '긴급 용차' } });
+    fireEvent.change(screen.getByLabelText('수정 연락처'), { target: { value: '010-2222-3333' } });
+    fireEvent.change(screen.getByLabelText('수정 차량/차종 메모'), { target: { value: '2.5톤 윙바디' } });
+    fireEvent.change(screen.getByLabelText('수정 메모'), { target: { value: '수정된 메모' } });
+    fireEvent.click(screen.getByRole('button', { name: '용차 기사 수정 저장' }));
+
+    await waitFor(() => {
+      expect(apiMocks.updateOutsourcedDriver).toHaveBeenCalledWith(
+        expect.anything(),
+        'outsourced-1',
+        expect.objectContaining({
+          name: '긴급 용차',
+          contact_number: '010-2222-3333',
+          vehicle_note: '2.5톤 윙바디',
+          memo: '수정된 메모',
         }),
       );
     });

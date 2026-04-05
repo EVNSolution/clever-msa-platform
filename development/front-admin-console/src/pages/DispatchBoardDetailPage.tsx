@@ -15,6 +15,7 @@ import {
   removeDriverDayException,
   removeDispatchWorkRule,
   removeOutsourcedDriver,
+  updateOutsourcedDriver,
   updateDispatchWorkRule,
   updateDispatchAssignment,
 } from '../api/dispatchRegistry';
@@ -86,6 +87,11 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
   const [newOutsourcedDriverContactNumber, setNewOutsourcedDriverContactNumber] = useState('');
   const [newOutsourcedDriverVehicleNote, setNewOutsourcedDriverVehicleNote] = useState('');
   const [newOutsourcedDriverMemo, setNewOutsourcedDriverMemo] = useState('');
+  const [editingOutsourcedDriverId, setEditingOutsourcedDriverId] = useState<string | null>(null);
+  const [editingOutsourcedDriverName, setEditingOutsourcedDriverName] = useState('');
+  const [editingOutsourcedDriverContactNumber, setEditingOutsourcedDriverContactNumber] = useState('');
+  const [editingOutsourcedDriverVehicleNote, setEditingOutsourcedDriverVehicleNote] = useState('');
+  const [editingOutsourcedDriverMemo, setEditingOutsourcedDriverMemo] = useState('');
   const [newWorkRuleName, setNewWorkRuleName] = useState('');
   const [newWorkRuleSystemKind, setNewWorkRuleSystemKind] = useState<DispatchWorkRule['system_kind']>('overtime');
   const [editingWorkRuleId, setEditingWorkRuleId] = useState<string | null>(null);
@@ -450,6 +456,33 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
     setErrorMessage(null);
     try {
       await removeOutsourcedDriver(client, outsourcedDriverId);
+      await reloadBoard();
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleUpdateOutsourcedDriver(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!editingOutsourcedDriverId || !editingOutsourcedDriverName || !editingOutsourcedDriverContactNumber) {
+      return;
+    }
+    setIsSaving(true);
+    setErrorMessage(null);
+    try {
+      await updateOutsourcedDriver(client, editingOutsourcedDriverId, {
+        name: editingOutsourcedDriverName,
+        contact_number: editingOutsourcedDriverContactNumber,
+        vehicle_note: editingOutsourcedDriverVehicleNote,
+        memo: editingOutsourcedDriverMemo,
+      });
+      setEditingOutsourcedDriverId(null);
+      setEditingOutsourcedDriverName('');
+      setEditingOutsourcedDriverContactNumber('');
+      setEditingOutsourcedDriverVehicleNote('');
+      setEditingOutsourcedDriverMemo('');
       await reloadBoard();
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
@@ -857,17 +890,88 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
                       <h3>{outsourcedDriver.name}</h3>
                       <p>{outsourcedDriver.contact_number}</p>
                     </div>
-                    <button
-                      className="button ghost small"
-                      disabled={isSaving}
-                      onClick={() => void handleRemoveOutsourcedDriver(outsourcedDriver.outsourced_driver_id)}
-                      type="button"
-                    >
-                      용차 기사 삭제
-                    </button>
+                    <div className="button-group">
+                      <button
+                        className="button ghost small"
+                        disabled={isSaving}
+                        onClick={() => {
+                          setEditingOutsourcedDriverId(outsourcedDriver.outsourced_driver_id);
+                          setEditingOutsourcedDriverName(outsourcedDriver.name);
+                          setEditingOutsourcedDriverContactNumber(outsourcedDriver.contact_number);
+                          setEditingOutsourcedDriverVehicleNote(outsourcedDriver.vehicle_note);
+                          setEditingOutsourcedDriverMemo(outsourcedDriver.memo);
+                        }}
+                        type="button"
+                      >
+                        용차 기사 수정
+                      </button>
+                      <button
+                        className="button ghost small"
+                        disabled={isSaving}
+                        onClick={() => void handleRemoveOutsourcedDriver(outsourcedDriver.outsourced_driver_id)}
+                        type="button"
+                      >
+                        용차 기사 삭제
+                      </button>
+                    </div>
                   </div>
                   {outsourcedDriver.vehicle_note ? <p>차량/차종: {outsourcedDriver.vehicle_note}</p> : null}
                   {outsourcedDriver.memo ? <p>메모: {outsourcedDriver.memo}</p> : null}
+                  {editingOutsourcedDriverId === outsourcedDriver.outsourced_driver_id ? (
+                    <form className="inline-form" onSubmit={handleUpdateOutsourcedDriver}>
+                      <label className="field">
+                        <span>수정 용차 기사 이름</span>
+                        <input
+                          onChange={(event) => setEditingOutsourcedDriverName(event.target.value)}
+                          value={editingOutsourcedDriverName}
+                        />
+                      </label>
+                      <label className="field">
+                        <span>수정 연락처</span>
+                        <input
+                          onChange={(event) => setEditingOutsourcedDriverContactNumber(event.target.value)}
+                          value={editingOutsourcedDriverContactNumber}
+                        />
+                      </label>
+                      <label className="field">
+                        <span>수정 차량/차종 메모</span>
+                        <input
+                          onChange={(event) => setEditingOutsourcedDriverVehicleNote(event.target.value)}
+                          value={editingOutsourcedDriverVehicleNote}
+                        />
+                      </label>
+                      <label className="field">
+                        <span>수정 메모</span>
+                        <textarea
+                          onChange={(event) => setEditingOutsourcedDriverMemo(event.target.value)}
+                          value={editingOutsourcedDriverMemo}
+                        />
+                      </label>
+                      <div className="form-actions">
+                        <button
+                          className="button primary small"
+                          disabled={isSaving || !editingOutsourcedDriverName || !editingOutsourcedDriverContactNumber}
+                          type="submit"
+                        >
+                          용차 기사 수정 저장
+                        </button>
+                        <button
+                          className="button ghost small"
+                          disabled={isSaving}
+                          onClick={() => {
+                            setEditingOutsourcedDriverId(null);
+                            setEditingOutsourcedDriverName('');
+                            setEditingOutsourcedDriverContactNumber('');
+                            setEditingOutsourcedDriverVehicleNote('');
+                            setEditingOutsourcedDriverMemo('');
+                          }}
+                          type="button"
+                        >
+                          수정 취소
+                        </button>
+                      </div>
+                    </form>
+                  ) : null}
                 </div>
               ))
             ) : (

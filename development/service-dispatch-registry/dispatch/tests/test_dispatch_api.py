@@ -224,6 +224,41 @@ class DispatchApiTests(TestCase):
         self.assertEqual(response.data[0]["name"], "외부 기사")
         self.assertEqual(response.data[0]["dispatch_plan_id"], str(matching_plan.dispatch_plan_id))
 
+    def test_admin_can_update_outsourced_driver(self):
+        models_module = _load_models_module(self)
+        self._authenticate(self.admin_token)
+        dispatch_plan = models_module.DispatchPlan.objects.create(
+            company_id=UUID("30000000-0000-0000-0000-000000000001"),
+            fleet_id=UUID("40000000-0000-0000-0000-000000000001"),
+            dispatch_date=date(2026, 3, 24),
+            planned_volume=120,
+            dispatch_status=models_module.DispatchPlan.DispatchStatus.DRAFT,
+        )
+        outsourced_driver = models_module.OutsourcedDriver.objects.create(
+            dispatch_plan=dispatch_plan,
+            name="외부 기사",
+            contact_number="010-9999-8888",
+            vehicle_note="1톤 카고",
+            memo="월말 정산 대상",
+        )
+
+        response = self.client.patch(
+            f"/outsourced-drivers/{outsourced_driver.outsourced_driver_id}/",
+            {
+                "name": "긴급 용차",
+                "contact_number": "010-2222-3333",
+                "vehicle_note": "2.5톤 윙바디",
+                "memo": "수정된 메모",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["name"], "긴급 용차")
+        self.assertEqual(response.data["contact_number"], "010-2222-3333")
+        self.assertEqual(response.data["vehicle_note"], "2.5톤 윙바디")
+        self.assertEqual(response.data["memo"], "수정된 메모")
+
     def test_admin_can_create_and_filter_work_rules(self):
         models_module = _load_models_module(self)
         self._authenticate(self.admin_token)

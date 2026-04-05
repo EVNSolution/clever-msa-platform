@@ -223,6 +223,17 @@ export function removeOutsourcedDriver(client: HttpClient, outsourcedDriverId: s
   });
 }
 
+export function updateOutsourcedDriver(
+  client: HttpClient,
+  outsourcedDriverId: string,
+  payload: Partial<Pick<OutsourcedDriver, 'name' | 'contact_number' | 'vehicle_note' | 'memo'>>,
+) {
+  return client.request<OutsourcedDriver>(`/dispatch/outsourced-drivers/${outsourcedDriverId}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
 export function createVehicleSchedule(client: HttpClient, payload: VehicleSchedulePayload) {
   return client.request<VehicleSchedule>('/dispatch/vehicle-schedules/', {
     method: 'POST',
