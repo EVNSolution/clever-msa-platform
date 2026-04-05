@@ -44,8 +44,8 @@ class SourceClientsTests(TestCase):
             self._build_response(
                 """
                 [
-                    {"dispatch_assignment_id": "assignment-1", "dispatch_date": "2026-03-24"},
-                    {"dispatch_assignment_id": "assignment-2", "dispatch_date": "2026-03-25"}
+                    {"dispatch_assignment_id": "assignment-1", "dispatch_date": "2026-03-24", "assignment_status": "assigned"},
+                    {"dispatch_assignment_id": "assignment-2", "dispatch_date": "2026-03-25", "assignment_status": "assigned"}
                 ]
                 """
             ),
@@ -107,8 +107,8 @@ class SourceClientsTests(TestCase):
         self.assertEqual(
             [call.args[0].full_url for call in mock_urlopen.call_args_list],
             [
-                "http://dispatch-registry-api:8000/plans/",
-                "http://dispatch-registry-api:8000/assignments/",
+                "http://dispatch-registry-api:8000/plans/?dispatch_date=2026-03-24&fleet_id=fleet-a",
+                "http://dispatch-registry-api:8000/assignments/?dispatch_date=2026-03-24&assignment_status=assigned",
                 "http://vehicle-assignment-api:8000/assignments/",
                 "http://vehicle-registry-api:8000/vehicle-masters/",
                 "http://driver-profile-api:8000/",

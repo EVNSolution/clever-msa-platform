@@ -113,6 +113,8 @@ class DispatchBoardServiceContractTests(TestCase):
             [
                 {
                     "dispatch_date": "2026-03-24",
+                    "vehicle_schedule_id": "schedule-1",
+                    "dispatch_assignment_id": "assignment-1",
                     "shift_slot": "A",
                     "vehicle_id": "vehicle-1",
                     "plate_number": "12가3456",
@@ -406,6 +408,8 @@ class DispatchBoardServiceContractTests(TestCase):
             [
                 {
                     "dispatch_date": "2026-03-24",
+                    "vehicle_schedule_id": None,
+                    "dispatch_assignment_id": None,
                     "shift_slot": None,
                     "vehicle_id": "vehicle-9",
                     "plate_number": "98다7654",

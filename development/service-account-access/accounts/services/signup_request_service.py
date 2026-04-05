@@ -87,6 +87,7 @@ class SignupRequestService:
             if principal.manager_account.role_type in {
                 ManagerAccount.RoleType.VEHICLE_MANAGER,
                 ManagerAccount.RoleType.SETTLEMENT_MANAGER,
+                ManagerAccount.RoleType.FLEET_MANAGER,
             }:
                 queryset = queryset.filter(
                     request_type=IdentitySignupRequest.RequestType.DRIVER_ACCOUNT_CREATE
@@ -241,6 +242,7 @@ class SignupRequestService:
             if role_type not in {
                 ManagerAccount.RoleType.VEHICLE_MANAGER,
                 ManagerAccount.RoleType.SETTLEMENT_MANAGER,
+                ManagerAccount.RoleType.FLEET_MANAGER,
             }:
                 raise PermissionDenied("Company super admin can configure only lower manager roles.")
 

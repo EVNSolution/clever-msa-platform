@@ -108,6 +108,71 @@ export type Fleet = {
   name: string;
 };
 
+export type DispatchPlan = {
+  dispatch_plan_id: string;
+  company_id: string;
+  fleet_id: string;
+  dispatch_date: string;
+  planned_volume: number;
+  dispatch_status: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type VehicleSchedule = {
+  vehicle_schedule_id: string;
+  vehicle_id: string;
+  fleet_id: string;
+  dispatch_date: string;
+  shift_slot: string;
+  schedule_status: string;
+  starts_at: string | null;
+  ends_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type DispatchAssignment = {
+  dispatch_assignment_id: string;
+  vehicle_schedule_id: string;
+  vehicle_id: string;
+  driver_id: string;
+  operator_company_id: string;
+  dispatch_date: string;
+  shift_slot: string;
+  assignment_status: string;
+  assigned_at: string;
+  unassigned_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type DispatchBoardRow = {
+  dispatch_date: string;
+  vehicle_schedule_id: string | null;
+  dispatch_assignment_id: string | null;
+  shift_slot: string | null;
+  vehicle_id: string | null;
+  plate_number: string | null;
+  planned_driver_id: string | null;
+  planned_driver_name: string | null;
+  current_driver_id: string | null;
+  current_driver_name: string | null;
+  dispatch_status: 'matched' | 'not_started' | 'dispatch_unit_changed' | 'unplanned_current';
+  warnings: string[];
+};
+
+export type DispatchBoardSummary = {
+  dispatch_date: string;
+  fleet_id: string;
+  planned_volume: number;
+  planned_assignment_count: number;
+  matched_count: number;
+  not_started_count: number;
+  dispatch_unit_changed_count: number;
+  unplanned_current_count: number;
+};
+
 export type DriverProfile = {
   driver_id: string;
   route_no?: number;

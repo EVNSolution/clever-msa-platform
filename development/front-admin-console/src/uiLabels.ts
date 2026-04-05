@@ -8,6 +8,8 @@ export function formatRoleLabel(role: string | null | undefined) {
       return '차량 관리자';
     case 'settlement_manager':
       return '정산 관리자';
+    case 'fleet_manager':
+      return '플릿 관리자';
     case 'manager':
       return '관리자';
     case 'driver':

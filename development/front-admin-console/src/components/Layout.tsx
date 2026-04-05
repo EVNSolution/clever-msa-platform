@@ -1,7 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom';
 
 import type { SessionPayload } from '../api/http';
-import { canAccessAccountsScope, canAccessCompanyScope, canAccessDriverScope, canAccessSettlementScope, canAccessVehicleScope } from '../authScopes';
+import { canAccessAccountsScope, canAccessCompanyScope, canAccessDispatchScope, canAccessDriverScope, canAccessSettlementScope, canAccessVehicleScope } from '../authScopes';
 import { formatRoleLabel } from '../uiLabels';
 
 type LayoutProps = {
@@ -49,6 +49,11 @@ export function Layout({ session, onLogout }: LayoutProps) {
           {canAccessSettlementScope(session) ? (
             <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/settlements">
               정산
+            </NavLink>
+          ) : null}
+          {canAccessDispatchScope(session) ? (
+            <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/dispatch/boards">
+              배차
             </NavLink>
           ) : null}
         </nav>

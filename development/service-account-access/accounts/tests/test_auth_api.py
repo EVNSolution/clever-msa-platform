@@ -628,6 +628,62 @@ class IdentityRequestApiTests(TestCase):
             [str(own_request.identity_signup_request_id)],
         )
 
+    def test_fleet_manager_can_only_see_same_company_driver_requests(self):
+        fleet_manager_identity = self._create_identity_with_password(
+            name="플릿 관리자",
+            birth_date="1986-06-06",
+            email="fleet-manager@example.com",
+            password="fleet-manager-pass-123",
+        )
+        ManagerAccount.objects.create(
+            identity=fleet_manager_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.FLEET_MANAGER,
+        )
+
+        own_driver_identity = self._create_identity_with_password(
+            name="같은 회사 배송원 요청자",
+            birth_date="1991-01-01",
+            email="fleet-driver-own@example.com",
+            password="fleet-driver-own-pass-123",
+        )
+        own_manager_identity = self._create_identity_with_password(
+            name="같은 회사 관리자 요청자",
+            birth_date="1991-01-02",
+            email="fleet-manager-own@example.com",
+            password="fleet-manager-own-pass-123",
+        )
+        other_driver_identity = self._create_identity_with_password(
+            name="다른 회사 배송원 요청자",
+            birth_date="1991-01-03",
+            email="fleet-driver-other@example.com",
+            password="fleet-driver-other-pass-123",
+        )
+        own_request = self._create_request(
+            identity=own_driver_identity,
+            company_id=self.company_id,
+            request_type=IdentitySignupRequest.RequestType.DRIVER_ACCOUNT_CREATE,
+        )
+        self._create_request(
+            identity=own_manager_identity,
+            company_id=self.company_id,
+            request_type=IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE,
+        )
+        self._create_request(
+            identity=other_driver_identity,
+            company_id=self.other_company_id,
+            request_type=IdentitySignupRequest.RequestType.DRIVER_ACCOUNT_CREATE,
+        )
+
+        self._login_identity("fleet-manager@example.com", "fleet-manager-pass-123")
+        response = self.client.get("/identity-signup-requests/manage/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            [item["identity_signup_request_id"] for item in response.data["requests"]],
+            [str(own_request.identity_signup_request_id)],
+        )
+
     def test_company_super_admin_approves_manager_request_into_awaiting_setup_then_completes_setup(self):
         super_admin_identity = self._create_identity_with_password(
             name="회사 총괄",
@@ -647,7 +703,7 @@ class IdentityRequestApiTests(TestCase):
             email="manager-request@example.com",
             password="manager-request-pass-123",
         )
-        request = self._create_request(
+        request = IdentitySignupRequest.objects.create(
             identity=request_identity,
             company_id=self.company_id,
             request_type=IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE,
@@ -916,6 +972,17 @@ class ManagerAccountManagementApiTests(TestCase):
             company_id=self.company_id,
             role_type=ManagerAccount.RoleType.SETTLEMENT_MANAGER,
         )
+        fleet_identity = self._create_identity_with_password(
+            name="플릿 관리자",
+            birth_date="1993-01-02",
+            email="company-fleet@example.com",
+            password="company-fleet-pass-123",
+        )
+        fleet_account = self._create_manager_account(
+            identity=fleet_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.FLEET_MANAGER,
+        )
         self._create_manager_account(
             identity=other_identity,
             company_id=self.other_company_id,
@@ -933,6 +1000,7 @@ class ManagerAccountManagementApiTests(TestCase):
                 str(super_account.manager_account_id),
                 str(vehicle_account.manager_account_id),
                 str(settlement_account.manager_account_id),
+                str(fleet_account.manager_account_id),
             },
         )
         self.assertNotIn(str(peer_super_account.manager_account_id), returned_ids)
@@ -995,14 +1063,55 @@ class ManagerAccountManagementApiTests(TestCase):
         self._login_identity("change-role-super@example.com", "change-role-super-pass-123")
         response = self.client.post(
             f"/manager-accounts/{lower_account.manager_account_id}/change-role/",
-            {"role_type": ManagerAccount.RoleType.SETTLEMENT_MANAGER},
+            {"role_type": ManagerAccount.RoleType.FLEET_MANAGER},
             format="json",
         )
 
         self.assertEqual(response.status_code, 200)
         lower_account.refresh_from_db()
-        self.assertEqual(lower_account.role_type, ManagerAccount.RoleType.SETTLEMENT_MANAGER)
+        self.assertEqual(lower_account.role_type, ManagerAccount.RoleType.FLEET_MANAGER)
         self.assertEqual(response.data["manager_account_id"], str(lower_account.manager_account_id))
+
+    def test_company_super_admin_can_complete_manager_setup_as_fleet_manager(self):
+        super_identity = self._create_identity_with_password(
+            name="플릿 역할 부여 총괄",
+            birth_date="1980-01-01",
+            email="setup-fleet-super@example.com",
+            password="setup-fleet-super-pass-123",
+        )
+        request_identity = self._create_identity_with_password(
+            name="플릿 역할 신청자",
+            birth_date="1990-01-02",
+            email="setup-fleet-target@example.com",
+            password="setup-fleet-target-pass-123",
+        )
+        self._create_manager_account(
+            identity=super_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.COMPANY_SUPER_ADMIN,
+        )
+        request = IdentitySignupRequest.objects.create(
+            identity=request_identity,
+            company_id=self.company_id,
+            request_type=IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE,
+            status=IdentitySignupRequest.Status.PENDING,
+        )
+        request.status = IdentitySignupRequest.Status.AWAITING_SETUP
+        request.save(update_fields=["status"])
+
+        self._login_identity("setup-fleet-super@example.com", "setup-fleet-super-pass-123")
+        response = self.client.post(
+            f"/identity-signup-requests/{request.identity_signup_request_id}/complete-setup/",
+            {"role_type": ManagerAccount.RoleType.FLEET_MANAGER},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        created_manager = ManagerAccount.objects.get(
+            identity=request_identity,
+            status=ManagerAccount.Status.ACTIVE,
+        )
+        self.assertEqual(created_manager.role_type, ManagerAccount.RoleType.FLEET_MANAGER)
 
     def test_vehicle_manager_cannot_change_own_role(self):
         vehicle_identity = self._create_identity_with_password(

@@ -10,6 +10,7 @@ class ManagerAccountService:
     LOWER_MANAGER_ROLES = {
         ManagerAccount.RoleType.VEHICLE_MANAGER,
         ManagerAccount.RoleType.SETTLEMENT_MANAGER,
+        ManagerAccount.RoleType.FLEET_MANAGER,
     }
 
     def list_manageable_accounts(self, principal):
@@ -57,7 +58,11 @@ class ManagerAccountService:
 
         if manager_account.role_type not in self.LOWER_MANAGER_ROLES or role_type not in self.LOWER_MANAGER_ROLES:
             raise ValidationError(
-                {"role_type": ["Only vehicle_manager and settlement_manager can change role in place."]}
+                {
+                    "role_type": [
+                        "Only vehicle_manager, settlement_manager, and fleet_manager can change role in place."
+                    ]
+                }
             )
         if manager_account.role_type == role_type:
             raise ValidationError({"role_type": ["Manager already has this role."]})

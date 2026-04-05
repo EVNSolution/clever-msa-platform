@@ -35,6 +35,7 @@ describe('Layout', () => {
     expect(screen.getByRole('link', { name: '계정 요청' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '차량' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '차량 배정' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '배차' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '단말기' })).not.toBeInTheDocument();
   });
 
@@ -69,6 +70,7 @@ describe('Layout', () => {
     expect(screen.getByRole('link', { name: '차량 배정' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '배송원' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '정산' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: '배차' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '회사' })).not.toBeInTheDocument();
   });
 
@@ -100,6 +102,7 @@ describe('Layout', () => {
     );
 
     expect(screen.getByRole('link', { name: '정산' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '배차' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '배송원' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '차량' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '차량 배정' })).not.toBeInTheDocument();

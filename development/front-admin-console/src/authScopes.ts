@@ -1,6 +1,6 @@
 import type { SessionPayload } from './api/http';
 
-export type ManagerRole = 'company_super_admin' | 'vehicle_manager' | 'settlement_manager';
+export type ManagerRole = 'company_super_admin' | 'vehicle_manager' | 'settlement_manager' | 'fleet_manager';
 
 export function isSystemAdmin(session: SessionPayload) {
   return session.activeAccount?.accountType === 'system_admin';
@@ -15,7 +15,8 @@ export function getManagerRole(session: SessionPayload): ManagerRole | null {
   if (
     roleType === 'company_super_admin' ||
     roleType === 'vehicle_manager' ||
-    roleType === 'settlement_manager'
+    roleType === 'settlement_manager' ||
+    roleType === 'fleet_manager'
   ) {
     return roleType;
   }
@@ -38,7 +39,16 @@ export function canAccessVehicleScope(session: SessionPayload) {
 
 export function canAccessSettlementScope(session: SessionPayload) {
   const role = getManagerRole(session);
-  return isSystemAdmin(session) || role === 'company_super_admin' || role === 'settlement_manager';
+  return (
+    isSystemAdmin(session) ||
+    role === 'company_super_admin' ||
+    role === 'settlement_manager' ||
+    role === 'fleet_manager'
+  );
+}
+
+export function canAccessDispatchScope(session: SessionPayload) {
+  return canAccessSettlementScope(session);
 }
 
 export function canAccessDriverScope(session: SessionPayload) {
@@ -51,10 +61,10 @@ export function canManageCompanySuperAdmin(session: SessionPayload) {
 
 export function getManageableManagerRoleOptions(session: SessionPayload): ManagerRole[] {
   if (canManageCompanySuperAdmin(session)) {
-    return ['company_super_admin', 'vehicle_manager', 'settlement_manager'];
+    return ['company_super_admin', 'vehicle_manager', 'settlement_manager', 'fleet_manager'];
   }
 
-  return ['vehicle_manager', 'settlement_manager'];
+  return ['vehicle_manager', 'settlement_manager', 'fleet_manager'];
 }
 
 export function getAccountsScopeDescription(session: SessionPayload) {

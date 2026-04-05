@@ -64,7 +64,14 @@ class SourceClients:
 
     def list_dispatch_plans(self, *, dispatch_date, fleet_id, authorization: str):
         payload = self._request_json(
-            url=self._build_url(settings.DISPATCH_REGISTRY_BASE_URL, "/plans/"),
+            url=self._build_url(
+                settings.DISPATCH_REGISTRY_BASE_URL,
+                "/plans/",
+                {
+                    "dispatch_date": dispatch_date,
+                    "fleet_id": fleet_id,
+                },
+            ),
             authorization=authorization,
             expect_list=True,
         )
@@ -72,11 +79,18 @@ class SourceClients:
 
     def list_dispatch_assignments(self, *, dispatch_date, authorization: str):
         payload = self._request_json(
-            url=self._build_url(settings.DISPATCH_REGISTRY_BASE_URL, "/assignments/"),
+            url=self._build_url(
+                settings.DISPATCH_REGISTRY_BASE_URL,
+                "/assignments/",
+                {
+                    "dispatch_date": dispatch_date,
+                    "assignment_status": "assigned",
+                },
+            ),
             authorization=authorization,
             expect_list=True,
         )
-        return self._filter_items(payload, dispatch_date=dispatch_date)
+        return self._filter_items(payload, dispatch_date=dispatch_date, assignment_status="assigned")
 
     def list_assigned_assignments(self, *, authorization: str):
         payload = self._request_json(

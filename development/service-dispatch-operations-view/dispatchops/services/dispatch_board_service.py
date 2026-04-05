@@ -98,6 +98,8 @@ class DispatchBoardService:
             board.append(
                 {
                     "dispatch_date": str(assignment.get("dispatch_date")),
+                    "vehicle_schedule_id": self._string_or_none(assignment.get("vehicle_schedule_id")),
+                    "dispatch_assignment_id": self._string_or_none(assignment.get("dispatch_assignment_id")),
                     "shift_slot": assignment.get("shift_slot"),
                     "vehicle_id": vehicle_id,
                     "plate_number": vehicle.get("plate_number") if vehicle else None,
@@ -127,6 +129,8 @@ class DispatchBoardService:
             board.append(
                 {
                     "dispatch_date": str(dispatch_date),
+                    "vehicle_schedule_id": None,
+                    "dispatch_assignment_id": None,
                     "shift_slot": None,
                     "vehicle_id": vehicle_id,
                     "plate_number": vehicle.get("plate_number") if vehicle else None,

@@ -142,14 +142,15 @@ describe('AccountsPage', () => {
     expect(screen.getByRole('button', { name: '계정 종료' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /계정 생성/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('option', { name: '회사 전체 관리자' })).not.toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '플릿 관리자' })).toBeInTheDocument();
 
-    fireEvent.change(screen.getByDisplayValue('차량 관리자'), { target: { value: 'settlement_manager' } });
+    fireEvent.change(screen.getByDisplayValue('차량 관리자'), { target: { value: 'fleet_manager' } });
     fireEvent.click(screen.getByRole('button', { name: '권한 변경' }));
     await waitFor(() => {
       expect(apiMocks.changeManagerAccountRole).toHaveBeenCalledWith(
         expect.anything(),
         '50000000-0000-0000-0000-000000000001',
-        'settlement_manager',
+        'fleet_manager',
       );
     });
 

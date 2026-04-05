@@ -142,6 +142,7 @@ class ManagerAccount(models.Model):
         COMPANY_SUPER_ADMIN = "company_super_admin", "Company Super Admin"
         VEHICLE_MANAGER = "vehicle_manager", "Vehicle Manager"
         SETTLEMENT_MANAGER = "settlement_manager", "Settlement Manager"
+        FLEET_MANAGER = "fleet_manager", "Fleet Manager"
 
     manager_account_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     identity = models.ForeignKey(

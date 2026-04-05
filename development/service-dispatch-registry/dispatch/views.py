@@ -35,6 +35,19 @@ class DispatchPlanListCreateView(generics.ListCreateAPIView):
     serializer_class = DispatchPlanSerializer
     permission_classes = [AuthenticatedReadAdminWrite]
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        company_id = self.request.query_params.get("company_id")
+        fleet_id = self.request.query_params.get("fleet_id")
+        dispatch_date = self.request.query_params.get("dispatch_date")
+        if company_id:
+            queryset = queryset.filter(company_id=company_id)
+        if fleet_id:
+            queryset = queryset.filter(fleet_id=fleet_id)
+        if dispatch_date:
+            queryset = queryset.filter(dispatch_date=dispatch_date)
+        return queryset
+
 
 class DispatchPlanDetailView(
     mixins.RetrieveModelMixin,
@@ -59,6 +72,19 @@ class VehicleScheduleListCreateView(generics.ListCreateAPIView):
     serializer_class = VehicleScheduleSerializer
     permission_classes = [AuthenticatedReadAdminWrite]
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        fleet_id = self.request.query_params.get("fleet_id")
+        dispatch_date = self.request.query_params.get("dispatch_date")
+        vehicle_id = self.request.query_params.get("vehicle_id")
+        if fleet_id:
+            queryset = queryset.filter(fleet_id=fleet_id)
+        if dispatch_date:
+            queryset = queryset.filter(dispatch_date=dispatch_date)
+        if vehicle_id:
+            queryset = queryset.filter(vehicle_id=vehicle_id)
+        return queryset
+
 
 class VehicleScheduleDetailView(
     mixins.RetrieveModelMixin,
@@ -82,6 +108,25 @@ class DispatchAssignmentListCreateView(generics.ListCreateAPIView):
     queryset = DispatchAssignment.objects.all()
     serializer_class = DispatchAssignmentSerializer
     permission_classes = [AuthenticatedReadAdminWrite]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        dispatch_date = self.request.query_params.get("dispatch_date")
+        assignment_status = self.request.query_params.get("assignment_status")
+        vehicle_schedule_id = self.request.query_params.get("vehicle_schedule_id")
+        vehicle_id = self.request.query_params.get("vehicle_id")
+        driver_id = self.request.query_params.get("driver_id")
+        if dispatch_date:
+            queryset = queryset.filter(dispatch_date=dispatch_date)
+        if assignment_status:
+            queryset = queryset.filter(assignment_status=assignment_status)
+        if vehicle_schedule_id:
+            queryset = queryset.filter(vehicle_schedule_id=vehicle_schedule_id)
+        if vehicle_id:
+            queryset = queryset.filter(vehicle_id=vehicle_id)
+        if driver_id:
+            queryset = queryset.filter(driver_id=driver_id)
+        return queryset
 
 
 class DispatchAssignmentDetailView(

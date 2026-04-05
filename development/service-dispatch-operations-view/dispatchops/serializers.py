@@ -21,6 +21,8 @@ class DispatchOpsBoardRowSerializer(serializers.Serializer):
     )
 
     dispatch_date = serializers.DateField()
+    vehicle_schedule_id = serializers.CharField(allow_null=True, required=False, default=None)
+    dispatch_assignment_id = serializers.CharField(allow_null=True, required=False, default=None)
     shift_slot = serializers.CharField(allow_null=True, required=False, default=None)
     vehicle_id = serializers.CharField(allow_null=True)
     plate_number = serializers.CharField(allow_null=True, default=None)

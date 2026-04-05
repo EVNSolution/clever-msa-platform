@@ -109,3 +109,19 @@ class AuthDomainModelTests(TestCase):
 
         request.status = IdentitySignupRequest.Status.AWAITING_SETUP
         request.full_clean()
+
+    def test_manager_account_supports_fleet_manager_role(self):
+        Identity = account_models.Identity
+        ManagerAccount = account_models.ManagerAccount
+        identity = Identity.objects.create(
+            name="플릿 관리자",
+            birth_date=date(1994, 5, 6),
+        )
+
+        account = ManagerAccount.objects.create(
+            identity=identity,
+            company_id=uuid.uuid4(),
+            role_type=ManagerAccount.RoleType.FLEET_MANAGER,
+        )
+
+        self.assertEqual(account.role_type, ManagerAccount.RoleType.FLEET_MANAGER)

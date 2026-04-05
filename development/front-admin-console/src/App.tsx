@@ -8,12 +8,15 @@ import { Layout } from './components/Layout';
 import { RequireAdmin } from './components/RequireAdmin';
 import { RequireRoleScope } from './components/RequireRoleScope';
 import { SettlementSectionLayout } from './components/SettlementSectionLayout';
-import { canAccessCompanyScope, canAccessSettlementScope, canAccessVehicleScope } from './authScopes';
+import { canAccessCompanyScope, canAccessDispatchScope, canAccessSettlementScope, canAccessVehicleScope } from './authScopes';
 import { AccountPage } from './pages/AccountPage';
 import { AccountsPage } from './pages/AccountsPage';
 import { CompaniesPage } from './pages/CompaniesPage';
 import { CompanyDetailPage } from './pages/CompanyDetailPage';
 import { CompanyFormPage } from './pages/CompanyFormPage';
+import { DispatchBoardDetailPage } from './pages/DispatchBoardDetailPage';
+import { DispatchBoardsPage } from './pages/DispatchBoardsPage';
+import { DispatchPlanFormPage } from './pages/DispatchPlanFormPage';
 import { DriverDetailPage } from './pages/DriverDetailPage';
 import { DriverFormPage } from './pages/DriverFormPage';
 import { DriversPage } from './pages/DriversPage';
@@ -288,6 +291,63 @@ export default function App() {
             />
             <Route path="/accounts" element={<AccountsPage client={client} session={session} />} />
             <Route path="/organization" element={<Navigate replace to="/companies" />} />
+            <Route path="/dispatch" element={<Navigate replace to="/dispatch/boards" />} />
+            <Route
+              path="/dispatch/boards"
+              element={
+                <RequireRoleScope
+                  message="배차는 시스템 관리자, 회사 전체 관리자, 플릿 관리자, 정산 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="배차 관리 권한 필요"
+                  when={canAccessDispatchScope}
+                >
+                  <DispatchBoardsPage client={client} />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/dispatch/boards/:fleetRef/:dispatchDate"
+              element={
+                <RequireRoleScope
+                  message="배차는 시스템 관리자, 회사 전체 관리자, 플릿 관리자, 정산 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="배차 관리 권한 필요"
+                  when={canAccessDispatchScope}
+                >
+                  <DispatchBoardDetailPage client={client} />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/dispatch/plans/new"
+              element={
+                <RequireRoleScope
+                  message="배차는 시스템 관리자, 회사 전체 관리자, 플릿 관리자, 정산 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="배차 관리 권한 필요"
+                  when={canAccessDispatchScope}
+                >
+                  <DispatchPlanFormPage client={client} mode="create" />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/dispatch/plans/:dispatchPlanRef/edit"
+              element={
+                <RequireRoleScope
+                  message="배차는 시스템 관리자, 회사 전체 관리자, 플릿 관리자, 정산 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="배차 관리 권한 필요"
+                  when={canAccessDispatchScope}
+                >
+                  <DispatchPlanFormPage client={client} mode="edit" />
+                </RequireRoleScope>
+              }
+            />
             <Route
               path="/companies"
               element={

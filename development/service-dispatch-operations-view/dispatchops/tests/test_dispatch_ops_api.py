@@ -125,6 +125,8 @@ class DispatchOpsApiTests(TestCase):
             "board": [
                 {
                     "dispatch_date": self.dispatch_date,
+                    "vehicle_schedule_id": "schedule-9",
+                    "dispatch_assignment_id": None,
                     "shift_slot": None,
                     "vehicle_id": "vehicle-9",
                     "plate_number": "98다7654",
@@ -137,6 +139,8 @@ class DispatchOpsApiTests(TestCase):
                 },
                 {
                     "dispatch_date": self.dispatch_date,
+                    "vehicle_schedule_id": "schedule-2",
+                    "dispatch_assignment_id": "assignment-2",
                     "shift_slot": "B",
                     "vehicle_id": "vehicle-2",
                     "plate_number": "23나4567",
@@ -149,6 +153,8 @@ class DispatchOpsApiTests(TestCase):
                 },
                 {
                     "dispatch_date": self.dispatch_date,
+                    "vehicle_schedule_id": "schedule-1",
+                    "dispatch_assignment_id": "assignment-1",
                     "shift_slot": "A",
                     "vehicle_id": "vehicle-1",
                     "plate_number": "12가3456",
@@ -181,6 +187,8 @@ class DispatchOpsApiTests(TestCase):
             [
                 {
                     "dispatch_date": self.dispatch_date,
+                    "vehicle_schedule_id": "schedule-1",
+                    "dispatch_assignment_id": "assignment-1",
                     "shift_slot": "A",
                     "vehicle_id": "vehicle-1",
                     "plate_number": "12가3456",
@@ -193,6 +201,8 @@ class DispatchOpsApiTests(TestCase):
                 },
                 {
                     "dispatch_date": self.dispatch_date,
+                    "vehicle_schedule_id": "schedule-2",
+                    "dispatch_assignment_id": "assignment-2",
                     "shift_slot": "B",
                     "vehicle_id": "vehicle-2",
                     "plate_number": "23나4567",
@@ -205,6 +215,8 @@ class DispatchOpsApiTests(TestCase):
                 },
                 {
                     "dispatch_date": self.dispatch_date,
+                    "vehicle_schedule_id": "schedule-9",
+                    "dispatch_assignment_id": None,
                     "shift_slot": None,
                     "vehicle_id": "vehicle-9",
                     "plate_number": "98다7654",
@@ -231,6 +243,44 @@ class DispatchOpsApiTests(TestCase):
 
         self.assertEqual(response.status_code, 400)
         mock_build_board.assert_not_called()
+
+    @patch("dispatchops.views.DispatchBoardService.build_board")
+    def test_board_endpoint_includes_schedule_and_assignment_identifiers(self, mock_build_board):
+        mock_build_board.return_value = {
+            "board": [
+                {
+                    "dispatch_date": self.dispatch_date,
+                    "vehicle_schedule_id": "schedule-1",
+                    "dispatch_assignment_id": "assignment-1",
+                    "shift_slot": "A",
+                    "vehicle_id": "vehicle-1",
+                    "plate_number": "12가3456",
+                    "planned_driver_id": "driver-1",
+                    "planned_driver_name": "Driver One",
+                    "current_driver_id": "driver-1",
+                    "current_driver_name": "Driver One",
+                    "dispatch_status": "matched",
+                    "warnings": [],
+                }
+            ],
+            "summary": {
+                "dispatch_date": self.dispatch_date,
+                "fleet_id": self.fleet_id,
+                "planned_volume": 1,
+                "planned_assignment_count": 1,
+                "matched_count": 1,
+                "not_started_count": 0,
+                "dispatch_unit_changed_count": 0,
+                "unplanned_current_count": 0,
+            },
+        }
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.token}")
+
+        response = self.client.get("/board/", {"dispatch_date": self.dispatch_date, "fleet_id": self.fleet_id})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data[0]["vehicle_schedule_id"], "schedule-1")
+        self.assertEqual(response.data[0]["dispatch_assignment_id"], "assignment-1")
 
     @patch("dispatchops.views.DispatchBoardService.build_board")
     def test_board_endpoint_returns_400_for_invalid_fleet_id(self, mock_build_board):

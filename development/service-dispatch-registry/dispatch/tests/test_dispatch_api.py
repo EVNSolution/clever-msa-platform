@@ -159,3 +159,114 @@ class DispatchApiTests(TestCase):
             403,
         )
 
+    def test_plan_list_filters_by_company_fleet_and_dispatch_date(self):
+        models_module = _load_models_module(self)
+        self._authenticate(self.admin_token)
+        matching_plan = models_module.DispatchPlan.objects.create(
+            company_id=UUID("30000000-0000-0000-0000-000000000001"),
+            fleet_id=UUID("40000000-0000-0000-0000-000000000001"),
+            dispatch_date=date(2026, 3, 24),
+            planned_volume=120,
+            dispatch_status=models_module.DispatchPlan.DispatchStatus.DRAFT,
+        )
+        models_module.DispatchPlan.objects.create(
+            company_id=UUID("30000000-0000-0000-0000-000000000002"),
+            fleet_id=UUID("40000000-0000-0000-0000-000000000002"),
+            dispatch_date=date(2026, 3, 25),
+            planned_volume=88,
+            dispatch_status=models_module.DispatchPlan.DispatchStatus.DRAFT,
+        )
+
+        response = self.client.get(
+            "/plans/",
+            {
+                "company_id": "30000000-0000-0000-0000-000000000001",
+                "fleet_id": "40000000-0000-0000-0000-000000000001",
+                "dispatch_date": "2026-03-24",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [response.data[0]])
+        self.assertEqual(response.data[0]["dispatch_plan_id"], str(matching_plan.dispatch_plan_id))
+
+    def test_vehicle_schedule_list_filters_by_fleet_and_dispatch_date(self):
+        models_module = _load_models_module(self)
+        self._authenticate(self.admin_token)
+        matching_schedule = models_module.VehicleSchedule.objects.create(
+            vehicle_id=UUID("50000000-0000-0000-0000-000000000001"),
+            fleet_id=UUID("40000000-0000-0000-0000-000000000001"),
+            dispatch_date=date(2026, 3, 24),
+            shift_slot="A",
+            schedule_status=models_module.VehicleSchedule.ScheduleStatus.PLANNED,
+        )
+        models_module.VehicleSchedule.objects.create(
+            vehicle_id=UUID("50000000-0000-0000-0000-000000000002"),
+            fleet_id=UUID("40000000-0000-0000-0000-000000000002"),
+            dispatch_date=date(2026, 3, 25),
+            shift_slot="B",
+            schedule_status=models_module.VehicleSchedule.ScheduleStatus.PLANNED,
+        )
+
+        response = self.client.get(
+            "/vehicle-schedules/",
+            {
+                "fleet_id": "40000000-0000-0000-0000-000000000001",
+                "dispatch_date": "2026-03-24",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [response.data[0]])
+        self.assertEqual(response.data[0]["vehicle_schedule_id"], str(matching_schedule.vehicle_schedule_id))
+
+    def test_assignment_list_filters_by_dispatch_date_and_status(self):
+        models_module = _load_models_module(self)
+        self._authenticate(self.admin_token)
+        matching_schedule = models_module.VehicleSchedule.objects.create(
+            vehicle_id=UUID("50000000-0000-0000-0000-000000000001"),
+            fleet_id=UUID("40000000-0000-0000-0000-000000000001"),
+            dispatch_date=date(2026, 3, 24),
+            shift_slot="A",
+            schedule_status=models_module.VehicleSchedule.ScheduleStatus.PLANNED,
+        )
+        other_schedule = models_module.VehicleSchedule.objects.create(
+            vehicle_id=UUID("50000000-0000-0000-0000-000000000002"),
+            fleet_id=UUID("40000000-0000-0000-0000-000000000002"),
+            dispatch_date=date(2026, 3, 25),
+            shift_slot="B",
+            schedule_status=models_module.VehicleSchedule.ScheduleStatus.PLANNED,
+        )
+        matching_assignment = models_module.DispatchAssignment.objects.create(
+            vehicle_schedule=matching_schedule,
+            vehicle_id=matching_schedule.vehicle_id,
+            driver_id=UUID("10000000-0000-0000-0000-000000000001"),
+            operator_company_id=UUID("30000000-0000-0000-0000-000000000001"),
+            dispatch_date=date(2026, 3, 24),
+            shift_slot="A",
+            assignment_status=models_module.DispatchAssignment.AssignmentStatus.ASSIGNED,
+            assigned_at=datetime(2026, 3, 24, 9, 0, tzinfo=timezone.utc),
+        )
+        models_module.DispatchAssignment.objects.create(
+            vehicle_schedule=other_schedule,
+            vehicle_id=other_schedule.vehicle_id,
+            driver_id=UUID("10000000-0000-0000-0000-000000000002"),
+            operator_company_id=UUID("30000000-0000-0000-0000-000000000001"),
+            dispatch_date=date(2026, 3, 25),
+            shift_slot="B",
+            assignment_status=models_module.DispatchAssignment.AssignmentStatus.UNASSIGNED,
+            assigned_at=datetime(2026, 3, 25, 9, 0, tzinfo=timezone.utc),
+            unassigned_at=datetime(2026, 3, 25, 12, 0, tzinfo=timezone.utc),
+        )
+
+        response = self.client.get(
+            "/assignments/",
+            {
+                "dispatch_date": "2026-03-24",
+                "assignment_status": "assigned",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [response.data[0]])
+        self.assertEqual(response.data[0]["dispatch_assignment_id"], str(matching_assignment.dispatch_assignment_id))
