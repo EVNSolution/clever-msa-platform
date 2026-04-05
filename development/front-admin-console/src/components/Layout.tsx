@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom';
 
 import type { SessionPayload } from '../api/http';
+import { canAccessAccountsScope, canAccessCompanyScope, canAccessDriverScope, canAccessSettlementScope, canAccessVehicleScope } from '../authScopes';
 import { formatRoleLabel } from '../uiLabels';
 
 type LayoutProps = {
@@ -20,24 +21,36 @@ export function Layout({ session, onLogout }: LayoutProps) {
           <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/account">
             내 계정
           </NavLink>
-          <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/accounts">
-            계정 요청
-          </NavLink>
-          <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/companies">
-            회사
-          </NavLink>
-          <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/drivers">
-            배송원
-          </NavLink>
-          <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/vehicles">
-            차량
-          </NavLink>
-          <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/vehicle-assignments">
-            차량 배정
-          </NavLink>
-          <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/settlements">
-            정산
-          </NavLink>
+          {canAccessAccountsScope(session) ? (
+            <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/accounts">
+              계정 요청
+            </NavLink>
+          ) : null}
+          {canAccessCompanyScope(session) ? (
+            <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/companies">
+              회사
+            </NavLink>
+          ) : null}
+          {canAccessDriverScope(session) ? (
+            <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/drivers">
+              배송원
+            </NavLink>
+          ) : null}
+          {canAccessVehicleScope(session) ? (
+            <>
+              <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/vehicles">
+                차량
+              </NavLink>
+              <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/vehicle-assignments">
+                차량 배정
+              </NavLink>
+            </>
+          ) : null}
+          {canAccessSettlementScope(session) ? (
+            <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/settlements">
+              정산
+            </NavLink>
+          ) : null}
         </nav>
         <div className="account-card admin-account-card">
           <div className="account-meta">

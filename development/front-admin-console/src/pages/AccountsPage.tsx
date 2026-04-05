@@ -1,18 +1,22 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { approveManagedRequest, completeManagedManagerSetup, listManagedRequests, rejectManagedRequest } from '../api/authRequests';
-import { getErrorMessage, type HttpClient } from '../api/http';
+import { getErrorMessage, type HttpClient, type SessionPayload } from '../api/http';
 import { archiveManagerAccount, changeManagerAccountRole, listManageableManagerAccounts } from '../api/managerAccounts';
-import type { IdentitySignupRequestSummary, ManagerAccountSummary } from '../types';
+import { listCompanies } from '../api/organization';
+import { getAccountsScopeDescription, getManageableManagerRoleOptions } from '../authScopes';
+import type { Company, IdentitySignupRequestSummary, ManagerAccountSummary } from '../types';
 import { formatAccountStatusLabel, formatRoleLabel } from '../uiLabels';
 
 type AccountsPageProps = {
   client: HttpClient;
+  session: SessionPayload;
 };
 
-export function AccountsPage({ client }: AccountsPageProps) {
+export function AccountsPage({ client, session }: AccountsPageProps) {
   const [requests, setRequests] = useState<IdentitySignupRequestSummary[]>([]);
   const [managerAccounts, setManagerAccounts] = useState<ManagerAccountSummary[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [statusFilter, setStatusFilter] = useState<'pending' | 'awaiting_setup' | 'approved' | 'rejected'>(
     'pending',
   );
@@ -29,6 +33,12 @@ export function AccountsPage({ client }: AccountsPageProps) {
     ],
     [],
   );
+  const roleOptions = useMemo(() => getManageableManagerRoleOptions(session), [session]);
+  const scopeDescription = useMemo(() => getAccountsScopeDescription(session), [session]);
+  const companyNameById = useMemo(
+    () => Object.fromEntries(companies.map((company) => [company.company_id, company.name])),
+    [companies],
+  );
 
   useEffect(() => {
     let ignore = false;
@@ -37,16 +47,18 @@ export function AccountsPage({ client }: AccountsPageProps) {
       setIsLoading(true);
       setErrorMessage(null);
       try {
-        const [requestResponse, managerAccountResponse] = await Promise.all([
+        const [requestResponse, managerAccountResponse, companyResponse] = await Promise.all([
           listManagedRequests(client, statusFilter),
           listManageableManagerAccounts(client),
+          listCompanies(client),
         ]);
         if (!ignore) {
           setRequests(requestResponse.requests);
           setManagerAccounts(managerAccountResponse.accounts);
+          setCompanies(companyResponse);
           setSetupRoles(
             Object.fromEntries(
-              requestResponse.requests.map((request) => [request.identity_signup_request_id, 'vehicle_manager']),
+              requestResponse.requests.map((request) => [request.identity_signup_request_id, roleOptions[0] ?? 'vehicle_manager']),
             ),
           );
           setManagerRoles(
@@ -70,15 +82,17 @@ export function AccountsPage({ client }: AccountsPageProps) {
     return () => {
       ignore = true;
     };
-  }, [client, statusFilter]);
+  }, [client, roleOptions, statusFilter]);
 
   async function reloadCurrentStatus() {
-    const [requestResponse, managerAccountResponse] = await Promise.all([
+    const [requestResponse, managerAccountResponse, companyResponse] = await Promise.all([
       listManagedRequests(client, statusFilter),
       listManageableManagerAccounts(client),
+      listCompanies(client),
     ]);
     setRequests(requestResponse.requests);
     setManagerAccounts(managerAccountResponse.accounts);
+    setCompanies(companyResponse);
     setManagerRoles((current) => ({
       ...Object.fromEntries(
         managerAccountResponse.accounts.map((account) => [account.manager_account_id, account.role_type]),
@@ -144,6 +158,7 @@ export function AccountsPage({ client }: AccountsPageProps) {
           <div>
             <p className="panel-kicker">계정 요청</p>
             <h2>계정 요청 관리</h2>
+            <p className="section-copy">{scopeDescription}</p>
           </div>
           <div className="inline-actions">
             {tabs.map((tab) => (
@@ -180,7 +195,7 @@ export function AccountsPage({ client }: AccountsPageProps) {
                 return (
                   <tr key={request.identity_signup_request_id}>
                     <td>{request.identity.name}</td>
-                    <td>{request.company_id}</td>
+                    <td>{companyNameById[request.company_id] ?? request.company_id}</td>
                     <td>{request.request_display_name}</td>
                     <td>{request.status_message}</td>
                     <td>{new Date(request.requested_at).toLocaleString('ko-KR')}</td>
@@ -205,11 +220,13 @@ export function AccountsPage({ client }: AccountsPageProps) {
                                   [request.identity_signup_request_id]: event.target.value,
                                 }))
                               }
-                              value={setupRoles[request.identity_signup_request_id] ?? 'vehicle_manager'}
+                              value={setupRoles[request.identity_signup_request_id] ?? roleOptions[0] ?? 'vehicle_manager'}
                             >
-                              <option value="company_super_admin">회사 전체 관리자</option>
-                              <option value="vehicle_manager">차량 관리자</option>
-                              <option value="settlement_manager">정산 관리자</option>
+                              {roleOptions.map((role) => (
+                                <option key={role} value={role}>
+                                  {formatRoleLabel(role)}
+                                </option>
+                              ))}
                             </select>
                             <button
                               className="button ghost small"
@@ -260,7 +277,7 @@ export function AccountsPage({ client }: AccountsPageProps) {
               {managerAccounts.map((account) => (
                 <tr key={account.manager_account_id}>
                   <td>{account.identity.name}</td>
-                  <td>{account.company_id}</td>
+                  <td>{companyNameById[account.company_id] ?? account.company_id}</td>
                   <td>{formatRoleLabel(account.role_type)}</td>
                   <td>{formatAccountStatusLabel(account.status)}</td>
                   <td>{new Date(account.created_at).toLocaleString('ko-KR')}</td>
@@ -275,9 +292,11 @@ export function AccountsPage({ client }: AccountsPageProps) {
                         }
                         value={managerRoles[account.manager_account_id] ?? account.role_type}
                       >
-                        <option value="company_super_admin">회사 전체 관리자</option>
-                        <option value="vehicle_manager">{formatRoleLabel('vehicle_manager')}</option>
-                        <option value="settlement_manager">{formatRoleLabel('settlement_manager')}</option>
+                        {roleOptions.map((role) => (
+                          <option key={role} value={role}>
+                            {formatRoleLabel(role)}
+                          </option>
+                        ))}
                       </select>
                       <button className="button ghost small" onClick={() => void handleChangeRole(account.manager_account_id)} type="button">
                         권한 변경

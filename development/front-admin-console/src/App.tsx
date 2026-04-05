@@ -6,7 +6,9 @@ import { createHttpClient, DEFAULT_API_BASE_URL, getErrorMessage, type HttpClien
 import { listPublicCompanies } from './api/organization';
 import { Layout } from './components/Layout';
 import { RequireAdmin } from './components/RequireAdmin';
+import { RequireRoleScope } from './components/RequireRoleScope';
 import { SettlementSectionLayout } from './components/SettlementSectionLayout';
+import { canAccessCompanyScope, canAccessSettlementScope, canAccessVehicleScope } from './authScopes';
 import { AccountPage } from './pages/AccountPage';
 import { AccountsPage } from './pages/AccountsPage';
 import { CompaniesPage } from './pages/CompaniesPage';
@@ -284,38 +286,250 @@ export default function App() {
                 />
               }
             />
-            <Route path="/accounts" element={<AccountsPage client={client} />} />
+            <Route path="/accounts" element={<AccountsPage client={client} session={session} />} />
             <Route path="/organization" element={<Navigate replace to="/companies" />} />
-            <Route path="/companies" element={<CompaniesPage client={client} />} />
-            <Route path="/companies/new" element={<CompanyFormPage client={client} mode="create" />} />
-            <Route path="/companies/:companyRef" element={<CompanyDetailPage client={client} />} />
-            <Route path="/companies/:companyRef/edit" element={<CompanyFormPage client={client} mode="edit" />} />
-            <Route path="/companies/:companyRef/fleets/new" element={<FleetFormPage client={client} mode="create" />} />
-            <Route path="/companies/:companyRef/fleets/:fleetRef" element={<FleetDetailPage client={client} />} />
-            <Route path="/companies/:companyRef/fleets/:fleetRef/edit" element={<FleetFormPage client={client} mode="edit" />} />
+            <Route
+              path="/companies"
+              element={
+                <RequireRoleScope
+                  message="회사 정본은 시스템 관리자 또는 회사 전체 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="회사 관리 권한 필요"
+                  when={canAccessCompanyScope}
+                >
+                  <CompaniesPage client={client} />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/companies/new"
+              element={
+                <RequireRoleScope
+                  message="회사 정본은 시스템 관리자 또는 회사 전체 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="회사 관리 권한 필요"
+                  when={canAccessCompanyScope}
+                >
+                  <CompanyFormPage client={client} mode="create" />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/companies/:companyRef"
+              element={
+                <RequireRoleScope
+                  message="회사 정본은 시스템 관리자 또는 회사 전체 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="회사 관리 권한 필요"
+                  when={canAccessCompanyScope}
+                >
+                  <CompanyDetailPage client={client} />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/companies/:companyRef/edit"
+              element={
+                <RequireRoleScope
+                  message="회사 정본은 시스템 관리자 또는 회사 전체 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="회사 관리 권한 필요"
+                  when={canAccessCompanyScope}
+                >
+                  <CompanyFormPage client={client} mode="edit" />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/companies/:companyRef/fleets/new"
+              element={
+                <RequireRoleScope
+                  message="회사 정본은 시스템 관리자 또는 회사 전체 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="회사 관리 권한 필요"
+                  when={canAccessCompanyScope}
+                >
+                  <FleetFormPage client={client} mode="create" />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/companies/:companyRef/fleets/:fleetRef"
+              element={
+                <RequireRoleScope
+                  message="회사 정본은 시스템 관리자 또는 회사 전체 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="회사 관리 권한 필요"
+                  when={canAccessCompanyScope}
+                >
+                  <FleetDetailPage client={client} />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/companies/:companyRef/fleets/:fleetRef/edit"
+              element={
+                <RequireRoleScope
+                  message="회사 정본은 시스템 관리자 또는 회사 전체 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="회사 관리 권한 필요"
+                  when={canAccessCompanyScope}
+                >
+                  <FleetFormPage client={client} mode="edit" />
+                </RequireRoleScope>
+              }
+            />
             <Route path="/drivers" element={<DriversPage client={client} />} />
             <Route path="/drivers/new" element={<DriverFormPage client={client} mode="create" />} />
             <Route path="/drivers/:driverRef" element={<DriverDetailPage client={client} />} />
             <Route path="/drivers/:driverRef/edit" element={<DriverFormPage client={client} mode="edit" />} />
-            <Route path="/vehicles" element={<VehiclesPage client={client} />} />
-            <Route path="/vehicles/new" element={<VehicleFormPage client={client} mode="create" />} />
-            <Route path="/vehicles/:vehicleRef" element={<VehicleDetailPage client={client} />} />
-            <Route path="/vehicles/:vehicleRef/edit" element={<VehicleFormPage client={client} mode="edit" />} />
-            <Route path="/vehicles/:vehicleRef/accesses/new" element={<VehicleOperatorAccessFormPage client={client} />} />
-            <Route path="/vehicle-assignments" element={<VehicleAssignmentsPage client={client} />} />
+            <Route
+              path="/vehicles"
+              element={
+                <RequireRoleScope
+                  message="차량과 차량 배정은 시스템 관리자, 회사 전체 관리자, 차량 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="차량 관리 권한 필요"
+                  when={canAccessVehicleScope}
+                >
+                  <VehiclesPage client={client} />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/vehicles/new"
+              element={
+                <RequireRoleScope
+                  message="차량과 차량 배정은 시스템 관리자, 회사 전체 관리자, 차량 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="차량 관리 권한 필요"
+                  when={canAccessVehicleScope}
+                >
+                  <VehicleFormPage client={client} mode="create" />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/vehicles/:vehicleRef"
+              element={
+                <RequireRoleScope
+                  message="차량과 차량 배정은 시스템 관리자, 회사 전체 관리자, 차량 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="차량 관리 권한 필요"
+                  when={canAccessVehicleScope}
+                >
+                  <VehicleDetailPage client={client} />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/vehicles/:vehicleRef/edit"
+              element={
+                <RequireRoleScope
+                  message="차량과 차량 배정은 시스템 관리자, 회사 전체 관리자, 차량 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="차량 관리 권한 필요"
+                  when={canAccessVehicleScope}
+                >
+                  <VehicleFormPage client={client} mode="edit" />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/vehicles/:vehicleRef/accesses/new"
+              element={
+                <RequireRoleScope
+                  message="차량과 차량 배정은 시스템 관리자, 회사 전체 관리자, 차량 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="차량 관리 권한 필요"
+                  when={canAccessVehicleScope}
+                >
+                  <VehicleOperatorAccessFormPage client={client} />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/vehicle-assignments"
+              element={
+                <RequireRoleScope
+                  message="차량과 차량 배정은 시스템 관리자, 회사 전체 관리자, 차량 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="차량 관리 권한 필요"
+                  when={canAccessVehicleScope}
+                >
+                  <VehicleAssignmentsPage client={client} />
+                </RequireRoleScope>
+              }
+            />
             <Route
               path="/vehicle-assignments/new"
-              element={<VehicleAssignmentFormPage client={client} mode="create" />}
+              element={
+                <RequireRoleScope
+                  message="차량과 차량 배정은 시스템 관리자, 회사 전체 관리자, 차량 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="차량 관리 권한 필요"
+                  when={canAccessVehicleScope}
+                >
+                  <VehicleAssignmentFormPage client={client} mode="create" />
+                </RequireRoleScope>
+              }
             />
             <Route
               path="/vehicle-assignments/:assignmentRef"
-              element={<VehicleAssignmentDetailPage client={client} />}
+              element={
+                <RequireRoleScope
+                  message="차량과 차량 배정은 시스템 관리자, 회사 전체 관리자, 차량 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="차량 관리 권한 필요"
+                  when={canAccessVehicleScope}
+                >
+                  <VehicleAssignmentDetailPage client={client} />
+                </RequireRoleScope>
+              }
             />
             <Route
               path="/vehicle-assignments/:assignmentRef/edit"
-              element={<VehicleAssignmentFormPage client={client} mode="edit" />}
+              element={
+                <RequireRoleScope
+                  message="차량과 차량 배정은 시스템 관리자, 회사 전체 관리자, 차량 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="차량 관리 권한 필요"
+                  when={canAccessVehicleScope}
+                >
+                  <VehicleAssignmentFormPage client={client} mode="edit" />
+                </RequireRoleScope>
+              }
             />
-            <Route path="/settlements" element={<SettlementSectionLayout client={client} />}>
+            <Route
+              path="/settlements"
+              element={
+                <RequireRoleScope
+                  message="정산은 시스템 관리자, 회사 전체 관리자, 정산 관리자만 관리할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="정산 관리 권한 필요"
+                  when={canAccessSettlementScope}
+                >
+                  <SettlementSectionLayout client={client} />
+                </RequireRoleScope>
+              }
+            >
               <Route index element={<Navigate replace to="/settlements/overview" />} />
               <Route path="overview" element={<SettlementOverviewPage client={client} />} />
               <Route path="criteria" element={<SettlementCriteriaPage client={client} />} />

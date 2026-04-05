@@ -15,6 +15,7 @@ import {
   withdrawIdentityConsent,
 } from '../api/identity';
 import { listCompanies } from '../api/organization';
+import { getManagerRole, isSystemAdmin } from '../authScopes';
 import type {
   Company,
   IdentityConsentCurrent,
@@ -22,6 +23,7 @@ import type {
   IdentityProfile,
   IdentitySignupRequestList,
 } from '../types';
+import { formatRoleLabel } from '../uiLabels';
 
 type AccountPageProps = {
   client: HttpClient;
@@ -52,6 +54,30 @@ export function AccountPage({ client, session, onSessionChange }: AccountPagePro
   const [isLoading, setIsLoading] = useState(true);
 
   const activeMethodCount = useMemo(() => loginMethods.length, [loginMethods]);
+  const companyNameById = useMemo(
+    () => Object.fromEntries(companies.map((company) => [company.company_id, company.name])),
+    [companies],
+  );
+  const currentRoleLabel = useMemo(() => {
+    if (isSystemAdmin(session)) {
+      return formatRoleLabel('system_admin');
+    }
+
+    const role = getManagerRole(session);
+    if (role) {
+      return formatRoleLabel(role);
+    }
+
+    return '승인 대기';
+  }, [session]);
+  const currentCompanyName = useMemo(() => {
+    const companyId = session.activeAccount?.companyId;
+    if (!companyId) {
+      return '미지정';
+    }
+
+    return companyNameById[companyId] ?? companyId;
+  }, [companyNameById, session.activeAccount?.companyId]);
 
   useEffect(() => {
     let ignore = false;
@@ -77,7 +103,7 @@ export function AccountPage({ client, session, onSessionChange }: AccountPagePro
         setCompanies(companyResponse);
         setName(profileResponse.name);
         setBirthDate(profileResponse.birth_date);
-        setSelectedCompanyId(companyResponse[0]?.company_id ?? '');
+        setSelectedCompanyId(session.activeAccount?.companyId ?? companyResponse[0]?.company_id ?? '');
       } catch (error) {
         if (!ignore) {
           setErrorMessage(getErrorMessage(error));
@@ -198,6 +224,17 @@ export function AccountPage({ client, session, onSessionChange }: AccountPagePro
 
   return (
     <div className="stack">
+      <section className="panel">
+        <div className="panel-header">
+          <p className="panel-kicker">현재 접근</p>
+          <h2>현재 웹 권한</h2>
+        </div>
+        <div className="stack">
+          <p>현재 권한: {currentRoleLabel}</p>
+          <p>현재 회사: {currentCompanyName}</p>
+        </div>
+      </section>
+
       <section className="panel">
         <div className="panel-header">
           <p className="panel-kicker">내 계정</p>
@@ -326,6 +363,9 @@ export function AccountPage({ client, session, onSessionChange }: AccountPagePro
         {requestList ? (
           <div className="stack">
             <p>{requestList.inquiry_message}</p>
+            {isReRequest ? (
+              <p className="hero-copy">회사 변경 요청은 승인되면 기존 세션이 종료되고 새 회사 기준으로 다시 진입합니다.</p>
+            ) : null}
             <label className="field">
               <span>회사 선택</span>
               <select aria-label="회사 선택" onChange={(event) => setSelectedCompanyId(event.target.value)} value={selectedCompanyId}>
@@ -358,14 +398,21 @@ export function AccountPage({ client, session, onSessionChange }: AccountPagePro
               />
               <span>회사 변경 요청으로 제출</span>
             </label>
-            <button className="button primary" onClick={() => void handleCreateRequest()} type="button">
-              요청 제출
+            <button
+              className="button primary"
+              disabled={!selectedCompanyId}
+              onClick={() => void handleCreateRequest()}
+              type="button"
+            >
+              {isReRequest ? '회사 변경 요청 제출' : '요청 제출'}
             </button>
             <div className="stack">
               {requestList.requests.map((request) => (
                 <div className="panel section-card" key={request.identity_signup_request_id}>
                   <p>{request.request_display_name}</p>
                   <p>{request.status_message}</p>
+                  <p>회사: {companyNameById[request.company_id] ?? request.company_id}</p>
+                  <p>요청 시각: {new Date(request.requested_at).toLocaleString('ko-KR')}</p>
                   {(request.status === 'pending' || request.status === 'awaiting_setup') ? (
                     <button
                       className="button ghost small"

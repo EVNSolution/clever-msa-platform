@@ -152,6 +152,9 @@ describe('AccountPage', () => {
     render(<AccountPage client={{ request: vi.fn() }} session={session} />);
 
     await screen.findByDisplayValue('관리자');
+    expect(screen.getByText('현재 웹 권한')).toBeInTheDocument();
+    expect(screen.getByText(/현재 권한:\s*회사 전체 관리자/)).toBeInTheDocument();
+    expect(screen.getAllByText('기존 회사').length).toBeGreaterThan(0);
     expect(screen.getByText('관련 문의는 관리자에게 문의하세요.')).toBeInTheDocument();
     expect(screen.getByText('회사 변경 요청')).toBeInTheDocument();
     expect(screen.getByText('manager@example.com')).toBeInTheDocument();
@@ -173,7 +176,8 @@ describe('AccountPage', () => {
       target: { value: 'driver_account_create' },
     });
     fireEvent.click(screen.getByLabelText('회사 변경 요청으로 제출'));
-    fireEvent.click(screen.getByRole('button', { name: '요청 제출' }));
+    expect(screen.getByText('회사 변경 요청은 승인되면 기존 세션이 종료되고 새 회사 기준으로 다시 진입합니다.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '회사 변경 요청 제출' }));
 
     await waitFor(() => {
       expect(apiMocks.createMySignupRequest).toHaveBeenCalledWith(expect.anything(), {

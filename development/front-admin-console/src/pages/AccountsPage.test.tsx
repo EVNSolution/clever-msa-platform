@@ -21,6 +21,12 @@ vi.mock('../api/managerAccounts', () => ({
   archiveManagerAccount: apiMocks.archiveManagerAccount,
 }));
 
+vi.mock('../api/organization', () => ({
+  listCompanies: vi.fn().mockResolvedValue([
+    { company_id: '40000000-0000-0000-0000-000000000001', name: '알파 회사' },
+  ]),
+}));
+
 describe('AccountsPage', () => {
   it('renders request management tabs and manageable manager accounts', async () => {
     apiMocks.listManagedRequests.mockResolvedValue({
@@ -95,11 +101,33 @@ describe('AccountsPage', () => {
 
     render(
       <MemoryRouter>
-        <AccountsPage client={{ request: vi.fn() }} />
+        <AccountsPage
+          client={{ request: vi.fn() }}
+          session={{
+            accessToken: 'token',
+            sessionKind: 'normal',
+            email: 'super@example.com',
+            identity: {
+              identityId: '90000000-0000-0000-0000-000000000001',
+              name: '회사 전체 관리자',
+              birthDate: '1990-01-01',
+              status: 'active',
+            },
+            activeAccount: {
+              accountType: 'manager',
+              accountId: '91000000-0000-0000-0000-000000000001',
+              companyId: '40000000-0000-0000-0000-000000000001',
+              roleType: 'company_super_admin',
+            },
+            availableAccountTypes: ['manager'],
+          }}
+        />
       </MemoryRouter>,
     );
 
     await screen.findByText('홍길동');
+    expect(screen.getByText('현재 권한으로 처리할 수 있는 하위 요청과 관리자 계정만 표시합니다.')).toBeInTheDocument();
+    expect(screen.getAllByText('알파 회사').length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: '대기' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '설정 중' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '승인됨' })).toBeInTheDocument();
@@ -113,6 +141,7 @@ describe('AccountsPage', () => {
     expect(screen.getByRole('button', { name: '권한 변경' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '계정 종료' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /계정 생성/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: '회사 전체 관리자' })).not.toBeInTheDocument();
 
     fireEvent.change(screen.getByDisplayValue('차량 관리자'), { target: { value: 'settlement_manager' } });
     fireEvent.click(screen.getByRole('button', { name: '권한 변경' }));
