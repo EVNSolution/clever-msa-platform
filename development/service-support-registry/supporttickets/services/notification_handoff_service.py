@@ -14,8 +14,8 @@ def send_support_reply_inbox_notification(*, ticket, ticket_response, authorizat
         "recipient_account_id": str(ticket.requester_account_id),
         "category": "support",
         "source_type": "support_ticket",
-        "source_ref": str(ticket.ticket_id),
-        "title": f"[문의 답변] {ticket.title}",
+        "source_ref": str(ticket.route_no),
+        "title": f"[문의 #{ticket.route_no}] {ticket.title}",
         "body": ticket_response.body,
         "status": "unread",
     }

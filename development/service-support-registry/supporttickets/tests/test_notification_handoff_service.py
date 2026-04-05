@@ -1,9 +1,8 @@
 import json
 from uuid import uuid4
-from unittest import TestCase
 from unittest.mock import patch
 
-from django.test import override_settings
+from django.test import TestCase, override_settings
 
 from supporttickets.models import SupportTicket, SupportTicketResponse
 from supporttickets.services.notification_handoff_service import send_support_reply_inbox_notification
@@ -57,7 +56,7 @@ class NotificationHandoffServiceTests(TestCase):
         self.assertEqual(payload["recipient_account_id"], str(ticket.requester_account_id))
         self.assertEqual(payload["category"], "support")
         self.assertEqual(payload["source_type"], "support_ticket")
-        self.assertEqual(payload["source_ref"], str(ticket.ticket_id))
-        self.assertEqual(payload["title"], "[문의 답변] Delivery issue")
+        self.assertEqual(payload["source_ref"], str(ticket.route_no))
+        self.assertEqual(payload["title"], f"[문의 #{ticket.route_no}] Delivery issue")
         self.assertEqual(payload["body"], "We updated the route.")
         self.assertEqual(payload["status"], "unread")

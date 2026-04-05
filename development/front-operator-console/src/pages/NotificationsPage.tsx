@@ -52,6 +52,13 @@ export function NotificationsPage({ client }: NotificationsPageProps) {
     }
   }
 
+  function getNotificationMeta(notification: GeneralNotification) {
+    if (notification.category === 'support' && notification.source_type === 'support_ticket' && notification.source_ref) {
+      return `문의 번호 #${notification.source_ref}`;
+    }
+    return null;
+  }
+
   return (
     <section className="panel">
       <div className="panel-header">
@@ -69,6 +76,7 @@ export function NotificationsPage({ client }: NotificationsPageProps) {
               <div className="panel-header panel-header-inline">
                 <div>
                   <h3>{notification.title}</h3>
+                  {getNotificationMeta(notification) ? <p className="account-role">{getNotificationMeta(notification)}</p> : null}
                   <p className="panel-kicker">{formatNotificationStatusLabel(notification.status)}</p>
                 </div>
                 <div className="inline-actions">

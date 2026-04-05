@@ -20,9 +20,9 @@ describe('Operator NotificationsPage', () => {
         notification_id: '11111111-1111-1111-1111-111111111111',
         recipient_account_id: '22222222-2222-2222-2222-222222222222',
         category: 'support',
-        source_type: 'ticket',
+        source_type: 'support_ticket',
         source_ref: '12',
-        title: '문의 답변 등록',
+        title: '[문의 #12] 로그인이 안 됩니다',
         body: '답변이 등록되었습니다.',
         status: 'unread',
         created_at: '2026-04-05T00:00:00Z',
@@ -34,9 +34,9 @@ describe('Operator NotificationsPage', () => {
       notification_id: '11111111-1111-1111-1111-111111111111',
       recipient_account_id: '22222222-2222-2222-2222-222222222222',
       category: 'support',
-      source_type: 'ticket',
+      source_type: 'support_ticket',
       source_ref: '12',
-      title: '문의 답변 등록',
+      title: '[문의 #12] 로그인이 안 됩니다',
       body: '답변이 등록되었습니다.',
       status: 'read',
       created_at: '2026-04-05T00:00:00Z',
@@ -46,9 +46,10 @@ describe('Operator NotificationsPage', () => {
 
     render(<NotificationsPage client={{ request: vi.fn() }} />);
 
-    await screen.findByText('문의 답변 등록');
+    await screen.findByText('[문의 #12] 로그인이 안 됩니다');
     expect(screen.getByRole('heading', { name: '알림' })).toBeInTheDocument();
     expect(screen.getByText('지원 답변이 등록되면 이 알림함에 일반 알림으로 함께 도착합니다.')).toBeInTheDocument();
+    expect(screen.getByText('문의 번호 #12')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '읽음 처리' }));
 
     await waitFor(() => {
