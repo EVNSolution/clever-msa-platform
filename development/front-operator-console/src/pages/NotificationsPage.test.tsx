@@ -48,6 +48,7 @@ describe('Operator NotificationsPage', () => {
 
     await screen.findByText('문의 답변 등록');
     expect(screen.getByRole('heading', { name: '알림' })).toBeInTheDocument();
+    expect(screen.getByText('지원 답변이 등록되면 이 알림함에 일반 알림으로 함께 도착합니다.')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '읽음 처리' }));
 
     await waitFor(() => {

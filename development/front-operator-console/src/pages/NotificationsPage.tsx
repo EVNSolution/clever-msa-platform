@@ -58,6 +58,7 @@ export function NotificationsPage({ client }: NotificationsPageProps) {
         <p className="panel-kicker">알림</p>
         <h2>알림</h2>
       </div>
+      <p className="empty-state">지원 답변이 등록되면 이 알림함에 일반 알림으로 함께 도착합니다.</p>
       {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
       {isLoading ? (
         <p className="empty-state">알림을 불러오는 중입니다...</p>

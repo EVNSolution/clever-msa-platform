@@ -49,6 +49,7 @@ describe('Operator SupportPage', () => {
 
     await screen.findByRole('heading', { name: '지원' });
     expect(screen.getAllByText('로그인이 안 됩니다').length).toBeGreaterThan(0);
+    expect(screen.getByText('관리자 답변은 이 화면과 알림함에서 함께 확인할 수 있습니다.')).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText('문의 제목'), { target: { value: '앱 접속 문의' } });
     fireEvent.change(screen.getByLabelText('문의 본문'), { target: { value: '웹만 열리고 앱 안내가 없습니다.' } });

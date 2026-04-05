@@ -58,6 +58,9 @@ describe('SupportPage', () => {
     await screen.findByRole('heading', { name: '지원 관리' });
     expect(screen.getAllByText('로그인이 안 됩니다').length).toBeGreaterThan(0);
     expect(await screen.findByText('원인 확인 중입니다.')).toBeInTheDocument();
+    expect(
+      screen.getByText('답변을 등록하면 요청자 알림함에 일반 알림이 자동 생성됩니다. Push는 자동 발송되지 않습니다.'),
+    ).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText('답변 내용'), {
       target: { value: '브라우저 캐시 초기화를 안내했습니다.' },

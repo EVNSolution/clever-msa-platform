@@ -198,6 +198,7 @@ export function SupportPage({ client }: SupportPageProps) {
                   <div className="panel-header">
                     <h3>응답</h3>
                   </div>
+                  <p className="empty-state">관리자 답변은 이 화면과 알림함에서 함께 확인할 수 있습니다.</p>
                   {responses.length ? (
                     <div className="stack">
                       {responses.map((response) => (

@@ -245,6 +245,7 @@ export function SupportPage({ client }: SupportPageProps) {
               <span>답변 내용</span>
               <textarea aria-label="답변 내용" onChange={(event) => setResponseBody(event.target.value)} rows={4} value={responseBody} />
             </label>
+            <p className="empty-state">답변을 등록하면 요청자 알림함에 일반 알림이 자동 생성됩니다. Push는 자동 발송되지 않습니다.</p>
             <button className="button primary" onClick={() => void handleCreateResponse()} type="button">
               답변 등록
             </button>
