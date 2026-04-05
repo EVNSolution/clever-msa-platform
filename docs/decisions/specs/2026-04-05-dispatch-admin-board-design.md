@@ -159,6 +159,9 @@
 5. `용차 기사`는 물리 삭제하지 않는다.
 6. 정산 입력 스냅샷이 찍히기 전에는 아카이브할 수 없다.
 7. 같은 날짜/플릿의 정산 입력 스냅샷이 존재할 때만 아카이브할 수 있다.
+8. 여기서 말하는 스냅샷은 `service-delivery-record`가 소유하는 `daily input snapshot`이다.
+9. dispatch는 이 handoff 완료까지만 보고 용차 기사 lifecycle을 판단한다.
+10. settlement 결과/지급 상태는 `service-settlement-*`의 재무 도메인 상태이며, dispatch의 아카이브 조건으로 직접 참조하지 않는다.
 
 ## 날짜별 근무 예외
 

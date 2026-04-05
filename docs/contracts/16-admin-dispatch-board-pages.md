@@ -95,6 +95,8 @@
 4. 정산 입력 스냅샷이 찍히기 전에는 아카이브할 수 없다.
 5. 같은 날짜/플릿의 정산 입력 스냅샷이 존재할 때만 아카이브할 수 있다.
 6. `dispatch_assignment`는 내부 `driver` 대신 `용차 기사`를 참조할 수 있어야 한다.
+7. 아카이브 가능 여부는 `service-delivery-record`의 해당 날짜 `daily input snapshot` 존재 여부로 계산한다.
+8. `service-settlement-*`의 결과/지급 상태는 이 화면의 아카이브 unlock 조건이 아니다.
 
 ### row 기준
 
