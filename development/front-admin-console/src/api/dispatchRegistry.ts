@@ -108,7 +108,9 @@ export function listVehicleSchedules(
 
 export function listOutsourcedDrivers(
   client: HttpClient,
-  filters?: Partial<Pick<OutsourcedDriver, 'dispatch_plan_id' | 'company_id' | 'fleet_id' | 'dispatch_date'>>,
+  filters?: Partial<
+    Pick<OutsourcedDriver, 'dispatch_plan_id' | 'company_id' | 'fleet_id' | 'dispatch_date' | 'status'>
+  >,
 ) {
   const query = new URLSearchParams();
   if (filters?.dispatch_plan_id) {
@@ -122,6 +124,9 @@ export function listOutsourcedDrivers(
   }
   if (filters?.dispatch_date) {
     query.set('dispatch_date', filters.dispatch_date);
+  }
+  if (filters?.status) {
+    query.set('status', filters.status);
   }
   const queryString = query.toString();
   const path = queryString ? `/dispatch/outsourced-drivers/?${queryString}` : '/dispatch/outsourced-drivers/';

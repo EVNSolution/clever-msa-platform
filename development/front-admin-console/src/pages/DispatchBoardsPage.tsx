@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { listDailyDeliveryInputSnapshots } from '../api/deliveryRecords';
 import { listDispatchPlans } from '../api/dispatchRegistry';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { listCompanies, listFleets } from '../api/organization';
-import type { Company, DispatchPlan, Fleet } from '../types';
+import type { Company, DailyDeliveryInputSnapshot, DispatchPlan, Fleet } from '../types';
 
 type DispatchBoardsPageProps = {
   client: HttpClient;
@@ -24,6 +25,7 @@ export function DispatchBoardsPage({ client }: DispatchBoardsPageProps) {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [fleets, setFleets] = useState<Fleet[]>([]);
   const [plans, setPlans] = useState<DispatchPlan[]>([]);
+  const [snapshots, setSnapshots] = useState<DailyDeliveryInputSnapshot[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -39,12 +41,14 @@ export function DispatchBoardsPage({ client }: DispatchBoardsPageProps) {
           listFleets(client),
           listDispatchPlans(client),
         ]);
+        const snapshotResponse = await listDailyDeliveryInputSnapshots(client, { status: 'active' });
         if (ignore) {
           return;
         }
         setCompanies(companyResponse);
         setFleets(fleetResponse);
         setPlans(planResponse);
+        setSnapshots(snapshotResponse);
       } catch (error) {
         if (!ignore) {
           setErrorMessage(getErrorMessage(error));
@@ -67,6 +71,15 @@ export function DispatchBoardsPage({ client }: DispatchBoardsPageProps) {
     [companies],
   );
   const fleetMap = useMemo(() => new Map(fleets.map((fleet) => [fleet.fleet_id, fleet])), [fleets]);
+  const snapshotKeySet = useMemo(
+    () =>
+      new Set(
+        snapshots.map(
+          (snapshot) => `${snapshot.company_id}:${snapshot.fleet_id}:${snapshot.service_date}`,
+        ),
+      ),
+    [snapshots],
+  );
 
   const rows = useMemo(
     () =>
@@ -109,6 +122,11 @@ export function DispatchBoardsPage({ client }: DispatchBoardsPageProps) {
             {rows.map((plan) => {
               const fleet = fleetMap.get(plan.fleet_id);
               const fleetRef = fleet ? getFleetBrowserRef(fleet) : null;
+              const snapshotStatus = snapshotKeySet.has(
+                `${plan.company_id}:${plan.fleet_id}:${plan.dispatch_date}`,
+              )
+                ? '정산 입력 완료'
+                : '정산 입력 대기';
 
               return (
                 <tr key={plan.dispatch_plan_id}>
@@ -116,7 +134,12 @@ export function DispatchBoardsPage({ client }: DispatchBoardsPageProps) {
                   <td>{fleet?.name ?? '미확인 플릿'}</td>
                   <td>{plan.dispatch_date}</td>
                   <td>{plan.planned_volume}</td>
-                  <td>{plan.dispatch_status}</td>
+                  <td>
+                    <div className="stack tight">
+                      <span>{plan.dispatch_status}</span>
+                      <span>{snapshotStatus}</span>
+                    </div>
+                  </td>
                   <td>
                     <div className="inline-actions">
                       {fleetRef ? (

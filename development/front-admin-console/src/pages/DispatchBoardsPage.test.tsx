@@ -6,10 +6,15 @@ import { DispatchBoardsPage } from './DispatchBoardsPage';
 
 const apiMocks = vi.hoisted(() => ({
   listDispatchPlans: vi.fn(),
+  listDailyDeliveryInputSnapshots: vi.fn(),
 }));
 
 vi.mock('../api/dispatchRegistry', () => ({
   listDispatchPlans: apiMocks.listDispatchPlans,
+}));
+
+vi.mock('../api/deliveryRecords', () => ({
+  listDailyDeliveryInputSnapshots: apiMocks.listDailyDeliveryInputSnapshots,
 }));
 
 vi.mock('../api/organization', () => ({
@@ -44,6 +49,20 @@ describe('DispatchBoardsPage', () => {
         updated_at: '2026-03-20T00:00:00Z',
       },
     ]);
+    apiMocks.listDailyDeliveryInputSnapshots.mockResolvedValue([
+      {
+        daily_delivery_input_snapshot_id: 'snapshot-1',
+        company_id: '30000000-0000-0000-0000-000000000001',
+        fleet_id: '40000000-0000-0000-0000-000000000001',
+        driver_id: '50000000-0000-0000-0000-000000000001',
+        service_date: '2026-03-24',
+        delivery_count: 12,
+        total_distance_km: '10.00',
+        total_base_amount: '10000.00',
+        source_record_count: 1,
+        status: 'active',
+      },
+    ]);
 
     render(
       <MemoryRouter>
@@ -55,6 +74,7 @@ describe('DispatchBoardsPage', () => {
     expect(screen.getByText('서울 플릿')).toBeInTheDocument();
     expect(screen.getByText('2026-03-24')).toBeInTheDocument();
     expect(screen.getByText('120')).toBeInTheDocument();
+    expect(screen.getByText('정산 입력 완료')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '보드 열기' })).toHaveAttribute(
       'href',
       '/dispatch/boards/41/2026-03-24',

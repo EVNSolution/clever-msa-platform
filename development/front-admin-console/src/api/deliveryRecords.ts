@@ -35,8 +35,33 @@ export function deleteDeliveryRecord(client: HttpClient, deliveryRecordId: strin
   });
 }
 
-export function listDailyDeliveryInputSnapshots(client: HttpClient) {
-  return client.request<DailyDeliveryInputSnapshot[]>('/delivery-record/daily-snapshots/');
+export function listDailyDeliveryInputSnapshots(
+  client: HttpClient,
+  filters?: Partial<
+    Pick<DailyDeliveryInputSnapshot, 'company_id' | 'fleet_id' | 'driver_id' | 'service_date' | 'status'>
+  >,
+) {
+  const query = new URLSearchParams();
+  if (filters?.company_id) {
+    query.set('company_id', filters.company_id);
+  }
+  if (filters?.fleet_id) {
+    query.set('fleet_id', filters.fleet_id);
+  }
+  if (filters?.driver_id) {
+    query.set('driver_id', filters.driver_id);
+  }
+  if (filters?.service_date) {
+    query.set('service_date', filters.service_date);
+  }
+  if (filters?.status) {
+    query.set('status', filters.status);
+  }
+  const queryString = query.toString();
+  const path = queryString
+    ? `/delivery-record/daily-snapshots/?${queryString}`
+    : '/delivery-record/daily-snapshots/';
+  return client.request<DailyDeliveryInputSnapshot[]>(path);
 }
 
 export function createDailyDeliveryInputSnapshot(

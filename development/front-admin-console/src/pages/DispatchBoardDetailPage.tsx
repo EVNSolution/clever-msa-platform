@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
+import { listDailyDeliveryInputSnapshots } from '../api/deliveryRecords';
 import {
   createDispatchAssignment,
   createDriverDayException,
@@ -27,6 +28,7 @@ import { listVehicleMasters } from '../api/vehicles';
 import { getDriverRouteRef, getVehicleRouteRef } from '../routeRefs';
 import type {
   Company,
+  DailyDeliveryInputSnapshot,
   DispatchBoardRow,
   DispatchBoardSummary,
   DispatchPlan,
@@ -64,6 +66,16 @@ function getFirstPlannedInternalDriverId(rows: DispatchBoardRow[]) {
   return rows.find((row) => row.planned_driver_kind === 'internal' && row.planned_driver_id)?.planned_driver_id ?? '';
 }
 
+function getDefaultAssignmentMode(
+  drivers: DriverProfile[],
+  outsourcedDrivers: OutsourcedDriver[],
+): 'internal' | 'outsourced' {
+  if (drivers.length === 0 && outsourcedDrivers.length > 0) {
+    return 'outsourced';
+  }
+  return 'internal';
+}
+
 export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps) {
   const { dispatchDate, fleetRef } = useParams();
   const [summary, setSummary] = useState<DispatchBoardSummary | null>(null);
@@ -74,7 +86,9 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
   const [vehicleSchedules, setVehicleSchedules] = useState<VehicleSchedule[]>([]);
   const [vehicles, setVehicles] = useState<VehicleMaster[]>([]);
   const [drivers, setDrivers] = useState<DriverProfile[]>([]);
-  const [outsourcedDrivers, setOutsourcedDrivers] = useState<OutsourcedDriver[]>([]);
+  const [activeOutsourcedDrivers, setActiveOutsourcedDrivers] = useState<OutsourcedDriver[]>([]);
+  const [archivedOutsourcedDrivers, setArchivedOutsourcedDrivers] = useState<OutsourcedDriver[]>([]);
+  const [dailySnapshots, setDailySnapshots] = useState<DailyDeliveryInputSnapshot[]>([]);
   const [workRules, setWorkRules] = useState<DispatchWorkRule[]>([]);
   const [driverDayExceptions, setDriverDayExceptions] = useState<DriverDayException[]>([]);
   const [newScheduleVehicleId, setNewScheduleVehicleId] = useState('');
@@ -131,7 +145,9 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
           driverResponse,
           workRuleResponse,
           driverDayExceptionResponse,
-          outsourcedDriverResponse,
+          activeOutsourcedDriverResponse,
+          archivedOutsourcedDriverResponse,
+          dailySnapshotResponse,
         ] = await Promise.all([
           getDispatchSummary(client, selectedDispatchDate, fleetResponse.fleet_id),
           getDispatchBoard(client, selectedDispatchDate, fleetResponse.fleet_id),
@@ -154,6 +170,18 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
           listOutsourcedDrivers(client, {
             fleet_id: fleetResponse.fleet_id,
             dispatch_date: selectedDispatchDate,
+            status: 'active',
+          }),
+          listOutsourcedDrivers(client, {
+            fleet_id: fleetResponse.fleet_id,
+            dispatch_date: selectedDispatchDate,
+            status: 'archived',
+          }),
+          listDailyDeliveryInputSnapshots(client, {
+            company_id: fleetResponse.company_id,
+            fleet_id: fleetResponse.fleet_id,
+            service_date: selectedDispatchDate,
+            status: 'active',
           }),
         ]);
         if (ignore) {
@@ -169,15 +197,20 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
         setDrivers(driverResponse);
         setWorkRules(workRuleResponse);
         setDriverDayExceptions(driverDayExceptionResponse);
-        setOutsourcedDrivers(outsourcedDriverResponse);
+        setActiveOutsourcedDrivers(activeOutsourcedDriverResponse);
+        setArchivedOutsourcedDrivers(archivedOutsourcedDriverResponse);
+        setDailySnapshots(dailySnapshotResponse);
         setNewScheduleVehicleId(vehicleResponse[0]?.vehicle_id ?? '');
         setNewAssignmentScheduleId(scheduleResponse[0]?.vehicle_schedule_id ?? '');
         setNewAssignmentDriverId(driverResponse[0]?.driver_id ?? '');
+        setNewAssignmentMode(
+          getDefaultAssignmentMode(driverResponse, activeOutsourcedDriverResponse),
+        );
         setNewExceptionDriverId(getFirstPlannedInternalDriverId(boardResponse));
         setNewExceptionWorkRuleId(
           workRuleResponse.find((workRule) => workRule.system_kind !== 'working')?.work_rule_id ?? '',
         );
-        setNewAssignmentOutsourcedDriverId(outsourcedDriverResponse[0]?.outsourced_driver_id ?? '');
+        setNewAssignmentOutsourcedDriverId(activeOutsourcedDriverResponse[0]?.outsourced_driver_id ?? '');
       } catch (error) {
         if (!ignore) {
           setErrorMessage(getErrorMessage(error));
@@ -236,7 +269,9 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
       scheduleResponse,
       workRuleResponse,
       driverDayExceptionResponse,
-      outsourcedDriverResponse,
+      activeOutsourcedDriverResponse,
+      archivedOutsourcedDriverResponse,
+      dailySnapshotResponse,
     ] = await Promise.all([
       getDispatchSummary(client, dispatchDate, fleet.fleet_id),
       getDispatchBoard(client, dispatchDate, fleet.fleet_id),
@@ -248,7 +283,22 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
         fleet_id: fleet.fleet_id,
         dispatch_date: dispatchDate,
       }),
-      listOutsourcedDrivers(client, { fleet_id: fleet.fleet_id, dispatch_date: dispatchDate }),
+      listOutsourcedDrivers(client, {
+        fleet_id: fleet.fleet_id,
+        dispatch_date: dispatchDate,
+        status: 'active',
+      }),
+      listOutsourcedDrivers(client, {
+        fleet_id: fleet.fleet_id,
+        dispatch_date: dispatchDate,
+        status: 'archived',
+      }),
+      listDailyDeliveryInputSnapshots(client, {
+        company_id: fleet.company_id,
+        fleet_id: fleet.fleet_id,
+        service_date: dispatchDate,
+        status: 'active',
+      }),
     ]);
     setSummary(summaryResponse);
     setBoardRows(boardResponse);
@@ -256,14 +306,21 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
     setVehicleSchedules(scheduleResponse);
     setWorkRules(workRuleResponse);
     setDriverDayExceptions(driverDayExceptionResponse);
-    setOutsourcedDrivers(outsourcedDriverResponse);
+    setActiveOutsourcedDrivers(activeOutsourcedDriverResponse);
+    setArchivedOutsourcedDrivers(archivedOutsourcedDriverResponse);
+    setDailySnapshots(dailySnapshotResponse);
     setNewAssignmentScheduleId(scheduleResponse[0]?.vehicle_schedule_id ?? '');
+    setNewAssignmentMode(
+      getDefaultAssignmentMode(drivers, activeOutsourcedDriverResponse),
+    );
     setNewExceptionDriverId(getFirstPlannedInternalDriverId(boardResponse));
     setNewExceptionWorkRuleId(
       workRuleResponse.find((workRule) => workRule.system_kind !== 'working')?.work_rule_id ?? '',
     );
-    setNewAssignmentOutsourcedDriverId(outsourcedDriverResponse[0]?.outsourced_driver_id ?? '');
+    setNewAssignmentOutsourcedDriverId(activeOutsourcedDriverResponse[0]?.outsourced_driver_id ?? '');
   }
+
+  const hasActiveDailySnapshot = dailySnapshots.length > 0;
 
   async function handleCreateSchedule(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -543,6 +600,10 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
             <div>
               <dt>계획 배정 수</dt>
               <dd>{summary?.planned_assignment_count ?? 0}</dd>
+            </div>
+            <div>
+              <dt>정산 입력</dt>
+              <dd>{hasActiveDailySnapshot ? '정산 입력 스냅샷 완료' : '정산 입력 스냅샷 대기'}</dd>
             </div>
           </dl>
         )}
@@ -882,8 +943,8 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
             </div>
           </form>
           <div className="stack tight">
-            {outsourcedDrivers.length ? (
-              outsourcedDrivers.map((outsourcedDriver) => (
+            {activeOutsourcedDrivers.length ? (
+              activeOutsourcedDrivers.map((outsourcedDriver) => (
                 <div className="list-card" key={outsourcedDriver.outsourced_driver_id}>
                   <div className="list-card-header">
                     <div>
@@ -982,6 +1043,25 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
             ) : (
               <p className="empty-state">등록된 용차 기사가 없습니다.</p>
             )}
+            {archivedOutsourcedDrivers.length ? (
+              <div className="stack tight">
+                <p className="helper-text">아카이브된 용차 기사</p>
+                {archivedOutsourcedDrivers.map((outsourcedDriver) => (
+                  <div className="list-card" key={outsourcedDriver.outsourced_driver_id}>
+                    <div className="list-card-header">
+                      <div>
+                        <h3>{outsourcedDriver.name}</h3>
+                        <p>{outsourcedDriver.contact_number}</p>
+                      </div>
+                      <span className="status-badge">아카이브됨</span>
+                    </div>
+                    {outsourcedDriver.archived_at ? <p>아카이브 시각: {outsourcedDriver.archived_at}</p> : null}
+                    {outsourcedDriver.vehicle_note ? <p>차량/차종: {outsourcedDriver.vehicle_note}</p> : null}
+                    {outsourcedDriver.memo ? <p>메모: {outsourcedDriver.memo}</p> : null}
+                  </div>
+                ))}
+              </div>
+            ) : null}
           </div>
         </section>
 
@@ -1049,7 +1129,7 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
                   value={newAssignmentOutsourcedDriverId}
                 >
                   <option value="">용차 기사 선택</option>
-                  {outsourcedDrivers.map((outsourcedDriver) => (
+                  {activeOutsourcedDrivers.map((outsourcedDriver) => (
                     <option key={outsourcedDriver.outsourced_driver_id} value={outsourcedDriver.outsourced_driver_id}>
                       {outsourcedDriver.name}
                     </option>

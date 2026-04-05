@@ -108,4 +108,39 @@ describe('Layout', () => {
     expect(screen.queryByRole('link', { name: '차량 배정' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '회사' })).not.toBeInTheDocument();
   });
+
+  it('shows dispatch and settlement navigation for fleet managers without vehicle or company menus', () => {
+    render(
+      <MemoryRouter>
+        <Layout
+          session={{
+            accessToken: 'token',
+            sessionKind: 'normal',
+            email: 'fleet@example.com',
+            identity: {
+              identityId: '10000000-0000-0000-0000-000000000001',
+              name: '플릿 관리자',
+              birthDate: '1970-01-01',
+              status: 'active',
+            },
+            activeAccount: {
+              accountType: 'manager',
+              accountId: '20000000-0000-0000-0000-000000000001',
+              companyId: '30000000-0000-0000-0000-000000000001',
+              roleType: 'fleet_manager',
+            },
+            availableAccountTypes: ['manager'],
+          }}
+          onLogout={vi.fn()}
+        />,
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('link', { name: '정산' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '배차' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '배송원' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: '차량' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: '차량 배정' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: '회사' })).not.toBeInTheDocument();
+  });
 });
