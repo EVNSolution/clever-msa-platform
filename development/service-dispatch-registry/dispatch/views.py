@@ -7,7 +7,7 @@ except ModuleNotFoundError:
 
         return decorator
 
-from django.db.models import ProtectedError
+from django.db.models import Count, ProtectedError
 from rest_framework import generics, mixins, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -222,7 +222,9 @@ class DispatchWorkRuleListCreateView(generics.ListCreateAPIView):
     permission_classes = [AuthenticatedReadAdminWrite]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().annotate(
+            driver_day_exception_count=Count("driver_day_exceptions")
+        )
         company_id = self.request.query_params.get("company_id")
         system_kind = self.request.query_params.get("system_kind")
         if company_id:
@@ -238,7 +240,9 @@ class DispatchWorkRuleDetailView(
     mixins.DestroyModelMixin,
     generics.GenericAPIView,
 ):
-    queryset = DispatchWorkRule.objects.all()
+    queryset = DispatchWorkRule.objects.annotate(
+        driver_day_exception_count=Count("driver_day_exceptions")
+    )
     serializer_class = DispatchWorkRuleSerializer
     lookup_field = "work_rule_id"
     permission_classes = [AuthenticatedReadAdminWrite]

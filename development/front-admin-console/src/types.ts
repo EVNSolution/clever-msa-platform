@@ -124,6 +124,7 @@ export type DispatchWorkRule = {
   company_id: string;
   name: string;
   system_kind: 'working' | 'day_off' | 'overtime';
+  is_in_use: boolean;
   created_at: string;
   updated_at: string;
 };

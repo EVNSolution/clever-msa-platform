@@ -262,6 +262,40 @@ class DispatchApiTests(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]["name"], "주말 특근")
         self.assertEqual(response.data[0]["system_kind"], "overtime")
+        self.assertEqual(response.data[0]["is_in_use"], False)
+
+    def test_work_rule_list_marks_rules_that_are_in_use(self):
+        models_module = _load_models_module(self)
+        self._authenticate(self.admin_token)
+        in_use_rule = models_module.DispatchWorkRule.objects.create(
+            company_id=UUID("30000000-0000-0000-0000-000000000001"),
+            name="주말 특근",
+            system_kind=models_module.DispatchWorkRule.SystemKind.OVERTIME,
+        )
+        models_module.DispatchWorkRule.objects.create(
+            company_id=UUID("30000000-0000-0000-0000-000000000001"),
+            name="평일 출근",
+            system_kind=models_module.DispatchWorkRule.SystemKind.WORKING,
+        )
+        models_module.DriverDayException.objects.create(
+            company_id=UUID("30000000-0000-0000-0000-000000000001"),
+            fleet_id=UUID("40000000-0000-0000-0000-000000000001"),
+            dispatch_date=date(2026, 3, 24),
+            driver_id=UUID("10000000-0000-0000-0000-000000000001"),
+            work_rule=in_use_rule,
+            memo="긴급 물량 대응",
+        )
+
+        response = self.client.get(
+            "/work-rules/",
+            {"company_id": "30000000-0000-0000-0000-000000000001"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+        usage_by_name = {item["name"]: item["is_in_use"] for item in response.data}
+        self.assertEqual(usage_by_name["주말 특근"], True)
+        self.assertEqual(usage_by_name["평일 출근"], False)
 
     def test_admin_can_create_and_filter_driver_day_exceptions(self):
         models_module = _load_models_module(self)

@@ -221,6 +221,7 @@ class OutsourcedDriverSerializer(serializers.ModelSerializer):
 class DispatchWorkRuleSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format=DATETIME_FORMAT, read_only=True)
     updated_at = serializers.DateTimeField(format=DATETIME_FORMAT, read_only=True)
+    is_in_use = serializers.SerializerMethodField()
 
     class Meta:
         model = DispatchWorkRule
@@ -229,9 +230,16 @@ class DispatchWorkRuleSerializer(serializers.ModelSerializer):
             "company_id",
             "name",
             "system_kind",
+            "is_in_use",
             "created_at",
             "updated_at",
         )
+
+    def get_is_in_use(self, instance):
+        count = getattr(instance, "driver_day_exception_count", None)
+        if count is not None:
+            return count > 0
+        return instance.driver_day_exceptions.exists()
 
     def validate(self, attrs):
         try:

@@ -165,7 +165,9 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
         setNewAssignmentScheduleId(scheduleResponse[0]?.vehicle_schedule_id ?? '');
         setNewAssignmentDriverId(driverResponse[0]?.driver_id ?? '');
         setNewExceptionDriverId(getFirstPlannedInternalDriverId(boardResponse));
-        setNewExceptionWorkRuleId(workRuleResponse[0]?.work_rule_id ?? '');
+        setNewExceptionWorkRuleId(
+          workRuleResponse.find((workRule) => workRule.system_kind !== 'working')?.work_rule_id ?? '',
+        );
         setNewAssignmentOutsourcedDriverId(outsourcedDriverResponse[0]?.outsourced_driver_id ?? '');
       } catch (error) {
         if (!ignore) {
@@ -208,6 +210,10 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
 
     return drivers.filter((driver) => plannedDriverIds.has(driver.driver_id));
   }, [boardRows, drivers]);
+  const exceptionEligibleWorkRules = useMemo(
+    () => workRules.filter((workRule) => workRule.system_kind !== 'working'),
+    [workRules],
+  );
 
   async function reloadBoard() {
     if (!fleet || !dispatchDate) {
@@ -244,7 +250,9 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
     setOutsourcedDrivers(outsourcedDriverResponse);
     setNewAssignmentScheduleId(scheduleResponse[0]?.vehicle_schedule_id ?? '');
     setNewExceptionDriverId(getFirstPlannedInternalDriverId(boardResponse));
-    setNewExceptionWorkRuleId(workRuleResponse[0]?.work_rule_id ?? '');
+    setNewExceptionWorkRuleId(
+      workRuleResponse.find((workRule) => workRule.system_kind !== 'working')?.work_rule_id ?? '',
+    );
     setNewAssignmentOutsourcedDriverId(outsourcedDriverResponse[0]?.outsourced_driver_id ?? '');
   }
 
@@ -646,13 +654,14 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
                     </div>
                     <button
                       className="button ghost small"
-                      disabled={isSaving}
+                      disabled={isSaving || workRule.is_in_use}
                       onClick={() => void handleRemoveWorkRule(workRule.work_rule_id)}
                       type="button"
                     >
                       근무 규칙 삭제
                     </button>
                   </div>
+                  {workRule.is_in_use ? <p>예외에서 사용 중</p> : null}
                 </div>
               ))
             ) : (
@@ -683,7 +692,7 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
               <span>적용 규칙</span>
               <select onChange={(event) => setNewExceptionWorkRuleId(event.target.value)} value={newExceptionWorkRuleId}>
                 <option value="">규칙 선택</option>
-                {workRules.map((workRule) => (
+                {exceptionEligibleWorkRules.map((workRule) => (
                   <option key={workRule.work_rule_id} value={workRule.work_rule_id}>
                     {workRule.name} · {formatWorkRuleKindLabel(workRule.system_kind)}
                   </option>
