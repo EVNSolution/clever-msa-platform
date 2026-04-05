@@ -30,5 +30,6 @@
 - phase 1 구현물 정리 우선순위: [10-phase-1-runtime-refactor-priority.md](10-phase-1-runtime-refactor-priority.md)
 - final phase 기능 backlog: [11-final-phase-feature-backlog.md](11-final-phase-feature-backlog.md)
 - 현재 작업 방식: [15-ui-first-working-mode.md](15-ui-first-working-mode.md)
+- 웹 우선 전체 완성 순서: [16-web-first-platform-delivery-order.md](16-web-first-platform-delivery-order.md)
 - 현재 front UI 규칙 감사: [14-front-ui-rule-audit.md](14-front-ui-rule-audit.md)
 - 현재 auth 전환 active plan: [plans/2026-04-04-auth-final-cutover-implementation-plan.md](plans/2026-04-04-auth-final-cutover-implementation-plan.md)
