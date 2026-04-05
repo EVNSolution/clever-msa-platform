@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import { SupportPage } from './SupportPage';
 
@@ -45,7 +46,11 @@ describe('Operator SupportPage', () => {
       updated_at: '2026-04-05T02:00:00Z',
     });
 
-    render(<SupportPage client={{ request: vi.fn() }} />);
+    render(
+      <MemoryRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
+        <SupportPage client={{ request: vi.fn() }} />
+      </MemoryRouter>,
+    );
 
     await screen.findByRole('heading', { name: '지원' });
     expect(screen.getAllByText('로그인이 안 됩니다').length).toBeGreaterThan(0);
@@ -64,5 +69,47 @@ describe('Operator SupportPage', () => {
         status: 'open',
       });
     });
+  });
+
+  it('selects the ticket referenced by route_no query param', async () => {
+    apiMocks.listSupportTickets.mockResolvedValue([
+      {
+        ticket_id: '11111111-1111-1111-1111-111111111111',
+        route_no: 12,
+        requester_account_id: '22222222-2222-2222-2222-222222222222',
+        title: '로그인이 안 됩니다',
+        body: '브라우저에서 세션이 자주 끊깁니다.',
+        status: 'open',
+        priority: 'high',
+        created_at: '2026-04-05T00:00:00Z',
+        updated_at: '2026-04-05T01:00:00Z',
+      },
+      {
+        ticket_id: '33333333-3333-3333-3333-333333333333',
+        route_no: 13,
+        requester_account_id: '22222222-2222-2222-2222-222222222222',
+        title: '앱 접속 문의',
+        body: '웹만 열리고 앱 안내가 없습니다.',
+        status: 'in_progress',
+        priority: 'medium',
+        created_at: '2026-04-05T02:00:00Z',
+        updated_at: '2026-04-05T02:30:00Z',
+      },
+    ]);
+    apiMocks.listSupportTicketResponses.mockResolvedValue([]);
+
+    render(
+      <MemoryRouter
+        future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
+        initialEntries={['/support?ticket=13']}
+      >
+        <Routes>
+          <Route path="/support" element={<SupportPage client={{ request: vi.fn() }} />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole('heading', { name: '앱 접속 문의' });
+    expect(screen.getByText('웹만 열리고 앱 안내가 없습니다.')).toBeInTheDocument();
   });
 });

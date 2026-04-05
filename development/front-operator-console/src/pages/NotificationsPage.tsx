@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { listGeneralNotifications, updateNotificationStatus } from '../api/notifications';
 import { getErrorMessage, type HttpClient } from '../api/http';
@@ -80,6 +81,13 @@ export function NotificationsPage({ client }: NotificationsPageProps) {
                   <p className="panel-kicker">{formatNotificationStatusLabel(notification.status)}</p>
                 </div>
                 <div className="inline-actions">
+                  {notification.category === 'support' &&
+                  notification.source_type === 'support_ticket' &&
+                  notification.source_ref ? (
+                    <Link className="button ghost small" to={`/support?ticket=${notification.source_ref}`}>
+                      문의 열기
+                    </Link>
+                  ) : null}
                   {notification.status === 'unread' ? (
                     <button
                       className="button ghost small"

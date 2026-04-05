@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import {
   createSupportTicket,
@@ -15,6 +16,7 @@ type SupportPageProps = {
 };
 
 export function SupportPage({ client }: SupportPageProps) {
+  const [searchParams] = useSearchParams();
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [responses, setResponses] = useState<SupportTicketResponse[]>([]);
   const [selectedTicketId, setSelectedTicketId] = useState('');
@@ -29,6 +31,21 @@ export function SupportPage({ client }: SupportPageProps) {
     () => tickets.find((ticket) => ticket.ticket_id === selectedTicketId) ?? null,
     [selectedTicketId, tickets],
   );
+  const requestedTicketRef = searchParams.get('ticket')?.trim() ?? '';
+
+  useEffect(() => {
+    if (!requestedTicketRef || !tickets.length) {
+      return;
+    }
+
+    const matchedTicket =
+      tickets.find((ticket) => String(ticket.route_no) === requestedTicketRef) ??
+      tickets.find((ticket) => ticket.ticket_id === requestedTicketRef);
+
+    if (matchedTicket && matchedTicket.ticket_id !== selectedTicketId) {
+      setSelectedTicketId(matchedTicket.ticket_id);
+    }
+  }, [requestedTicketRef, selectedTicketId, tickets]);
 
   useEffect(() => {
     let ignore = false;

@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 
 import { NotificationsPage } from './NotificationsPage';
 
@@ -44,12 +45,17 @@ describe('Operator NotificationsPage', () => {
       archived_at: null,
     });
 
-    render(<NotificationsPage client={{ request: vi.fn() }} />);
+    render(
+      <MemoryRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
+        <NotificationsPage client={{ request: vi.fn() }} />
+      </MemoryRouter>,
+    );
 
     await screen.findByText('[문의 #12] 로그인이 안 됩니다');
     expect(screen.getByRole('heading', { name: '알림' })).toBeInTheDocument();
     expect(screen.getByText('지원 답변이 등록되면 이 알림함에 일반 알림으로 함께 도착합니다.')).toBeInTheDocument();
     expect(screen.getByText('문의 번호 #12')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '문의 열기' })).toHaveAttribute('href', '/support?ticket=12');
     fireEvent.click(screen.getByRole('button', { name: '읽음 처리' }));
 
     await waitFor(() => {
