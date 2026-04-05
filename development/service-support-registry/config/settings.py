@@ -100,3 +100,4 @@ JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "change-me-local-jwt-secret-ke
 JWT_ISSUER = os.environ.get("JWT_ISSUER", "msa-server")
 JWT_AUDIENCE = os.environ.get("JWT_AUDIENCE", "msa-server")
 JWT_ALGORITHM = os.environ.get("JWT_ALGORITHM", "HS256")
+NOTIFICATION_HUB_BASE_URL = os.environ.get("NOTIFICATION_HUB_BASE_URL", "http://notification-hub-api:8000")

@@ -5,6 +5,7 @@ import jwt
 from django.conf import settings
 from django.test import TestCase
 from rest_framework.test import APIClient
+from unittest.mock import patch
 
 from supporttickets.models import SupportTicket, SupportTicketResponse
 
@@ -146,16 +147,55 @@ class SupportTicketApiTests(TestCase):
         ticket = self._create_ticket(requester_account_id=self.user_account_id)
         self._authenticate(self.user_token)
 
-        create_response = self.client.post(
-            "/ticket-responses/",
-            self._response_payload(ticket_id=str(ticket.ticket_id)),
-            format="json",
-        )
+        with patch("supporttickets.views.send_support_reply_inbox_notification", create=True) as mock_handoff:
+            create_response = self.client.post(
+                "/ticket-responses/",
+                self._response_payload(ticket_id=str(ticket.ticket_id)),
+                format="json",
+            )
         list_response = self.client.get("/ticket-responses/", {"ticket_id": str(ticket.ticket_id)})
 
         self.assertEqual(create_response.status_code, 201)
         self.assertEqual(create_response.data["author_account_id"], self.user_account_id)
         self.assertEqual(len(list_response.data), 1)
+        mock_handoff.assert_not_called()
+
+    def test_admin_reply_creates_inbox_notification_handoff(self) -> None:
+        ticket = self._create_ticket(requester_account_id=self.user_account_id)
+        self._authenticate(self.admin_token)
+
+        with patch("supporttickets.views.send_support_reply_inbox_notification", create=True) as mock_handoff:
+            response = self.client.post(
+                "/ticket-responses/",
+                self._response_payload(ticket_id=str(ticket.ticket_id)),
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, 201)
+        mock_handoff.assert_called_once()
+        call_kwargs = mock_handoff.call_args.kwargs
+        self.assertEqual(call_kwargs["ticket"].ticket_id, ticket.ticket_id)
+        self.assertEqual(call_kwargs["ticket_response"].body, "Checking now.")
+        self.assertEqual(call_kwargs["authorization"], f"Bearer {self.admin_token}")
+
+    def test_admin_reply_still_succeeds_when_notification_handoff_fails(self) -> None:
+        ticket = self._create_ticket(requester_account_id=self.user_account_id)
+        self._authenticate(self.admin_token)
+
+        with patch(
+            "supporttickets.views.send_support_reply_inbox_notification",
+            side_effect=RuntimeError("notification hub down"),
+            create=True,
+        ) as mock_handoff:
+            response = self.client.post(
+                "/ticket-responses/",
+                self._response_payload(ticket_id=str(ticket.ticket_id)),
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(SupportTicketResponse.objects.count(), 1)
+        mock_handoff.assert_called_once()
 
     def test_non_owner_cannot_create_response(self) -> None:
         ticket = self._create_ticket(requester_account_id=self.user_account_id)

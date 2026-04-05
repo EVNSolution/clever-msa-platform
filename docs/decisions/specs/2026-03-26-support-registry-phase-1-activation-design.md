@@ -25,7 +25,7 @@
 
 이번 설계에서는 아래 항목을 다루지 않는다.
 
-1. push send, inbox notification
+1. push send
 2. 공지 게시
 3. 결재 workflow
 4. attachment binary storage
@@ -43,7 +43,7 @@
 4. legacy 기준 `/api/ticket/*` namespace가 존재한다.
 5. current consumer reference에는 `/api/ticket/tickets/*`, `/api/ticket/ticket-responses/*`가 적혀 있다.
 
-즉 지금 필요한 것은 지원 정본의 최소 runtime 활성화이지, notification fan-out이나 별도 read-model을 같이 올리는 것이 아니다.
+즉 지금 필요한 것은 지원 정본의 최소 runtime 활성화이며, 알림 채널 정본 ownership은 유지한 채 필요한 inbox handoff만 최소로 연동하는 것이다.
 
 ## 선택된 접근
 
@@ -54,7 +54,9 @@
 3. ticket 생성은 authenticated user 누구나 허용한다.
 4. ticket 처리 상태 patch는 admin만 허용한다.
 5. response 생성은 admin 또는 ticket owner만 허용한다.
-6. phase 1에서는 notification fan-out, inbox sync, support read-model을 열지 않는다.
+6. admin response 저장 성공 시 `service-notification-hub`에 inbox notification 생성 handoff를 best-effort로 보낸다.
+7. push send는 자동화하지 않는다.
+8. support read-model은 열지 않는다.
 
 이 접근을 선택한 이유는 아래와 같다.
 
@@ -62,6 +64,7 @@
 2. driver / web 소비 흔적이 이미 ticket namespace에 남아 있어 authenticated create가 자연스럽다.
 3. 상태 변경 권한은 admin으로 제한해야 최소 workflow 경계가 선다.
 4. response를 별도 aggregate로 두면 legacy `/ticket-responses/*`와 current ownership을 같이 만족시킬 수 있다.
+5. admin response에 대한 inbox handoff만 최소로 추가하면 권한 분리를 유지하면서도 운영자 self-service 경험을 닫을 수 있다.
 
 ## 서비스 경계
 
@@ -77,7 +80,7 @@
 ### `service-support-registry`가 소유하지 않는 것
 
 1. push send
-2. inbox notification
+2. inbox notification row 자체의 ownership
 3. 공지 게시
 4. approval truth
 5. attachment binary storage
@@ -139,6 +142,7 @@
 1. `GET /api/ticket/tickets/`는 `status`, `priority`, `requester_account_id` filter를 허용한다.
 2. `GET /api/ticket/ticket-responses/`는 `ticket_id` filter를 허용한다.
 3. delete는 1차에서 제공하지 않는다.
+4. admin response 등록 후 inbox handoff가 실패해도 response create는 성공으로 본다.
 
 ## Auth / Permission 기준
 
@@ -199,6 +203,7 @@
 1. `service-support-registry`는 더 이상 empty shell이 아니다.
 2. 이 repo는 ticket / response / handling status 정본만 소유한다.
 3. notification channel은 계속 `service-notification-hub`에 남는다.
+4. admin response는 `service-notification-hub`로 inbox 생성 handoff만 보낸다.
 
 ## 검증 기준
 

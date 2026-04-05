@@ -1,3 +1,5 @@
+import logging
+
 try:
     from drf_spectacular.utils import extend_schema
 except ModuleNotFoundError:
@@ -21,6 +23,9 @@ from supporttickets.serializers import (
     SupportTicketResponseSerializer,
     SupportTicketSerializer,
 )
+from supporttickets.services.notification_handoff_service import send_support_reply_inbox_notification
+
+logger = logging.getLogger(__name__)
 
 
 class HealthView(APIView):
@@ -121,7 +126,26 @@ class TicketResponseListCreateView(generics.ListCreateAPIView):
         if not is_admin(user) and str(ticket.requester_account_id) != user.account_id:
             raise PermissionDenied("Ticket owner required.")
 
-        serializer.save(
+        ticket_response = serializer.save(
             author_account_id=user.account_id,
             author_role=user.role,
         )
+        if not is_admin(user) or str(ticket.requester_account_id) == user.account_id:
+            return
+
+        try:
+            send_support_reply_inbox_notification(
+                ticket=ticket,
+                ticket_response=ticket_response,
+                authorization=self.request.headers.get("Authorization", ""),
+            )
+        except Exception:
+            logger.warning(
+                "Support reply inbox handoff failed.",
+                extra={
+                    "ticket_id": str(ticket.ticket_id),
+                    "response_id": str(ticket_response.response_id),
+                    "requester_account_id": str(ticket.requester_account_id),
+                },
+                exc_info=True,
+            )
