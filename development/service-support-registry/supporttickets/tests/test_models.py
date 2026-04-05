@@ -16,6 +16,25 @@ class SupportTicketModelTests(TestCase):
 
         ticket.full_clean()
 
+    def test_ticket_allocates_route_no(self) -> None:
+        first = SupportTicket.objects.create(
+            requester_account_id="93000000-0000-0000-0000-000000000201",
+            title="First Inquiry",
+            body="Need support",
+            status=SupportTicket.Status.OPEN,
+            priority=SupportTicket.Priority.MEDIUM,
+        )
+        second = SupportTicket.objects.create(
+            requester_account_id="93000000-0000-0000-0000-000000000202",
+            title="Second Inquiry",
+            body="Need more support",
+            status=SupportTicket.Status.OPEN,
+            priority=SupportTicket.Priority.MEDIUM,
+        )
+
+        self.assertEqual(first.route_no, 1)
+        self.assertEqual(second.route_no, 2)
+
     def test_response_rejects_closed_ticket(self) -> None:
         ticket = SupportTicket.objects.create(
             requester_account_id="93000000-0000-0000-0000-000000000201",

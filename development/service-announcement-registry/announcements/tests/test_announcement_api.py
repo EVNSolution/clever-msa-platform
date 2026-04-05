@@ -82,7 +82,7 @@ class AnnouncementApiTests(TestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
 
-    def test_authenticated_non_admin_cannot_manage_announcements(self) -> None:
+    def test_authenticated_non_admin_cannot_create_or_update_announcements(self) -> None:
         announcement = self._create_announcement(slug="ops-one")
         self._authenticate(self.user_token)
 
@@ -94,9 +94,37 @@ class AnnouncementApiTests(TestCase):
             format="json",
         )
 
-        self.assertEqual(list_response.status_code, 403)
+        self.assertEqual(list_response.status_code, 200)
         self.assertEqual(create_response.status_code, 403)
         self.assertEqual(patch_response.status_code, 403)
+
+    def test_authenticated_non_admin_can_read_published_operator_announcements_only(self) -> None:
+        self._create_announcement(
+            slug="ops-all",
+            status=Announcement.Status.PUBLISHED,
+            exposure_scope=Announcement.ExposureScope.ALL,
+        )
+        self._create_announcement(
+            slug="ops-operator",
+            status=Announcement.Status.PUBLISHED,
+            exposure_scope=Announcement.ExposureScope.OPERATOR,
+        )
+        self._create_announcement(
+            slug="ops-driver",
+            status=Announcement.Status.PUBLISHED,
+            exposure_scope=Announcement.ExposureScope.DRIVER,
+        )
+        self._create_announcement(
+            slug="ops-draft",
+            status=Announcement.Status.DRAFT,
+            exposure_scope=Announcement.ExposureScope.OPERATOR,
+        )
+        self._authenticate(self.user_token)
+
+        response = self.client.get("/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([item["slug"] for item in response.data], ["ops-all", "ops-operator"])
 
     def test_admin_can_crud_announcements(self) -> None:
         self._authenticate(self.admin_token)

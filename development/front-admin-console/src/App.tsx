@@ -11,6 +11,9 @@ import { SettlementSectionLayout } from './components/SettlementSectionLayout';
 import { canAccessCompanyScope, canAccessDispatchScope, canAccessSettlementScope, canAccessVehicleScope } from './authScopes';
 import { AccountPage } from './pages/AccountPage';
 import { AccountsPage } from './pages/AccountsPage';
+import { AnnouncementDetailPage } from './pages/AnnouncementDetailPage';
+import { AnnouncementFormPage } from './pages/AnnouncementFormPage';
+import { AnnouncementsPage } from './pages/AnnouncementsPage';
 import { CompaniesPage } from './pages/CompaniesPage';
 import { CompanyDetailPage } from './pages/CompanyDetailPage';
 import { CompanyFormPage } from './pages/CompanyFormPage';
@@ -24,11 +27,13 @@ import { FleetDetailPage } from './pages/FleetDetailPage';
 import { FleetFormPage } from './pages/FleetFormPage';
 import { LoginPage } from './pages/LoginPage';
 import { ConsentRecoveryPage } from './pages/ConsentRecoveryPage';
+import { NotificationsPage } from './pages/NotificationsPage';
 import { SettlementCriteriaPage } from './pages/SettlementCriteriaPage';
 import { SettlementInputsPage } from './pages/SettlementInputsPage';
 import { SettlementOverviewPage } from './pages/SettlementOverviewPage';
 import { SettlementResultsPage } from './pages/SettlementResultsPage';
 import { SettlementRunsPage } from './pages/SettlementRunsPage';
+import { SupportPage } from './pages/SupportPage';
 import { VehicleAssignmentDetailPage } from './pages/VehicleAssignmentDetailPage';
 import { VehicleAssignmentFormPage } from './pages/VehicleAssignmentFormPage';
 import { VehicleAssignmentsPage } from './pages/VehicleAssignmentsPage';
@@ -347,6 +352,30 @@ export default function App() {
                   <DispatchPlanFormPage client={client} mode="edit" />
                 </RequireRoleScope>
               }
+            />
+            <Route
+              path="/announcements"
+              element={<AnnouncementsPage client={client} />}
+            />
+            <Route
+              path="/announcements/new"
+              element={<AnnouncementFormPage client={client} mode="create" />}
+            />
+            <Route
+              path="/announcements/:announcementSlug"
+              element={<AnnouncementDetailPage client={client} />}
+            />
+            <Route
+              path="/announcements/:announcementSlug/edit"
+              element={<AnnouncementFormPage client={client} mode="edit" />}
+            />
+            <Route
+              path="/support"
+              element={<SupportPage client={client} />}
+            />
+            <Route
+              path="/notifications"
+              element={<NotificationsPage client={client} />}
             />
             <Route
               path="/companies"

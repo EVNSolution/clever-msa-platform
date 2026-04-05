@@ -1,7 +1,8 @@
 import uuid
 
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import IntegrityError, models, transaction
+from django.db.models import Max
 
 
 class SupportTicket(models.Model):
@@ -17,6 +18,7 @@ class SupportTicket(models.Model):
         HIGH = "high", "high"
 
     ticket_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    route_no = models.PositiveIntegerField(unique=True, editable=False)
     requester_account_id = models.UUIDField(db_index=True)
     title = models.CharField(max_length=200)
     body = models.TextField()
@@ -27,6 +29,20 @@ class SupportTicket(models.Model):
 
     class Meta:
         ordering = ("-created_at", "ticket_id")
+
+    def save(self, *args, **kwargs):
+        if self.route_no is not None:
+            return super().save(*args, **kwargs)
+
+        for _ in range(5):
+            self.route_no = (type(self).objects.aggregate(max_route_no=Max("route_no"))["max_route_no"] or 0) + 1
+            try:
+                with transaction.atomic():
+                    return super().save(*args, **kwargs)
+            except IntegrityError:
+                self.route_no = None
+
+        raise IntegrityError("Failed to allocate support ticket route_no.")
 
 
 class SupportTicketResponse(models.Model):

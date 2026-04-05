@@ -15,6 +15,7 @@ class SupportTicketSerializer(serializers.ModelSerializer):
         model = SupportTicket
         fields = (
             "ticket_id",
+            "route_no",
             "requester_account_id",
             "title",
             "body",
@@ -23,7 +24,7 @@ class SupportTicketSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         )
-        read_only_fields = ("ticket_id", "requester_account_id", "created_at", "updated_at")
+        read_only_fields = ("ticket_id", "route_no", "requester_account_id", "created_at", "updated_at")
 
     def validate(self, attrs):
         candidate = self.instance or SupportTicket()

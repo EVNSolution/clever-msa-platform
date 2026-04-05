@@ -7,12 +7,15 @@ import { listPublicCompanies } from './api/organization';
 import { Layout } from './components/Layout';
 import { DashboardPage } from './pages/DashboardPage';
 import { AccountPage } from './pages/AccountPage';
+import { AnnouncementsPage } from './pages/AnnouncementsPage';
 import { ConsentRecoveryPage } from './pages/ConsentRecoveryPage';
 import { Driver360Page } from './pages/Driver360Page';
 import { DriverFormPage } from './pages/DriverFormPage';
 import { DriversPage } from './pages/DriversPage';
 import { LoginPage } from './pages/LoginPage';
+import { NotificationsPage } from './pages/NotificationsPage';
 import { SettlementsPage } from './pages/SettlementsPage';
+import { SupportPage } from './pages/SupportPage';
 import { VehicleDetailPage } from './pages/VehicleDetailPage';
 import { VehiclesPage } from './pages/VehiclesPage';
 import { clearStoredSession, loadStoredSession, persistSession } from './sessionPersistence';
@@ -267,6 +270,9 @@ export default function App() {
             }
           />
           <Route path="/" element={<DashboardPage session={session} client={client} />} />
+          <Route path="/announcements" element={<AnnouncementsPage client={client} />} />
+          <Route path="/support" element={<SupportPage client={client} />} />
+          <Route path="/notifications" element={<NotificationsPage client={client} />} />
           <Route path="/drivers" element={<DriversPage client={client} />} />
           <Route path="/drivers/new" element={<DriverFormPage client={client} mode="create" />} />
           <Route path="/drivers/:driverRef" element={<Driver360Page client={client} />} />

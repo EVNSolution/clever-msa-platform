@@ -33,6 +33,9 @@ describe('Layout', () => {
     );
 
     expect(screen.getByRole('link', { name: '계정 요청' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '공지' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '지원' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '알림' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '차량' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '차량 배정' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '배차' })).toBeInTheDocument();

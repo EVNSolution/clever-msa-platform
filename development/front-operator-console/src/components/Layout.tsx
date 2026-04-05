@@ -23,6 +23,15 @@ export function Layout({ session, onLogout }: LayoutProps) {
           <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/">
             대시보드
           </NavLink>
+          <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/announcements">
+            공지
+          </NavLink>
+          <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/support">
+            지원
+          </NavLink>
+          <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/notifications">
+            알림
+          </NavLink>
           <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/drivers">
             배송원
           </NavLink>

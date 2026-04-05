@@ -7,6 +7,8 @@ except ModuleNotFoundError:
 
         return decorator
 
+from django.db.models import Q
+from django.http import Http404
 from rest_framework import generics, mixins, permissions
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
@@ -65,9 +67,20 @@ class TicketDetailView(
     generics.GenericAPIView,
 ):
     serializer_class = SupportTicketSerializer
-    lookup_field = "ticket_id"
     permission_classes = [AuthenticatedTicketAccess]
     http_method_names = ["get", "patch", "options", "head"]
+
+    def get_object(self):
+        ticket_ref = self.kwargs["ticket_ref"]
+        queryset = self.get_queryset()
+        if ticket_ref.isdigit():
+            filters = Q(route_no=int(ticket_ref))
+        else:
+            filters = Q(ticket_id=ticket_ref)
+        ticket = queryset.filter(filters).first()
+        if ticket is None:
+            raise Http404
+        return ticket
 
     def get_queryset(self):
         queryset = SupportTicket.objects.all()

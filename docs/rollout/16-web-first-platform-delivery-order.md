@@ -66,10 +66,10 @@
 
 ### 3. Announcement / support / notification web
 
-- [ ] `service-announcement-registry` 기준 공지 운영 화면 닫기
-- [ ] `service-support-registry` 기준 문의/지원 운영 화면 닫기
-- [ ] `service-notification-hub` 기준 알림 운영 화면 닫기
-- [ ] 앱 부재를 보완하는 웹 운영 경로를 완성하기
+- [x] `service-announcement-registry` 기준 공지 운영 화면 닫기
+- [x] `service-support-registry` 기준 문의/지원 운영 화면 닫기
+- [x] `service-notification-hub` 기준 알림 운영 화면 닫기
+- [x] 앱 부재를 보완하는 웹 운영 경로를 완성하기
 
 앱이 아직 없기 때문에 이 세 영역은 웹 대체 경로로서 우선순위가 높다.
 
@@ -124,5 +124,6 @@
 - [14-front-ui-rule-audit.md](14-front-ui-rule-audit.md)
 - [../contracts/10-front-ui-rules.md](../contracts/10-front-ui-rules.md)
 - [../contracts/15-auth-api-scenario-map.md](../contracts/15-auth-api-scenario-map.md)
+- [../contracts/17-admin-communication-pages.md](../contracts/17-admin-communication-pages.md)
 - [../../WORKSPACE.md](../../WORKSPACE.md)
 - [../../repo-map.md](../../repo-map.md)

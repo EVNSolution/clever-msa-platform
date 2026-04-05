@@ -176,6 +176,84 @@ export function formatPolicyVersionStatusLabel(value: string | null | undefined)
   }
 }
 
+export function formatAnnouncementStatusLabel(value: string | null | undefined) {
+  switch (value) {
+    case 'draft':
+      return '초안';
+    case 'published':
+      return '게시됨';
+    case 'archived':
+      return '보관';
+    default:
+      return value ?? '-';
+  }
+}
+
+export function formatAnnouncementScopeLabel(value: string | null | undefined) {
+  switch (value) {
+    case 'all':
+      return '전체용';
+    case 'driver':
+      return '배송원용';
+    case 'operator':
+      return '운영자용';
+    default:
+      return value ?? '-';
+  }
+}
+
+export function formatSupportTicketStatusLabel(value: string | null | undefined) {
+  switch (value) {
+    case 'open':
+      return '열림';
+    case 'in_progress':
+      return '처리 중';
+    case 'resolved':
+      return '해결됨';
+    case 'closed':
+      return '종료';
+    default:
+      return value ?? '-';
+  }
+}
+
+export function formatSupportTicketPriorityLabel(value: string | null | undefined) {
+  switch (value) {
+    case 'low':
+      return '낮음';
+    case 'medium':
+      return '보통';
+    case 'high':
+      return '높음';
+    default:
+      return value ?? '-';
+  }
+}
+
+export function formatNotificationStatusLabel(value: string | null | undefined) {
+  switch (value) {
+    case 'unread':
+      return '읽지 않음';
+    case 'read':
+      return '읽음';
+    case 'archived':
+      return '보관';
+    default:
+      return value ?? '-';
+  }
+}
+
+export function formatPushDeliveryStatusLabel(value: string | null | undefined) {
+  switch (value) {
+    case 'simulated_sent':
+      return '발송됨';
+    case 'failed':
+      return '실패';
+    default:
+      return value ?? '-';
+  }
+}
+
 export function formatDeliveryRecordStatusLabel(value: string | null | undefined) {
   switch (value) {
     case 'draft':

@@ -8,11 +8,12 @@ except ModuleNotFoundError:
         return decorator
 
 from rest_framework import generics, mixins, permissions
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from announcements.models import Announcement
-from announcements.permissions import AdminOnlyAccess
+from announcements.permissions import AdminOnlyAccess, AuthenticatedAnnouncementAccess, is_admin
 from announcements.serializers import AnnouncementSerializer, HealthSerializer
 
 
@@ -27,17 +28,27 @@ class HealthView(APIView):
 
 class AnnouncementListCreateView(generics.ListCreateAPIView):
     serializer_class = AnnouncementSerializer
-    permission_classes = [AdminOnlyAccess]
+    permission_classes = [AuthenticatedAnnouncementAccess]
 
     def get_queryset(self):
         queryset = Announcement.objects.all()
+        user = self.request.user
+
+        if not is_admin(user):
+            queryset = queryset.filter(
+                status=Announcement.Status.PUBLISHED,
+                exposure_scope__in=(
+                    Announcement.ExposureScope.ALL,
+                    Announcement.ExposureScope.OPERATOR,
+                ),
+            )
 
         status_value = self.request.query_params.get("status")
-        if status_value:
+        if status_value and is_admin(user):
             queryset = queryset.filter(status=status_value)
 
         exposure_scope = self.request.query_params.get("exposure_scope")
-        if exposure_scope:
+        if exposure_scope and is_admin(user):
             queryset = queryset.filter(exposure_scope=exposure_scope)
 
         slug = self.request.query_params.get("slug")
@@ -45,6 +56,11 @@ class AnnouncementListCreateView(generics.ListCreateAPIView):
             queryset = queryset.filter(slug=slug)
 
         return queryset
+
+    def post(self, request, *args, **kwargs):
+        if not is_admin(request.user):
+            raise PermissionDenied("Admin role required.")
+        return super().post(request, *args, **kwargs)
 
 
 class AnnouncementDetailView(

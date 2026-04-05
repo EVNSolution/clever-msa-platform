@@ -26,6 +26,21 @@ export function Layout({ session, onLogout }: LayoutProps) {
               계정 요청
             </NavLink>
           ) : null}
+          {canAccessAccountsScope(session) ? (
+            <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/announcements">
+              공지
+            </NavLink>
+          ) : null}
+          {canAccessAccountsScope(session) ? (
+            <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/support">
+              지원
+            </NavLink>
+          ) : null}
+          {canAccessAccountsScope(session) ? (
+            <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/notifications">
+              알림
+            </NavLink>
+          ) : null}
           {canAccessCompanyScope(session) ? (
             <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/companies">
               회사

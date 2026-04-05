@@ -81,6 +81,7 @@ class SupportTicketApiTests(TestCase):
 
         self.assertEqual(create_response.status_code, 201)
         self.assertEqual(create_response.data["requester_account_id"], self.user_account_id)
+        self.assertIn("route_no", create_response.data)
         self.assertEqual(len(list_response.data), 1)
         self.assertEqual(list_response.data[0]["requester_account_id"], self.user_account_id)
 
@@ -111,6 +112,16 @@ class SupportTicketApiTests(TestCase):
         self.assertEqual(len(list_response.data), 1)
         self.assertEqual(patch_response.status_code, 200)
         self.assertEqual(patch_response.data["status"], "resolved")
+
+    def test_ticket_detail_accepts_route_no_lookup(self) -> None:
+        self._authenticate(self.user_token)
+        create_response = self.client.post("/tickets/", self._ticket_payload(), format="json")
+
+        route_no = create_response.data["route_no"]
+        detail_response = self.client.get(f"/tickets/{route_no}/")
+
+        self.assertEqual(detail_response.status_code, 200)
+        self.assertEqual(detail_response.data["route_no"], route_no)
 
     def test_ticket_list_filters_by_status_priority_and_requester(self) -> None:
         own_ticket = self._create_ticket(requester_account_id=self.user_account_id, status=SupportTicket.Status.OPEN)
