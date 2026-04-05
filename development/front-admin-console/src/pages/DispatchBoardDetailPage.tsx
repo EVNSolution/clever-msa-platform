@@ -13,6 +13,7 @@ import {
   createVehicleSchedule,
   listVehicleSchedules,
   removeDriverDayException,
+  removeDispatchWorkRule,
   removeOutsourcedDriver,
   updateDispatchAssignment,
 } from '../api/dispatchRegistry';
@@ -55,6 +56,10 @@ function formatWorkRuleKindLabel(systemKind: DispatchWorkRule['system_kind']) {
     default:
       return systemKind;
   }
+}
+
+function getFirstPlannedInternalDriverId(rows: DispatchBoardRow[]) {
+  return rows.find((row) => row.planned_driver_kind === 'internal' && row.planned_driver_id)?.planned_driver_id ?? '';
 }
 
 export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps) {
@@ -159,7 +164,7 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
         setNewScheduleVehicleId(vehicleResponse[0]?.vehicle_id ?? '');
         setNewAssignmentScheduleId(scheduleResponse[0]?.vehicle_schedule_id ?? '');
         setNewAssignmentDriverId(driverResponse[0]?.driver_id ?? '');
-        setNewExceptionDriverId(driverResponse[0]?.driver_id ?? '');
+        setNewExceptionDriverId(getFirstPlannedInternalDriverId(boardResponse));
         setNewExceptionWorkRuleId(workRuleResponse[0]?.work_rule_id ?? '');
         setNewAssignmentOutsourcedDriverId(outsourcedDriverResponse[0]?.outsourced_driver_id ?? '');
       } catch (error) {
@@ -192,6 +197,17 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
     () => new Map(driverDayExceptions.map((exception) => [exception.driver_id, exception])),
     [driverDayExceptions],
   );
+  const plannedInternalDrivers = useMemo(() => {
+    const plannedDriverIds = new Set(
+      boardRows
+        .filter(
+          (row) => row.planned_driver_kind === 'internal' && Boolean(row.planned_driver_id),
+        )
+        .map((row) => row.planned_driver_id as string),
+    );
+
+    return drivers.filter((driver) => plannedDriverIds.has(driver.driver_id));
+  }, [boardRows, drivers]);
 
   async function reloadBoard() {
     if (!fleet || !dispatchDate) {
@@ -227,6 +243,7 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
     setDriverDayExceptions(driverDayExceptionResponse);
     setOutsourcedDrivers(outsourcedDriverResponse);
     setNewAssignmentScheduleId(scheduleResponse[0]?.vehicle_schedule_id ?? '');
+    setNewExceptionDriverId(getFirstPlannedInternalDriverId(boardResponse));
     setNewExceptionWorkRuleId(workRuleResponse[0]?.work_rule_id ?? '');
     setNewAssignmentOutsourcedDriverId(outsourcedDriverResponse[0]?.outsourced_driver_id ?? '');
   }
@@ -337,6 +354,19 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
         system_kind: newWorkRuleSystemKind,
       });
       setNewWorkRuleName('');
+      await reloadBoard();
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleRemoveWorkRule(workRuleId: string) {
+    setIsSaving(true);
+    setErrorMessage(null);
+    try {
+      await removeDispatchWorkRule(client, workRuleId);
       await reloadBoard();
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
@@ -604,6 +634,7 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
               </button>
             </div>
           </form>
+          <p className="helper-text">회사 규칙명은 자유롭게 정하되, 시스템 의미는 반드시 출근/휴무/특근에 매핑됩니다.</p>
           <div className="stack tight">
             {workRules.length ? (
               workRules.map((workRule) => (
@@ -613,6 +644,14 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
                       <h3>{workRule.name}</h3>
                       <p>{formatWorkRuleKindLabel(workRule.system_kind)}</p>
                     </div>
+                    <button
+                      className="button ghost small"
+                      disabled={isSaving}
+                      onClick={() => void handleRemoveWorkRule(workRule.work_rule_id)}
+                      type="button"
+                    >
+                      근무 규칙 삭제
+                    </button>
                   </div>
                 </div>
               ))
@@ -627,13 +666,13 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
             <p className="panel-kicker">날짜 예외</p>
             <h2>기사 근무 예외 입력</h2>
           </div>
-          <p className="helper-text">일반 휴무는 따로 저장하지 않고, 예외가 있을 때만 입력합니다.</p>
+          <p className="helper-text">일반 휴무는 따로 저장하지 않고, 해당 날짜에 계획된 내부 기사에게만 예외를 입력합니다.</p>
           <form className="form-stack" onSubmit={handleCreateDriverDayException}>
             <label className="field">
               <span>예외 배송원</span>
               <select onChange={(event) => setNewExceptionDriverId(event.target.value)} value={newExceptionDriverId}>
                 <option value="">배송원 선택</option>
-                {drivers.map((driver) => (
+                {plannedInternalDrivers.map((driver) => (
                   <option key={driver.driver_id} value={driver.driver_id}>
                     {driver.name}
                   </option>

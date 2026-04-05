@@ -20,6 +20,7 @@ const apiMocks = vi.hoisted(() => ({
   listVehicleMasters: vi.fn(),
   listVehicleSchedules: vi.fn(),
   removeDriverDayException: vi.fn(),
+  removeDispatchWorkRule: vi.fn(),
   removeOutsourcedDriver: vi.fn(),
   updateDispatchAssignment: vi.fn(),
 }));
@@ -41,6 +42,7 @@ vi.mock('../api/dispatchRegistry', () => ({
   listOutsourcedDrivers: apiMocks.listOutsourcedDrivers,
   listVehicleSchedules: apiMocks.listVehicleSchedules,
   removeDriverDayException: apiMocks.removeDriverDayException,
+  removeDispatchWorkRule: apiMocks.removeDispatchWorkRule,
   removeOutsourcedDriver: apiMocks.removeOutsourcedDriver,
   updateDispatchAssignment: apiMocks.updateDispatchAssignment,
 }));
@@ -369,6 +371,16 @@ describe('DispatchBoardDetailPage', () => {
         phone_number: '010-1111-2222',
         address: '서울',
       },
+      {
+        driver_id: 'driver-2',
+        route_no: 102,
+        company_id: '30000000-0000-0000-0000-000000000001',
+        fleet_id: '40000000-0000-0000-0000-000000000001',
+        name: '김철수',
+        ev_id: 'EV-2',
+        phone_number: '010-3333-4444',
+        address: '서울',
+      },
     ]);
     apiMocks.listDispatchWorkRules
       .mockResolvedValueOnce([])
@@ -459,7 +471,10 @@ describe('DispatchBoardDetailPage', () => {
     });
 
     await screen.findAllByText('주말 특근');
-    fireEvent.change(screen.getByLabelText('예외 배송원'), { target: { value: 'driver-1' } });
+    const exceptionDriverSelect = screen.getByLabelText('예외 배송원');
+    expect(exceptionDriverSelect).toHaveTextContent('홍길동');
+    expect(exceptionDriverSelect).not.toHaveTextContent('김철수');
+    fireEvent.change(exceptionDriverSelect, { target: { value: 'driver-1' } });
     fireEvent.change(screen.getByLabelText('적용 규칙'), { target: { value: 'work-rule-1' } });
     fireEvent.change(screen.getByLabelText('예외 메모'), { target: { value: '긴급 물량 대응' } });
     fireEvent.click(screen.getByRole('button', { name: '날짜 예외 추가' }));
@@ -477,5 +492,64 @@ describe('DispatchBoardDetailPage', () => {
     });
 
     await screen.findByText('긴급 물량 대응');
+  });
+
+  it('deletes an unused company work rule', async () => {
+    apiMocks.listDispatchPlans.mockResolvedValue([
+      {
+        dispatch_plan_id: 'dispatch-plan-1',
+        company_id: '30000000-0000-0000-0000-000000000001',
+        fleet_id: '40000000-0000-0000-0000-000000000001',
+        dispatch_date: '2026-03-24',
+        planned_volume: 120,
+        dispatch_status: 'draft',
+      },
+    ]);
+    apiMocks.getDispatchSummary.mockResolvedValue({
+      dispatch_date: '2026-03-24',
+      fleet_id: '40000000-0000-0000-0000-000000000001',
+      planned_volume: 120,
+      planned_assignment_count: 0,
+      matched_count: 0,
+      not_started_count: 0,
+      dispatch_unit_changed_count: 0,
+      unplanned_current_count: 0,
+    });
+    apiMocks.getDispatchBoard.mockResolvedValue([]);
+    apiMocks.listOutsourcedDrivers.mockResolvedValue([]);
+    apiMocks.listVehicleSchedules.mockResolvedValue([]);
+    apiMocks.listDispatchAssignments.mockResolvedValue([]);
+    apiMocks.listVehicleMasters.mockResolvedValue([]);
+    apiMocks.listDrivers.mockResolvedValue([]);
+    apiMocks.listDriverDayExceptions.mockResolvedValue([]);
+    apiMocks.listDispatchWorkRules.mockResolvedValue([
+      {
+        work_rule_id: 'work-rule-1',
+        company_id: '30000000-0000-0000-0000-000000000001',
+        name: '주말 특근',
+        system_kind: 'overtime',
+        created_at: '2026-03-24T09:00:00Z',
+        updated_at: '2026-03-24T09:00:00Z',
+      },
+    ]);
+    apiMocks.removeDispatchWorkRule.mockResolvedValue(undefined);
+
+    render(
+      <MemoryRouter initialEntries={['/dispatch/boards/41/2026-03-24']}>
+        <Routes>
+          <Route
+            path="/dispatch/boards/:fleetRef/:dispatchDate"
+            element={<DispatchBoardDetailPage client={{ request: vi.fn() }} />}
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    await screen.findByText('주말 특근');
+    fireEvent.click(screen.getByRole('button', { name: '근무 규칙 삭제' }));
+
+    await waitFor(() => {
+      expect(apiMocks.removeDispatchWorkRule).toHaveBeenCalledWith(expect.anything(), 'work-rule-1');
+    });
   });
 });
