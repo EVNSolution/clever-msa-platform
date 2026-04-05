@@ -65,6 +65,10 @@ class VehicleSchedule(models.Model):
 
 
 class OutsourcedDriver(models.Model):
+    class Status(models.TextChoices):
+        ACTIVE = "active", "active"
+        ARCHIVED = "archived", "archived"
+
     outsourced_driver_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     dispatch_plan = models.ForeignKey(
         DispatchPlan,
@@ -76,11 +80,22 @@ class OutsourcedDriver(models.Model):
     contact_number = models.CharField(max_length=32)
     vehicle_note = models.CharField(max_length=255, blank=True, default="")
     memo = models.TextField(blank=True, default="")
+    status = models.CharField(max_length=32, choices=Status.choices, default=Status.ACTIVE)
+    archived_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ("outsourced_driver_id",)
+
+    def clean(self):
+        errors = {}
+        if self.status == self.Status.ACTIVE and self.archived_at is not None:
+            errors["archived_at"] = "archived_at must be empty for active outsourced drivers."
+        if self.status == self.Status.ARCHIVED and self.archived_at is None:
+            errors["archived_at"] = "archived_at is required for archived outsourced drivers."
+        if errors:
+            raise ValidationError(errors)
 
 
 class DispatchWorkRule(models.Model):
@@ -203,6 +218,8 @@ class DispatchAssignment(models.Model):
                 errors["vehicle_schedule_id"] = "Assigned dispatch requires a planned vehicle schedule."
             if self.outsourced_driver_id:
                 dispatch_plan = self.outsourced_driver.dispatch_plan
+                if self.outsourced_driver.status != OutsourcedDriver.Status.ACTIVE:
+                    errors["outsourced_driver_id"] = "outsourced_driver must be active."
                 if schedule.fleet_id != dispatch_plan.fleet_id:
                     errors["outsourced_driver_id"] = (
                         "outsourced_driver dispatch_plan must match vehicle_schedule fleet."

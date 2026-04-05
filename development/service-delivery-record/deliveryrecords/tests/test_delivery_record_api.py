@@ -243,6 +243,52 @@ class DeliveryRecordApiTests(TestCase):
         self.assertEqual(detail_response.status_code, 200)
         self.assertEqual(update_response.status_code, 200)
 
+    def test_daily_snapshot_list_supports_company_fleet_service_date_and_status_filters(self) -> None:
+        with patch(
+            "deliveryrecords.services.source_clients.SourceClients.validate_company_fleet_scope",
+            return_value=None,
+        ), patch(
+            "deliveryrecords.services.source_clients.SourceClients.validate_driver_exists",
+            return_value=None,
+        ):
+            self._admin_client().post("/daily-snapshots/", self._snapshot_payload(), format="json")
+            self._admin_client().post(
+                "/daily-snapshots/",
+                {
+                    **self._snapshot_payload(),
+                    "driver_id": str(uuid4()),
+                    "status": DailyDeliveryInputSnapshot.Status.SUPERSEDED,
+                },
+                format="json",
+            )
+            self._admin_client().post(
+                "/daily-snapshots/",
+                {
+                    **self._snapshot_payload(),
+                    "company_id": str(uuid4()),
+                    "fleet_id": str(uuid4()),
+                    "driver_id": str(uuid4()),
+                    "service_date": "2026-03-25",
+                },
+                format="json",
+            )
+
+        response = self._user_client().get(
+            "/daily-snapshots/",
+            {
+                "company_id": self.company_id,
+                "fleet_id": self.fleet_id,
+                "service_date": self.service_date,
+                "status": DailyDeliveryInputSnapshot.Status.ACTIVE,
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["company_id"], self.company_id)
+        self.assertEqual(response.data[0]["fleet_id"], self.fleet_id)
+        self.assertEqual(response.data[0]["service_date"], self.service_date)
+
     def test_put_and_delete_are_not_allowed_for_detail_routes(self) -> None:
         with patch(
             "deliveryrecords.services.source_clients.SourceClients.validate_company_fleet_scope",

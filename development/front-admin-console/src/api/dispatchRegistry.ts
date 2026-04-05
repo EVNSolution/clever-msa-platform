@@ -217,9 +217,9 @@ export function createOutsourcedDriver(client: HttpClient, payload: OutsourcedDr
   });
 }
 
-export function removeOutsourcedDriver(client: HttpClient, outsourcedDriverId: string) {
-  return client.request<void>(`/dispatch/outsourced-drivers/${outsourcedDriverId}/`, {
-    method: 'DELETE',
+export function archiveOutsourcedDriver(client: HttpClient, outsourcedDriverId: string) {
+  return client.request<OutsourcedDriver>(`/dispatch/outsourced-drivers/${outsourcedDriverId}/archive/`, {
+    method: 'POST',
   });
 }
 

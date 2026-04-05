@@ -174,6 +174,9 @@ class OutsourcedDriverSerializer(serializers.ModelSerializer):
     company_id = serializers.SerializerMethodField()
     fleet_id = serializers.SerializerMethodField()
     dispatch_date = serializers.SerializerMethodField()
+    status = serializers.CharField(read_only=True)
+    archived_at = serializers.DateTimeField(format=DATETIME_FORMAT, read_only=True)
+    is_archivable = serializers.SerializerMethodField()
     created_at = serializers.DateTimeField(format=DATETIME_FORMAT, read_only=True)
     updated_at = serializers.DateTimeField(format=DATETIME_FORMAT, read_only=True)
 
@@ -189,6 +192,9 @@ class OutsourcedDriverSerializer(serializers.ModelSerializer):
             "contact_number",
             "vehicle_note",
             "memo",
+            "status",
+            "archived_at",
+            "is_archivable",
             "created_at",
             "updated_at",
         )
@@ -202,12 +208,41 @@ class OutsourcedDriverSerializer(serializers.ModelSerializer):
     def get_dispatch_date(self, instance):
         return str(instance.dispatch_plan.dispatch_date)
 
+    def get_is_archivable(self, instance):
+        if instance.status != OutsourcedDriver.Status.ACTIVE:
+            return False
+
+        request = self.context.get("request")
+        authorization = request.headers.get("Authorization", "") if request else ""
+        cache = self.context.setdefault("_outsourced_driver_archivable_cache", {})
+        cache_key = (
+            str(instance.dispatch_plan.company_id),
+            str(instance.dispatch_plan.fleet_id),
+            str(instance.dispatch_plan.dispatch_date),
+        )
+        if cache_key not in cache:
+            try:
+                snapshots = SourceClients().list_daily_delivery_input_snapshots(
+                    company_id=cache_key[0],
+                    fleet_id=cache_key[1],
+                    service_date=cache_key[2],
+                    status="active",
+                    authorization=authorization,
+                )
+            except SourceServiceError:
+                cache[cache_key] = False
+            else:
+                cache[cache_key] = bool(snapshots)
+        return cache[cache_key]
+
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data["dispatch_plan_id"] = str(instance.dispatch_plan_id)
         return data
 
     def validate(self, attrs):
+        if self.instance is not None and self.instance.status != OutsourcedDriver.Status.ACTIVE:
+            raise serializers.ValidationError({"status": ["Archived outsourced drivers cannot be modified."]})
         try:
             return _validate_model_instance(OutsourcedDriver, attrs, instance=self.instance)
         except Exception as exc:

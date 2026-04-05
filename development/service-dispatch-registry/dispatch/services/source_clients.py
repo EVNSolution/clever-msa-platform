@@ -90,3 +90,27 @@ class SourceClients:
             authorization=authorization,
             allow_not_found=True,
         )
+
+    def list_daily_delivery_input_snapshots(
+        self,
+        *,
+        company_id: str,
+        fleet_id: str,
+        service_date: str,
+        status: str,
+        authorization: str,
+    ):
+        return self._request_json(
+            url=self._build_url(
+                settings.DELIVERY_RECORD_BASE_URL,
+                "/daily-snapshots/",
+                query={
+                    "company_id": company_id,
+                    "fleet_id": fleet_id,
+                    "service_date": service_date,
+                    "status": status,
+                },
+            ),
+            authorization=authorization,
+            expect_list=True,
+        )

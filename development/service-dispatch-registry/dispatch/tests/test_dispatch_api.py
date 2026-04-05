@@ -425,7 +425,7 @@ class DispatchApiTests(TestCase):
         self.assertEqual(response.data["outsourced_driver_id"], str(outsourced_driver.outsourced_driver_id))
         mock_get_driver.assert_not_called()
 
-    def test_admin_cannot_delete_outsourced_driver_when_assignment_exists(self):
+    def test_admin_cannot_archive_outsourced_driver_before_settlement_snapshot(self):
         models_module = _load_models_module(self)
         self._authenticate(self.admin_token)
         dispatch_plan = models_module.DispatchPlan.objects.create(
@@ -461,9 +461,97 @@ class DispatchApiTests(TestCase):
             assigned_at=datetime(2026, 3, 24, 9, 0, tzinfo=timezone.utc),
         )
 
-        response = self.client.delete(f"/outsourced-drivers/{outsourced_driver.outsourced_driver_id}/")
+        with patch(
+            "dispatch.services.source_clients.SourceClients.list_daily_delivery_input_snapshots",
+            return_value=[],
+        ):
+            response = self.client.post(
+                f"/outsourced-drivers/{outsourced_driver.outsourced_driver_id}/archive/"
+            )
 
         self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.data["code"], "outsourced_driver_archive_requires_daily_input_snapshot")
+
+    def test_admin_can_archive_outsourced_driver_after_settlement_snapshot_exists(self):
+        models_module = _load_models_module(self)
+        self._authenticate(self.admin_token)
+        dispatch_plan = models_module.DispatchPlan.objects.create(
+            company_id=UUID("30000000-0000-0000-0000-000000000001"),
+            fleet_id=UUID("40000000-0000-0000-0000-000000000001"),
+            dispatch_date=date(2026, 3, 24),
+            planned_volume=120,
+            dispatch_status=models_module.DispatchPlan.DispatchStatus.DRAFT,
+        )
+        outsourced_driver = models_module.OutsourcedDriver.objects.create(
+            dispatch_plan=dispatch_plan,
+            name="외부 기사",
+            contact_number="010-9999-8888",
+            vehicle_note="1톤 카고",
+            memo="월말 정산 대상",
+        )
+
+        with patch(
+            "dispatch.services.source_clients.SourceClients.list_daily_delivery_input_snapshots",
+            return_value=[{"daily_delivery_input_snapshot_id": str(uuid4()), "status": "active"}],
+        ):
+            response = self.client.post(
+                f"/outsourced-drivers/{outsourced_driver.outsourced_driver_id}/archive/"
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["status"], "archived")
+        self.assertIsNotNone(response.data["archived_at"])
+
+    def test_outsourced_driver_list_hides_archived_items_by_default(self):
+        models_module = _load_models_module(self)
+        self._authenticate(self.admin_token)
+        dispatch_plan = models_module.DispatchPlan.objects.create(
+            company_id=UUID("30000000-0000-0000-0000-000000000001"),
+            fleet_id=UUID("40000000-0000-0000-0000-000000000001"),
+            dispatch_date=date(2026, 3, 24),
+            planned_volume=120,
+            dispatch_status=models_module.DispatchPlan.DispatchStatus.DRAFT,
+        )
+        active_driver = models_module.OutsourcedDriver.objects.create(
+            dispatch_plan=dispatch_plan,
+            name="활성 용차",
+            contact_number="010-9999-8888",
+            vehicle_note="1톤 카고",
+            memo="월말 정산 대상",
+        )
+        archived_driver = models_module.OutsourcedDriver.objects.create(
+            dispatch_plan=dispatch_plan,
+            name="아카이브 용차",
+            contact_number="010-7777-6666",
+            vehicle_note="2.5톤 윙바디",
+            memo="보존 대상",
+            status="archived",
+            archived_at=datetime(2026, 3, 24, 20, 0, tzinfo=timezone.utc),
+        )
+
+        active_response = self.client.get(
+            "/outsourced-drivers/",
+            {"fleet_id": "40000000-0000-0000-0000-000000000001", "dispatch_date": "2026-03-24"},
+        )
+        archived_response = self.client.get(
+            "/outsourced-drivers/",
+            {
+                "fleet_id": "40000000-0000-0000-0000-000000000001",
+                "dispatch_date": "2026-03-24",
+                "status": "archived",
+            },
+        )
+
+        self.assertEqual(active_response.status_code, 200)
+        self.assertEqual(
+            [item["outsourced_driver_id"] for item in active_response.data],
+            [str(active_driver.outsourced_driver_id)],
+        )
+        self.assertEqual(archived_response.status_code, 200)
+        self.assertEqual(
+            [item["outsourced_driver_id"] for item in archived_response.data],
+            [str(archived_driver.outsourced_driver_id)],
+        )
 
     def test_authenticated_user_can_read_but_cannot_write(self):
         self._authenticate(self.user_token)

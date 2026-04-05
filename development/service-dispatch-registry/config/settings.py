@@ -109,3 +109,7 @@ DRIVER_PROFILE_BASE_URL = os.environ.get(
     "DRIVER_PROFILE_BASE_URL",
     "http://driver-profile-api:8000",
 )
+DELIVERY_RECORD_BASE_URL = os.environ.get(
+    "DELIVERY_RECORD_BASE_URL",
+    "http://delivery-record-api:8000",
+)

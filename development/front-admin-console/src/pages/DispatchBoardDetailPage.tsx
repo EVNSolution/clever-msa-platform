@@ -6,6 +6,7 @@ import {
   createDriverDayException,
   createDispatchWorkRule,
   createOutsourcedDriver,
+  archiveOutsourcedDriver,
   listDriverDayExceptions,
   listDispatchPlans,
   listDispatchWorkRules,
@@ -14,7 +15,6 @@ import {
   listVehicleSchedules,
   removeDriverDayException,
   removeDispatchWorkRule,
-  removeOutsourcedDriver,
   updateOutsourcedDriver,
   updateDispatchWorkRule,
   updateDispatchAssignment,
@@ -451,11 +451,11 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
     }
   }
 
-  async function handleRemoveOutsourcedDriver(outsourcedDriverId: string) {
+  async function handleArchiveOutsourcedDriver(outsourcedDriverId: string) {
     setIsSaving(true);
     setErrorMessage(null);
     try {
-      await removeOutsourcedDriver(client, outsourcedDriverId);
+      await archiveOutsourcedDriver(client, outsourcedDriverId);
       await reloadBoard();
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
@@ -907,14 +907,19 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
                       </button>
                       <button
                         className="button ghost small"
-                        disabled={isSaving}
-                        onClick={() => void handleRemoveOutsourcedDriver(outsourcedDriver.outsourced_driver_id)}
+                        disabled={isSaving || !(outsourcedDriver.is_archivable ?? false)}
+                        onClick={() => void handleArchiveOutsourcedDriver(outsourcedDriver.outsourced_driver_id)}
                         type="button"
                       >
-                        용차 기사 삭제
+                        용차 기사 아카이브
                       </button>
                     </div>
                   </div>
+                  <p>
+                    {outsourcedDriver.is_archivable
+                      ? '정산 입력 스냅샷 완료 · 아카이브 가능'
+                      : '정산 입력 스냅샷 후 아카이브 가능'}
+                  </p>
                   {outsourcedDriver.vehicle_note ? <p>차량/차종: {outsourcedDriver.vehicle_note}</p> : null}
                   {outsourcedDriver.memo ? <p>메모: {outsourcedDriver.memo}</p> : null}
                   {editingOutsourcedDriverId === outsourcedDriver.outsourced_driver_id ? (

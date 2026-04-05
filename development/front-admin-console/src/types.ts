@@ -151,6 +151,9 @@ export type OutsourcedDriver = {
   contact_number: string;
   vehicle_note: string;
   memo: string;
+  status?: 'active' | 'archived';
+  archived_at?: string | null;
+  is_archivable?: boolean;
   created_at: string;
   updated_at: string;
 };

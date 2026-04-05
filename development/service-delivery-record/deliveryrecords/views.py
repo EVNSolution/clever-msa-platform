@@ -100,9 +100,18 @@ class DailyDeliveryInputSnapshotViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        company_id = self.request.query_params.get("company_id")
+        fleet_id = self.request.query_params.get("fleet_id")
+        service_date = self.request.query_params.get("service_date")
         driver_id = self.request.query_params.get("driver_id")
         status = self.request.query_params.get("status")
 
+        if company_id:
+            queryset = queryset.filter(company_id=_parse_uuid_filter(company_id, field_name="company_id"))
+        if fleet_id:
+            queryset = queryset.filter(fleet_id=_parse_uuid_filter(fleet_id, field_name="fleet_id"))
+        if service_date:
+            queryset = queryset.filter(service_date=service_date)
         if driver_id:
             queryset = queryset.filter(driver_id=_parse_uuid_filter(driver_id, field_name="driver_id"))
         if status:

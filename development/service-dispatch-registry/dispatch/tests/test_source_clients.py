@@ -66,3 +66,23 @@ class DispatchSourceClientTests(SimpleTestCase):
         with self.assertRaises(SourceNotFoundError):
             SourceClients().get_vehicle(vehicle_id="v1", authorization="Bearer token")
 
+    @patch("dispatch.services.source_clients.urlopen")
+    def test_list_daily_delivery_input_snapshots_returns_list(self, mocked_urlopen):
+        from dispatch.services.source_clients import SourceClients
+
+        response = MagicMock()
+        response.__enter__.return_value.read.return_value = (
+            b'[{"daily_delivery_input_snapshot_id":"s1","status":"active"}]'
+        )
+        mocked_urlopen.return_value = response
+
+        payload = SourceClients().list_daily_delivery_input_snapshots(
+            company_id="c1",
+            fleet_id="f1",
+            service_date="2026-03-24",
+            status="active",
+            authorization="Bearer token",
+        )
+
+        self.assertEqual(len(payload), 1)
+        self.assertEqual(payload[0]["daily_delivery_input_snapshot_id"], "s1")

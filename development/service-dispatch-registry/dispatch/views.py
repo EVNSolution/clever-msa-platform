@@ -7,7 +7,7 @@ except ModuleNotFoundError:
 
         return decorator
 
-from django.db.models import Count, ProtectedError
+from django.db.models import Count
 from rest_framework import generics, mixins, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -20,6 +20,10 @@ from dispatch.models import (
     DriverDayException,
     OutsourcedDriver,
     VehicleSchedule,
+)
+from dispatch.services.outsourced_driver_lifecycle_service import (
+    OutsourcedDriverArchiveBlockedError,
+    OutsourcedDriverLifecycleService,
 )
 from dispatch.permissions import AuthenticatedReadAdminWrite
 from dispatch.serializers import (
@@ -173,6 +177,7 @@ class OutsourcedDriverListCreateView(generics.ListCreateAPIView):
         company_id = self.request.query_params.get("company_id")
         fleet_id = self.request.query_params.get("fleet_id")
         dispatch_date = self.request.query_params.get("dispatch_date")
+        status_param = self.request.query_params.get("status", OutsourcedDriver.Status.ACTIVE)
         if dispatch_plan_id:
             queryset = queryset.filter(dispatch_plan_id=dispatch_plan_id)
         if company_id:
@@ -181,20 +186,26 @@ class OutsourcedDriverListCreateView(generics.ListCreateAPIView):
             queryset = queryset.filter(dispatch_plan__fleet_id=fleet_id)
         if dispatch_date:
             queryset = queryset.filter(dispatch_plan__dispatch_date=dispatch_date)
+        valid_statuses = {choice for choice, _ in OutsourcedDriver.Status.choices}
+        if status_param:
+            if status_param not in valid_statuses:
+                from rest_framework.exceptions import ValidationError
+
+                raise ValidationError({"status": [f"Must be one of: {', '.join(sorted(valid_statuses))}."]})
+            queryset = queryset.filter(status=status_param)
         return queryset
 
 
 class OutsourcedDriverDetailView(
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
     generics.GenericAPIView,
 ):
     queryset = OutsourcedDriver.objects.select_related("dispatch_plan").all()
     serializer_class = OutsourcedDriverSerializer
     lookup_field = "outsourced_driver_id"
     permission_classes = [AuthenticatedReadAdminWrite]
-    http_method_names = ["get", "patch", "delete", "options", "head"]
+    http_method_names = ["get", "patch", "options", "head"]
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
@@ -202,18 +213,31 @@ class OutsourcedDriverDetailView(
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
 
-    def delete(self, request, *args, **kwargs):
+class OutsourcedDriverArchiveView(APIView):
+    permission_classes = [AuthenticatedReadAdminWrite]
+
+    def post(self, request, outsourced_driver_id):
+        outsourced_driver = generics.get_object_or_404(
+            OutsourcedDriver.objects.select_related("dispatch_plan"),
+            outsourced_driver_id=outsourced_driver_id,
+        )
         try:
-            return self.destroy(request, *args, **kwargs)
-        except ProtectedError:
+            outsourced_driver = OutsourcedDriverLifecycleService().archive(
+                outsourced_driver,
+                authorization=request.headers.get("Authorization", ""),
+            )
+        except OutsourcedDriverArchiveBlockedError:
             return Response(
                 {
-                    "code": "outsourced_driver_in_use",
-                    "message": "Referenced outsourced driver cannot be deleted.",
+                    "code": "outsourced_driver_archive_requires_daily_input_snapshot",
+                    "message": "Daily settlement input snapshot is required before archiving an outsourced driver.",
                     "details": {},
                 },
                 status=status.HTTP_409_CONFLICT,
             )
+
+        serializer = OutsourcedDriverSerializer(outsourced_driver, context={"request": request})
+        return Response(serializer.data)
 
 
 class DispatchWorkRuleListCreateView(generics.ListCreateAPIView):
