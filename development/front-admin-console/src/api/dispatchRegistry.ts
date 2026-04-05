@@ -1,4 +1,11 @@
-import type { DispatchAssignment, DispatchPlan, OutsourcedDriver, VehicleSchedule } from '../types';
+import type {
+  DispatchAssignment,
+  DispatchPlan,
+  DispatchWorkRule,
+  DriverDayException,
+  OutsourcedDriver,
+  VehicleSchedule,
+} from '../types';
 import type { HttpClient } from './http';
 
 export type DispatchPlanPayload = Pick<
@@ -29,6 +36,17 @@ export type OutsourcedDriverPayload = Pick<
   OutsourcedDriver,
   'dispatch_plan_id' | 'name' | 'contact_number' | 'vehicle_note' | 'memo'
 >;
+
+export type DispatchWorkRulePayload = Pick<DispatchWorkRule, 'company_id' | 'name' | 'system_kind'>;
+
+export type DriverDayExceptionPayload = {
+  company_id: string;
+  fleet_id: string;
+  dispatch_date: string;
+  driver_id: string;
+  work_rule_id: string;
+  memo: string;
+};
 
 export function listDispatchPlans(
   client: HttpClient,
@@ -108,6 +126,71 @@ export function listOutsourcedDrivers(
   const queryString = query.toString();
   const path = queryString ? `/dispatch/outsourced-drivers/?${queryString}` : '/dispatch/outsourced-drivers/';
   return client.request<OutsourcedDriver[]>(path);
+}
+
+export function listDispatchWorkRules(
+  client: HttpClient,
+  filters?: Partial<Pick<DispatchWorkRule, 'company_id' | 'system_kind'>>,
+) {
+  const query = new URLSearchParams();
+  if (filters?.company_id) {
+    query.set('company_id', filters.company_id);
+  }
+  if (filters?.system_kind) {
+    query.set('system_kind', filters.system_kind);
+  }
+  const queryString = query.toString();
+  const path = queryString ? `/dispatch/work-rules/?${queryString}` : '/dispatch/work-rules/';
+  return client.request<DispatchWorkRule[]>(path);
+}
+
+export function createDispatchWorkRule(client: HttpClient, payload: DispatchWorkRulePayload) {
+  return client.request<DispatchWorkRule>('/dispatch/work-rules/', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function listDriverDayExceptions(
+  client: HttpClient,
+  filters?: Partial<Pick<DriverDayException, 'company_id' | 'fleet_id' | 'dispatch_date' | 'driver_id'>> & {
+    work_rule_id?: string;
+  },
+) {
+  const query = new URLSearchParams();
+  if (filters?.company_id) {
+    query.set('company_id', filters.company_id);
+  }
+  if (filters?.fleet_id) {
+    query.set('fleet_id', filters.fleet_id);
+  }
+  if (filters?.dispatch_date) {
+    query.set('dispatch_date', filters.dispatch_date);
+  }
+  if (filters?.driver_id) {
+    query.set('driver_id', filters.driver_id);
+  }
+  if (filters?.work_rule_id) {
+    query.set('work_rule_id', filters.work_rule_id);
+  }
+  const queryString = query.toString();
+  const path = queryString
+    ? `/dispatch/driver-day-exceptions/?${queryString}`
+    : '/dispatch/driver-day-exceptions/';
+  return client.request<DriverDayException[]>(path);
+}
+
+export function createDriverDayException(client: HttpClient, payload: DriverDayExceptionPayload) {
+  return client.request<DriverDayException>('/dispatch/driver-day-exceptions/', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function removeDriverDayException(client: HttpClient, driverDayExceptionId: string) {
+  return client.request<void>(`/dispatch/driver-day-exceptions/${driverDayExceptionId}/`, {
+    method: 'DELETE',
+  });
 }
 
 export function createOutsourcedDriver(client: HttpClient, payload: OutsourcedDriverPayload) {

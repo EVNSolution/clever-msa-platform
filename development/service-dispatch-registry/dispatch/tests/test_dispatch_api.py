@@ -84,6 +84,23 @@ class DispatchApiTests(TestCase):
             "memo": "월말 정산 대상",
         }
 
+    def _work_rule_payload(self, company_id: str):
+        return {
+            "company_id": company_id,
+            "name": "주말 특근",
+            "system_kind": "overtime",
+        }
+
+    def _driver_day_exception_payload(self, *, company_id: str, fleet_id: str, work_rule_id: str):
+        return {
+            "company_id": company_id,
+            "fleet_id": fleet_id,
+            "dispatch_date": "2026-03-24",
+            "driver_id": "10000000-0000-0000-0000-000000000001",
+            "work_rule_id": work_rule_id,
+            "memo": "긴급 물량 대응",
+        }
+
     def test_health_endpoint_returns_ok(self):
         response = self.client.get("/health/")
 
@@ -206,6 +223,87 @@ class DispatchApiTests(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]["name"], "외부 기사")
         self.assertEqual(response.data[0]["dispatch_plan_id"], str(matching_plan.dispatch_plan_id))
+
+    def test_admin_can_create_and_filter_work_rules(self):
+        models_module = _load_models_module(self)
+        self._authenticate(self.admin_token)
+        models_module.DispatchPlan.objects.create(
+            company_id=UUID("30000000-0000-0000-0000-000000000001"),
+            fleet_id=UUID("40000000-0000-0000-0000-000000000001"),
+            dispatch_date=date(2026, 3, 24),
+            planned_volume=120,
+            dispatch_status=models_module.DispatchPlan.DispatchStatus.DRAFT,
+        )
+
+        create_response = self.client.post(
+            "/work-rules/",
+            self._work_rule_payload("30000000-0000-0000-0000-000000000001"),
+            format="json",
+        )
+
+        self.assertEqual(create_response.status_code, 201)
+
+        self.client.post(
+            "/work-rules/",
+            {
+                "company_id": "30000000-0000-0000-0000-000000000002",
+                "name": "타회사 휴무",
+                "system_kind": "day_off",
+            },
+            format="json",
+        )
+
+        response = self.client.get(
+            "/work-rules/",
+            {"company_id": "30000000-0000-0000-0000-000000000001"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["name"], "주말 특근")
+        self.assertEqual(response.data[0]["system_kind"], "overtime")
+
+    def test_admin_can_create_and_filter_driver_day_exceptions(self):
+        models_module = _load_models_module(self)
+        self._authenticate(self.admin_token)
+        work_rule = models_module.DispatchWorkRule.objects.create(
+            company_id=UUID("30000000-0000-0000-0000-000000000001"),
+            name="주말 특근",
+            system_kind=models_module.DispatchWorkRule.SystemKind.OVERTIME,
+        )
+
+        with patch(
+            "dispatch.services.source_clients.SourceClients.get_driver",
+            return_value={
+                "driver_id": "10000000-0000-0000-0000-000000000001",
+                "company_id": "30000000-0000-0000-0000-000000000001",
+                "fleet_id": "40000000-0000-0000-0000-000000000001",
+            },
+        ):
+            create_response = self.client.post(
+                "/driver-day-exceptions/",
+                self._driver_day_exception_payload(
+                    company_id="30000000-0000-0000-0000-000000000001",
+                    fleet_id="40000000-0000-0000-0000-000000000001",
+                    work_rule_id=str(work_rule.work_rule_id),
+                ),
+                format="json",
+            )
+
+        self.assertEqual(create_response.status_code, 201)
+
+        response = self.client.get(
+            "/driver-day-exceptions/",
+            {
+                "fleet_id": "40000000-0000-0000-0000-000000000001",
+                "dispatch_date": "2026-03-24",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["driver_id"], "10000000-0000-0000-0000-000000000001")
+        self.assertEqual(response.data[0]["work_rule"]["system_kind"], "overtime")
 
     def test_admin_can_create_dispatch_assignment_with_outsourced_driver(self):
         models_module = _load_models_module(self)

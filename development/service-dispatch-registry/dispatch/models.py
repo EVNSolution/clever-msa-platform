@@ -83,6 +83,62 @@ class OutsourcedDriver(models.Model):
         ordering = ("outsourced_driver_id",)
 
 
+class DispatchWorkRule(models.Model):
+    class SystemKind(models.TextChoices):
+        WORKING = "working", "working"
+        DAY_OFF = "day_off", "day_off"
+        OVERTIME = "overtime", "overtime"
+
+    work_rule_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    company_id = models.UUIDField()
+    name = models.CharField(max_length=120)
+    system_kind = models.CharField(max_length=32, choices=SystemKind.choices)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("work_rule_id",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=("company_id", "name"),
+                name="unique_dispatch_work_rule_name_per_company",
+            )
+        ]
+
+
+class DriverDayException(models.Model):
+    driver_day_exception_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    company_id = models.UUIDField()
+    fleet_id = models.UUIDField()
+    dispatch_date = models.DateField()
+    driver_id = models.UUIDField()
+    work_rule = models.ForeignKey(
+        DispatchWorkRule,
+        on_delete=models.PROTECT,
+        related_name="driver_day_exceptions",
+        db_column="work_rule_id",
+    )
+    memo = models.TextField(blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("driver_day_exception_id",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=("driver_id", "dispatch_date"),
+                name="unique_driver_day_exception_per_driver_date",
+            )
+        ]
+
+    def clean(self):
+        errors = {}
+        if self.work_rule_id and self.company_id != self.work_rule.company_id:
+            errors["work_rule_id"] = "work_rule company must match company_id."
+        if errors:
+            raise ValidationError(errors)
+
+
 class DispatchAssignment(models.Model):
     class AssignmentStatus(models.TextChoices):
         ASSIGNED = "assigned", "assigned"

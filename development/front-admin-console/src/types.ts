@@ -119,6 +119,27 @@ export type DispatchPlan = {
   updated_at: string;
 };
 
+export type DispatchWorkRule = {
+  work_rule_id: string;
+  company_id: string;
+  name: string;
+  system_kind: 'working' | 'day_off' | 'overtime';
+  created_at: string;
+  updated_at: string;
+};
+
+export type DriverDayException = {
+  driver_day_exception_id: string;
+  company_id: string;
+  fleet_id: string;
+  dispatch_date: string;
+  driver_id: string;
+  work_rule: DispatchWorkRule;
+  memo: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type OutsourcedDriver = {
   outsourced_driver_id: string;
   dispatch_plan_id: string;

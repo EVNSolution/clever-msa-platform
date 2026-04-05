@@ -1,7 +1,16 @@
 from rest_framework import serializers
 
-from dispatch.models import DispatchAssignment, DispatchPlan, OutsourcedDriver, VehicleSchedule
+from dispatch.exceptions import ServiceUnavailableError
+from dispatch.models import (
+    DispatchAssignment,
+    DispatchPlan,
+    DispatchWorkRule,
+    DriverDayException,
+    OutsourcedDriver,
+    VehicleSchedule,
+)
 from dispatch.services.dispatch_rule_service import DispatchRuleService, DispatchRuleViolation
+from dispatch.services.source_clients import SourceClients, SourceNotFoundError, SourceServiceError
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
@@ -201,6 +210,94 @@ class OutsourcedDriverSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         try:
             return _validate_model_instance(OutsourcedDriver, attrs, instance=self.instance)
+        except Exception as exc:
+            from django.core.exceptions import ValidationError as DjangoValidationError
+
+            if isinstance(exc, DjangoValidationError):
+                raise serializers.ValidationError(exc.message_dict) from exc
+            raise
+
+
+class DispatchWorkRuleSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(format=DATETIME_FORMAT, read_only=True)
+    updated_at = serializers.DateTimeField(format=DATETIME_FORMAT, read_only=True)
+
+    class Meta:
+        model = DispatchWorkRule
+        fields = (
+            "work_rule_id",
+            "company_id",
+            "name",
+            "system_kind",
+            "created_at",
+            "updated_at",
+        )
+
+    def validate(self, attrs):
+        try:
+            return _validate_model_instance(DispatchWorkRule, attrs, instance=self.instance)
+        except Exception as exc:
+            from django.core.exceptions import ValidationError as DjangoValidationError
+
+            if isinstance(exc, DjangoValidationError):
+                raise serializers.ValidationError(exc.message_dict) from exc
+            raise
+
+
+class DriverDayExceptionSerializer(serializers.ModelSerializer):
+    work_rule_id = serializers.PrimaryKeyRelatedField(
+        queryset=DispatchWorkRule.objects.all(),
+        source="work_rule",
+        write_only=True,
+    )
+    work_rule = DispatchWorkRuleSerializer(read_only=True)
+    created_at = serializers.DateTimeField(format=DATETIME_FORMAT, read_only=True)
+    updated_at = serializers.DateTimeField(format=DATETIME_FORMAT, read_only=True)
+
+    class Meta:
+        model = DriverDayException
+        fields = (
+            "driver_day_exception_id",
+            "company_id",
+            "fleet_id",
+            "dispatch_date",
+            "driver_id",
+            "work_rule_id",
+            "work_rule",
+            "memo",
+            "created_at",
+            "updated_at",
+        )
+
+    def validate(self, attrs):
+        request = self.context.get("request")
+        authorization = request.headers.get("Authorization", "") if request else ""
+        source_clients = SourceClients()
+        company_id = str(attrs.get("company_id") or getattr(self.instance, "company_id", ""))
+        fleet_id = str(attrs.get("fleet_id") or getattr(self.instance, "fleet_id", ""))
+        driver_id = str(attrs.get("driver_id") or getattr(self.instance, "driver_id", ""))
+        work_rule = attrs.get("work_rule") or getattr(self.instance, "work_rule", None)
+
+        try:
+            if work_rule is None:
+                raise serializers.ValidationError({"work_rule_id": ["work_rule_id is required."]})
+            driver = source_clients.get_driver(driver_id=driver_id, authorization=authorization)
+        except SourceNotFoundError as exc:
+            raise serializers.ValidationError({"driver_id": ["Unknown driver_id."]}) from exc
+        except SourceServiceError as exc:
+            raise ServiceUnavailableError("Driver day exception validation is unavailable.") from exc
+
+        if str(driver.get("company_id", "")) != company_id:
+            raise serializers.ValidationError(
+                {"company_id": ["company_id must match the driver company."]}
+            )
+        if str(driver.get("fleet_id", "")) != fleet_id:
+            raise serializers.ValidationError(
+                {"fleet_id": ["fleet_id must match the driver fleet."]}
+            )
+
+        try:
+            return _validate_model_instance(DriverDayException, attrs, instance=self.instance)
         except Exception as exc:
             from django.core.exceptions import ValidationError as DjangoValidationError
 

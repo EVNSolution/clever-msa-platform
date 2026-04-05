@@ -3,11 +3,16 @@ import { Link, useParams } from 'react-router-dom';
 
 import {
   createDispatchAssignment,
+  createDriverDayException,
+  createDispatchWorkRule,
   createOutsourcedDriver,
+  listDriverDayExceptions,
   listDispatchPlans,
+  listDispatchWorkRules,
   listOutsourcedDrivers,
   createVehicleSchedule,
   listVehicleSchedules,
+  removeDriverDayException,
   removeOutsourcedDriver,
   updateDispatchAssignment,
 } from '../api/dispatchRegistry';
@@ -22,6 +27,8 @@ import type {
   DispatchBoardRow,
   DispatchBoardSummary,
   DispatchPlan,
+  DispatchWorkRule,
+  DriverDayException,
   DriverProfile,
   OutsourcedDriver,
   Fleet,
@@ -37,6 +44,19 @@ function createTimestamp() {
   return new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
 }
 
+function formatWorkRuleKindLabel(systemKind: DispatchWorkRule['system_kind']) {
+  switch (systemKind) {
+    case 'working':
+      return '출근';
+    case 'day_off':
+      return '휴무';
+    case 'overtime':
+      return '특근';
+    default:
+      return systemKind;
+  }
+}
+
 export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps) {
   const { dispatchDate, fleetRef } = useParams();
   const [summary, setSummary] = useState<DispatchBoardSummary | null>(null);
@@ -48,6 +68,8 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
   const [vehicles, setVehicles] = useState<VehicleMaster[]>([]);
   const [drivers, setDrivers] = useState<DriverProfile[]>([]);
   const [outsourcedDrivers, setOutsourcedDrivers] = useState<OutsourcedDriver[]>([]);
+  const [workRules, setWorkRules] = useState<DispatchWorkRule[]>([]);
+  const [driverDayExceptions, setDriverDayExceptions] = useState<DriverDayException[]>([]);
   const [newScheduleVehicleId, setNewScheduleVehicleId] = useState('');
   const [newScheduleShiftSlot, setNewScheduleShiftSlot] = useState('A');
   const [newAssignmentScheduleId, setNewAssignmentScheduleId] = useState('');
@@ -58,6 +80,11 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
   const [newOutsourcedDriverContactNumber, setNewOutsourcedDriverContactNumber] = useState('');
   const [newOutsourcedDriverVehicleNote, setNewOutsourcedDriverVehicleNote] = useState('');
   const [newOutsourcedDriverMemo, setNewOutsourcedDriverMemo] = useState('');
+  const [newWorkRuleName, setNewWorkRuleName] = useState('');
+  const [newWorkRuleSystemKind, setNewWorkRuleSystemKind] = useState<DispatchWorkRule['system_kind']>('overtime');
+  const [newExceptionDriverId, setNewExceptionDriverId] = useState('');
+  const [newExceptionWorkRuleId, setNewExceptionWorkRuleId] = useState('');
+  const [newExceptionMemo, setNewExceptionMemo] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -88,6 +115,8 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
           scheduleResponse,
           vehicleResponse,
           driverResponse,
+          workRuleResponse,
+          driverDayExceptionResponse,
           outsourcedDriverResponse,
         ] = await Promise.all([
           getDispatchSummary(client, selectedDispatchDate, fleetResponse.fleet_id),
@@ -102,6 +131,12 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
           }),
           listVehicleMasters(client),
           listDrivers(client),
+          listDispatchWorkRules(client, { company_id: fleetResponse.company_id }),
+          listDriverDayExceptions(client, {
+            company_id: fleetResponse.company_id,
+            fleet_id: fleetResponse.fleet_id,
+            dispatch_date: selectedDispatchDate,
+          }),
           listOutsourcedDrivers(client, {
             fleet_id: fleetResponse.fleet_id,
             dispatch_date: selectedDispatchDate,
@@ -118,10 +153,14 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
         setVehicleSchedules(scheduleResponse);
         setVehicles(vehicleResponse);
         setDrivers(driverResponse);
+        setWorkRules(workRuleResponse);
+        setDriverDayExceptions(driverDayExceptionResponse);
         setOutsourcedDrivers(outsourcedDriverResponse);
         setNewScheduleVehicleId(vehicleResponse[0]?.vehicle_id ?? '');
         setNewAssignmentScheduleId(scheduleResponse[0]?.vehicle_schedule_id ?? '');
         setNewAssignmentDriverId(driverResponse[0]?.driver_id ?? '');
+        setNewExceptionDriverId(driverResponse[0]?.driver_id ?? '');
+        setNewExceptionWorkRuleId(workRuleResponse[0]?.work_rule_id ?? '');
         setNewAssignmentOutsourcedDriverId(outsourcedDriverResponse[0]?.outsourced_driver_id ?? '');
       } catch (error) {
         if (!ignore) {
@@ -149,25 +188,46 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
     [vehicles],
   );
   const driverMap = useMemo(() => new Map(drivers.map((driver) => [driver.driver_id, driver])), [drivers]);
+  const driverDayExceptionMap = useMemo(
+    () => new Map(driverDayExceptions.map((exception) => [exception.driver_id, exception])),
+    [driverDayExceptions],
+  );
 
   async function reloadBoard() {
     if (!fleet || !dispatchDate) {
       return;
     }
 
-    const [summaryResponse, boardResponse, planResponse, scheduleResponse, outsourcedDriverResponse] = await Promise.all([
+    const [
+      summaryResponse,
+      boardResponse,
+      planResponse,
+      scheduleResponse,
+      workRuleResponse,
+      driverDayExceptionResponse,
+      outsourcedDriverResponse,
+    ] = await Promise.all([
       getDispatchSummary(client, dispatchDate, fleet.fleet_id),
       getDispatchBoard(client, dispatchDate, fleet.fleet_id),
       listDispatchPlans(client, { fleet_id: fleet.fleet_id, dispatch_date: dispatchDate }),
       listVehicleSchedules(client, { fleet_id: fleet.fleet_id, dispatch_date: dispatchDate }),
+      listDispatchWorkRules(client, { company_id: fleet.company_id }),
+      listDriverDayExceptions(client, {
+        company_id: fleet.company_id,
+        fleet_id: fleet.fleet_id,
+        dispatch_date: dispatchDate,
+      }),
       listOutsourcedDrivers(client, { fleet_id: fleet.fleet_id, dispatch_date: dispatchDate }),
     ]);
     setSummary(summaryResponse);
     setBoardRows(boardResponse);
     setDispatchPlan(planResponse[0] ?? null);
     setVehicleSchedules(scheduleResponse);
+    setWorkRules(workRuleResponse);
+    setDriverDayExceptions(driverDayExceptionResponse);
     setOutsourcedDrivers(outsourcedDriverResponse);
     setNewAssignmentScheduleId(scheduleResponse[0]?.vehicle_schedule_id ?? '');
+    setNewExceptionWorkRuleId(workRuleResponse[0]?.work_rule_id ?? '');
     setNewAssignmentOutsourcedDriverId(outsourcedDriverResponse[0]?.outsourced_driver_id ?? '');
   }
 
@@ -255,6 +315,66 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
       setNewOutsourcedDriverContactNumber('');
       setNewOutsourcedDriverVehicleNote('');
       setNewOutsourcedDriverMemo('');
+      await reloadBoard();
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleCreateWorkRule(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!fleet || !newWorkRuleName) {
+      return;
+    }
+    setIsSaving(true);
+    setErrorMessage(null);
+    try {
+      await createDispatchWorkRule(client, {
+        company_id: fleet.company_id,
+        name: newWorkRuleName,
+        system_kind: newWorkRuleSystemKind,
+      });
+      setNewWorkRuleName('');
+      await reloadBoard();
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleCreateDriverDayException(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!fleet || !dispatchDate || !newExceptionDriverId || !newExceptionWorkRuleId) {
+      return;
+    }
+    setIsSaving(true);
+    setErrorMessage(null);
+    try {
+      await createDriverDayException(client, {
+        company_id: fleet.company_id,
+        fleet_id: fleet.fleet_id,
+        dispatch_date: dispatchDate,
+        driver_id: newExceptionDriverId,
+        work_rule_id: newExceptionWorkRuleId,
+        memo: newExceptionMemo,
+      });
+      setNewExceptionMemo('');
+      await reloadBoard();
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleRemoveDriverDayException(driverDayExceptionId: string) {
+    setIsSaving(true);
+    setErrorMessage(null);
+    try {
+      await removeDriverDayException(client, driverDayExceptionId);
       await reloadBoard();
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
@@ -363,6 +483,10 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
               {boardRows.map((row) => {
                 const vehicle = row.vehicle_id ? vehicleMap.get(row.vehicle_id) : null;
                 const driver = row.planned_driver_id ? driverMap.get(row.planned_driver_id) : null;
+                const dayException =
+                  row.planned_driver_kind === 'internal' && row.planned_driver_id
+                    ? driverDayExceptionMap.get(row.planned_driver_id)
+                    : undefined;
                 const plannedDriverLabel =
                   row.planned_driver_kind === 'outsourced'
                     ? `용차 · ${row.planned_driver_name ?? '미배정'}`
@@ -383,6 +507,11 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
                     <td>
                       <div className="stack tight">
                         <span>{plannedDriverLabel}</span>
+                        {dayException ? (
+                          <span className="status-badge">
+                            {dayException.work_rule.name} · {formatWorkRuleKindLabel(dayException.work_rule.system_kind)}
+                          </span>
+                        ) : null}
                         {row.planned_driver_kind === 'internal' && driver?.route_no != null ? (
                           <Link className="inline-link" to={`/drivers/${getDriverRouteRef(driver)}`}>
                             배송원 관리로 이동
@@ -445,6 +574,124 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
               </button>
             </div>
           </form>
+        </section>
+
+        <section className="panel form-panel">
+          <div className="panel-header">
+            <p className="panel-kicker">근무 규칙</p>
+            <h2>회사 규칙 생성</h2>
+          </div>
+          <form className="form-stack" onSubmit={handleCreateWorkRule}>
+            <label className="field">
+              <span>근무 규칙 이름</span>
+              <input onChange={(event) => setNewWorkRuleName(event.target.value)} value={newWorkRuleName} />
+            </label>
+            <label className="field">
+              <span>근무 의미</span>
+              <select
+                aria-label="근무 의미"
+                onChange={(event) => setNewWorkRuleSystemKind(event.target.value as DispatchWorkRule['system_kind'])}
+                value={newWorkRuleSystemKind}
+              >
+                <option value="working">출근</option>
+                <option value="day_off">휴무</option>
+                <option value="overtime">특근</option>
+              </select>
+            </label>
+            <div className="form-actions">
+              <button className="button primary" disabled={isSaving || !fleet || !newWorkRuleName} type="submit">
+                근무 규칙 추가
+              </button>
+            </div>
+          </form>
+          <div className="stack tight">
+            {workRules.length ? (
+              workRules.map((workRule) => (
+                <div className="list-card" key={workRule.work_rule_id}>
+                  <div className="list-card-header">
+                    <div>
+                      <h3>{workRule.name}</h3>
+                      <p>{formatWorkRuleKindLabel(workRule.system_kind)}</p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="empty-state">등록된 회사 근무 규칙이 없습니다.</p>
+            )}
+          </div>
+        </section>
+
+        <section className="panel form-panel">
+          <div className="panel-header">
+            <p className="panel-kicker">날짜 예외</p>
+            <h2>기사 근무 예외 입력</h2>
+          </div>
+          <p className="helper-text">일반 휴무는 따로 저장하지 않고, 예외가 있을 때만 입력합니다.</p>
+          <form className="form-stack" onSubmit={handleCreateDriverDayException}>
+            <label className="field">
+              <span>예외 배송원</span>
+              <select onChange={(event) => setNewExceptionDriverId(event.target.value)} value={newExceptionDriverId}>
+                <option value="">배송원 선택</option>
+                {drivers.map((driver) => (
+                  <option key={driver.driver_id} value={driver.driver_id}>
+                    {driver.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>적용 규칙</span>
+              <select onChange={(event) => setNewExceptionWorkRuleId(event.target.value)} value={newExceptionWorkRuleId}>
+                <option value="">규칙 선택</option>
+                {workRules.map((workRule) => (
+                  <option key={workRule.work_rule_id} value={workRule.work_rule_id}>
+                    {workRule.name} · {formatWorkRuleKindLabel(workRule.system_kind)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>예외 메모</span>
+              <textarea onChange={(event) => setNewExceptionMemo(event.target.value)} value={newExceptionMemo} />
+            </label>
+            <div className="form-actions">
+              <button
+                className="button primary"
+                disabled={isSaving || !newExceptionDriverId || !newExceptionWorkRuleId}
+                type="submit"
+              >
+                날짜 예외 추가
+              </button>
+            </div>
+          </form>
+          <div className="stack tight">
+            {driverDayExceptions.length ? (
+              driverDayExceptions.map((exception) => (
+                <div className="list-card" key={exception.driver_day_exception_id}>
+                  <div className="list-card-header">
+                    <div>
+                      <h3>{driverMap.get(exception.driver_id)?.name ?? exception.driver_id}</h3>
+                      <p>
+                        {exception.work_rule.name} · {formatWorkRuleKindLabel(exception.work_rule.system_kind)}
+                      </p>
+                    </div>
+                    <button
+                      className="button ghost small"
+                      disabled={isSaving}
+                      onClick={() => void handleRemoveDriverDayException(exception.driver_day_exception_id)}
+                      type="button"
+                    >
+                      날짜 예외 삭제
+                    </button>
+                  </div>
+                  {exception.memo ? <p>{exception.memo}</p> : null}
+                </div>
+              ))
+            ) : (
+              <p className="empty-state">등록된 날짜 예외가 없습니다.</p>
+            )}
+          </div>
         </section>
 
         <section className="panel form-panel">

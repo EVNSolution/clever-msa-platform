@@ -13,11 +13,20 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from dispatch.models import DispatchAssignment, DispatchPlan, OutsourcedDriver, VehicleSchedule
+from dispatch.models import (
+    DispatchAssignment,
+    DispatchPlan,
+    DispatchWorkRule,
+    DriverDayException,
+    OutsourcedDriver,
+    VehicleSchedule,
+)
 from dispatch.permissions import AuthenticatedReadAdminWrite
 from dispatch.serializers import (
     DispatchAssignmentSerializer,
     DispatchPlanSerializer,
+    DispatchWorkRuleSerializer,
+    DriverDayExceptionSerializer,
     HealthSerializer,
     OutsourcedDriverSerializer,
     VehicleScheduleSerializer,
@@ -205,3 +214,98 @@ class OutsourcedDriverDetailView(
                 },
                 status=status.HTTP_409_CONFLICT,
             )
+
+
+class DispatchWorkRuleListCreateView(generics.ListCreateAPIView):
+    queryset = DispatchWorkRule.objects.all()
+    serializer_class = DispatchWorkRuleSerializer
+    permission_classes = [AuthenticatedReadAdminWrite]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        company_id = self.request.query_params.get("company_id")
+        system_kind = self.request.query_params.get("system_kind")
+        if company_id:
+            queryset = queryset.filter(company_id=company_id)
+        if system_kind:
+            queryset = queryset.filter(system_kind=system_kind)
+        return queryset
+
+
+class DispatchWorkRuleDetailView(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    generics.GenericAPIView,
+):
+    queryset = DispatchWorkRule.objects.all()
+    serializer_class = DispatchWorkRuleSerializer
+    lookup_field = "work_rule_id"
+    permission_classes = [AuthenticatedReadAdminWrite]
+    http_method_names = ["get", "patch", "delete", "options", "head"]
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        try:
+            return self.destroy(request, *args, **kwargs)
+        except ProtectedError:
+            return Response(
+                {
+                    "code": "work_rule_in_use",
+                    "message": "Referenced work rule cannot be deleted.",
+                    "details": {},
+                },
+                status=status.HTTP_409_CONFLICT,
+            )
+
+
+class DriverDayExceptionListCreateView(generics.ListCreateAPIView):
+    queryset = DriverDayException.objects.select_related("work_rule").all()
+    serializer_class = DriverDayExceptionSerializer
+    permission_classes = [AuthenticatedReadAdminWrite]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        company_id = self.request.query_params.get("company_id")
+        fleet_id = self.request.query_params.get("fleet_id")
+        dispatch_date = self.request.query_params.get("dispatch_date")
+        driver_id = self.request.query_params.get("driver_id")
+        work_rule_id = self.request.query_params.get("work_rule_id")
+        if company_id:
+            queryset = queryset.filter(company_id=company_id)
+        if fleet_id:
+            queryset = queryset.filter(fleet_id=fleet_id)
+        if dispatch_date:
+            queryset = queryset.filter(dispatch_date=dispatch_date)
+        if driver_id:
+            queryset = queryset.filter(driver_id=driver_id)
+        if work_rule_id:
+            queryset = queryset.filter(work_rule_id=work_rule_id)
+        return queryset
+
+
+class DriverDayExceptionDetailView(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    generics.GenericAPIView,
+):
+    queryset = DriverDayException.objects.select_related("work_rule").all()
+    serializer_class = DriverDayExceptionSerializer
+    lookup_field = "driver_day_exception_id"
+    permission_classes = [AuthenticatedReadAdminWrite]
+    http_method_names = ["get", "patch", "delete", "options", "head"]
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
