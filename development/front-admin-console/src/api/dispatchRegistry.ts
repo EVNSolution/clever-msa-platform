@@ -157,6 +157,17 @@ export function removeDispatchWorkRule(client: HttpClient, workRuleId: string) {
   });
 }
 
+export function updateDispatchWorkRule(
+  client: HttpClient,
+  workRuleId: string,
+  payload: Partial<Pick<DispatchWorkRule, 'name'>>,
+) {
+  return client.request<DispatchWorkRule>(`/dispatch/work-rules/${workRuleId}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
 export function listDriverDayExceptions(
   client: HttpClient,
   filters?: Partial<Pick<DriverDayException, 'company_id' | 'fleet_id' | 'dispatch_date' | 'driver_id'>> & {

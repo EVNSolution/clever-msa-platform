@@ -15,6 +15,7 @@ import {
   removeDriverDayException,
   removeDispatchWorkRule,
   removeOutsourcedDriver,
+  updateDispatchWorkRule,
   updateDispatchAssignment,
 } from '../api/dispatchRegistry';
 import { getDispatchBoard, getDispatchSummary } from '../api/dispatchOps';
@@ -87,6 +88,8 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
   const [newOutsourcedDriverMemo, setNewOutsourcedDriverMemo] = useState('');
   const [newWorkRuleName, setNewWorkRuleName] = useState('');
   const [newWorkRuleSystemKind, setNewWorkRuleSystemKind] = useState<DispatchWorkRule['system_kind']>('overtime');
+  const [editingWorkRuleId, setEditingWorkRuleId] = useState<string | null>(null);
+  const [editingWorkRuleName, setEditingWorkRuleName] = useState('');
   const [newExceptionDriverId, setNewExceptionDriverId] = useState('');
   const [newExceptionWorkRuleId, setNewExceptionWorkRuleId] = useState('');
   const [newExceptionMemo, setNewExceptionMemo] = useState('');
@@ -383,6 +386,27 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
     }
   }
 
+  async function handleUpdateWorkRule(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!editingWorkRuleId || !editingWorkRuleName) {
+      return;
+    }
+    setIsSaving(true);
+    setErrorMessage(null);
+    try {
+      await updateDispatchWorkRule(client, editingWorkRuleId, {
+        name: editingWorkRuleName,
+      });
+      setEditingWorkRuleId(null);
+      setEditingWorkRuleName('');
+      await reloadBoard();
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
   async function handleCreateDriverDayException(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!fleet || !dispatchDate || !newExceptionDriverId || !newExceptionWorkRuleId) {
@@ -652,16 +676,60 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
                       <h3>{workRule.name}</h3>
                       <p>{formatWorkRuleKindLabel(workRule.system_kind)}</p>
                     </div>
-                    <button
-                      className="button ghost small"
-                      disabled={isSaving || workRule.is_in_use}
-                      onClick={() => void handleRemoveWorkRule(workRule.work_rule_id)}
-                      type="button"
-                    >
-                      근무 규칙 삭제
-                    </button>
+                    <div className="button-group">
+                      <button
+                        className="button ghost small"
+                        disabled={isSaving}
+                        onClick={() => {
+                          setEditingWorkRuleId(workRule.work_rule_id);
+                          setEditingWorkRuleName(workRule.name);
+                        }}
+                        type="button"
+                      >
+                        근무 규칙 이름 수정
+                      </button>
+                      <button
+                        className="button ghost small"
+                        disabled={isSaving || workRule.is_in_use}
+                        onClick={() => void handleRemoveWorkRule(workRule.work_rule_id)}
+                        type="button"
+                      >
+                        근무 규칙 삭제
+                      </button>
+                    </div>
                   </div>
                   {workRule.is_in_use ? <p>예외에서 사용 중</p> : null}
+                  {editingWorkRuleId === workRule.work_rule_id ? (
+                    <form className="inline-form" onSubmit={handleUpdateWorkRule}>
+                      <label className="field">
+                        <span>수정 규칙 이름</span>
+                        <input
+                          onChange={(event) => setEditingWorkRuleName(event.target.value)}
+                          value={editingWorkRuleName}
+                        />
+                      </label>
+                      <div className="form-actions">
+                        <button
+                          className="button primary small"
+                          disabled={isSaving || !editingWorkRuleName}
+                          type="submit"
+                        >
+                          근무 규칙 수정 저장
+                        </button>
+                        <button
+                          className="button ghost small"
+                          disabled={isSaving}
+                          onClick={() => {
+                            setEditingWorkRuleId(null);
+                            setEditingWorkRuleName('');
+                          }}
+                          type="button"
+                        >
+                          수정 취소
+                        </button>
+                      </div>
+                    </form>
+                  ) : null}
                 </div>
               ))
             ) : (

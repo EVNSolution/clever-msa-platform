@@ -22,6 +22,7 @@ const apiMocks = vi.hoisted(() => ({
   removeDriverDayException: vi.fn(),
   removeDispatchWorkRule: vi.fn(),
   removeOutsourcedDriver: vi.fn(),
+  updateDispatchWorkRule: vi.fn(),
   updateDispatchAssignment: vi.fn(),
 }));
 
@@ -44,6 +45,7 @@ vi.mock('../api/dispatchRegistry', () => ({
   removeDriverDayException: apiMocks.removeDriverDayException,
   removeDispatchWorkRule: apiMocks.removeDispatchWorkRule,
   removeOutsourcedDriver: apiMocks.removeOutsourcedDriver,
+  updateDispatchWorkRule: apiMocks.updateDispatchWorkRule,
   updateDispatchAssignment: apiMocks.updateDispatchAssignment,
 }));
 
@@ -622,5 +624,92 @@ describe('DispatchBoardDetailPage', () => {
     await screen.findByText('주말 특근');
     expect(screen.getByText('예외에서 사용 중')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '근무 규칙 삭제' })).toBeDisabled();
+  });
+
+  it('renames a work rule without changing its mapped meaning', async () => {
+    apiMocks.listDispatchPlans.mockResolvedValue([
+      {
+        dispatch_plan_id: 'dispatch-plan-1',
+        company_id: '30000000-0000-0000-0000-000000000001',
+        fleet_id: '40000000-0000-0000-0000-000000000001',
+        dispatch_date: '2026-03-24',
+        planned_volume: 120,
+        dispatch_status: 'draft',
+      },
+    ]);
+    apiMocks.getDispatchSummary.mockResolvedValue({
+      dispatch_date: '2026-03-24',
+      fleet_id: '40000000-0000-0000-0000-000000000001',
+      planned_volume: 120,
+      planned_assignment_count: 0,
+      matched_count: 0,
+      not_started_count: 0,
+      dispatch_unit_changed_count: 0,
+      unplanned_current_count: 0,
+    });
+    apiMocks.getDispatchBoard.mockResolvedValue([]);
+    apiMocks.listOutsourcedDrivers.mockResolvedValue([]);
+    apiMocks.listVehicleSchedules.mockResolvedValue([]);
+    apiMocks.listDispatchAssignments.mockResolvedValue([]);
+    apiMocks.listVehicleMasters.mockResolvedValue([]);
+    apiMocks.listDrivers.mockResolvedValue([]);
+    apiMocks.listDriverDayExceptions.mockResolvedValue([]);
+    apiMocks.listDispatchWorkRules.mockResolvedValue([
+      {
+        work_rule_id: 'work-rule-1',
+        company_id: '30000000-0000-0000-0000-000000000001',
+        name: '주말 특근',
+        system_kind: 'overtime',
+        is_in_use: true,
+        created_at: '2026-03-24T09:00:00Z',
+        updated_at: '2026-03-24T09:00:00Z',
+      },
+      {
+        work_rule_id: 'work-rule-2',
+        company_id: '30000000-0000-0000-0000-000000000001',
+        name: '휴일 특근',
+        system_kind: 'overtime',
+        is_in_use: false,
+        created_at: '2026-03-24T09:00:00Z',
+        updated_at: '2026-03-24T09:00:00Z',
+      },
+    ]);
+    apiMocks.updateDispatchWorkRule.mockResolvedValue({
+      work_rule_id: 'work-rule-1',
+      company_id: '30000000-0000-0000-0000-000000000001',
+      name: '주말 긴급 특근',
+      system_kind: 'overtime',
+      is_in_use: true,
+      created_at: '2026-03-24T09:00:00Z',
+      updated_at: '2026-03-24T10:00:00Z',
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/dispatch/boards/41/2026-03-24']}>
+        <Routes>
+          <Route
+            path="/dispatch/boards/:fleetRef/:dispatchDate"
+            element={<DispatchBoardDetailPage client={{ request: vi.fn() }} />}
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    await screen.findByText('주말 특근');
+    expect(screen.getByText('휴일 특근')).toBeInTheDocument();
+
+    fireEvent.click(screen.getAllByRole('button', { name: '근무 규칙 이름 수정' })[0]);
+    fireEvent.change(screen.getByLabelText('수정 규칙 이름'), { target: { value: '주말 긴급 특근' } });
+    fireEvent.click(screen.getByRole('button', { name: '근무 규칙 수정 저장' }));
+
+    await waitFor(() => {
+      expect(apiMocks.updateDispatchWorkRule).toHaveBeenCalledWith(
+        expect.anything(),
+        'work-rule-1',
+        expect.objectContaining({
+          name: '주말 긴급 특근',
+        }),
+      );
+    });
   });
 });
