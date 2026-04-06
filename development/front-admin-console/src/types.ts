@@ -294,6 +294,21 @@ export type DriverProfile = {
   address: string;
 };
 
+export type PersonnelDocument = {
+  personnel_document_id: string;
+  driver_id: string;
+  document_type: 'contract' | 'license_or_certificate' | 'bank_account_proof' | 'business_registration';
+  status: 'draft' | 'active' | 'expired' | 'revoked';
+  title: string;
+  document_number: string | null;
+  issuer_name: string | null;
+  issued_on: string | null;
+  expires_on: string | null;
+  notes: string | null;
+  external_reference: string | null;
+  payload: Record<string, unknown>;
+};
+
 export type DriverAccountLinkSummary = {
   driver_account_link_id: string;
   driver_account_id: string;

@@ -11,10 +11,12 @@ import { SettlementSectionLayout } from './components/SettlementSectionLayout';
 import {
   canAccessCompanyScope,
   canAccessDispatchScope,
+  canAccessPersonnelDocumentScope,
   canAccessSettlementScope,
   canAccessVehicleScope,
   canManageAnnouncementScope,
   canManageDriverProfileScope,
+  canManagePersonnelDocumentScope,
 } from './authScopes';
 import { AccountPage } from './pages/AccountPage';
 import { AccountsPage } from './pages/AccountsPage';
@@ -36,6 +38,9 @@ import { FleetFormPage } from './pages/FleetFormPage';
 import { LoginPage } from './pages/LoginPage';
 import { ConsentRecoveryPage } from './pages/ConsentRecoveryPage';
 import { NotificationsPage } from './pages/NotificationsPage';
+import { PersonnelDocumentDetailPage } from './pages/PersonnelDocumentDetailPage';
+import { PersonnelDocumentFormPage } from './pages/PersonnelDocumentFormPage';
+import { PersonnelDocumentsPage } from './pages/PersonnelDocumentsPage';
 import { SettlementCriteriaPage } from './pages/SettlementCriteriaPage';
 import { SettlementInputsPage } from './pages/SettlementInputsPage';
 import { SettlementOverviewPage } from './pages/SettlementOverviewPage';
@@ -527,6 +532,62 @@ export default function App() {
                   when={canManageDriverProfileScope}
                 >
                   <DriverFormPage client={client} mode="edit" />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/personnel-documents"
+              element={
+                <RequireRoleScope
+                  message="인사문서는 관리자 계정에서만 접근할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="인사문서 접근 권한 필요"
+                  when={canAccessPersonnelDocumentScope}
+                >
+                  <PersonnelDocumentsPage client={client} session={session} />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/personnel-documents/new"
+              element={
+                <RequireRoleScope
+                  message="인사문서 생성과 수정은 시스템 관리자, 회사 전체 관리자, 정산 관리자, 플릿 관리자만 할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="인사문서 관리 권한 필요"
+                  when={canManagePersonnelDocumentScope}
+                >
+                  <PersonnelDocumentFormPage client={client} mode="create" />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/personnel-documents/:documentRef"
+              element={
+                <RequireRoleScope
+                  message="인사문서는 관리자 계정에서만 접근할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="인사문서 접근 권한 필요"
+                  when={canAccessPersonnelDocumentScope}
+                >
+                  <PersonnelDocumentDetailPage client={client} session={session} />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/personnel-documents/:documentRef/edit"
+              element={
+                <RequireRoleScope
+                  message="인사문서 생성과 수정은 시스템 관리자, 회사 전체 관리자, 정산 관리자, 플릿 관리자만 할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="인사문서 관리 권한 필요"
+                  when={canManagePersonnelDocumentScope}
+                >
+                  <PersonnelDocumentFormPage client={client} mode="edit" />
                 </RequireRoleScope>
               }
             />
