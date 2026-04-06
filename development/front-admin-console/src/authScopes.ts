@@ -51,8 +51,30 @@ export function canAccessDispatchScope(session: SessionPayload) {
   return canAccessSettlementScope(session);
 }
 
+export function canAccessRegionScope(session: SessionPayload) {
+  return isSystemAdmin(session) || getManagerRole(session) !== null;
+}
+
+export function canManageRegionScope(session: SessionPayload) {
+  return isSystemAdmin(session) || getManagerRole(session) === 'company_super_admin';
+}
+
 export function canAccessDriverScope(session: SessionPayload) {
   return isSystemAdmin(session) || getManagerRole(session) !== null;
+}
+
+export function canAccessPersonnelDocumentScope(session: SessionPayload) {
+  return isSystemAdmin(session) || getManagerRole(session) !== null;
+}
+
+export function canManagePersonnelDocumentScope(session: SessionPayload) {
+  const role = getManagerRole(session);
+  return (
+    isSystemAdmin(session) ||
+    role === 'company_super_admin' ||
+    role === 'settlement_manager' ||
+    role === 'fleet_manager'
+  );
 }
 
 export function canManageDriverProfileScope(session: SessionPayload) {

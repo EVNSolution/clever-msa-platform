@@ -1,7 +1,16 @@
 import { NavLink, Outlet } from 'react-router-dom';
 
 import type { SessionPayload } from '../api/http';
-import { canAccessAccountsScope, canAccessCompanyScope, canAccessDispatchScope, canAccessDriverScope, canAccessSettlementScope, canAccessVehicleScope } from '../authScopes';
+import {
+  canAccessAccountsScope,
+  canAccessCompanyScope,
+  canAccessDispatchScope,
+  canAccessDriverScope,
+  canAccessPersonnelDocumentScope,
+  canAccessRegionScope,
+  canAccessSettlementScope,
+  canAccessVehicleScope,
+} from '../authScopes';
 import { formatRoleLabel } from '../uiLabels';
 
 type LayoutProps = {
@@ -49,9 +58,19 @@ export function Layout({ session, onLogout }: LayoutProps) {
               회사
             </NavLink>
           ) : null}
+          {canAccessRegionScope(session) ? (
+            <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/regions">
+              권역
+            </NavLink>
+          ) : null}
           {canAccessDriverScope(session) ? (
             <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/drivers">
               배송원
+            </NavLink>
+          ) : null}
+          {canAccessPersonnelDocumentScope(session) ? (
+            <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/personnel-documents">
+              인사문서
             </NavLink>
           ) : null}
           {canAccessVehicleScope(session) ? (

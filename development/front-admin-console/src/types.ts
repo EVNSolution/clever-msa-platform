@@ -176,6 +176,50 @@ export type Fleet = {
   name: string;
 };
 
+export type Region = {
+  region_id: string;
+  region_code: string;
+  name: string;
+  status: 'draft' | 'active' | 'inactive';
+  difficulty_level: 'low' | 'medium' | 'high';
+  polygon_geojson: Record<string, unknown>;
+  description: string;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type RegionDailyStatistic = {
+  region_daily_statistic_id: string;
+  region_id: string;
+  region_code_snapshot: string;
+  service_date: string;
+  delivery_count: number;
+  completed_delivery_count: number;
+  exception_delivery_count: number;
+  total_distance_km: string;
+  total_base_amount: string;
+  average_delivery_minutes: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type RegionPerformanceSummary = {
+  region_performance_summary_id: string;
+  region_id: string;
+  region_code_snapshot: string;
+  difficulty_level_snapshot: 'low' | 'medium' | 'high';
+  period_start: string;
+  period_end: string;
+  delivery_count: number;
+  completion_rate: string;
+  productivity_score: string;
+  cost_per_delivery: string;
+  notes: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type DispatchPlan = {
   dispatch_plan_id: string;
   company_id: string;
@@ -292,6 +336,21 @@ export type DriverProfile = {
   ev_id: string;
   phone_number: string;
   address: string;
+};
+
+export type PersonnelDocument = {
+  personnel_document_id: string;
+  driver_id: string;
+  document_type: 'contract' | 'license_or_certificate' | 'bank_account_proof' | 'business_registration';
+  status: 'draft' | 'active' | 'expired' | 'revoked';
+  title: string;
+  document_number: string | null;
+  issuer_name: string | null;
+  issued_on: string | null;
+  expires_on: string | null;
+  notes: string | null;
+  external_reference: string | null;
+  payload: Record<string, unknown>;
 };
 
 export type DriverAccountLinkSummary = {

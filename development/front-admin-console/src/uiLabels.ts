@@ -230,6 +230,36 @@ export function formatSupportTicketPriorityLabel(value: string | null | undefine
   }
 }
 
+export function formatPersonnelDocumentTypeLabel(value: string | null | undefined) {
+  switch (value) {
+    case 'contract':
+      return '계약서';
+    case 'license_or_certificate':
+      return '자격/증빙';
+    case 'bank_account_proof':
+      return '계좌 증빙';
+    case 'business_registration':
+      return '사업자 등록';
+    default:
+      return value ?? '-';
+  }
+}
+
+export function formatPersonnelDocumentStatusLabel(value: string | null | undefined) {
+  switch (value) {
+    case 'draft':
+      return '초안';
+    case 'active':
+      return '활성';
+    case 'expired':
+      return '만료';
+    case 'revoked':
+      return '해제';
+    default:
+      return value ?? '-';
+  }
+}
+
 export function formatNotificationStatusLabel(value: string | null | undefined) {
   switch (value) {
     case 'unread':
