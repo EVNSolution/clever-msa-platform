@@ -85,6 +85,7 @@
 
 ### 5. Region web
 
+- [ ] 현재 active next slice로 권역 웹을 기준 삼기
 - [ ] `service-region-registry` 기준 권역 기준 화면 닫기
 - [ ] `service-region-analytics` 기준 권역 분석 화면 닫기
 - [ ] 지도/표/요약 등 웹 운영에 필요한 read 중심 UX를 마감하기
