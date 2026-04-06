@@ -38,6 +38,8 @@ describe('Layout', () => {
     expect(screen.getByRole('link', { name: '지원' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '알림' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '인사문서' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '권역' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '인사문서' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '차량' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '차량 배정' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '배차' })).toBeInTheDocument();
@@ -75,6 +77,8 @@ describe('Layout', () => {
     expect(screen.getByRole('link', { name: '공지' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '지원' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '알림' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '인사문서' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '권역' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '인사문서' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '차량' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '차량 배정' })).toBeInTheDocument();
@@ -116,6 +120,8 @@ describe('Layout', () => {
     expect(screen.getByRole('link', { name: '지원' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '알림' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '인사문서' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '권역' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '인사문서' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '정산' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '배차' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '배송원' })).toBeInTheDocument();
@@ -155,6 +161,8 @@ describe('Layout', () => {
     expect(screen.getByRole('link', { name: '공지' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '지원' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '알림' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '인사문서' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '권역' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '인사문서' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '정산' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '배차' })).toBeInTheDocument();

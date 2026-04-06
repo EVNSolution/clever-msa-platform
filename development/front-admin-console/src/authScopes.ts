@@ -51,6 +51,14 @@ export function canAccessDispatchScope(session: SessionPayload) {
   return canAccessSettlementScope(session);
 }
 
+export function canAccessRegionScope(session: SessionPayload) {
+  return isSystemAdmin(session) || getManagerRole(session) !== null;
+}
+
+export function canManageRegionScope(session: SessionPayload) {
+  return isSystemAdmin(session) || getManagerRole(session) === 'company_super_admin';
+}
+
 export function canAccessDriverScope(session: SessionPayload) {
   return isSystemAdmin(session) || getManagerRole(session) !== null;
 }

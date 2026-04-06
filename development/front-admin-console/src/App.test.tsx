@@ -50,6 +50,25 @@ vi.mock('./api/drivers', async () => {
   };
 });
 
+vi.mock('./api/regions', () => ({
+  listRegions: vi.fn().mockResolvedValue([]),
+  getRegionByCode: vi.fn().mockResolvedValue({
+    region_id: '10000000-0000-0000-0000-000000000011',
+    region_code: 'SEOUL-A',
+    name: '서울 A 권역',
+    status: 'active',
+    difficulty_level: 'high',
+    polygon_geojson: { type: 'Polygon', coordinates: [] },
+    description: '',
+    display_order: 1,
+    created_at: '2026-04-01T00:00:00Z',
+    updated_at: '2026-04-01T00:00:00Z',
+  }),
+  createRegion: vi.fn(),
+  updateRegion: vi.fn(),
+  listRegionDailyStatistics: vi.fn().mockResolvedValue([]),
+  listRegionPerformanceSummaries: vi.fn().mockResolvedValue([]),
+}));
 describe('Admin App', () => {
   beforeEach(() => {
     window.history.replaceState({}, '', '/');
@@ -67,5 +86,13 @@ describe('Admin App', () => {
     render(<App />);
 
     expect(await screen.findByRole('heading', { name: '인사문서 목록' })).toBeInTheDocument();
+  });
+
+  it('renders the region list route inside the single web console', async () => {
+    window.history.replaceState({}, '', '/regions');
+
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: '권역 목록' })).toBeInTheDocument();
   });
 });

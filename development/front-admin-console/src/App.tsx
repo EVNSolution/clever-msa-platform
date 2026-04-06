@@ -12,11 +12,13 @@ import {
   canAccessCompanyScope,
   canAccessDispatchScope,
   canAccessPersonnelDocumentScope,
+  canAccessRegionScope,
   canAccessSettlementScope,
   canAccessVehicleScope,
   canManageAnnouncementScope,
   canManageDriverProfileScope,
   canManagePersonnelDocumentScope,
+  canManageRegionScope,
 } from './authScopes';
 import { AccountPage } from './pages/AccountPage';
 import { AccountsPage } from './pages/AccountsPage';
@@ -41,6 +43,9 @@ import { NotificationsPage } from './pages/NotificationsPage';
 import { PersonnelDocumentDetailPage } from './pages/PersonnelDocumentDetailPage';
 import { PersonnelDocumentFormPage } from './pages/PersonnelDocumentFormPage';
 import { PersonnelDocumentsPage } from './pages/PersonnelDocumentsPage';
+import { RegionDetailPage } from './pages/RegionDetailPage';
+import { RegionFormPage } from './pages/RegionFormPage';
+import { RegionsPage } from './pages/RegionsPage';
 import { SettlementCriteriaPage } from './pages/SettlementCriteriaPage';
 import { SettlementInputsPage } from './pages/SettlementInputsPage';
 import { SettlementOverviewPage } from './pages/SettlementOverviewPage';
@@ -406,6 +411,62 @@ export default function App() {
             <Route
               path="/notifications"
               element={<NotificationsPage client={client} session={session} />}
+            />
+            <Route
+              path="/regions"
+              element={
+                <RequireRoleScope
+                  message="권역은 시스템 관리자와 회사 관리자 레벨에서 조회할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="권역 조회 권한 필요"
+                  when={canAccessRegionScope}
+                >
+                  <RegionsPage client={client} session={session} />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/regions/new"
+              element={
+                <RequireRoleScope
+                  message="권역 정본 생성과 수정은 시스템 관리자 또는 회사 전체 관리자만 할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="권역 관리 권한 필요"
+                  when={canManageRegionScope}
+                >
+                  <RegionFormPage client={client} mode="create" />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/regions/:regionRef"
+              element={
+                <RequireRoleScope
+                  message="권역은 시스템 관리자와 회사 관리자 레벨에서 조회할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="권역 조회 권한 필요"
+                  when={canAccessRegionScope}
+                >
+                  <RegionDetailPage client={client} session={session} />
+                </RequireRoleScope>
+              }
+            />
+            <Route
+              path="/regions/:regionRef/edit"
+              element={
+                <RequireRoleScope
+                  message="권역 정본 생성과 수정은 시스템 관리자 또는 회사 전체 관리자만 할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="권역 관리 권한 필요"
+                  when={canManageRegionScope}
+                >
+                  <RegionFormPage client={client} mode="edit" />
+                </RequireRoleScope>
+              }
             />
             <Route
               path="/companies"
