@@ -2,25 +2,25 @@
 
 ## 문서 목적
 
-이 문서는 `정산 조회`를 `admin`과 `operator`가 어떻게 공유할지 고정한다.
+이 문서는 단일 웹 콘솔에서 `정산 조회`를 권한 기반 shared read로 어떻게 다룰지 고정한다.
 
 이번 문서는 아래를 먼저 결정한다.
 
 1. shared settlement read의 소속
 2. shared settlement read의 데이터 소스
-3. admin 전용 정산 화면과의 경계
-4. operator가 볼 수 있는 정산 범위
+3. 정산 write 화면과의 경계
+4. lower manager가 볼 수 있는 정산 범위
 
 ## 기본 원칙
 
 1. `정산 조회`는 shared read 화면이다.
-2. `정산 조회`는 `front-admin-console`, `front-operator-console` 양쪽에 존재할 수 있다.
-3. 두 콘솔은 같은 업무 화면을 보되, 같은 앱을 공유하는 것은 아니다.
-4. 두 콘솔은 같은 read contract를 소비한다.
+2. `정산 조회`는 `front-admin-console` 안의 shared route로 존재한다.
+3. 같은 route에서 권한에 따라 read/write 패널을 다르게 노출한다.
+4. shared settlement read는 같은 read contract를 소비한다.
 
 ## 콘솔별 정산 구분
 
-### Admin 전용
+### Write 전용
 
 아래 정산 화면은 `admin`만 가진다.
 
@@ -31,7 +31,7 @@
 
 ### Shared
 
-아래 정산 화면은 `admin`, `operator`가 함께 본다.
+아래 정산 화면은 권한이 허용된 manager가 함께 본다.
 
 1. `정산 조회`
 
@@ -60,27 +60,27 @@ shared settlement read는 아래 범위를 가지지 않는다.
 4. settlement item write
 5. payout 이후 workflow write
 
-## Operator 범위
+## Lower Manager 범위
 
-1. `operator`는 정산을 생성하지 않는다.
-2. `operator`는 정산 기준을 수정하지 않는다.
-3. `operator`는 정산 입력을 수정하지 않는다.
-4. `operator`는 정산 결과 원본을 수정하지 않는다.
-5. `operator`는 자기 권한 범위의 read-only summary만 본다.
+1. lower manager는 정산을 생성하지 않는다.
+2. lower manager는 정산 기준을 수정하지 않는다.
+3. lower manager는 정산 입력을 수정하지 않는다.
+4. lower manager는 정산 결과 원본을 수정하지 않는다.
+5. lower manager는 자기 권한 범위의 read-only summary만 본다.
 
-## Admin 범위
+## High Manager 범위
 
-1. `admin`은 shared settlement read를 본다.
-2. `admin`은 별도의 write 화면도 가진다.
-3. `admin`의 조회 화면도 read-only여야 한다.
-4. `admin`이 write를 하려면 `정산 기준 / 입력 / 실행 / 결과` 전용 화면으로 이동해야 한다.
+1. high manager는 shared settlement read를 본다.
+2. high manager는 별도의 write 화면도 가진다.
+3. 조회 화면 자체는 read-only여야 한다.
+4. write를 하려면 `정산 기준 / 입력 / 실행 / 결과` 전용 화면으로 이동해야 한다.
 
 ## 라우트 기준
 
 이번 문서는 shared read 화면의 최소 라우트만 고정한다.
 
-- operator: `/settlements`
-- admin: `/settlements/overview`
+- shared entry: `/settlements`
+- shared read page: `/settlements/overview`
 
 ## 연결 문서
 

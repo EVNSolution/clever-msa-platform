@@ -2,18 +2,17 @@
 
 ## 문서 목적
 
-이 문서는 `front-admin-console`, `front-operator-console`에서 `공지 / 지원 / 알림` 웹 화면을 어떻게 고정해서 운영하는지 current truth로 정리한다.
+이 문서는 단일 웹 콘솔에서 `공지 / 지원 / 알림` 화면을 어떻게 고정해서 운영하는지 current truth로 정리한다.
 
 이번 문서는 아래를 먼저 잠근다.
 
-1. 관리자 웹과 운영자 웹이 각각 어떤 communication 화면을 가진다.
+1. 권한 기반 단일 웹이 어떤 communication 화면을 가진다.
 2. 각 화면이 어떤 runtime truth를 읽고 쓴다.
 3. 공지, 지원, 알림이 한 큰 단위로 보이더라도 write owner와 책임은 분리된다는 점을 고정한다.
 
 ## 적용 범위
 
 - `front-admin-console`
-- `front-operator-console`
 - `service-announcement-registry`
 - `service-support-registry`
 - `service-notification-hub`
@@ -26,9 +25,9 @@
 4. inbox notification, push send, push log는 `service-notification-hub`가 소유한다.
 5. 프론트 화면은 이 세 runtime을 하나의 운영 경험으로 묶어 보여줄 수는 있지만, 정본 경계는 넘지 않는다.
 
-## 관리자 웹 페이지
+## 단일 웹 페이지
 
-관리자 웹은 아래 세 영역을 모두 가진다.
+단일 웹은 아래 세 영역을 모두 가진다.
 
 1. `공지`
 2. `지원`
@@ -36,7 +35,7 @@
 
 ### 1. 공지
 
-관리자 웹 공지는 아래 라우트로 고정한다.
+공지 화면은 아래 라우트로 고정한다.
 
 1. `/announcements`
 2. `/announcements/new`
@@ -52,7 +51,7 @@
 
 ### 2. 지원
 
-관리자 웹 지원은 `/support` 단일 화면으로 고정한다.
+지원은 `/support` 단일 화면으로 고정한다.
 
 이 화면은 아래를 같은 문맥 안에서 처리한다.
 
@@ -84,7 +83,7 @@
 
 ### 3. 알림
 
-관리자 웹 알림은 `/notifications` 단일 화면으로 고정한다.
+알림은 `/notifications` 단일 화면으로 고정한다.
 
 이 화면은 아래를 같은 문맥 안에서 처리한다.
 
@@ -98,29 +97,23 @@
 2. push log의 `이벤트 타입`, `제목`, `전달 상태`, `실패 사유`
 3. 수동 발송 입력의 `대상 account_id`, `이벤트 타입`, `카테고리`, `제목`, `본문`
 
-## 운영자 웹 페이지
+## Lower Manager Read / Self-Service
 
-운영자 웹도 아래 세 영역을 가진다.
-
-1. `/announcements`
-2. `/support`
-3. `/notifications`
-
-다만 역할은 관리자와 다르다.
+같은 route 안에서 lower manager는 published/read/self-service 위주 화면을 본다.
 
 ### 1. 공지
 
-운영자 웹 공지는 published announcement read 화면이다.
+lower manager의 공지는 published announcement read 화면이다.
 
 규칙:
 
 1. draft, archived 공지는 보이지 않는다.
 2. 노출 범위가 `all`, `operator`인 공지만 본다.
-3. 운영자는 공지를 생성/수정하지 않는다.
+3. lower manager는 공지를 생성/수정하지 않는다.
 
 ### 2. 지원
 
-운영자 웹 지원은 self-service 티켓 화면이다.
+lower manager의 지원은 self-service 티켓 화면이다.
 
 이 화면은 아래를 같은 문맥 안에서 처리한다.
 
@@ -129,17 +122,17 @@
 3. 응답 thread 조회
 4. 새 지원 요청 생성
 
-운영자는 자기 티켓만 본다.  
+lower manager는 자기 티켓만 본다.
 티켓 상태/우선순위 수정 같은 관리자 액션은 가지지 않는다.
-관리자 답변이 등록되면 운영자 inbox에도 일반 알림이 자동 생성된다.
+관리자 답변이 등록되면 자기 inbox에도 일반 알림이 자동 생성된다.
 
 ### 3. 알림
 
-운영자 웹 알림은 자기 inbox notification 중심 화면이다.
+lower manager의 알림은 자기 inbox notification 중심 화면이다.
 
 규칙:
 
-1. 운영자는 자기 notification만 본다.
+1. lower manager는 자기 notification만 본다.
 2. unread -> read 같은 읽음 처리는 허용한다.
 3. push send나 push log 전체 운영 기능은 관리자 웹에만 둔다.
 
@@ -147,8 +140,8 @@
 
 1. 관리자 웹의 공지 write는 `system_admin`, `company_super_admin`를 기본으로 본다.
 2. 지원 티켓 처리와 알림 운영은 현재 관리자 권한 계층에서 허용된 범위만 노출한다.
-3. 운영자 웹은 원칙적으로 read/self-service 중심이다.
-4. 운영자 웹은 공지 게시, 티켓 상태 수정, 수동 push send를 하지 않는다.
+3. lower manager는 원칙적으로 read/self-service 중심이다.
+4. lower manager는 공지 게시, 티켓 상태 수정, 수동 push send를 하지 않는다.
 
 ## 1차 완료 기준
 
@@ -157,9 +150,9 @@
 1. 관리자 웹에서 공지 CRUD가 닫혀야 한다.
 2. 관리자 웹에서 지원 티켓 처리와 응답 등록이 닫혀야 한다.
 3. 관리자 웹에서 inbox/push log 조회와 수동 push send가 닫혀야 한다.
-4. 운영자 웹에서 published announcement 조회가 닫혀야 한다.
-5. 운영자 웹에서 self-service 지원 요청과 응답 조회가 닫혀야 한다.
-6. 운영자 웹에서 inbox notification 조회와 읽음 처리가 닫혀야 한다.
+4. lower manager가 같은 route에서 published announcement 조회를 할 수 있어야 한다.
+5. lower manager가 self-service 지원 요청과 응답 조회를 할 수 있어야 한다.
+6. lower manager가 같은 route에서 inbox notification 조회와 읽음 처리를 할 수 있어야 한다.
 
 ## 연결 문서
 

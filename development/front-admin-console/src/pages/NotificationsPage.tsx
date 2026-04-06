@@ -1,15 +1,133 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
-import { createPushSend, listGeneralNotifications, listPushDeliveryLogs } from '../api/notifications';
-import { getErrorMessage, type HttpClient } from '../api/http';
+import { canManageNotificationScope } from '../authScopes';
+import { createPushSend, listGeneralNotifications, listPushDeliveryLogs, updateNotificationStatus } from '../api/notifications';
+import { getErrorMessage, type HttpClient, type SessionPayload } from '../api/http';
 import type { GeneralNotification, PushDeliveryLog } from '../types';
 import { formatNotificationStatusLabel, formatPushDeliveryStatusLabel } from '../uiLabels';
 
 type NotificationsPageProps = {
   client: HttpClient;
+  session: SessionPayload;
 };
 
-export function NotificationsPage({ client }: NotificationsPageProps) {
+function SelfServiceNotifications({
+  client,
+  recipientAccountId,
+}: {
+  client: HttpClient;
+  recipientAccountId: string;
+}) {
+  const [notifications, setNotifications] = useState<GeneralNotification[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function load() {
+      setIsLoading(true);
+      setErrorMessage(null);
+      try {
+        const response = await listGeneralNotifications(client, { recipient_account_id: recipientAccountId });
+        if (!ignore) {
+          setNotifications(response);
+        }
+      } catch (error) {
+        if (!ignore) {
+          setErrorMessage(getErrorMessage(error));
+        }
+      } finally {
+        if (!ignore) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    void load();
+    return () => {
+      ignore = true;
+    };
+  }, [client, recipientAccountId]);
+
+  async function handleUpdate(notificationId: string, status: GeneralNotification['status']) {
+    setErrorMessage(null);
+    try {
+      const next = await updateNotificationStatus(client, notificationId, status);
+      setNotifications((current) => current.map((item) => (item.notification_id === notificationId ? next : item)));
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    }
+  }
+
+  function getNotificationMeta(notification: GeneralNotification) {
+    if (notification.category === 'support' && notification.source_type === 'support_ticket' && notification.source_ref) {
+      return `문의 번호 #${notification.source_ref}`;
+    }
+    return null;
+  }
+
+  return (
+    <section className="panel">
+      <div className="panel-header">
+        <p className="panel-kicker">알림</p>
+        <h2>알림</h2>
+      </div>
+      <p className="empty-state">지원 답변이 등록되면 이 알림함에 일반 알림으로 함께 도착합니다.</p>
+      {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
+      {isLoading ? (
+        <p className="empty-state">알림을 불러오는 중입니다...</p>
+      ) : notifications.length ? (
+        <div className="stack">
+          {notifications.map((notification) => (
+            <article key={notification.notification_id} className="panel subtle-panel">
+              <div className="panel-header panel-header-inline">
+                <div>
+                  <h3>{notification.title}</h3>
+                  {getNotificationMeta(notification) ? <p className="account-role">{getNotificationMeta(notification)}</p> : null}
+                  <p className="panel-kicker">{formatNotificationStatusLabel(notification.status)}</p>
+                </div>
+                <div className="inline-actions">
+                  {notification.category === 'support' &&
+                  notification.source_type === 'support_ticket' &&
+                  notification.source_ref ? (
+                    <Link className="button ghost small" to={`/support?ticket=${notification.source_ref}`}>
+                      문의 열기
+                    </Link>
+                  ) : null}
+                  {notification.status === 'unread' ? (
+                    <button
+                      className="button ghost small"
+                      onClick={() => void handleUpdate(notification.notification_id, 'read')}
+                      type="button"
+                    >
+                      읽음 처리
+                    </button>
+                  ) : null}
+                  {notification.status !== 'archived' ? (
+                    <button
+                      className="button ghost small"
+                      onClick={() => void handleUpdate(notification.notification_id, 'archived')}
+                      type="button"
+                    >
+                      보관
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+              <p>{notification.body}</p>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p className="empty-state">수신한 알림이 없습니다.</p>
+      )}
+    </section>
+  );
+}
+
+function ManagementNotifications({ client }: { client: HttpClient }) {
   const [notifications, setNotifications] = useState<GeneralNotification[]>([]);
   const [logs, setLogs] = useState<PushDeliveryLog[]>([]);
   const [targetAccountId, setTargetAccountId] = useState('');
@@ -130,11 +248,7 @@ export function NotificationsPage({ client }: NotificationsPageProps) {
           <textarea aria-label="본문" onChange={(event) => setBody(event.target.value)} rows={4} value={body} />
         </label>
         <label className="checkbox-field">
-          <input
-            checked={createInbox}
-            onChange={(event) => setCreateInbox(event.target.checked)}
-            type="checkbox"
-          />
+          <input checked={createInbox} onChange={(event) => setCreateInbox(event.target.checked)} type="checkbox" />
           <span>수신함 생성</span>
         </label>
         <button className="button primary" onClick={() => void handleSend()} type="button">
@@ -207,4 +321,26 @@ export function NotificationsPage({ client }: NotificationsPageProps) {
       </div>
     </div>
   );
+}
+
+export function NotificationsPage({ client, session }: NotificationsPageProps) {
+  const recipientAccountId = session.activeAccount?.accountId;
+
+  if (canManageNotificationScope(session)) {
+    return <ManagementNotifications client={client} />;
+  }
+
+  if (!recipientAccountId) {
+    return (
+      <section className="panel">
+        <div className="panel-header">
+          <p className="panel-kicker">알림</p>
+          <h2>알림</h2>
+        </div>
+        <p className="empty-state">알림 계정 문맥이 없습니다.</p>
+      </section>
+    );
+  }
+
+  return <SelfServiceNotifications client={client} recipientAccountId={recipientAccountId} />;
 }

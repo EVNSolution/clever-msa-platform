@@ -138,7 +138,27 @@ describe('Admin DriversPage', () => {
     ]);
     render(
       <MemoryRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
-        <DriversPage client={{ request: vi.fn() }} />
+        <DriversPage
+          client={{ request: vi.fn() }}
+          session={{
+            accessToken: 'token',
+            sessionKind: 'normal',
+            email: 'admin@example.com',
+            identity: {
+              identityId: '10000000-0000-0000-0000-000000000001',
+              name: '관리자',
+              birthDate: '1990-01-01',
+              status: 'active',
+            },
+            activeAccount: {
+              accountType: 'manager',
+              accountId: '20000000-0000-0000-0000-000000000099',
+              companyId: '30000000-0000-0000-0000-000000000001',
+              roleType: 'company_super_admin',
+            },
+            availableAccountTypes: ['manager'],
+          }}
+        />
       </MemoryRouter>,
     );
 
@@ -170,5 +190,42 @@ describe('Admin DriversPage', () => {
         '21000000-0000-0000-0000-000000000001',
       );
     });
+  });
+
+  it('hides driver create action for vehicle managers', async () => {
+    apiMocks.listDrivers.mockResolvedValue([]);
+    apiMocks.listDriverAccountLinks.mockResolvedValue([]);
+    apiMocks.listManageableDriverAccounts.mockResolvedValue({ accounts: [] });
+    apiMocks.listCompanies.mockResolvedValue([]);
+    apiMocks.listFleets.mockResolvedValue([]);
+
+    render(
+      <MemoryRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
+        <DriversPage
+          client={{ request: vi.fn() }}
+          session={{
+            accessToken: 'token',
+            sessionKind: 'normal',
+            email: 'vehicle@example.com',
+            identity: {
+              identityId: '10000000-0000-0000-0000-000000000002',
+              name: '차량 관리자',
+              birthDate: '1990-01-01',
+              status: 'active',
+            },
+            activeAccount: {
+              accountType: 'manager',
+              accountId: '20000000-0000-0000-0000-000000000100',
+              companyId: '30000000-0000-0000-0000-000000000001',
+              roleType: 'vehicle_manager',
+            },
+            availableAccountTypes: ['manager'],
+          }}
+        />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole('heading', { name: /driver profile hr 관리자 조회/i });
+    expect(screen.queryByRole('link', { name: /배송원 생성/i })).not.toBeInTheDocument();
   });
 });

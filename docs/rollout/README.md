@@ -33,3 +33,4 @@
 - 웹 우선 전체 완성 순서: [16-web-first-platform-delivery-order.md](16-web-first-platform-delivery-order.md)
 - 현재 front UI 규칙 감사: [14-front-ui-rule-audit.md](14-front-ui-rule-audit.md)
 - 현재 auth 전환 active plan: [plans/2026-04-04-auth-final-cutover-implementation-plan.md](plans/2026-04-04-auth-final-cutover-implementation-plan.md)
+- 현재 단일 웹 cutover active plan: [plans/2026-04-06-single-web-console-cutover-implementation-plan.md](plans/2026-04-06-single-web-console-cutover-implementation-plan.md)

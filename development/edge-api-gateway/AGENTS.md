@@ -31,6 +31,6 @@
 
 ## Current Scope Notes
 
-- Operator UI lives in `../front-operator-console/`.
-- Admin UI lives in `../front-admin-console/`.
+- The single surviving web runtime lives in `../front-admin-console/`.
+- `../front-operator-console/` is legacy code pending removal, not an active edge target.
 - Local integration compose lives in `../integration-local-stack/`.

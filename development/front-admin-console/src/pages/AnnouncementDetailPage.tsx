@@ -1,20 +1,23 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
+import { canManageAnnouncementScope } from '../authScopes';
 import { getAnnouncementBySlug } from '../api/announcements';
-import { getErrorMessage, type HttpClient } from '../api/http';
+import { getErrorMessage, type HttpClient, type SessionPayload } from '../api/http';
 import { formatAnnouncementScopeLabel, formatAnnouncementStatusLabel } from '../uiLabels';
 import type { Announcement } from '../types';
 
 type AnnouncementDetailPageProps = {
   client: HttpClient;
+  session: SessionPayload;
 };
 
-export function AnnouncementDetailPage({ client }: AnnouncementDetailPageProps) {
+export function AnnouncementDetailPage({ client, session }: AnnouncementDetailPageProps) {
   const { announcementSlug } = useParams();
   const [announcement, setAnnouncement] = useState<Announcement | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const canManage = canManageAnnouncementScope(session);
 
   useEffect(() => {
     const slug = announcementSlug;
@@ -59,7 +62,7 @@ export function AnnouncementDetailPage({ client }: AnnouncementDetailPageProps) 
           <h2>{announcement?.title ?? '공지 상세'}</h2>
         </div>
         <div className="inline-actions">
-          {announcementSlug ? (
+          {announcementSlug && canManage ? (
             <Link className="button ghost" to={`/announcements/${announcementSlug}/edit`}>
               공지 수정
             </Link>
@@ -72,7 +75,7 @@ export function AnnouncementDetailPage({ client }: AnnouncementDetailPageProps) 
       {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
       {isLoading ? (
         <p className="empty-state">공지를 불러오는 중입니다...</p>
-      ) : announcement ? (
+      ) : announcement && (canManage || (announcement.status === 'published' && announcement.exposure_scope !== 'driver')) ? (
         <div className="stack">
           <dl className="detail-list">
             <div>
@@ -102,7 +105,7 @@ export function AnnouncementDetailPage({ client }: AnnouncementDetailPageProps) 
           </article>
         </div>
       ) : (
-        <p className="empty-state">공지를 찾을 수 없습니다.</p>
+        <p className="empty-state">공지에 접근할 수 없습니다.</p>
       )}
     </section>
   );

@@ -4,7 +4,7 @@
 
 현재 역할:
 - Nginx reverse proxy
-- front/admin/service API 단일 진입점
+- 단일 web/service API 진입점
 - auth header와 cookie forwarding
 
 포함:

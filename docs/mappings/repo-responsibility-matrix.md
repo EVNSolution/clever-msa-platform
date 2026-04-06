@@ -12,8 +12,8 @@
 | --- | --- | --- | --- |
 | `integration-local-stack` | compose, local env examples, smoke scripts, seed orchestration | 도메인 모델, 서비스 내부 로직, 중앙 문서 정본 | 모든 runtime repo |
 | `edge-api-gateway` | routing, reverse proxy, auth forwarding, edge profile | token 발급, 도메인 비즈니스 로직, front code | front repos, service repos |
-| `front-operator-console` | operator UI, routing, API clients, page tests | gateway config, backend logic, admin UI | `edge-api-gateway`, read/write service APIs |
-| `front-admin-console` | admin UI, CRUD 관리 화면, API clients, page tests | gateway config, backend logic, operator UI | `edge-api-gateway`, registry/assignment APIs |
+| `front-operator-console` | legacy operator UI code kept only until repo cleanup | gateway config, backend logic, active runtime ownership, new UI work | none; migration reference only |
+| `front-admin-console` | 권한 기반 단일 웹 콘솔 UI, CRUD 관리 화면, read/self-service 화면, API clients, page tests | gateway config, backend logic, separate operator runtime | `edge-api-gateway`, registry/assignment APIs |
 | `service-organization-registry` | company, fleet registry | account, driver, assignment, settlement, gateway | `service-account-access` for auth only |
 | `service-account-access` | account, credential, token, refresh, lockout, access rules | driver profile, organization, settlement policy, gateway routing | redis, auth consumers |
 | `service-driver-profile` | driver basic profile, linked account reference | account credential, settlement result, vehicle assignment | `service-account-access`, `service-organization-registry` |

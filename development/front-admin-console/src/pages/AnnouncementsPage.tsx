@@ -1,21 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { canManageAnnouncementScope } from '../authScopes';
 import { listAnnouncements } from '../api/announcements';
-import { getErrorMessage, type HttpClient } from '../api/http';
+import { getErrorMessage, type HttpClient, type SessionPayload } from '../api/http';
 import { getAnnouncementRouteRef } from '../routeRefs';
 import type { Announcement } from '../types';
 import { formatAnnouncementScopeLabel, formatAnnouncementStatusLabel } from '../uiLabels';
 
 type AnnouncementsPageProps = {
   client: HttpClient;
+  session: SessionPayload;
 };
 
-export function AnnouncementsPage({ client }: AnnouncementsPageProps) {
+export function AnnouncementsPage({ client, session }: AnnouncementsPageProps) {
   const navigate = useNavigate();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const canManage = canManageAnnouncementScope(session);
 
   useEffect(() => {
     let ignore = false;
@@ -24,7 +27,7 @@ export function AnnouncementsPage({ client }: AnnouncementsPageProps) {
       setIsLoading(true);
       setErrorMessage(null);
       try {
-        const response = await listAnnouncements(client);
+        const response = await listAnnouncements(client, canManage ? {} : { status: 'published' });
         if (!ignore) {
           setAnnouncements(response);
         }
@@ -43,7 +46,19 @@ export function AnnouncementsPage({ client }: AnnouncementsPageProps) {
     return () => {
       ignore = true;
     };
-  }, [client]);
+  }, [canManage, client]);
+
+  const visibleAnnouncements = useMemo(() => {
+    if (canManage) {
+      return announcements;
+    }
+
+    return announcements.filter(
+      (announcement) =>
+        announcement.status === 'published' &&
+        (announcement.exposure_scope === 'all' || announcement.exposure_scope === 'operator'),
+    );
+  }, [announcements, canManage]);
 
   function handleRowKeyDown(event: React.KeyboardEvent<HTMLTableRowElement>, detailPath: string) {
     if (event.key !== 'Enter' && event.key !== ' ') {
@@ -51,6 +66,40 @@ export function AnnouncementsPage({ client }: AnnouncementsPageProps) {
     }
     event.preventDefault();
     navigate(detailPath);
+  }
+
+  if (!canManage) {
+    return (
+      <section className="panel">
+        <div className="panel-header">
+          <p className="panel-kicker">공지</p>
+          <h2>공지</h2>
+        </div>
+        {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
+        {isLoading ? (
+          <p className="empty-state">공지를 불러오는 중입니다...</p>
+        ) : visibleAnnouncements.length ? (
+          <div className="stack">
+            {visibleAnnouncements.map((announcement) => (
+              <article key={announcement.announcement_id} className="panel subtle-panel">
+                <div className="panel-header panel-header-inline">
+                  <div>
+                    <h3>{announcement.title}</h3>
+                    <div className="inline-actions">
+                      <span className="pill">{formatAnnouncementStatusLabel(announcement.status)}</span>
+                      <span className="pill muted">{formatAnnouncementScopeLabel(announcement.exposure_scope)}</span>
+                    </div>
+                  </div>
+                </div>
+                <p style={{ whiteSpace: 'pre-wrap' }}>{announcement.body}</p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="empty-state">게시된 공지가 없습니다.</p>
+        )}
+      </section>
+    );
   }
 
   return (
@@ -67,7 +116,7 @@ export function AnnouncementsPage({ client }: AnnouncementsPageProps) {
       {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
       {isLoading ? (
         <p className="empty-state">공지를 불러오는 중입니다...</p>
-      ) : announcements.length ? (
+      ) : visibleAnnouncements.length ? (
         <table className="table compact">
           <thead>
             <tr>
@@ -78,7 +127,7 @@ export function AnnouncementsPage({ client }: AnnouncementsPageProps) {
             </tr>
           </thead>
           <tbody>
-            {announcements.map((announcement) => {
+            {visibleAnnouncements.map((announcement) => {
               const detailPath = `/announcements/${getAnnouncementRouteRef(announcement)}`;
 
               return (

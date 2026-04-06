@@ -2,7 +2,7 @@
 
 ## 문서 목적
 
-이 문서는 [../contracts/10-front-ui-rules.md](../contracts/10-front-ui-rules.md) 기준으로 현재 `front-admin-console`, `front-operator-console` 화면이 얼마나 맞춰져 있는지 점검한 결과를 남긴다.
+이 문서는 [../contracts/10-front-ui-rules.md](../contracts/10-front-ui-rules.md) 기준으로 현재 단일 웹 콘솔 화면이 얼마나 맞춰져 있는지 점검한 결과를 남긴다.
 
 이 문서는 구현 완료 기록이 아니라, 현재 UI 정리 작업의 기준선이다.
 
@@ -21,7 +21,7 @@
 3. `vehicle-assignments`까지 현재 계약 기준으로 정리됐다.
 4. `admin settlements`는 문맥 bar와 upload-first handoff shell까지 올라왔다.
 
-## Operator Audit
+## Lower-role Audit
 
 ### 1. `login`
 
@@ -62,7 +62,7 @@
 - 현재 라우트
   - `/settlements`
 - 근거
-  - `operator` settlement는 1차 범위에서 shared read summary 화면 한 장으로 고정했다.
+  - lower-role settlement는 1차 범위에서 shared read summary 화면 한 장으로 고정했다.
   - write 동작이 없다.
   - read contract는 `settlement-ops` 기준으로 분리돼 있다.
 

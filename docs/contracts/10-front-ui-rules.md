@@ -2,13 +2,12 @@
 
 ## 문서 목적
 
-이 문서는 `front-operator-console`, `front-admin-console`의 공통 UI 규칙을 고정한다.
+이 문서는 `front-admin-console` 단일 웹 콘솔의 공통 UI 규칙을 고정한다.
 
 목표는 탭마다 다른 입력 레이아웃을 줄이고, 목록/상세/수정의 역할을 분리해서 운영형 화면을 일관되게 유지하는 것이다.
 
 ## 적용 범위
 
-- `development/front-operator-console/`
 - `development/front-admin-console/`
 
 ## 기본 원칙

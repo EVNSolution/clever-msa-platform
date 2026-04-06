@@ -14,7 +14,7 @@
 ## 현재 원칙
 
 1. 현재 1차 목표는 `앱 없이도 웹만으로 운영이 닫히는 상태`다.
-2. `front-admin-console`, `front-operator-console`가 현재 플랫폼의 주 사용자 경로다.
+2. 최종 웹 1차는 `front-admin-console` 하나로 통합하는 것을 목표로 한다.
 3. 앱 repo 구현과 Kakao SDK/콘솔 연동은 필요하지만, 현재 라운드의 blocker가 아니다.
 4. 앱/Kakao는 `auth 2차`가 아니라 `플랫폼 전체 2차`다.
 
@@ -22,8 +22,8 @@
 
 아래가 모두 충족되면 `웹 1차 완성`으로 본다.
 
-1. 관리자 운영은 `front-admin-console`만으로 가능하다.
-2. 운영자 조회/보조 업무는 `front-operator-console`만으로 가능하다.
+1. 관리자 운영과 read/self-service 운영 업무는 `front-admin-console` 하나로 가능하다.
+2. 별도 `front-operator-console` 없이 권한 기반 뷰 분기로 운영이 닫힌다.
 3. 신규 사용자 진입, 승인, 계정 관리, 회사 변경이 웹에서 닫힌다.
 4. 핵심 업무 도메인의 목록, 상세, 생성/수정, 운영 액션이 웹에서 닫힌다.
 5. 앱이 없어도 실제 운영 업무가 막히지 않는다.
@@ -73,7 +73,17 @@
 
 앱이 아직 없기 때문에 이 세 영역은 웹 대체 경로로서 우선순위가 높다.
 
-### 4. Region web
+### 4. Single web console cutover
+
+- [x] `front-admin-console`를 최종 단일 웹 runtime으로 고정하기
+- [x] `front-operator-console`의 read/self-service 기능을 `front-admin-console`로 이관하기
+- [x] `/admin/*` 호환 경로 없이 최종 base URL을 `/`로 통일하기
+- [x] 같은 route에서 권한 기반 UI 노출/액션으로 화면을 분기하기
+- [x] `front-operator-console` 제거 전 검증/정리 순서를 plan으로 고정하기
+
+이 단계는 웹 1차 완성의 구조적 마감이다. region, personnel document보다 먼저 닫아야 한다.
+
+### 5. Region web
 
 - [ ] `service-region-registry` 기준 권역 기준 화면 닫기
 - [ ] `service-region-analytics` 기준 권역 분석 화면 닫기
@@ -81,14 +91,14 @@
 
 이 단계는 운영 보조와 분석 기능을 웹 기준으로 닫는다.
 
-### 5. Personnel document web
+### 6. Personnel document web
 
 - [ ] `service-personnel-document-registry` 기준 문서 메타데이터 화면 닫기
 - [ ] 업로드/조회/상태 관리 기준을 웹에서 정리하기
 
 이 영역은 중요하지만, 위 1~4보다 운영 차단 효과가 한 단계 낮으므로 뒤에 둔다.
 
-### 6. Final web verification
+### 7. Final web verification
 
 - [ ] admin/operator 권한별 smoke 시나리오 점검
 - [ ] 핵심 도메인 route, route_no, 세션, 승인 흐름 회귀 점검
@@ -125,5 +135,6 @@
 - [../contracts/10-front-ui-rules.md](../contracts/10-front-ui-rules.md)
 - [../contracts/15-auth-api-scenario-map.md](../contracts/15-auth-api-scenario-map.md)
 - [../contracts/17-admin-communication-pages.md](../contracts/17-admin-communication-pages.md)
+- [../decisions/specs/2026-04-06-single-web-console-cutover-design.md](../decisions/specs/2026-04-06-single-web-console-cutover-design.md)
 - [../../WORKSPACE.md](../../WORKSPACE.md)
 - [../../repo-map.md](../../repo-map.md)

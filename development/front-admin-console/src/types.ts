@@ -519,3 +519,27 @@ export type DriverLatestSettlement = {
   attendance_inferred_from_delivery_history: boolean | null;
   latest_settlement: LatestSettlementSummary | null;
 };
+
+export type Driver360Summary = {
+  driver_id: string;
+  driver_name: string;
+  ev_id: string;
+  phone_number: string;
+  address: string;
+  company_id: string;
+  company_name: string | null;
+  fleet_id: string;
+  fleet_name: string | null;
+  driver_account_link_id: string | null;
+  driver_account_id: string | null;
+  driver_account_identity_name: string | null;
+  driver_account_email: string | null;
+  driver_account_status: string | null;
+  latest_settlement_run_id: string | null;
+  latest_settlement_period_start: string | null;
+  latest_settlement_period_end: string | null;
+  latest_settlement_status: string | null;
+  latest_payout_status: string | null;
+  latest_settlement_amount: string | null;
+  warnings: string[];
+};

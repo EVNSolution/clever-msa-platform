@@ -43,7 +43,7 @@ core / documents 앱은 패키지형 구조라서 `views.py` / `serializers.py` 
 
 ### Web frontend
 
-현재 이 섹션은 `web-front` / `admin-front` 채널의 공통 source path entry다. 별도 admin repo가 확인되기 전까지는 같은 Web frontend channel/repo를 기준으로 추적한다.
+현재 플랫폼 current truth는 `front-admin-console` 하나의 단일 웹 콘솔이다. 아래 경로는 legacy source를 읽을 때의 공통 frontend source entry로만 사용한다.
 
 - `ev-dashboard-web-frontend/src/config/env.ts`
 - `ev-dashboard-web-frontend/src/data/remote/repository/auth.repo.ts`

@@ -8,7 +8,6 @@ services:
     build:
       context: ../edge-api-gateway
     depends_on:
-      - front
       - admin-front
       - account-auth-api
       - driver-profile-api
@@ -34,14 +33,6 @@ services:
       - driver-ops-api
     ports:
       - "8080:8080"
-
-  front:
-    build:
-      context: ../front-operator-console
-    env_file:
-      - ./infra/env/front.env.example
-    expose:
-      - "5173"
 
   admin-front:
     build:

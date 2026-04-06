@@ -150,23 +150,22 @@ legacy `account` 요약 payload는 최종 current truth에서 제거한다.
 
 ### 공통
 
-1. `front-admin-console`, `front-operator-console` 모두 `identity-login`, `identity-refresh`, `identity-me`, `identity-logout`만 사용한다.
-2. 웹 세션 정본은 legacy `AccountSummary`가 아니라 `identity + active_account`다.
-3. 웹은 `system_admin_account` 또는 `manager_account`만 사용한다.
-4. `driver_account`는 웹 세션 대상이 아니다.
+1. 웹 런타임은 `front-admin-console` 하나만 남긴다.
+2. 웹은 `identity-login`, `identity-refresh`, `identity-me`, `identity-logout`만 사용한다.
+3. 웹 세션 정본은 legacy `AccountSummary`가 아니라 `identity + active_account`다.
+4. 웹은 `system_admin_account` 또는 `manager_account`만 사용한다.
+5. `driver_account`는 웹 세션 대상이 아니다.
+6. 비로그인 첫 진입은 `로그인 / 회원가입 요청 / identity 복구`를 같은 웹에서 처리한다.
+7. 화면 분리는 별도 operator 앱이 아니라 `권한별 UI 노출/액션`으로 처리한다.
 
-### front-admin-console
+### 통합 웹 콘솔
 
 1. legacy account CRUD 화면은 제거한다.
-2. `/admin/accounts`는 legacy account 목록이 아니라 auth request 관리 화면으로 대체한다.
-3. `/admin/accounts/new`, `/admin/accounts/:ref`, `/admin/accounts/:ref/edit`는 제거한다.
+2. `/accounts`는 legacy account 목록이 아니라 auth request 관리 화면으로 대체한다.
+3. legacy `/admin/accounts*` 경로는 남기지 않는다.
 4. `RequireAdmin`는 legacy `role === admin`이 아니라 아래로 판단한다.
    - `active_account.account_type in {system_admin, manager}`
-
-### front-operator-console
-
-1. legacy auth 세션만 제거한다.
-2. operator는 별도 account CRUD/auth 관리 화면을 갖지 않는다.
+5. 기존 `front-operator-console`의 read/self-service 화면은 통합 웹으로 이관하고, 별도 active runtime으로 유지하지 않는다.
 
 ## driver 참조 current truth
 
@@ -207,7 +206,7 @@ legacy `account` 요약 payload는 최종 current truth에서 제거한다.
 아래가 모두 성립하면 이번 phase가 완료된 것이다.
 
 1. `service-account-access`에 legacy `Account` model과 legacy `/auth/*`가 없다.
-2. 두 웹 콘솔이 `identity-*` auth API만 사용한다.
+2. 단일 웹 콘솔이 `identity-*` auth API만 사용한다.
 3. admin 콘솔에 legacy account CRUD 화면이 없다.
 4. `service-driver-profile`에 `DriverProfile.account_id`가 없다.
 5. `service-driver-operations-view`가 legacy account lookup을 하지 않는다.

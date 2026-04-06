@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { canManageDriverProfileScope } from '../authScopes';
 import { listManageableDriverAccounts } from '../api/driverAccounts';
 import { createDriverAccountLink, listDriverAccountLinks, unlinkDriverAccountLink } from '../api/driverAccountLinks';
 import { listDrivers } from '../api/drivers';
 import { listCompanies, listFleets } from '../api/organization';
-import { getErrorMessage, type HttpClient } from '../api/http';
+import { getErrorMessage, type HttpClient, type SessionPayload } from '../api/http';
 import { getDriverRouteRef } from '../routeRefs';
 import type { Company, DriverAccountLinkSummary, DriverAccountSummary, DriverProfile, Fleet } from '../types';
 
 type DriversPageProps = {
   client: HttpClient;
+  session: SessionPayload;
 };
 
-export function DriversPage({ client }: DriversPageProps) {
+export function DriversPage({ client, session }: DriversPageProps) {
   const navigate = useNavigate();
   const [driverAccountLinks, setDriverAccountLinks] = useState<DriverAccountLinkSummary[]>([]);
   const [driverAccounts, setDriverAccounts] = useState<DriverAccountSummary[]>([]);
@@ -23,6 +25,7 @@ export function DriversPage({ client }: DriversPageProps) {
   const [fleets, setFleets] = useState<Fleet[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const canManageDriverProfiles = canManageDriverProfileScope(session);
 
   useEffect(() => {
     let ignore = false;
@@ -146,9 +149,11 @@ export function DriversPage({ client }: DriversPageProps) {
           <p className="panel-kicker">배송원 목록</p>
           <h2>Driver Profile HR 관리자 조회</h2>
         </div>
-        <Link className="button primary" to="/drivers/new">
-          배송원 생성
-        </Link>
+        {canManageDriverProfiles ? (
+          <Link className="button primary" to="/drivers/new">
+            배송원 생성
+          </Link>
+        ) : null}
       </div>
       {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
       {isLoading ? <p className="empty-state">배송원을 불러오는 중입니다...</p> : (

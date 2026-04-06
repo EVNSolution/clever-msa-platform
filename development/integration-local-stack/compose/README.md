@@ -9,7 +9,6 @@
 
 ## 현재 Compose 대상
 - `gateway`
-- `front`
 - `admin-front`
 - `account-auth-api`
 - `driver-profile-api`
@@ -64,7 +63,7 @@
 - `vehicle-ops-api`는 lean `Vehicle Ops` query service다.
 - current runtime authoritative contract는 [05-vehicle-ops-read-model.md](../../../docs/contracts/05-vehicle-ops-read-model.md)의 current runtime / bootstrap Phase 1 section을 따른다.
 - post-refactor target contract는 같은 문서의 post-refactor target section을 따른다.
-- `front /vehicles`는 현재 `Vehicle Ops` summary contract를 사용한다.
+- `admin-front /vehicles`는 현재 `Vehicle Ops` summary contract를 사용한다.
 - current runtime summary contract는 `Vehicle Registry + Driver Vehicle Assignment + Telemetry Hub + Terminal Registry + Organization Registry`를 읽는다.
 - current runtime detail은 `current_terminal` block을 포함한다.
 - 이번 범위에서 `Vehicle Ops Phase 1`의 compose/gateway/env/front 전환이 모두 완료됐다.
@@ -220,8 +219,7 @@
 - replay/status workflow나 telemetry 정본 저장은 소유하지 않는다.
 
 ## Gateway 규칙
-- `/` -> `front`
-- `/admin/` -> `admin-front`
+- `/` -> `admin-front`
 - `/api/auth/` -> `account-auth-api`
 - `/api/drivers/` -> `driver-profile-api`
 - `/api/personnel-documents/` -> `personnel-document-registry-api`

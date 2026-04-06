@@ -16,7 +16,7 @@
 | `service-telemetry-hub` | latest location, latest diagnostic |
 | `service-organization-registry` | 제조사/운영사 회사명 |
 
-`front-operator-console`은 source service를 직접 fan-out하지 않고 `Vehicle Ops` contract만 사용한다.
+단일 웹 콘솔의 차량 조회 화면은 source service를 직접 fan-out하지 않고 `Vehicle Ops` contract만 사용한다.
 
 ## 조회 질문
 
@@ -133,8 +133,8 @@
 
 ### 목록
 
-- `front /vehicles`는 `Vehicle Ops` 목록 contract만 사용한다.
-- `front /vehicles`는 browser에서 terminal을 별도 리소스로 분리하지 않는다.
+- 단일 웹의 `/vehicles`는 `Vehicle Ops` 목록 contract만 사용한다.
+- 단일 웹의 `/vehicles`는 browser에서 terminal을 별도 리소스로 분리하지 않는다.
 - vehicle row는 terminal 연결 상태와 telemetry freshness를 함께 요약할 수 있어야 한다.
 - terminal이 없으면 `미연결`, freshness가 떨어지면 `지연` 같은 상태를 차량 행 안에서 표현한다.
 
@@ -165,7 +165,7 @@
 - UI는 수동 새로고침 없이 terminal/telemetry 상태 변화를 반영해야 한다.
 - UI는 항상 마지막 수집 시각과 freshness 상태를 보여줘야 한다.
 
-`admin-front`는 계속 각 정본 서비스의 write API를 사용한다. `Vehicle Ops`는 admin write 경로를 대체하지 않는다.
+단일 웹은 계속 각 정본 서비스의 write API를 사용한다. `Vehicle Ops`는 write 경로를 대체하지 않는다.
 
 ## 금지 규칙
 

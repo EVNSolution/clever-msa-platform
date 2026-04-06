@@ -55,6 +55,29 @@ export function canAccessDriverScope(session: SessionPayload) {
   return isSystemAdmin(session) || getManagerRole(session) !== null;
 }
 
+export function canManageDriverProfileScope(session: SessionPayload) {
+  const role = getManagerRole(session);
+  return (
+    isSystemAdmin(session) ||
+    role === 'company_super_admin' ||
+    role === 'settlement_manager' ||
+    role === 'fleet_manager'
+  );
+}
+
+export function canManageAnnouncementScope(session: SessionPayload) {
+  const role = getManagerRole(session);
+  return isSystemAdmin(session) || role === 'company_super_admin';
+}
+
+export function canManageSupportScope(session: SessionPayload) {
+  return canManageAnnouncementScope(session);
+}
+
+export function canManageNotificationScope(session: SessionPayload) {
+  return canManageAnnouncementScope(session);
+}
+
 export function canManageCompanySuperAdmin(session: SessionPayload) {
   return isSystemAdmin(session);
 }

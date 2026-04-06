@@ -8,7 +8,14 @@ import { Layout } from './components/Layout';
 import { RequireAdmin } from './components/RequireAdmin';
 import { RequireRoleScope } from './components/RequireRoleScope';
 import { SettlementSectionLayout } from './components/SettlementSectionLayout';
-import { canAccessCompanyScope, canAccessDispatchScope, canAccessSettlementScope, canAccessVehicleScope } from './authScopes';
+import {
+  canAccessCompanyScope,
+  canAccessDispatchScope,
+  canAccessSettlementScope,
+  canAccessVehicleScope,
+  canManageAnnouncementScope,
+  canManageDriverProfileScope,
+} from './authScopes';
 import { AccountPage } from './pages/AccountPage';
 import { AccountsPage } from './pages/AccountsPage';
 import { AnnouncementDetailPage } from './pages/AnnouncementDetailPage';
@@ -20,6 +27,7 @@ import { CompanyFormPage } from './pages/CompanyFormPage';
 import { DispatchBoardDetailPage } from './pages/DispatchBoardDetailPage';
 import { DispatchBoardsPage } from './pages/DispatchBoardsPage';
 import { DispatchPlanFormPage } from './pages/DispatchPlanFormPage';
+import { DashboardPage } from './pages/DashboardPage';
 import { DriverDetailPage } from './pages/DriverDetailPage';
 import { DriverFormPage } from './pages/DriverFormPage';
 import { DriversPage } from './pages/DriversPage';
@@ -276,11 +284,11 @@ export default function App() {
   }
 
   return (
-    <BrowserRouter basename="/admin" future={ROUTER_FUTURE}>
+    <BrowserRouter future={ROUTER_FUTURE}>
       <RequireAdmin session={session} onLogout={handleLogout}>
         <Routes>
           <Route element={<Layout session={session} onLogout={handleLogout} />}>
-            <Route path="/" element={<Navigate replace to="/accounts" />} />
+            <Route path="/" element={<DashboardPage client={client} session={session} />} />
             <Route
               path="/account"
               element={
@@ -353,29 +361,46 @@ export default function App() {
                 </RequireRoleScope>
               }
             />
-            <Route
-              path="/announcements"
-              element={<AnnouncementsPage client={client} />}
-            />
+            <Route path="/announcements" element={<AnnouncementsPage client={client} session={session} />} />
             <Route
               path="/announcements/new"
-              element={<AnnouncementFormPage client={client} mode="create" />}
+              element={
+                <RequireRoleScope
+                  message="공지 생성과 수정은 시스템 관리자 또는 회사 전체 관리자만 할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="공지 관리 권한 필요"
+                  when={canManageAnnouncementScope}
+                >
+                  <AnnouncementFormPage client={client} mode="create" />
+                </RequireRoleScope>
+              }
             />
             <Route
               path="/announcements/:announcementSlug"
-              element={<AnnouncementDetailPage client={client} />}
+              element={<AnnouncementDetailPage client={client} session={session} />}
             />
             <Route
               path="/announcements/:announcementSlug/edit"
-              element={<AnnouncementFormPage client={client} mode="edit" />}
+              element={
+                <RequireRoleScope
+                  message="공지 생성과 수정은 시스템 관리자 또는 회사 전체 관리자만 할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="공지 관리 권한 필요"
+                  when={canManageAnnouncementScope}
+                >
+                  <AnnouncementFormPage client={client} mode="edit" />
+                </RequireRoleScope>
+              }
             />
             <Route
               path="/support"
-              element={<SupportPage client={client} />}
+              element={<SupportPage client={client} session={session} />}
             />
             <Route
               path="/notifications"
-              element={<NotificationsPage client={client} />}
+              element={<NotificationsPage client={client} session={session} />}
             />
             <Route
               path="/companies"
@@ -475,10 +500,36 @@ export default function App() {
                 </RequireRoleScope>
               }
             />
-            <Route path="/drivers" element={<DriversPage client={client} />} />
-            <Route path="/drivers/new" element={<DriverFormPage client={client} mode="create" />} />
-            <Route path="/drivers/:driverRef" element={<DriverDetailPage client={client} />} />
-            <Route path="/drivers/:driverRef/edit" element={<DriverFormPage client={client} mode="edit" />} />
+            <Route path="/drivers" element={<DriversPage client={client} session={session} />} />
+            <Route
+              path="/drivers/new"
+              element={
+                <RequireRoleScope
+                  message="배송원 정본 생성과 수정은 시스템 관리자, 회사 전체 관리자, 정산 관리자, 플릿 관리자만 할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="배송원 관리 권한 필요"
+                  when={canManageDriverProfileScope}
+                >
+                  <DriverFormPage client={client} mode="create" />
+                </RequireRoleScope>
+              }
+            />
+            <Route path="/drivers/:driverRef" element={<DriverDetailPage client={client} session={session} />} />
+            <Route
+              path="/drivers/:driverRef/edit"
+              element={
+                <RequireRoleScope
+                  message="배송원 정본 생성과 수정은 시스템 관리자, 회사 전체 관리자, 정산 관리자, 플릿 관리자만 할 수 있습니다."
+                  onLogout={handleLogout}
+                  session={session}
+                  title="배송원 관리 권한 필요"
+                  when={canManageDriverProfileScope}
+                >
+                  <DriverFormPage client={client} mode="edit" />
+                </RequireRoleScope>
+              }
+            />
             <Route
               path="/vehicles"
               element={
@@ -626,7 +677,7 @@ export default function App() {
               <Route path="runs" element={<SettlementRunsPage client={client} />} />
               <Route path="results" element={<SettlementResultsPage client={client} />} />
             </Route>
-            <Route path="*" element={<Navigate replace to="/accounts" />} />
+            <Route path="*" element={<Navigate replace to="/" />} />
           </Route>
         </Routes>
       </RequireAdmin>

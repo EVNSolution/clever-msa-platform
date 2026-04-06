@@ -24,8 +24,6 @@
 - `development/service-account-access/accounts/tests/test_auth_api.py`
 - `development/front-admin-console/src/api/auth.ts`
 - `development/front-admin-console/src/api/http.ts`
-- `development/front-operator-console/src/api/auth.ts`
-- `development/front-operator-console/src/api/http.ts`
 - `development/edge-api-gateway/nginx.conf`
 - 각 서비스 repo의 `authentication.py`, `permissions.py`
 
@@ -169,7 +167,7 @@ consent recovery 세션은 `principal_kind=identity_consent_recovery_session`으
 
 ### 프론트 동작
 
-두 웹 콘솔은 같은 auth client 패턴을 쓴다.
+단일 웹 콘솔은 같은 auth client 패턴을 쓴다.
 
 1. 로그인 시 `/api/auth/identity-login/` 호출
 2. access token은 메모리에 유지

@@ -43,6 +43,13 @@ export function listGeneralNotifications(client: HttpClient, params: Notificatio
   return client.request<GeneralNotification[]>(`/notifications/general/${suffix}`);
 }
 
+export function updateNotificationStatus(client: HttpClient, notificationId: string, status: GeneralNotification['status']) {
+  return client.request<GeneralNotification>(`/notifications/general/${notificationId}/`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  });
+}
+
 export function createPushSend(client: HttpClient, payload: PushSendPayload) {
   return client.request<PushDeliveryLog>('/notifications/push-sends/', {
     method: 'POST',

@@ -14,10 +14,13 @@ export function Layout({ session, onLogout }: LayoutProps) {
     <div className="page-shell admin-shell">
       <header className="topbar admin-topbar">
         <div>
-          <p className="brand-kicker">CLEVER 관리</p>
-          <h1 className="brand-title">관리자 콘솔</h1>
+          <p className="brand-kicker">CLEVER 운영</p>
+          <h1 className="brand-title">통합 콘솔</h1>
         </div>
         <nav className="nav-links admin-nav">
+          <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/">
+            대시보드
+          </NavLink>
           <NavLink className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} to="/account">
             내 계정
           </NavLink>
