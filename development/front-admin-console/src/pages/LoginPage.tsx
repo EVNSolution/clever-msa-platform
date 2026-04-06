@@ -127,8 +127,8 @@ export function LoginPage({
   return (
     <div className="auth-shell admin-auth-shell">
       <section className="auth-hero admin-hero">
-        <p className="eyebrow">관리자 화면</p>
-        <h1>계정, 조직, 배송원, 정산 도메인을 직접 관리하는 관리자 콘솔입니다.</h1>
+        <p className="eyebrow">웹 콘솔</p>
+        <h1>계정, 조직, 배송원, 정산 도메인을 직접 관리하는 통합 웹 콘솔입니다.</h1>
         <p className="hero-copy">
           모든 요청은 게이트웨이를 거치며, Refresh 토큰은 <code>HttpOnly</code> 쿠키로 유지됩니다.
         </p>
@@ -137,7 +137,7 @@ export function LoginPage({
         <div className="panel-header panel-header-inline">
           <div>
             <p className="panel-kicker">
-              {view === 'login' ? '관리자 로그인' : view === 'signup' ? '회원가입 요청' : 'identity 복구'}
+              {view === 'login' ? '웹 콘솔 로그인' : view === 'signup' ? '회원가입 요청' : 'identity 복구'}
             </p>
             <h2>
               {view === 'login'

@@ -76,6 +76,13 @@ cutover 시작 시점의 runtime은 아래처럼 분리되어 있었다.
 
 ## 최종 웹 current truth
 
+### naming 원칙
+
+1. 사용자-facing 이름은 `통합 웹 콘솔`로 고정한다.
+2. `관리자 콘솔`, `운영 콘솔` 같은 split-web 표현은 current truth에서 제거한다.
+3. `front-admin-console`, `admin-front` 같은 이름은 repo path와 compose service를 가리키는 기술 식별자로만 남긴다.
+4. 즉 이번 cutover는 사용자-facing naming 통합이지, repo/service/container 식별자 rename까지 포함하지 않는다.
+
 ### 살아남는 웹
 
 1. 최종 단일 웹 runtime은 `front-admin-console`이다.
