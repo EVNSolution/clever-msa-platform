@@ -85,17 +85,18 @@
 
 ### 5. Region web
 
-- [ ] 현재 active next slice로 권역 웹을 기준 삼기
-- [ ] `service-region-registry` 기준 권역 기준 화면 닫기
-- [ ] `service-region-analytics` 기준 권역 분석 화면 닫기
-- [ ] 지도/표/요약 등 웹 운영에 필요한 read 중심 UX를 마감하기
+- [x] 현재 active next slice로 권역 웹을 기준 삼기
+- [x] `service-region-registry` 기준 권역 기준 화면 닫기
+- [x] `service-region-analytics` 기준 권역 분석 화면 닫기
+- [x] 지도/표/요약 등 웹 운영에 필요한 read 중심 UX를 마감하기
 
 이 단계는 운영 보조와 분석 기능을 웹 기준으로 닫는다.
 
 ### 6. Personnel document web
 
 - [ ] `service-personnel-document-registry` 기준 문서 메타데이터 화면 닫기
-- [ ] 업로드/조회/상태 관리 기준을 웹에서 정리하기
+- [ ] `driver` 연결 필수 규칙과 `driver_id` 필터 UX를 웹에서 정리하기
+- [ ] 업로드 없이 메타데이터 기반 목록/상세/등록/수정 흐름을 닫기
 
 이 영역은 중요하지만, 위 1~4보다 운영 차단 효과가 한 단계 낮으므로 뒤에 둔다.
 
