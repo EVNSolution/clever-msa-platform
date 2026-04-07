@@ -1,0 +1,350 @@
+services:
+  - service_id: edge-api-gateway
+    repo: development/edge-api-gateway
+    runtime: ec2
+    artifact: source:git
+    wave: 1
+    depends_on: []
+    compose_service: gateway
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service edge-api-gateway --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service edge-api-gateway --env {environment}"
+
+  - service_id: service-account-access
+    repo: development/service-account-access
+    runtime: ec2
+    artifact: source:git
+    wave: 2
+    depends_on: ["edge-api-gateway"]
+    compose_service: account-auth-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-account-access --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-account-access --env {environment}"
+
+  - service_id: service-organization-registry
+    repo: development/service-organization-registry
+    runtime: ec2
+    artifact: source:git
+    wave: 2
+    depends_on: ["service-account-access"]
+    compose_service: organization-master-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-organization-registry --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-organization-registry --env {environment}"
+
+  - service_id: service-driver-profile
+    repo: development/service-driver-profile
+    runtime: ec2
+    artifact: source:git
+    wave: 2
+    depends_on: ["service-account-access"]
+    compose_service: driver-profile-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-driver-profile --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-driver-profile --env {environment}"
+
+  - service_id: service-personnel-document-registry
+    repo: development/service-personnel-document-registry
+    runtime: ec2
+    artifact: source:git
+    wave: 3
+    depends_on: ["service-account-access", "service-organization-registry"]
+    compose_service: personnel-document-registry-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-personnel-document-registry --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-personnel-document-registry --env {environment}"
+
+  - service_id: service-region-registry
+    repo: development/service-region-registry
+    runtime: ec2
+    artifact: source:git
+    wave: 2
+    depends_on: ["service-organization-registry"]
+    compose_service: region-registry-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-region-registry --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-region-registry --env {environment}"
+
+  - service_id: service-terminal-registry
+    repo: development/service-terminal-registry
+    runtime: ec2
+    artifact: source:git
+    wave: 3
+    depends_on: ["service-region-registry"]
+    compose_service: terminal-registry-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-terminal-registry --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-terminal-registry --env {environment}"
+
+  - service_id: service-delivery-record
+    repo: development/service-delivery-record
+    runtime: ec2
+    artifact: source:git
+    wave: 3
+    depends_on: []
+    compose_service: delivery-record-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-delivery-record --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-delivery-record --env {environment}"
+
+  - service_id: service-dispatch-registry
+    repo: development/service-dispatch-registry
+    runtime: ec2
+    artifact: source:git
+    wave: 3
+    depends_on: ["service-region-registry", "service-terminal-registry"]
+    compose_service: dispatch-registry-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-dispatch-registry --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-dispatch-registry --env {environment}"
+
+  - service_id: service-vehicle-registry
+    repo: development/service-vehicle-registry
+    runtime: ec2
+    artifact: source:git
+    wave: 3
+    depends_on: ["service-organization-registry"]
+    compose_service: vehicle-asset-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-vehicle-registry --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-vehicle-registry --env {environment}"
+
+  - service_id: service-vehicle-assignment
+    repo: development/service-vehicle-assignment
+    runtime: ec2
+    artifact: source:git
+    wave: 3
+    depends_on: ["service-vehicle-registry"]
+    compose_service: driver-vehicle-assignment-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-vehicle-assignment --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-vehicle-assignment --env {environment}"
+
+  - service_id: service-settlement-registry
+    repo: development/service-settlement-registry
+    runtime: ec2
+    artifact: source:git
+    wave: 4
+    depends_on: ["service-account-access", "service-organization-registry"]
+    compose_service: settlement-registry-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-settlement-registry --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-settlement-registry --env {environment}"
+
+  - service_id: service-settlement-payroll
+    repo: development/service-settlement-payroll
+    runtime: ec2
+    artifact: source:git
+    wave: 4
+    depends_on: ["service-settlement-registry"]
+    compose_service: settlement-payroll-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-settlement-payroll --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-settlement-payroll --env {environment}"
+
+  - service_id: service-settlement-operations-view
+    repo: development/service-settlement-operations-view
+    runtime: ec2
+    artifact: source:git
+    wave: 5
+    depends_on: ["service-settlement-registry", "service-settlement-payroll"]
+    compose_service: settlement-ops-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-settlement-operations-view --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-settlement-operations-view --env {environment}"
+
+  - service_id: service-driver-operations-view
+    repo: development/service-driver-operations-view
+    runtime: ec2
+    artifact: source:git
+    wave: 5
+    depends_on: ["service-driver-profile"]
+    compose_service: driver-ops-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-driver-operations-view --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-driver-operations-view --env {environment}"
+
+  - service_id: service-vehicle-operations-view
+    repo: development/service-vehicle-operations-view
+    runtime: ec2
+    artifact: source:git
+    wave: 5
+    depends_on: ["service-vehicle-registry", "service-vehicle-assignment"]
+    compose_service: vehicle-ops-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-vehicle-operations-view --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-vehicle-operations-view --env {environment}"
+
+  - service_id: service-dispatch-operations-view
+    repo: development/service-dispatch-operations-view
+    runtime: ec2
+    artifact: source:git
+    wave: 5
+    depends_on: ["service-dispatch-registry"]
+    compose_service: dispatch-ops-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-dispatch-operations-view --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-dispatch-operations-view --env {environment}"
+
+  - service_id: service-region-analytics
+    repo: development/service-region-analytics
+    runtime: ec2
+    artifact: source:git
+    wave: 4
+    depends_on: ["service-region-registry", "service-delivery-record"]
+    compose_service: region-analytics-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-region-analytics --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-region-analytics --env {environment}"
+
+  - service_id: service-announcement-registry
+    repo: development/service-announcement-registry
+    runtime: ec2
+    artifact: source:git
+    wave: 4
+    depends_on: ["service-account-access", "service-organization-registry"]
+    compose_service: announcement-registry-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-announcement-registry --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-announcement-registry --env {environment}"
+
+  - service_id: service-support-registry
+    repo: development/service-support-registry
+    runtime: ec2
+    artifact: source:git
+    wave: 4
+    depends_on: ["service-account-access", "service-organization-registry"]
+    compose_service: support-registry-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-support-registry --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-support-registry --env {environment}"
+
+  - service_id: service-notification-hub
+    repo: development/service-notification-hub
+    runtime: ec2
+    artifact: source:git
+    wave: 4
+    depends_on: ["service-account-access", "service-organization-registry"]
+    compose_service: notification-hub-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-notification-hub --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-notification-hub --env {environment}"
+
+  - service_id: service-telemetry-hub
+    repo: development/service-telemetry-hub
+    runtime: ec2
+    artifact: source:git
+    wave: 3
+    depends_on: []
+    compose_service: telemetry-hub-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-telemetry-hub --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-telemetry-hub --env {environment}"
+
+  - service_id: service-telemetry-listener
+    repo: development/service-telemetry-listener
+    runtime: ec2
+    artifact: source:git
+    wave: 3
+    depends_on: ["service-telemetry-hub"]
+    compose_service: telemetry-listener
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-telemetry-listener --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-telemetry-listener --env {environment}"
+
+  - service_id: service-telemetry-dead-letter
+    repo: development/service-telemetry-dead-letter
+    runtime: ec2
+    artifact: source:git
+    wave: 4
+    depends_on: ["service-telemetry-hub"]
+    compose_service: telemetry-dead-letter-api
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service service-telemetry-dead-letter --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service service-telemetry-dead-letter --env {environment}"
+
+  - service_id: front-admin-console
+    repo: development/front-admin-console
+    runtime: ec2
+    artifact: source:git
+    wave: 6
+    depends_on: ["edge-api-gateway"]
+    compose_service: admin-front
+    compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
+    remote_repo_dir: /srv/clever/clever-msa-platform
+    instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
+    health_check: docker-compose-ps
+    deploy_command: "scripts/deploy/runner.sh --service front-admin-console --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service front-admin-console --env {environment}"

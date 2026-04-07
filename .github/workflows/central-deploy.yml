@@ -1,0 +1,347 @@
+name: Central MSA Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        required: true
+        default: dev
+        options:
+          - dev
+          - stage
+          - prod
+      targets:
+        type: string
+        required: false
+        description: "Comma-separated service targets (service-*, front-*, edge-api-gateway). empty = changed-file based."
+      base_sha:
+        type: string
+        required: false
+        description: "Optional base SHA for compare"
+      head_sha:
+        type: string
+        required: false
+        description: "Optional head SHA for compare"
+      changed_files:
+        type: string
+        required: false
+        description: "Optional raw newline-separated changed files"
+      dry_run:
+        type: boolean
+        required: false
+        default: false
+      run_health_check:
+        type: boolean
+        required: false
+        default: true
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: false
+        default: dev
+      targets:
+        type: string
+        required: false
+        default: ""
+      base_sha:
+        type: string
+        required: false
+        default: ""
+      head_sha:
+        type: string
+        required: false
+        default: ""
+      changed_files:
+        type: string
+        required: false
+        default: ""
+      dry_run:
+        type: boolean
+        required: false
+        default: false
+      run_health_check:
+        type: boolean
+        required: false
+        default: true
+  push:
+    branches:
+      - main
+    paths:
+      - "development/**"
+      - "docs/mappings/central-deploy-catalog.yaml"
+      - ".github/workflows/central-deploy*.yml"
+  repository_dispatch:
+    types:
+      - central-deploy
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  plan:
+    name: Plan deploy targets
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.context.outputs.environment }}
+      dry_run: ${{ steps.context.outputs.dry_run }}
+      run_health_check: ${{ steps.context.outputs.run_health_check }}
+      waves_json: ${{ steps.plan.outputs.waves_json }}
+      deployable: ${{ steps.plan.outputs.deployable }}
+      aws_role_arn: ${{ steps.plan.outputs.aws_role_arn }}
+      target_count: ${{ steps.plan.outputs.target_count }}
+      changed_count: ${{ steps.plan.outputs.changed_count }}
+      catalog_path: ${{ steps.context.outputs.catalog_path }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve plan inputs
+        id: context
+        run: |
+          EVENT_NAME="${{ github.event_name }}"
+          CATALOG="docs/mappings/central-deploy-catalog.yaml"
+          echo "catalog_path=$CATALOG" >> "$GITHUB_OUTPUT"
+
+          if [ "$EVENT_NAME" = "workflow_call" ]; then
+            ENV_INPUT="${{ inputs.environment }}"
+            TARGETS_INPUT="${{ inputs.targets }}"
+            CHANGED_INPUT="${{ inputs.changed_files }}"
+            BASE_SHA="${{ inputs.base_sha }}"
+            HEAD_SHA="${{ inputs.head_sha }}"
+            DRY_RUN="${{ inputs.dry_run }}"
+            RUN_HEALTH="${{ inputs.run_health_check }}"
+          elif [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            ENV_INPUT="${{ github.event.inputs.environment }}"
+            TARGETS_INPUT="${{ github.event.inputs.targets }}"
+            CHANGED_INPUT="${{ github.event.inputs.changed_files }}"
+            BASE_SHA="${{ github.event.inputs.base_sha }}"
+            HEAD_SHA="${{ github.event.inputs.head_sha }}"
+            DRY_RUN="${{ github.event.inputs.dry_run }}"
+            RUN_HEALTH="${{ github.event.inputs.run_health_check }}"
+          elif [ "$EVENT_NAME" = "repository_dispatch" ]; then
+            ENV_INPUT="${{ github.event.client_payload.environment }}"
+            TARGETS_INPUT="${{ github.event.client_payload.targets }}"
+            CHANGED_INPUT="${{ github.event.client_payload.changed_files }}"
+            BASE_SHA="${{ github.event.client_payload.base_sha }}"
+            HEAD_SHA="${{ github.event.client_payload.head_sha }}"
+            DRY_RUN="${{ github.event.client_payload.dry_run }}"
+            RUN_HEALTH="${{ github.event.client_payload.run_health_check }}"
+          else
+            ENV_INPUT="dev"
+            TARGETS_INPUT=""
+            CHANGED_INPUT=""
+            BASE_SHA="${{ github.event.before }}"
+            HEAD_SHA="${{ github.sha }}"
+            DRY_RUN="false"
+            RUN_HEALTH="true"
+          fi
+
+          case "${ENV_INPUT}" in
+            dev|stage|prod)
+              ENVIRONMENT="$ENV_INPUT"
+              ;;
+            *)
+              ENVIRONMENT="dev"
+              ;;
+          esac
+
+          if [ -z "$RUN_HEALTH" ]; then
+            RUN_HEALTH="true"
+          fi
+          if [ "$DRY_RUN" = "true" ]; then
+            DRY_RUN="true"
+          else
+            DRY_RUN="false"
+          fi
+
+          echo "environment=$ENVIRONMENT" >> "$GITHUB_OUTPUT"
+          echo "dry_run=$DRY_RUN" >> "$GITHUB_OUTPUT"
+          echo "run_health_check=$RUN_HEALTH" >> "$GITHUB_OUTPUT"
+          echo "targets_input=$TARGETS_INPUT" >> "$GITHUB_OUTPUT"
+          echo "changed_input<<EOF" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$CHANGED_INPUT" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Compute wave plan
+        id: plan
+        env:
+          BASE_SHA: ${{ steps.context.outputs.base_sha }}
+          HEAD_SHA: ${{ steps.context.outputs.head_sha }}
+          TARGETS: ${{ steps.context.outputs.targets_input }}
+          CHANGED: ${{ steps.context.outputs.changed_input }}
+          CATALOG: ${{ steps.context.outputs.catalog_path }}
+          DRY_RUN: ${{ steps.context.outputs.dry_run }}
+        run: |
+          : > /tmp/changed_files.txt
+          if [ -n "$CHANGED" ]; then
+            printf '%s\n' "$CHANGED" > /tmp/changed_files.txt
+          elif [ -n "$TARGETS" ]; then
+            TARGETS="${TARGETS//$'\n'/,}"
+            IFS=',' read -r -a TARGET_LIST <<< "$TARGETS"
+            for t in "${TARGET_LIST[@]}"; do
+              target="$(echo "$t" | tr -d '[:space:]')"
+              if [ -n "$target" ]; then
+                printf 'development/%s/.keep\n' "$target" >> /tmp/changed_files.txt
+              fi
+            done
+          else
+            if [ -n "$BASE_SHA" ] && [ -n "$HEAD_SHA" ]; then
+              git diff --name-only "$BASE_SHA..$HEAD_SHA" > /tmp/changed_files.txt || true
+            fi
+          fi
+
+          python3 scripts/deploy/compute-targets.py \
+            --base-sha "$BASE_SHA" \
+            --head-sha "$HEAD_SHA" \
+            --targets "$TARGETS" \
+            --changes-file /tmp/changed_files.txt \
+            --catalog "$CATALOG" \
+            --output /tmp/target-plan.json
+
+          if [ ! -f /tmp/target-plan.json ]; then
+            echo "FAILED: target plan missing" >&2
+            exit 1
+          fi
+
+          target_count=$(jq -r '.target_count' /tmp/target-plan.json)
+          changed_count=$(jq -r '.changed_files|length' /tmp/target-plan.json)
+          deployable=$(jq -r '(if .docs_only_change then false else .target_count > 0 end)' /tmp/target-plan.json)
+          waves=$(jq -c '.waves' /tmp/target-plan.json)
+          echo "target_count=$target_count" >> "$GITHUB_OUTPUT"
+          echo "changed_count=$changed_count" >> "$GITHUB_OUTPUT"
+          echo "deployable=$deployable" >> "$GITHUB_OUTPUT"
+          echo "waves_json=$waves" >> "$GITHUB_OUTPUT"
+
+          case "${{ steps.context.outputs.environment }}" in
+            dev)
+              role="${{ secrets.GH_ACTIONS_DEV_DEPLOY_ROLE_ARN }}"
+              ;;
+            stage)
+              role="${{ secrets.GH_ACTIONS_STAGE_DEPLOY_ROLE_ARN }}"
+              ;;
+            prod)
+              role="${{ secrets.GH_ACTIONS_PROD_DEPLOY_ROLE_ARN }}"
+              ;;
+            *)
+              role=""
+              ;;
+          esac
+          echo "aws_role_arn=$role" >> "$GITHUB_OUTPUT"
+
+      - name: Validate plan
+        run: |
+          echo "[plan] environment=${{ steps.context.outputs.environment }}"
+          echo "[plan] target_count=${{ steps.plan.outputs.target_count }}"
+          echo "[plan] changed_count=${{ steps.plan.outputs.changed_count }}"
+          echo "[plan] deployable=${{ steps.plan.outputs.deployable }}"
+          echo "[plan] waves_json=${{ steps.plan.outputs.waves_json }}"
+
+      - name: Upload target plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: central-deploy-plan
+          path: /tmp/target-plan.json
+          if-no-files-found: error
+
+  deploy:
+    name: Deploy wave ${{ matrix.wave.wave }}
+    needs: plan
+    if: needs.plan.outputs.deployable == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include: ${{ fromJson(needs.plan.outputs.waves_json) }}
+    environment: ${{ needs.plan.outputs.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure AWS credentials
+        if: needs.plan.outputs.deployable == 'true' && needs.plan.outputs.aws_role_arn != ''
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ needs.plan.outputs.aws_role_arn }}
+          aws-region: ap-northeast-2
+
+      - name: Verify AWS role when deploy needed
+        if: needs.plan.outputs.deployable == 'true' && needs.plan.outputs.aws_role_arn == '' && needs.plan.outputs.dry_run != 'true'
+        run: |
+          echo "deploy requires AWS role for non-dry-run. Set one of GH_ACTIONS_*_DEPLOY_ROLE_ARN secrets."
+          exit 1
+
+      - name: Deploy services in wave
+        if: ${{ needs.plan.outputs.deployable == 'true' }}
+        env:
+          DRY_RUN: ${{ needs.plan.outputs.dry_run }}
+          SKIP_HEALTH_CHECK: ${{ needs.plan.outputs.run_health_check != 'true' }}
+          SERVICES: ${{ toJson(matrix.wave.services) }}
+          TARGET_ENV: ${{ needs.plan.outputs.environment }}
+        run: |
+          set -euo pipefail
+          wave='${{ matrix.wave.wave }}'
+          echo "wave=$wave, services=$SERVICES"
+          if [ "${{ needs.plan.outputs.dry_run }}" = "true" ]; then
+            export DRY_RUN=true
+          else
+            export DRY_RUN=false
+          fi
+          echo "$SERVICES" | jq -c '.[]' | while read -r svc; do
+            service_id="$(echo "$svc" | jq -r '.service_id')"
+            runtime="$(echo "$svc" | jq -r '.runtime')"
+            artifact="$(echo "$svc" | jq -r '.artifact')"
+            command="$(echo "$svc" | jq -r '.deploy_command')"
+            health_check="$(echo "$svc" | jq -r '.health_check // empty')"
+            compose_service="$(echo "$svc" | jq -r '.compose_service // empty')"
+            compose_file="$(echo "$svc" | jq -r '.compose_file // empty')"
+            remote_repo_dir="$(echo "$svc" | jq -r '.remote_repo_dir // empty')"
+            instance_selector="$(echo "$svc" | jq -r '.instance_selector // empty')"
+            remote_health_command="$(echo "$svc" | jq -r '.remote_health_command // empty')"
+
+            echo "[deploy] $service_id ($runtime) wave=$wave"
+            ./scripts/deploy/runner.sh \
+              --service "$service_id" \
+              --environment "$TARGET_ENV" \
+              --runtime "$runtime" \
+              --artifact "$artifact" \
+              --deploy-command "$command" \
+              --health-check "$health_check" \
+              --compose-service "$compose_service" \
+              --compose-file "$compose_file" \
+              --remote-repo-dir "$remote_repo_dir" \
+              --instance-selector "$instance_selector" \
+              --remote-health-command "$remote_health_command" \
+              --dry-run "$DRY_RUN"
+          done
+
+      - name: Roll back failed wave
+        if: failure()
+        env:
+          DRY_RUN: ${{ needs.plan.outputs.dry_run }}
+          SERVICES: ${{ toJson(matrix.wave.services) }}
+          TARGET_ENV: ${{ needs.plan.outputs.environment }}
+        run: |
+          set -euo pipefail
+          echo "[rollback] wave=${{ matrix.wave.wave }}"
+          echo "$SERVICES" | jq -c '.[]' | while read -r svc; do
+            service_id="$(echo "$svc" | jq -r '.service_id')"
+            runtime="$(echo "$svc" | jq -r '.runtime')"
+            artifact="$(echo "$svc" | jq -r '.artifact')"
+            echo "[rollback] $service_id ($runtime)"
+            ./scripts/deploy/rollback.sh \
+              --service "$service_id" \
+              --environment "$TARGET_ENV" \
+              --runtime "$runtime" \
+              --artifact "$artifact" \
+              --dry-run "$DRY_RUN" || true
+          done
