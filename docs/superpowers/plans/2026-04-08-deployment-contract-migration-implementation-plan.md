@@ -18,6 +18,8 @@
 - ECR repository `service-account-access` 생성 완료
 - GitHub Actions build role / EC2 host pull 권한 추가 완료
 - `service-account-access` repo에는 image build workflow와 production-oriented image entrypoint 반영 완료
+- image build role ARN은 repo secret이 아니라 organization secret `GH_ACTIONS_ECR_BUILD_ROLE_ARN` 으로 승격 완료
+- 현재 organization secret access는 selected repositories 방식으로 관리하고, `service-account-access`가 첫 연결 repo다
 - `integration-local-stack`에는 deploy 전용 compose `docker-compose.deploy.account-driver-settlement.yml` 반영 완료
 - `clever-deploy-control`은 `service-account-access` 1개에 대해 `ecr` artifact를 해석하고 EC2 host에서 image pull + compose up 을 수행하도록 반영 완료
 
