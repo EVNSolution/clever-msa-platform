@@ -10,6 +10,26 @@
 
 ---
 
+## Current Pilot Status (2026-04-08)
+
+현재 기준선은 아래로 고정한다.
+
+- pilot service `service-account-access`는 dev에서 `GitHub Actions -> ECR push -> EC2 pull` 경로로 실제 배포 성공
+- ECR repository `service-account-access` 생성 완료
+- GitHub Actions build role / EC2 host pull 권한 추가 완료
+- `service-account-access` repo에는 image build workflow와 production-oriented image entrypoint 반영 완료
+- `integration-local-stack`에는 deploy 전용 compose `docker-compose.deploy.account-driver-settlement.yml` 반영 완료
+- `clever-deploy-control`은 `service-account-access` 1개에 대해 `ecr` artifact를 해석하고 EC2 host에서 image pull + compose up 을 수행하도록 반영 완료
+
+즉 현재는 mixed contract 상태다.
+
+- `service-account-access`: image deploy
+- 나머지 서비스: source deploy
+
+이 문서의 다음 목적은 pilot 성공을 기준선으로 삼고, 두 번째 backend 서비스 확장 순서를 정하는 것이다.
+
+---
+
 ## Scope Lock
 
 이번 계획은 아래만 1차 범위로 잡는다.
