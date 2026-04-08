@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
-import { listDailyDeliveryInputSnapshots } from '../api/deliveryRecords';
+import {
+  bootstrapDailySnapshotsFromDispatch,
+  listDailyDeliveryInputSnapshots,
+} from '../api/deliveryRecords';
 import {
   createDispatchAssignment,
   createDriverDayException,
@@ -40,6 +43,7 @@ import type {
   VehicleMaster,
   VehicleSchedule,
 } from '../types';
+import { PageLayout } from '../components/PageLayout';
 
 type DispatchBoardDetailPageProps = {
   client: HttpClient;
@@ -181,7 +185,6 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
             company_id: fleetResponse.company_id,
             fleet_id: fleetResponse.fleet_id,
             service_date: selectedDispatchDate,
-            status: 'active',
           }),
         ]);
         if (ignore) {
@@ -297,7 +300,6 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
         company_id: fleet.company_id,
         fleet_id: fleet.fleet_id,
         service_date: dispatchDate,
-        status: 'active',
       }),
     ]);
     setSummary(summaryResponse);
@@ -320,7 +322,30 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
     setNewAssignmentOutsourcedDriverId(activeOutsourcedDriverResponse[0]?.outsourced_driver_id ?? '');
   }
 
-  const hasActiveDailySnapshot = dailySnapshots.length > 0;
+  const draftDailySnapshotCount = dailySnapshots.filter((snapshot) => snapshot.status === 'draft').length;
+  const activeDailySnapshotCount = dailySnapshots.filter((snapshot) => snapshot.status === 'active').length;
+  const hasActiveDailySnapshot = activeDailySnapshotCount > 0;
+  const hasDraftDailySnapshot = draftDailySnapshotCount > 0;
+
+  async function handleBootstrapSettlementInputs() {
+    if (!fleet || !dispatchDate) {
+      return;
+    }
+    setIsSaving(true);
+    setErrorMessage(null);
+    try {
+      await bootstrapDailySnapshotsFromDispatch(client, {
+        company_id: fleet.company_id,
+        fleet_id: fleet.fleet_id,
+        service_date: dispatchDate,
+      });
+      await reloadBoard();
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsSaving(false);
+    }
+  }
 
   async function handleCreateSchedule(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -565,16 +590,31 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
   }
 
   return (
-    <div className="stack">
-      <section className="panel">
-        <div className="panel-header panel-header-inline">
-          <div>
-            <p className="panel-kicker">배차 보드 상세</p>
-            <h2>{fleet?.name ?? '배차 보드'}</h2>
-          </div>
+    <PageLayout
+      actions={
+        <div className="button-group">
+          <button
+            className="button primary"
+            disabled={isSaving || !fleet || !dispatchDate}
+            onClick={() => void handleBootstrapSettlementInputs()}
+            type="button"
+          >
+            정산 입력으로 넘기기
+          </button>
           <Link className="button ghost" to="/dispatch/boards">
             보드 목록
           </Link>
+        </div>
+      }
+      subtitle="dispatch unit과 운영 입력을 함께 관리합니다."
+      title={fleet?.name ?? '배차 보드'}
+    >
+      <section className="panel">
+        <div className="panel-header">
+          <div>
+            <p className="panel-kicker">운영 개요</p>
+            <h2>배차 문맥</h2>
+          </div>
         </div>
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
         {isLoading ? (
@@ -603,7 +643,21 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
             </div>
             <div>
               <dt>정산 입력</dt>
-              <dd>{hasActiveDailySnapshot ? '정산 입력 스냅샷 완료' : '정산 입력 스냅샷 대기'}</dd>
+              <dd>
+                {hasActiveDailySnapshot
+                  ? '정산 입력 스냅샷 완료'
+                  : hasDraftDailySnapshot
+                    ? '정산 입력 draft snapshot 생성'
+                    : '정산 입력 스냅샷 대기'}
+              </dd>
+            </div>
+            <div>
+              <dt>draft snapshot</dt>
+              <dd>{draftDailySnapshotCount}</dd>
+            </div>
+            <div>
+              <dt>활성 snapshot</dt>
+              <dd>{activeDailySnapshotCount}</dd>
             </div>
           </dl>
         )}
@@ -1155,6 +1209,6 @@ export function DispatchBoardDetailPage({ client }: DispatchBoardDetailPageProps
           </form>
         </section>
       </div>
-    </div>
+    </PageLayout>
   );
 }

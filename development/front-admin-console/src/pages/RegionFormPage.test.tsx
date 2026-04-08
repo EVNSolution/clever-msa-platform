@@ -56,6 +56,7 @@ describe('RegionFormPage', () => {
       </MemoryRouter>,
     );
 
+    expect(screen.getByText('권역 정본과 polygon을 같은 입력 흐름에서 관리합니다.')).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('권역 코드'), { target: { value: 'SEOUL-A' } });
     fireEvent.change(screen.getByLabelText('권역 이름'), { target: { value: '서울 A 권역' } });
     fireEvent.change(screen.getByLabelText('상태'), { target: { value: 'active' } });
@@ -116,6 +117,7 @@ describe('RegionFormPage', () => {
     );
 
     expect(await screen.findByDisplayValue('서울 A 권역')).toBeInTheDocument();
+    expect(screen.getByText('권역 정본과 polygon을 같은 입력 흐름에서 관리합니다.')).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('권역 이름'), { target: { value: '서울 A 권역 수정' } });
     fireEvent.change(screen.getByLabelText('난이도'), { target: { value: 'medium' } });
     fireEvent.change(screen.getByLabelText('설명'), { target: { value: '수정됨' } });

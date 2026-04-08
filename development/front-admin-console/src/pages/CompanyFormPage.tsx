@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { createCompany, getCompany, updateCompany } from '../api/organization';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { getCompanyRouteRef } from '../routeRefs';
+import { PageLayout } from '../components/PageLayout';
 
 type CompanyFormPageProps = {
   client: HttpClient;
@@ -76,30 +77,42 @@ export function CompanyFormPage({ client, mode }: CompanyFormPageProps) {
   const cancelHref = isEdit && companyRef ? `/companies/${companyRef}` : '/companies';
 
   return (
-    <section className="panel form-panel">
-      <div className="panel-header">
-        <p className="panel-kicker">회사 입력</p>
-        <h2>{isEdit ? '회사 수정' : '회사 생성'}</h2>
-      </div>
-      {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
-      {isLoading ? (
-        <p className="empty-state">회사를 불러오는 중입니다...</p>
-      ) : (
-        <form className="form-stack" onSubmit={handleSubmit}>
-          <label className="field">
-            <span>회사 이름</span>
-            <input onChange={(event) => setName(event.target.value)} value={name} />
-          </label>
-          <div className="form-actions">
-            <button className="button primary" disabled={isSaving} type="submit">
-              {isSaving ? '저장 중...' : isEdit ? '회사 수정' : '회사 생성'}
-            </button>
-            <Link className="button ghost" to={cancelHref}>
-              취소
-            </Link>
-          </div>
-        </form>
-      )}
-    </section>
+    <PageLayout
+      subtitle="회사 정본 등록과 이름 변경을 같은 입력 흐름에서 처리합니다."
+      title={isEdit ? '회사 수정' : '회사 생성'}
+    >
+      <section className="panel form-panel">
+        <div className="panel-header">
+          <p className="panel-kicker">회사 입력</p>
+          <h2>기본 회사 정보</h2>
+        </div>
+        {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
+        {isLoading ? (
+          <p className="empty-state">회사를 불러오는 중입니다...</p>
+        ) : (
+          <form className="form-stack" onSubmit={handleSubmit}>
+            <div className="summary-strip">
+              <article className="summary-item">
+                <span>Mode</span>
+                <strong>{isEdit ? '수정' : '생성'}</strong>
+                <small>회사 정본 등록과 이름 변경을 같은 입력 흐름으로 처리합니다.</small>
+              </article>
+            </div>
+            <label className="field">
+              <span>회사 이름</span>
+              <input onChange={(event) => setName(event.target.value)} value={name} />
+            </label>
+            <div className="form-actions">
+              <button className="button primary" disabled={isSaving} type="submit">
+                {isSaving ? '저장 중...' : isEdit ? '회사 수정' : '회사 생성'}
+              </button>
+              <Link className="button ghost" to={cancelHref}>
+                취소
+              </Link>
+            </div>
+          </form>
+        )}
+      </section>
+    </PageLayout>
   );
 }

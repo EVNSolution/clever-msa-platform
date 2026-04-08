@@ -81,6 +81,8 @@ describe('VehicleAssignmentsPage', () => {
     );
 
     await screen.findByText('Seed Driver');
+    expect(screen.getByRole('heading', { name: '차량 배정' })).toBeInTheDocument();
+    expect(screen.getByText('배송원-차량 배정 상태를 같은 화면에서 운영합니다.')).toBeInTheDocument();
     const row = screen.getByText('Seed Driver').closest('tr');
 
     expect(screen.getByRole('link', { name: /배정 생성/i })).toHaveAttribute(

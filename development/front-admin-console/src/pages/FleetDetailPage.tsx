@@ -5,6 +5,7 @@ import { deleteFleet, getCompany, getFleet } from '../api/organization';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { getCompanyRouteRef, getFleetRouteRef } from '../routeRefs';
 import type { Company, Fleet } from '../types';
+import { PageLayout } from '../components/PageLayout';
 
 type FleetDetailPageProps = {
   client: HttpClient;
@@ -85,13 +86,9 @@ export function FleetDetailPage({ client }: FleetDetailPageProps) {
   }
 
   return (
-    <section className="panel">
-      <div className="panel-header panel-header-inline">
-        <div>
-          <p className="panel-kicker">플릿 상세</p>
-          <h2>{fleet?.name ?? '플릿 상세'}</h2>
-        </div>
-        <div className="inline-actions">
+    <PageLayout
+      actions={
+        <>
           {company && fleet ? (
             <Link className="button ghost" to={`/companies/${getCompanyRouteRef(company)}/fleets/${getFleetRouteRef(fleet)}/edit`}>
               플릿 수정
@@ -100,37 +97,58 @@ export function FleetDetailPage({ client }: FleetDetailPageProps) {
           <button className="button ghost" disabled={isDeleting || !fleet} onClick={() => void handleDelete()} type="button">
             {isDeleting ? '삭제 중...' : '플릿 삭제'}
           </button>
+        </>
+      }
+      subtitle="회사 문맥과 플릿 연결 상태를 함께 확인합니다."
+      title={fleet?.name ?? '플릿 상세'}
+    >
+      <section className="panel">
+        <div className="panel-header">
+          <p className="panel-kicker">플릿 문맥</p>
+          <h2>기본 정보</h2>
         </div>
-      </div>
-      {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
-      {isLoading ? (
-        <p className="empty-state">플릿을 불러오는 중입니다...</p>
-      ) : fleet ? (
-        <div className="stack">
-          <dl className="detail-list">
-            <div>
-              <dt>플릿 이름</dt>
-              <dd>{fleet.name}</dd>
+        {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
+        {isLoading ? (
+          <p className="empty-state">플릿을 불러오는 중입니다...</p>
+        ) : fleet ? (
+          <div className="stack">
+            <div className="summary-strip">
+              <article className="summary-item">
+                <span>Fleet</span>
+                <strong>{fleet.name}</strong>
+                <small>현재 보고 있는 플릿 정본</small>
+              </article>
+              <article className="summary-item">
+                <span>Company</span>
+                <strong>{company?.name ?? '미확인 회사'}</strong>
+                <small>상위 회사 문맥</small>
+              </article>
             </div>
-            <div>
-              <dt>상위 회사</dt>
-              <dd>{company?.name ?? '미확인 회사'}</dd>
-            </div>
-          </dl>
-          <div className="page-actions">
-            {company ? (
-              <Link className="button ghost" to={`/companies/${getCompanyRouteRef(company)}`}>
-                회사 상세로
+            <dl className="detail-list">
+              <div>
+                <dt>플릿 이름</dt>
+                <dd>{fleet.name}</dd>
+              </div>
+              <div>
+                <dt>상위 회사</dt>
+                <dd>{company?.name ?? '미확인 회사'}</dd>
+              </div>
+            </dl>
+            <div className="page-actions">
+              {company ? (
+                <Link className="button ghost" to={`/companies/${getCompanyRouteRef(company)}`}>
+                  회사 상세로
+                </Link>
+              ) : null}
+              <Link className="button ghost" to="/companies">
+                회사 목록으로
               </Link>
-            ) : null}
-            <Link className="button ghost" to="/companies">
-              회사 목록으로
-            </Link>
+            </div>
           </div>
-        </div>
-      ) : (
-        <p className="empty-state">플릿을 찾을 수 없습니다.</p>
-      )}
-    </section>
+        ) : (
+          <p className="empty-state">플릿을 찾을 수 없습니다.</p>
+        )}
+      </section>
+    </PageLayout>
   );
 }

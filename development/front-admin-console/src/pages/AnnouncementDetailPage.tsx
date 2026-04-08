@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { canManageAnnouncementScope } from '../authScopes';
 import { getAnnouncementBySlug } from '../api/announcements';
 import { getErrorMessage, type HttpClient, type SessionPayload } from '../api/http';
+import { PageLayout } from '../components/PageLayout';
 import { formatAnnouncementScopeLabel, formatAnnouncementStatusLabel } from '../uiLabels';
 import type { Announcement } from '../types';
 
@@ -55,13 +56,9 @@ export function AnnouncementDetailPage({ client, session }: AnnouncementDetailPa
   }, [announcementSlug, client]);
 
   return (
-    <section className="panel">
-      <div className="panel-header panel-header-inline">
-        <div>
-          <p className="panel-kicker">공지 상세</p>
-          <h2>{announcement?.title ?? '공지 상세'}</h2>
-        </div>
-        <div className="inline-actions">
+    <PageLayout
+      actions={
+        <>
           {announcementSlug && canManage ? (
             <Link className="button ghost" to={`/announcements/${announcementSlug}/edit`}>
               공지 수정
@@ -70,43 +67,72 @@ export function AnnouncementDetailPage({ client, session }: AnnouncementDetailPa
           <Link className="button ghost" to="/announcements">
             목록으로
           </Link>
-        </div>
-      </div>
+        </>
+      }
+      subtitle="노출 범위와 게시 상태를 한 문맥에서 확인합니다."
+      title={announcement?.title ?? '공지 상세'}
+    >
       {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
       {isLoading ? (
         <p className="empty-state">공지를 불러오는 중입니다...</p>
       ) : announcement && (canManage || (announcement.status === 'published' && announcement.exposure_scope !== 'driver')) ? (
         <div className="stack">
-          <dl className="detail-list">
-            <div>
-              <dt>슬러그</dt>
-              <dd>{announcement.slug}</dd>
+          <section className="panel subtle-panel">
+            <div className="panel-header">
+              <p className="panel-kicker">공지 문맥</p>
+              <h2>상태와 노출 문맥</h2>
             </div>
-            <div>
-              <dt>게시 상태</dt>
-              <dd>{formatAnnouncementStatusLabel(announcement.status)}</dd>
+            <div className="summary-strip">
+              <article className="summary-item">
+                <span>Status</span>
+                <strong>{formatAnnouncementStatusLabel(announcement.status)}</strong>
+                <small>현재 게시 상태</small>
+              </article>
+              <article className="summary-item">
+                <span>Scope</span>
+                <strong>{formatAnnouncementScopeLabel(announcement.exposure_scope)}</strong>
+                <small>노출 대상 범위</small>
+              </article>
+              <article className="summary-item">
+                <span>Published</span>
+                <strong>{announcement.published_at ?? '-'}</strong>
+                <small>마지막 게시 시각</small>
+              </article>
             </div>
-            <div>
-              <dt>노출 범위</dt>
-              <dd>{formatAnnouncementScopeLabel(announcement.exposure_scope)}</dd>
-            </div>
-            <div>
-              <dt>게시 시각</dt>
-              <dd>{announcement.published_at ?? '-'}</dd>
-            </div>
-            <div>
-              <dt>종료 시각</dt>
-              <dd>{announcement.expires_at ?? '-'}</dd>
-            </div>
-          </dl>
+            <dl className="detail-list">
+              <div>
+                <dt>슬러그</dt>
+                <dd>{announcement.slug}</dd>
+              </div>
+              <div>
+                <dt>게시 상태</dt>
+                <dd>{formatAnnouncementStatusLabel(announcement.status)}</dd>
+              </div>
+              <div>
+                <dt>노출 범위</dt>
+                <dd>{formatAnnouncementScopeLabel(announcement.exposure_scope)}</dd>
+              </div>
+              <div>
+                <dt>게시 시각</dt>
+                <dd>{announcement.published_at ?? '-'}</dd>
+              </div>
+              <div>
+                <dt>종료 시각</dt>
+                <dd>{announcement.expires_at ?? '-'}</dd>
+              </div>
+            </dl>
+          </section>
           <article className="panel subtle-panel">
-            <h3>본문</h3>
+            <div className="panel-header">
+              <p className="panel-kicker">본문</p>
+              <h3>공지 내용</h3>
+            </div>
             <p style={{ whiteSpace: 'pre-wrap' }}>{announcement.body}</p>
           </article>
         </div>
       ) : (
         <p className="empty-state">공지에 접근할 수 없습니다.</p>
       )}
-    </section>
+    </PageLayout>
   );
 }

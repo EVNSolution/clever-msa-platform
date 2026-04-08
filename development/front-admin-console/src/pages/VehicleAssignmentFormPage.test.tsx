@@ -90,6 +90,8 @@ describe('VehicleAssignmentFormPage', () => {
     await waitFor(() => {
       expect(apiMocks.getAssignment).toHaveBeenCalledWith(expect.anything(), '1');
     });
+    expect(screen.getByRole('heading', { name: '배정 수정' })).toBeInTheDocument();
+    expect(screen.getByText('배송원과 차량 연결 상태를 같은 입력 흐름에서 관리합니다.')).toBeInTheDocument();
     expect(screen.getByDisplayValue('assigned')).toBeInTheDocument();
   });
 
@@ -150,6 +152,7 @@ describe('VehicleAssignmentFormPage', () => {
     );
 
     await screen.findByRole('heading', { name: /배정 생성/i });
+    expect(screen.getByText('배송원과 차량 연결 상태를 같은 입력 흐름에서 관리합니다.')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /배정 생성/i }));
 
     await waitFor(() => {

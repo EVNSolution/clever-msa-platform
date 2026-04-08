@@ -56,9 +56,11 @@ describe('PersonnelDocumentDetailPage', () => {
     );
 
     expect(await screen.findByRole('heading', { name: '인사문서 상세' })).toBeInTheDocument();
-    expect(screen.getByText('홍길동')).toBeInTheDocument();
+    expect(screen.getByText('기사 연결 문서 메타데이터와 payload를 함께 확인합니다.')).toBeInTheDocument();
+    expect(screen.getByText('기사 연결 상태와 문서 수명주기를 먼저 확인합니다.')).toBeInTheDocument();
+    expect(screen.getAllByText('홍길동').length).toBeGreaterThan(0);
     expect(screen.getByText('화물 운송 자격증')).toBeInTheDocument();
-    expect(screen.getByText('자격/증빙')).toBeInTheDocument();
+    expect(screen.getAllByText('자격/증빙').length).toBeGreaterThan(0);
     expect(screen.getByText('국토부')).toBeInTheDocument();
     expect(screen.getByText('hr://license/001')).toBeInTheDocument();
   });

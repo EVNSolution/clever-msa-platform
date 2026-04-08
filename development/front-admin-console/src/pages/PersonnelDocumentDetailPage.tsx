@@ -7,6 +7,7 @@ import { getErrorMessage, type HttpClient, type SessionPayload } from '../api/ht
 import { getPersonnelDocument } from '../api/personnelDocuments';
 import type { DriverProfile, PersonnelDocument } from '../types';
 import { formatPersonnelDocumentStatusLabel, formatPersonnelDocumentTypeLabel } from '../uiLabels';
+import { PageLayout } from '../components/PageLayout';
 
 type PersonnelDocumentDetailPageProps = {
   client: HttpClient;
@@ -59,13 +60,9 @@ export function PersonnelDocumentDetailPage({ client, session }: PersonnelDocume
   }, [client, documentRef]);
 
   return (
-    <section className="panel">
-      <div className="panel-header panel-header-inline">
-        <div>
-          <p className="panel-kicker">인사문서 상세</p>
-          <h2>인사문서 상세</h2>
-        </div>
-        <div className="inline-actions">
+    <PageLayout
+      actions={
+        <>
           {documentRef && canManage ? (
             <Link className="button ghost" to={`/personnel-documents/${documentRef}/edit`}>
               문서 수정
@@ -74,15 +71,45 @@ export function PersonnelDocumentDetailPage({ client, session }: PersonnelDocume
           <Link className="button ghost" to="/personnel-documents">
             목록으로
           </Link>
-        </div>
-      </div>
+        </>
+      }
+      subtitle="기사 연결 문서 메타데이터와 payload를 함께 확인합니다."
+      title="인사문서 상세"
+    >
       {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
       {isLoading ? (
         <p className="empty-state">인사문서를 불러오는 중입니다...</p>
       ) : document ? (
         <div className="stack">
+          <article className="panel">
+            <div className="panel-header">
+              <p className="panel-kicker">문서 문맥</p>
+              <h2>기사 연결과 수명주기</h2>
+              <p className="empty-state">기사 연결 상태와 문서 수명주기를 먼저 확인합니다.</p>
+            </div>
+            <div className="summary-strip">
+              <article className="summary-item">
+                <span>Driver</span>
+                <strong>{driver?.name ?? '미확인 기사'}</strong>
+                <small>기사 식별자: {document.driver_id}</small>
+              </article>
+              <article className="summary-item">
+                <span>Status</span>
+                <strong>{formatPersonnelDocumentStatusLabel(document.status)}</strong>
+                <small>{formatPersonnelDocumentTypeLabel(document.document_type)}</small>
+              </article>
+              <article className="summary-item">
+                <span>Expires</span>
+                <strong>{document.expires_on ?? '-'}</strong>
+                <small>만료일이 없으면 상시 유효 문맥입니다.</small>
+              </article>
+            </div>
+          </article>
           <article className="panel subtle-panel">
-            <h3>기사 연결 정보</h3>
+            <div className="panel-header">
+              <p className="panel-kicker">Driver Link</p>
+              <h3>기사 연결 정보</h3>
+            </div>
             <dl className="detail-list">
               <div>
                 <dt>기사명</dt>
@@ -95,7 +122,10 @@ export function PersonnelDocumentDetailPage({ client, session }: PersonnelDocume
             </dl>
           </article>
           <article className="panel subtle-panel">
-            <h3>기본 문서 정보</h3>
+            <div className="panel-header">
+              <p className="panel-kicker">Metadata</p>
+              <h3>기본 문서 정보</h3>
+            </div>
             <dl className="detail-list">
               <div>
                 <dt>문서 종류</dt>
@@ -136,13 +166,19 @@ export function PersonnelDocumentDetailPage({ client, session }: PersonnelDocume
             </dl>
           </article>
           <article className="panel subtle-panel">
-            <h3>payload</h3>
+            <div className="panel-header">
+              <p className="panel-kicker">Payload</p>
+              <h3>payload</h3>
+            </div>
+            <div className="panel-toolbar">
+              <span className="table-meta">원본 payload는 메타데이터 보조 정보로만 사용합니다.</span>
+            </div>
             <pre>{JSON.stringify(document.payload, null, 2)}</pre>
           </article>
         </div>
       ) : (
         <p className="empty-state">인사문서를 찾을 수 없습니다.</p>
       )}
-    </section>
+    </PageLayout>
   );
 }

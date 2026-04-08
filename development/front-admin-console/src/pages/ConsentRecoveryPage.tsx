@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { getErrorMessage, type HttpClient, type SessionPayload } from '../api/http';
 import { getIdentityConsent, recoverIdentityConsent } from '../api/identity';
+import { PageLayout } from '../components/PageLayout';
 import type { IdentityConsentCurrent } from '../types';
 
 type ConsentRecoveryPageProps = {
@@ -73,11 +74,11 @@ export function ConsentRecoveryPage({ client, onRecovered, onLogout }: ConsentRe
   return (
     <div className="auth-shell admin-auth-shell">
       <section className="auth-panel panel blocked-panel">
-        <p className="panel-kicker">동의 복구</p>
-        <h2>필수 동의를 다시 확인해야 합니다.</h2>
-        <p className="hero-copy">
-          개인정보처리와 위치기반 동의를 모두 다시 확인해야 일반 화면으로 돌아갈 수 있습니다.
-        </p>
+        <PageLayout subtitle="필수 동의를 다시 확인하고 일반 세션으로 복귀합니다." title="동의 복구">
+          <h2>필수 동의를 다시 확인해야 합니다.</h2>
+          <p className="hero-copy">
+            개인정보처리와 위치기반 동의를 모두 다시 확인해야 일반 화면으로 돌아갈 수 있습니다.
+          </p>
         {isLoading ? <p className="empty-state">현재 동의 상태를 불러오는 중입니다...</p> : null}
         {consent ? (
           <div className="stack">
@@ -108,6 +109,7 @@ export function ConsentRecoveryPage({ client, onRecovered, onLogout }: ConsentRe
             로그아웃
           </button>
         </div>
+        </PageLayout>
       </section>
     </div>
   );

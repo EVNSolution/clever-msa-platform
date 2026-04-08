@@ -108,7 +108,9 @@ describe('DriverDetailPage', () => {
 
     renderPage();
 
-    expect(await screen.findByText('driver@example.com')).toBeInTheDocument();
+    await screen.findByRole('heading', { name: 'Kim Driver' });
+    expect(screen.getByText('배송원 정본과 계정·정산 문맥을 함께 확인합니다.')).toBeInTheDocument();
+    expect(screen.getByText('driver@example.com')).toBeInTheDocument();
     expect(screen.getByText(/driver@example.com/i)).toBeInTheDocument();
     expect(screen.getByText(/125000.50/i)).toBeInTheDocument();
     expect(screen.getByText(/주의 사항이 없습니다/i)).toBeInTheDocument();
@@ -154,6 +156,7 @@ describe('DriverDetailPage', () => {
 
     renderPage();
 
+    await screen.findByRole('heading', { name: 'Kim Driver' });
     expect(await screen.findByText(/정산 정보가 없습니다/i)).toBeInTheDocument();
     expect(screen.getByText(/company not found/i)).toBeInTheDocument();
   });

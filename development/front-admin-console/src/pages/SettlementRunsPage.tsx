@@ -252,6 +252,18 @@ export function SettlementRunsPage({ client }: SettlementRunsPageProps) {
     }
     return true;
   }).length;
+  const draftSnapshotCount = snapshots.filter((snapshot) => {
+    if (snapshot.status !== 'draft') {
+      return false;
+    }
+    if (selectedCompanyId && snapshot.company_id !== selectedCompanyId) {
+      return false;
+    }
+    if (selectedFleetId && snapshot.fleet_id !== selectedFleetId) {
+      return false;
+    }
+    return true;
+  }).length;
 
   return (
     <div className="stack large-gap">
@@ -259,41 +271,38 @@ export function SettlementRunsPage({ client }: SettlementRunsPageProps) {
 
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">실행 handoff</p>
-          <h2>실행 준비</h2>
-          <p className="empty-state">업로드와 검증이 끝난 입력만 정산 실행으로 넘깁니다.</p>
+          <p className="panel-kicker">정산 실행</p>
+          <h2>정산 실행 요약</h2>
         </div>
-        <div className="settlement-flow-shell">
-          <article className="shell-card">
-            <strong>유효한 입력</strong>
-            <span>현재 문맥에서 실행 가능한 입력 준비 상태입니다.</span>
-            <dl className="shell-metric-list">
-              <div>
-                <dt>확정 record</dt>
-                <dd>{confirmedRecordCount}</dd>
-              </div>
-              <div>
-                <dt>활성 snapshot</dt>
-                <dd>{activeSnapshotCount}</dd>
-              </div>
-              <div>
-                <dt>기존 run</dt>
-                <dd>{filteredRuns.length}</dd>
-              </div>
-            </dl>
+        <div className="summary-strip">
+          <article className="summary-item">
+            <span>Confirmed Record</span>
+            <strong>{confirmedRecordCount}</strong>
+            <small>실행 기준이 되는 확정 원천 입력</small>
           </article>
-          <article className="shell-card">
-            <strong>실행 후 handoff</strong>
-            <span>run 생성 뒤에는 결과 페이지에서 기사별 항목과 지급 상태를 확인합니다.</span>
-            <div className="inline-actions">
-              <button className="button primary" onClick={openCreateRunModal} type="button">
-                정산 실행 생성
-              </button>
-              <Link className="button ghost" to="/settlements/results">
-                정산 결과로 이동
-              </Link>
-            </div>
+          <article className="summary-item">
+            <span>Active Snapshot</span>
+            <strong>{activeSnapshotCount}</strong>
+            <small>현재 문맥에서 실행 가능한 입력 묶음</small>
           </article>
+          <article className="summary-item">
+            <span>Draft Snapshot</span>
+            <strong>{draftSnapshotCount}</strong>
+            <small>검토 중이어서 실행에 포함되지 않는 입력</small>
+          </article>
+          <article className="summary-item">
+            <span>Settlement Run</span>
+            <strong>{filteredRuns.length}</strong>
+            <small>현재 문맥에 생성된 정산 실행 수</small>
+          </article>
+        </div>
+        <div className="panel-toolbar">
+          <span className="table-meta">활성 snapshot을 기준으로 정산 실행을 만들고, 이후 결과 단계에서 기사별 지급 항목을 확인합니다.</span>
+          <div className="panel-toolbar-actions">
+            <Link className="button ghost small" to="/settlements/results">
+              정산 결과로 이동
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -306,6 +315,16 @@ export function SettlementRunsPage({ client }: SettlementRunsPageProps) {
           <button className="button primary" onClick={openCreateRunModal} type="button">
             정산 실행 생성
           </button>
+        </div>
+        <div className="panel-toolbar">
+          <span className="table-meta">
+            현재 문맥에서 입력 스냅샷을 기준으로 실행을 만들고, 이후 결과 단계에서 기사별 항목으로 넘깁니다.
+          </span>
+          <div className="panel-toolbar-actions">
+            <span className="table-meta">draft snapshot {draftSnapshotCount}건</span>
+            <span className="table-meta">확정 record {confirmedRecordCount}건</span>
+            <span className="table-meta">활성 snapshot {activeSnapshotCount}건</span>
+          </div>
         </div>
         {isLoading ? (
           <p className="empty-state">정산 실행을 불러오는 중입니다...</p>
@@ -363,6 +382,18 @@ export function SettlementRunsPage({ client }: SettlementRunsPageProps) {
         title={editingRunId ? '정산 실행 수정' : '정산 실행 생성'}
       >
         <form className="form-stack" onSubmit={handleRunSubmit}>
+          <div className="summary-strip">
+            <article className="summary-item">
+              <span>회사</span>
+              <strong>{getCompanyName(companies, runForm.company_id)}</strong>
+              <small>정산 실행이 귀속될 회사 문맥입니다.</small>
+            </article>
+            <article className="summary-item">
+              <span>플릿</span>
+              <strong>{getFleetName(fleets, runForm.fleet_id)}</strong>
+              <small>선택한 플릿 기준으로 입력과 결과가 이어집니다.</small>
+            </article>
+          </div>
           <label className="field">
             <span>회사</span>
             <select onChange={(event) => handleRunCompanyChange(event.target.value)} value={runForm.company_id}>

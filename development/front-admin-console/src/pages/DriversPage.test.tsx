@@ -162,7 +162,8 @@ describe('Admin DriversPage', () => {
       </MemoryRouter>,
     );
 
-    await screen.findByRole('heading', { name: /driver profile hr 관리자 조회/i });
+    await screen.findByRole('heading', { name: '배송원' });
+    expect(screen.getByText('배송원 정본과 계정 연결 상태를 같은 화면에서 관리합니다.')).toBeInTheDocument();
     const row = screen.getByText('Kim Driver').closest('tr');
     expect(screen.getByRole('link', { name: /배송원 생성/i })).toHaveAttribute('href', '/drivers/new');
     expect(row).toHaveAttribute('data-detail-path', '/drivers/1');
@@ -225,7 +226,7 @@ describe('Admin DriversPage', () => {
       </MemoryRouter>,
     );
 
-    await screen.findByRole('heading', { name: /driver profile hr 관리자 조회/i });
+    await screen.findByRole('heading', { name: '배송원' });
     expect(screen.queryByRole('link', { name: /배송원 생성/i })).not.toBeInTheDocument();
   });
 });

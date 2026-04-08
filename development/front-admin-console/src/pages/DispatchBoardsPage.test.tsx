@@ -70,6 +70,7 @@ describe('DispatchBoardsPage', () => {
       </MemoryRouter>,
     );
 
+    await screen.findByRole('heading', { name: '배차 보드' });
     await screen.findByText('알파 회사');
     expect(screen.getByText('서울 플릿')).toBeInTheDocument();
     expect(screen.getByText('2026-03-24')).toBeInTheDocument();

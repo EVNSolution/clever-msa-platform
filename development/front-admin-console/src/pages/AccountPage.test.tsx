@@ -152,6 +152,8 @@ describe('AccountPage', () => {
     render(<AccountPage client={{ request: vi.fn() }} session={session} />);
 
     await screen.findByDisplayValue('관리자');
+    expect(screen.getByRole('heading', { name: '내 계정' })).toBeInTheDocument();
+    expect(screen.getByText('프로필, 로그인 수단, 요청 이력을 한 화면에서 관리합니다.')).toBeInTheDocument();
     expect(screen.getByText('현재 웹 권한')).toBeInTheDocument();
     expect(screen.getByText(/현재 권한:\s*회사 전체 관리자/)).toBeInTheDocument();
     expect(screen.getAllByText('기존 회사').length).toBeGreaterThan(0);

@@ -10,6 +10,7 @@ import {
   updateSupportTicket,
 } from '../api/support';
 import { getErrorMessage, type HttpClient, type SessionPayload } from '../api/http';
+import { PageLayout } from '../components/PageLayout';
 import type { SupportTicket, SupportTicketResponse } from '../types';
 import { formatRoleLabel, formatSupportTicketPriorityLabel, formatSupportTicketStatusLabel } from '../uiLabels';
 
@@ -190,92 +191,94 @@ function SelfServiceSupportPage({ client, requesterAccountId }: SupportListProps
   }
 
   return (
-    <div className="data-grid two-columns">
-      <section className="panel form-panel">
-        <div className="panel-header">
-          <p className="panel-kicker">지원</p>
-          <h2>지원</h2>
-        </div>
-        {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
-        <label className="field">
-          <span>문의 제목</span>
-          <input aria-label="문의 제목" onChange={(event) => setNewTitle(event.target.value)} value={newTitle} />
-        </label>
-        <label className="field">
-          <span>문의 본문</span>
-          <textarea aria-label="문의 본문" onChange={(event) => setNewBody(event.target.value)} rows={4} value={newBody} />
-        </label>
-        <label className="field">
-          <span>우선순위</span>
-          <select aria-label="우선순위" onChange={(event) => setNewPriority(event.target.value as SupportTicket['priority'])} value={newPriority}>
-            <option value="low">low</option>
-            <option value="medium">medium</option>
-            <option value="high">high</option>
-          </select>
-        </label>
-        <button className="button primary" onClick={() => void handleCreateTicket()} type="button">
-          문의 등록
-        </button>
-      </section>
-
-      <section className="panel">
-        <div className="panel-header">
-          <p className="panel-kicker">내 문의</p>
-          <h2>{selectedTicket?.title ?? '지원 티켓 선택'}</h2>
-        </div>
-        {isLoading ? (
-          <p className="empty-state">지원 티켓을 불러오는 중입니다...</p>
-        ) : tickets.length ? (
-          <div className="stack">
-            <table className="table compact">
-              <thead>
-                <tr>
-                  <th>번호</th>
-                  <th>제목</th>
-                  <th>상태</th>
-                  <th>우선순위</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tickets.map((ticket) => (
-                  <tr
-                    key={ticket.ticket_id}
-                    className={ticket.ticket_id === selectedTicketId ? 'interactive-row selected-row' : 'interactive-row'}
-                    onClick={() => setSelectedTicketId(ticket.ticket_id)}
-                  >
-                    <td>{ticket.route_no}</td>
-                    <td>{ticket.title}</td>
-                    <td>{formatSupportTicketStatusLabel(ticket.status)}</td>
-                    <td>{formatSupportTicketPriorityLabel(ticket.priority)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {selectedTicket ? (
-              <>
-                <p>{selectedTicket.body}</p>
-                <article className="panel subtle-panel">
-                  <div className="panel-header">
-                    <h3>응답</h3>
-                  </div>
-                  <p className="empty-state">관리자 답변은 이 화면과 알림함에서 함께 확인할 수 있습니다.</p>
-                  <SupportResponses client={client} selectedTicketId={selectedTicketId} />
-                </article>
-                <label className="field">
-                  <span>답변 내용</span>
-                  <textarea aria-label="답변 내용" onChange={(event) => setResponseBody(event.target.value)} rows={4} value={responseBody} />
-                </label>
-                <button className="button ghost" onClick={() => void handleCreateResponse()} type="button">
-                  답변 등록
-                </button>
-              </>
-            ) : null}
+    <PageLayout subtitle="내 문의를 등록하고 관리자 답변을 확인합니다." title="지원">
+      <div className="data-grid two-columns">
+        <section className="panel form-panel">
+          <div className="panel-header">
+            <p className="panel-kicker">지원</p>
+            <h2>문의 등록</h2>
           </div>
-        ) : (
-          <p className="empty-state">등록된 문의가 없습니다.</p>
-        )}
-      </section>
-    </div>
+          {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
+          <label className="field">
+            <span>문의 제목</span>
+            <input aria-label="문의 제목" onChange={(event) => setNewTitle(event.target.value)} value={newTitle} />
+          </label>
+          <label className="field">
+            <span>문의 본문</span>
+            <textarea aria-label="문의 본문" onChange={(event) => setNewBody(event.target.value)} rows={4} value={newBody} />
+          </label>
+          <label className="field">
+            <span>우선순위</span>
+            <select aria-label="우선순위" onChange={(event) => setNewPriority(event.target.value as SupportTicket['priority'])} value={newPriority}>
+              <option value="low">low</option>
+              <option value="medium">medium</option>
+              <option value="high">high</option>
+            </select>
+          </label>
+          <button className="button primary" onClick={() => void handleCreateTicket()} type="button">
+            문의 등록
+          </button>
+        </section>
+
+        <section className="panel">
+          <div className="panel-header">
+            <p className="panel-kicker">내 문의</p>
+            <h2>{selectedTicket?.title ?? '지원 티켓 선택'}</h2>
+          </div>
+          {isLoading ? (
+            <p className="empty-state">지원 티켓을 불러오는 중입니다...</p>
+          ) : tickets.length ? (
+            <div className="stack">
+              <table className="table compact">
+                <thead>
+                  <tr>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>상태</th>
+                    <th>우선순위</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tickets.map((ticket) => (
+                    <tr
+                      key={ticket.ticket_id}
+                      className={ticket.ticket_id === selectedTicketId ? 'interactive-row selected-row' : 'interactive-row'}
+                      onClick={() => setSelectedTicketId(ticket.ticket_id)}
+                    >
+                      <td>{ticket.route_no}</td>
+                      <td>{ticket.title}</td>
+                      <td>{formatSupportTicketStatusLabel(ticket.status)}</td>
+                      <td>{formatSupportTicketPriorityLabel(ticket.priority)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {selectedTicket ? (
+                <>
+                  <p>{selectedTicket.body}</p>
+                  <article className="panel subtle-panel">
+                    <div className="panel-header">
+                      <h3>응답</h3>
+                    </div>
+                    <p className="empty-state">관리자 답변은 이 화면과 알림함에서 함께 확인할 수 있습니다.</p>
+                    <SupportResponses client={client} selectedTicketId={selectedTicketId} />
+                  </article>
+                  <label className="field">
+                    <span>답변 내용</span>
+                    <textarea aria-label="답변 내용" onChange={(event) => setResponseBody(event.target.value)} rows={4} value={responseBody} />
+                  </label>
+                  <button className="button ghost" onClick={() => void handleCreateResponse()} type="button">
+                    답변 등록
+                  </button>
+                </>
+              ) : null}
+            </div>
+          ) : (
+            <p className="empty-state">등록된 문의가 없습니다.</p>
+          )}
+        </section>
+      </div>
+    </PageLayout>
   );
 }
 
@@ -407,115 +410,120 @@ function ManagementSupportPage({ client }: { client: HttpClient }) {
   }
 
   return (
-    <div className="data-grid two-columns">
-      <section className="panel">
-        <div className="panel-header">
-          <p className="panel-kicker">지원</p>
-          <h2>지원 관리</h2>
-        </div>
-        {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
-        {isLoading ? (
-          <p className="empty-state">지원 티켓을 불러오는 중입니다...</p>
-        ) : tickets.length ? (
-          <table className="table compact">
-            <thead>
-              <tr>
-                <th>번호</th>
-                <th>제목</th>
-                <th>상태</th>
-                <th>우선순위</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tickets.map((ticket) => (
-                <tr
-                  key={ticket.ticket_id}
-                  className={ticket.ticket_id === selectedTicketId ? 'interactive-row selected-row' : 'interactive-row'}
-                  onClick={() => setSelectedTicketId(ticket.ticket_id)}
-                >
-                  <td>{ticket.route_no}</td>
-                  <td>{ticket.title}</td>
-                  <td>{formatSupportTicketStatusLabel(ticket.status)}</td>
-                  <td>{formatSupportTicketPriorityLabel(ticket.priority)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="empty-state">표시할 지원 티켓이 없습니다.</p>
-        )}
-      </section>
-
-      <section className="panel">
-        <div className="panel-header">
-          <p className="panel-kicker">티켓 상세</p>
-          <h2>{selectedTicket?.title ?? '지원 티켓 선택'}</h2>
-        </div>
-        {selectedTicket ? (
-          <div className="stack">
-            <dl className="detail-list">
-              <div>
-                <dt>요청자 account_id</dt>
-                <dd>{selectedTicket.requester_account_id}</dd>
-              </div>
-              <div>
-                <dt>본문</dt>
-                <dd>{selectedTicket.body}</dd>
-              </div>
-            </dl>
-            <div className="form-grid">
-              <label className="field">
-                <span>상태</span>
-                <select onChange={(event) => setTicketStatus(event.target.value as SupportTicket['status'])} value={ticketStatus}>
-                  <option value="open">open</option>
-                  <option value="in_progress">in_progress</option>
-                  <option value="resolved">resolved</option>
-                  <option value="closed">closed</option>
-                </select>
-              </label>
-              <label className="field">
-                <span>우선순위</span>
-                <select onChange={(event) => setTicketPriority(event.target.value as SupportTicket['priority'])} value={ticketPriority}>
-                  <option value="low">low</option>
-                  <option value="medium">medium</option>
-                  <option value="high">high</option>
-                </select>
-              </label>
-            </div>
-            <button className="button ghost" onClick={() => void handleTicketUpdate()} type="button">
-              티켓 상태 저장
-            </button>
-            <article className="panel subtle-panel">
-              <div className="panel-header">
-                <h3>응답</h3>
-              </div>
-              {responses.length ? (
-                <div className="stack">
-                  {responses.map((response) => (
-                    <article key={response.response_id} className="stack small-gap">
-                      <strong>{formatRoleLabel(response.author_role)}</strong>
-                      <p>{response.body}</p>
-                    </article>
-                  ))}
-                </div>
-              ) : (
-                <p className="empty-state">등록된 응답이 없습니다.</p>
-              )}
-            </article>
-            <label className="field">
-              <span>답변 내용</span>
-              <textarea aria-label="답변 내용" onChange={(event) => setResponseBody(event.target.value)} rows={4} value={responseBody} />
-            </label>
-            <p className="empty-state">답변을 등록하면 요청자 알림함에 일반 알림이 자동 생성됩니다. Push는 자동 발송되지 않습니다.</p>
-            <button className="button primary" onClick={() => void handleCreateResponse()} type="button">
-              답변 등록
-            </button>
+    <PageLayout
+      subtitle="지원 티켓을 상태, 우선순위, 답변 기준으로 관리합니다."
+      title="지원 관리"
+    >
+      <div className="data-grid two-columns">
+        <section className="panel">
+          <div className="panel-header">
+            <p className="panel-kicker">지원</p>
+            <h2>티켓 목록</h2>
           </div>
-        ) : (
-          <p className="empty-state">선택된 지원 티켓이 없습니다.</p>
-        )}
-      </section>
-    </div>
+          {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
+          {isLoading ? (
+            <p className="empty-state">지원 티켓을 불러오는 중입니다...</p>
+          ) : tickets.length ? (
+            <table className="table compact">
+              <thead>
+                <tr>
+                  <th>번호</th>
+                  <th>제목</th>
+                  <th>상태</th>
+                  <th>우선순위</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tickets.map((ticket) => (
+                  <tr
+                    key={ticket.ticket_id}
+                    className={ticket.ticket_id === selectedTicketId ? 'interactive-row selected-row' : 'interactive-row'}
+                    onClick={() => setSelectedTicketId(ticket.ticket_id)}
+                  >
+                    <td>{ticket.route_no}</td>
+                    <td>{ticket.title}</td>
+                    <td>{formatSupportTicketStatusLabel(ticket.status)}</td>
+                    <td>{formatSupportTicketPriorityLabel(ticket.priority)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="empty-state">표시할 지원 티켓이 없습니다.</p>
+          )}
+        </section>
+
+        <section className="panel">
+          <div className="panel-header">
+            <p className="panel-kicker">티켓 상세</p>
+            <h2>{selectedTicket?.title ?? '지원 티켓 선택'}</h2>
+          </div>
+          {selectedTicket ? (
+            <div className="stack">
+              <dl className="detail-list">
+                <div>
+                  <dt>요청자 account_id</dt>
+                  <dd>{selectedTicket.requester_account_id}</dd>
+                </div>
+                <div>
+                  <dt>본문</dt>
+                  <dd>{selectedTicket.body}</dd>
+                </div>
+              </dl>
+              <div className="form-grid">
+                <label className="field">
+                  <span>상태</span>
+                  <select onChange={(event) => setTicketStatus(event.target.value as SupportTicket['status'])} value={ticketStatus}>
+                    <option value="open">open</option>
+                    <option value="in_progress">in_progress</option>
+                    <option value="resolved">resolved</option>
+                    <option value="closed">closed</option>
+                  </select>
+                </label>
+                <label className="field">
+                  <span>우선순위</span>
+                  <select onChange={(event) => setTicketPriority(event.target.value as SupportTicket['priority'])} value={ticketPriority}>
+                    <option value="low">low</option>
+                    <option value="medium">medium</option>
+                    <option value="high">high</option>
+                  </select>
+                </label>
+              </div>
+              <button className="button ghost" onClick={() => void handleTicketUpdate()} type="button">
+                티켓 상태 저장
+              </button>
+              <article className="panel subtle-panel">
+                <div className="panel-header">
+                  <h3>응답</h3>
+                </div>
+                {responses.length ? (
+                  <div className="stack">
+                    {responses.map((response) => (
+                      <article key={response.response_id} className="stack small-gap">
+                        <strong>{formatRoleLabel(response.author_role)}</strong>
+                        <p>{response.body}</p>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="empty-state">등록된 응답이 없습니다.</p>
+                )}
+              </article>
+              <label className="field">
+                <span>답변 내용</span>
+                <textarea aria-label="답변 내용" onChange={(event) => setResponseBody(event.target.value)} rows={4} value={responseBody} />
+              </label>
+              <p className="empty-state">답변을 등록하면 요청자 알림함에 일반 알림이 자동 생성됩니다. Push는 자동 발송되지 않습니다.</p>
+              <button className="button primary" onClick={() => void handleCreateResponse()} type="button">
+                답변 등록
+              </button>
+            </div>
+          ) : (
+            <p className="empty-state">선택된 지원 티켓이 없습니다.</p>
+          )}
+        </section>
+      </div>
+    </PageLayout>
   );
 }
 
@@ -528,13 +536,11 @@ export function SupportPage({ client, session }: SupportPageProps) {
 
   if (!requesterAccountId) {
     return (
-      <section className="panel">
-        <div className="panel-header">
-          <p className="panel-kicker">지원</p>
-          <h2>지원</h2>
-        </div>
-        <p className="empty-state">지원 계정 문맥이 없습니다.</p>
-      </section>
+      <PageLayout title="지원">
+        <section className="panel">
+          <p className="empty-state">지원 계정 문맥이 없습니다.</p>
+        </section>
+      </PageLayout>
     );
   }
 

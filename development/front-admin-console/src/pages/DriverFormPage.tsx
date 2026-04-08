@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { createDriver, getDriver, updateDriver, type DriverPayload } from '../api/drivers';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { listCompanies, listFleets } from '../api/organization';
+import { PageLayout } from '../components/PageLayout';
 import { getDriverRouteRef } from '../routeRefs';
 import type { Company, Fleet } from '../types';
 
@@ -133,16 +134,20 @@ export function DriverFormPage({ client, mode }: DriverFormPageProps) {
   const cancelHref = isEdit && driverRef ? `/drivers/${driverRef}` : '/drivers';
 
   return (
-    <section className="panel form-panel">
-      <div className="panel-header">
-        <p className="panel-kicker">배송원 입력</p>
-        <h2>{isEdit ? '배송원 수정' : '배송원 생성'}</h2>
-      </div>
-      {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
-      {isLoading ? (
-        <p className="empty-state">배송원 정보를 불러오는 중입니다...</p>
-      ) : (
-        <form className="form-stack" onSubmit={handleSubmit}>
+    <PageLayout
+      subtitle="배송원 정본과 소속 정보를 같은 입력 흐름에서 관리합니다."
+      title={isEdit ? '배송원 수정' : '배송원 생성'}
+    >
+      <section className="panel form-panel">
+        <div className="panel-header">
+          <p className="panel-kicker">배송원 입력</p>
+          <h2>기본 정보 입력</h2>
+        </div>
+        {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
+        {isLoading ? (
+          <p className="empty-state">배송원 정보를 불러오는 중입니다...</p>
+        ) : (
+          <form className="form-stack" onSubmit={handleSubmit}>
           <label className="field">
             <span>회사</span>
             <select onChange={(event) => handleCompanyChange(event.target.value)} value={form.company_id}>
@@ -187,8 +192,9 @@ export function DriverFormPage({ client, mode }: DriverFormPageProps) {
               취소
             </Link>
           </div>
-        </form>
-      )}
-    </section>
+          </form>
+        )}
+      </section>
+    </PageLayout>
   );
 }

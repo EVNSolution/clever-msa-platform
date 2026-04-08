@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { createAnnouncement, getAnnouncementBySlug, updateAnnouncement } from '../api/announcements';
 import { getErrorMessage, type HttpClient } from '../api/http';
+import { PageLayout } from '../components/PageLayout';
 import { getAnnouncementRouteRef } from '../routeRefs';
 
 type AnnouncementFormPageProps = {
@@ -116,16 +117,41 @@ export function AnnouncementFormPage({ client, mode }: AnnouncementFormPageProps
   const cancelHref = isEdit && announcementSlug ? `/announcements/${announcementSlug}` : '/announcements';
 
   return (
-    <section className="panel form-panel">
-      <div className="panel-header">
-        <p className="panel-kicker">공지 입력</p>
-        <h2>{isEdit ? '공지 수정' : '공지 생성'}</h2>
-      </div>
+    <PageLayout
+      subtitle="공지 메타데이터와 게시 설정을 같은 입력 흐름에서 관리합니다."
+      title={isEdit ? '공지 수정' : '공지 생성'}
+    >
       {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
       {isLoading ? (
         <p className="empty-state">공지를 불러오는 중입니다...</p>
       ) : (
-        <form className="form-stack" onSubmit={handleSubmit}>
+        <form className="form-stack panel form-panel" onSubmit={handleSubmit}>
+          <div className="panel-header">
+            <p className="panel-kicker">공지 입력</p>
+            <h2>게시 정보</h2>
+            <p className="empty-state">입력 전 기본 상태를 먼저 확인하고 저장합니다.</p>
+          </div>
+          <div className="summary-strip">
+            <article className="summary-item">
+              <span>Mode</span>
+              <strong>{isEdit ? '수정' : '생성'}</strong>
+              <small>현재 공지 편집 모드</small>
+            </article>
+            <article className="summary-item">
+              <span>Status</span>
+              <strong>{status}</strong>
+              <small>저장 시 적용될 게시 상태</small>
+            </article>
+            <article className="summary-item">
+              <span>Scope</span>
+              <strong>{exposureScope}</strong>
+              <small>현재 선택된 노출 범위</small>
+            </article>
+          </div>
+          <div className="panel-toolbar">
+            <span className="table-meta">게시 일정과 노출 범위를 먼저 정하고 본문을 저장합니다.</span>
+            <span className="table-meta">게시 설정 요약</span>
+          </div>
           <label className="field">
             <span>슬러그</span>
             <input aria-label="슬러그" onChange={(event) => setSlug(event.target.value)} value={slug} />
@@ -206,6 +232,6 @@ export function AnnouncementFormPage({ client, mode }: AnnouncementFormPageProps
           </div>
         </form>
       )}
-    </section>
+    </PageLayout>
   );
 }

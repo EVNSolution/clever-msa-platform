@@ -387,6 +387,16 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
     }
   }
 
+  async function handleActivateSnapshot(snapshotId: string) {
+    setErrorMessage(null);
+    try {
+      await updateDailyDeliveryInputSnapshot(client, snapshotId, { status: 'active' });
+      await loadAll();
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    }
+  }
+
   function selectRecord(record: DeliveryRecord) {
     setEditingRecordId(record.delivery_record_id);
     setRecordForm({
@@ -480,6 +490,7 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
   });
 
   const confirmedRecordCount = filteredRecords.filter((record) => record.status === 'confirmed').length;
+  const draftSnapshotCount = filteredSnapshots.filter((snapshot) => snapshot.status === 'draft').length;
   const activeSnapshotCount = filteredSnapshots.filter((snapshot) => snapshot.status === 'active').length;
   const readyDriverCount = new Set(filteredSnapshots.map((snapshot) => snapshot.driver_id)).size;
 
@@ -489,72 +500,46 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
 
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">입력 기본 경로</p>
-          <h2>엑셀 업로드</h2>
-          <p className="empty-state">
-            정산 입력은 업로드부터 시작합니다. 기본 운영 경로는 업로드와 검증입니다.
-          </p>
-        </div>
-        <div className="settlement-flow-shell">
-          <article className="shell-card">
-            <strong>검증 요약</strong>
-            <span>현재 문맥에서 확인된 입력 준비 상태를 먼저 봅니다.</span>
-            <dl className="shell-metric-list">
-              <div>
-                <dt>확정 record</dt>
-                <dd>{confirmedRecordCount}</dd>
-              </div>
-              <div>
-                <dt>활성 snapshot</dt>
-                <dd>{activeSnapshotCount}</dd>
-              </div>
-              <div>
-                <dt>대상 배송원</dt>
-                <dd>{readyDriverCount}</dd>
-              </div>
-            </dl>
-          </article>
-          <article className="shell-card">
-            <strong>업로드 흐름</strong>
-            <span>운영 기준 입력은 엑셀 업로드로 묶고, 검증 통과 후 실행으로 넘깁니다.</span>
-            <div className="inline-actions">
-              <button className="button primary" type="button">
-                업로드 준비 중
-              </button>
-              <Link className="button ghost" to="/settlements/runs">
-                정산 실행으로 이동
-              </Link>
-            </div>
-            <p className="empty-state">수동 입력은 예외 보정 경로로만 유지합니다.</p>
-          </article>
-        </div>
-      </section>
-
-      <section className="panel">
-        <div className="panel-header">
           <p className="panel-kicker">정산 입력</p>
-          <h2>배송이력 입력 요약</h2>
+          <h2>정산 입력 요약</h2>
         </div>
         {isLoading ? (
           <p className="empty-state">정산 입력을 불러오는 중입니다...</p>
         ) : (
-          <div className="metric-grid">
-            <article className="metric-card">
-              <span className="panel-kicker">Record</span>
-              <strong>{filteredRecords.length}</strong>
-              <span className="empty-state">현재 문맥 배송 원천 record 수</span>
-            </article>
-            <article className="metric-card">
-              <span className="panel-kicker">Snapshot</span>
-              <strong>{filteredSnapshots.length}</strong>
-              <span className="empty-state">현재 문맥 일별 snapshot 수</span>
-            </article>
-            <article className="metric-card">
-              <span className="panel-kicker">Driver</span>
-              <strong>{readyDriverCount}</strong>
-              <span className="empty-state">입력이 잡힌 배송원 수</span>
-            </article>
-          </div>
+          <>
+            <div className="summary-strip">
+              <article className="summary-item">
+                <span>Confirmed Record</span>
+                <strong>{confirmedRecordCount}</strong>
+                <small>정산 실행으로 바로 넘길 수 있는 원천 입력</small>
+              </article>
+              <article className="summary-item">
+                <span>Draft Snapshot</span>
+                <strong>{draftSnapshotCount}</strong>
+                <small>검토 중인 일별 입력 스냅샷</small>
+              </article>
+              <article className="summary-item">
+                <span>Active Snapshot</span>
+                <strong>{activeSnapshotCount}</strong>
+                <small>실행 대상 일별 입력 스냅샷</small>
+              </article>
+              <article className="summary-item">
+                <span>Target Drivers</span>
+                <strong>{readyDriverCount}</strong>
+                <small>현재 문맥에서 입력이 잡힌 배송원 수</small>
+              </article>
+            </div>
+            <div className="panel-toolbar">
+              <span className="table-meta">원천 입력과 일별 스냅샷을 먼저 정리한 뒤 정산 실행 단계로 넘깁니다.</span>
+              <div className="panel-toolbar-actions">
+                <span className="table-meta">record {filteredRecords.length}건</span>
+                <span className="table-meta">snapshot {filteredSnapshots.length}건</span>
+                <Link className="button ghost small" to="/settlements/runs">
+                  정산 실행으로 이동
+                </Link>
+              </div>
+            </div>
+          </>
         )}
       </section>
 
@@ -567,6 +552,13 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
           <button className="button primary" onClick={openCreateRecordModal} type="button">
             원천 입력 생성
           </button>
+        </div>
+        <div className="panel-toolbar">
+          <span className="table-meta">기본 입력은 업로드를 기준으로 하고, 필요한 예외만 여기서 수동 보정합니다.</span>
+          <div className="panel-toolbar-actions">
+            <span className="table-meta">확정 {confirmedRecordCount}건</span>
+            <span className="table-meta">전체 {filteredRecords.length}건</span>
+          </div>
         </div>
         {isLoading ? (
           <p className="empty-state">배송 원천 입력을 불러오는 중입니다...</p>
@@ -623,14 +615,21 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
         <div className="panel-header panel-header-inline">
           <div className="stack">
             <p className="panel-kicker">수동 보정</p>
-            <h2>일별 snapshot 목록</h2>
+            <h2>일별 입력 스냅샷</h2>
           </div>
           <button className="button primary" onClick={openCreateSnapshotModal} type="button">
-            snapshot 생성
+            스냅샷 생성
           </button>
         </div>
+        <div className="panel-toolbar">
+          <span className="table-meta">정산 실행으로 넘길 수 있는 일별 입력 묶음입니다. draft는 검토 중, active만 실행 대상으로 봅니다.</span>
+          <div className="panel-toolbar-actions">
+            <span className="table-meta">draft {draftSnapshotCount}건</span>
+            <span className="table-meta">active {activeSnapshotCount}건</span>
+          </div>
+        </div>
         {isLoading ? (
-          <p className="empty-state">일별 snapshot을 불러오는 중입니다...</p>
+          <p className="empty-state">일별 스냅샷을 불러오는 중입니다...</p>
         ) : filteredSnapshots.length ? (
           <table className="table compact">
             <thead>
@@ -639,7 +638,7 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
                 <th>플릿</th>
                 <th>배송원</th>
                 <th>서비스 일자</th>
-                <th>건수</th>
+                <th>record 수</th>
                 <th>상태</th>
                 <th />
               </tr>
@@ -648,9 +647,7 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
               {filteredSnapshots.map((snapshot) => (
                 <tr
                   key={snapshot.daily_delivery_input_snapshot_id}
-                  className={`interactive-row${
-                    editingSnapshotId === snapshot.daily_delivery_input_snapshot_id ? ' is-selected' : ''
-                  }`}
+                  className={`interactive-row${editingSnapshotId === snapshot.daily_delivery_input_snapshot_id ? ' is-selected' : ''}`}
                   onClick={() => selectSnapshot(snapshot)}
                   onKeyDown={(event) => handleSnapshotRowKeyDown(event, snapshot)}
                   tabIndex={0}
@@ -659,26 +656,40 @@ export function SettlementInputsPage({ client }: SettlementInputsPageProps) {
                   <td>{getFleetName(fleets, snapshot.fleet_id)}</td>
                   <td>{getDriverName(drivers, snapshot.driver_id)}</td>
                   <td>{snapshot.service_date}</td>
-                  <td>{snapshot.delivery_count}</td>
+                  <td>{snapshot.source_record_count}</td>
                   <td>{formatDeliverySnapshotStatusLabel(snapshot.status)}</td>
                   <td>
-                    <button
-                      className="button ghost small"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        void handleSnapshotDelete(snapshot.daily_delivery_input_snapshot_id);
-                      }}
-                      type="button"
-                    >
-                      삭제
-                    </button>
+                    <div className="inline-actions">
+                      {snapshot.status === 'draft' ? (
+                        <button
+                          className="button ghost small"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            void handleActivateSnapshot(snapshot.daily_delivery_input_snapshot_id);
+                          }}
+                          type="button"
+                        >
+                          활성화
+                        </button>
+                      ) : null}
+                      <button
+                        className="button ghost small"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          void handleSnapshotDelete(snapshot.daily_delivery_input_snapshot_id);
+                        }}
+                        type="button"
+                      >
+                        삭제
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <p className="empty-state">현재 문맥에 일별 snapshot이 없습니다.</p>
+          <p className="empty-state">현재 문맥에 일별 입력 스냅샷이 없습니다.</p>
         )}
       </section>
 

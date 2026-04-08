@@ -6,6 +6,7 @@ import { listDrivers } from '../api/drivers';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { listCompanies } from '../api/organization';
 import { listVehicleMasters } from '../api/vehicles';
+import { PageLayout } from '../components/PageLayout';
 import { getDriverRouteRef, getVehicleRouteRef } from '../routeRefs';
 import type { Company, DriverProfile, DriverVehicleAssignment, VehicleMaster } from '../types';
 import { formatAssignmentStatusLabel } from '../uiLabels';
@@ -105,12 +106,8 @@ export function VehicleAssignmentDetailPage({ client }: VehicleAssignmentDetailP
   const company = getCompany();
 
   return (
-    <section className="panel">
-      <div className="panel-header panel-header-inline">
-        <div>
-          <p className="panel-kicker">배정 상세</p>
-          <h2>배정 상세</h2>
-        </div>
+    <PageLayout
+      actions={
         <div className="inline-actions">
           {assignmentRef ? (
             <Link className="button ghost" to={`/vehicle-assignments/${assignmentRef}/edit`}>
@@ -128,12 +125,20 @@ export function VehicleAssignmentDetailPage({ client }: VehicleAssignmentDetailP
             </button>
           ) : null}
         </div>
-      </div>
-      {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
-      {isLoading ? (
-        <p className="empty-state">배정 정보를 불러오는 중입니다...</p>
-      ) : assignment ? (
-        <div className="stack">
+      }
+      subtitle="배정 상태와 연결된 차량·배송원 문맥을 함께 확인합니다."
+      title="배정 상세"
+    >
+      <section className="panel">
+        <div className="panel-header">
+          <p className="panel-kicker">차량 배정</p>
+          <h2>배정 요약</h2>
+        </div>
+        {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
+        {isLoading ? (
+          <p className="empty-state">배정 정보를 불러오는 중입니다...</p>
+        ) : assignment ? (
+          <div className="stack">
           <dl className="detail-list">
             <div>
               <dt>배송원</dt>
@@ -175,10 +180,11 @@ export function VehicleAssignmentDetailPage({ client }: VehicleAssignmentDetailP
               목록으로
             </Link>
           </div>
-        </div>
-      ) : (
-        <p className="empty-state">배정 정보를 찾을 수 없습니다.</p>
-      )}
-    </section>
+          </div>
+        ) : (
+          <p className="empty-state">배정 정보를 찾을 수 없습니다.</p>
+        )}
+      </section>
+    </PageLayout>
   );
 }

@@ -52,6 +52,8 @@ describe('ConsentRecoveryPage', () => {
       />,
     );
 
+    expect(screen.getByRole('heading', { name: '동의 복구' })).toBeInTheDocument();
+    expect(screen.getByText('필수 동의를 다시 확인하고 일반 세션으로 복귀합니다.')).toBeInTheDocument();
     await screen.findByText('필수 동의를 다시 확인해야 합니다.');
     fireEvent.click(screen.getByLabelText('개인정보처리 동의'));
     fireEvent.click(screen.getByLabelText('위치기반 동의'));

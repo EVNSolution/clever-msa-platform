@@ -103,6 +103,7 @@ describe('VehicleDetailPage', () => {
     );
 
     await screen.findByRole('heading', { name: '12가3456' });
+    expect(screen.getByText('차량 정본, 운영사 접근, 단말 상태를 함께 확인합니다.')).toBeInTheDocument();
     expect(apiMocks.getVehicleOps).toHaveBeenCalledWith(expect.anything(), '1');
     expect(screen.getByText('Seed Company')).toBeInTheDocument();
     expect(screen.getAllByText('운영사 회사').length).toBeGreaterThan(0);

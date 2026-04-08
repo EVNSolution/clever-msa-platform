@@ -47,6 +47,7 @@ describe('CompanyDetailPage', () => {
     );
 
     await screen.findByRole('heading', { name: 'Seed Company' });
+    expect(screen.getByText('회사 정본과 하위 플릿 연결 상태를 함께 확인합니다.')).toBeInTheDocument();
     const row = screen.getByText('Seed Fleet').closest('tr');
     expect(screen.getByText('Seed Fleet')).toBeInTheDocument();
     expect(screen.queryByText('Other Fleet')).not.toBeInTheDocument();

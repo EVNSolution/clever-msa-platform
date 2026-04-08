@@ -62,6 +62,8 @@ describe('VehicleOperatorAccessFormPage', () => {
     );
 
     await screen.findByDisplayValue('12가3456');
+    expect(screen.getByText('차량 문맥을 유지한 채 운영사 접근을 추가합니다.')).toBeInTheDocument();
+    expect(screen.getByText('입력 요약')).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText(/운영사 회사/i), {
       target: { value: '30000000-0000-0000-0000-000000000002' },

@@ -54,6 +54,11 @@ describe('SettlementSectionLayout', () => {
     );
 
     await screen.findByRole('heading', { name: '정산' });
+    expect(screen.getByRole('link', { name: '정산 조회' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '정산 실행' })).toBeInTheDocument();
+    expect(screen.queryByText('현재 run, item, 최신 정산을 읽습니다.')).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: '회사 / 플릿 선택' })).not.toBeInTheDocument();
+    expect(screen.queryByText('입력, 실행, 결과는 같은 문맥을 유지한 채 이어집니다.')).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('회사'), {
       target: { value: '30000000-0000-0000-0000-000000000002' },
     });

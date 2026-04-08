@@ -98,6 +98,7 @@ describe('VehicleAssignmentDetailPage', () => {
     );
 
     await screen.findByRole('heading', { name: /배정 상세/i });
+    expect(screen.getByText('배정 상태와 연결된 차량·배송원 문맥을 함께 확인합니다.')).toBeInTheDocument();
     expect(apiMocks.getAssignment).toHaveBeenCalledWith(expect.anything(), '1');
     expect(screen.getByText('Seed Driver')).toBeInTheDocument();
     expect(screen.getByText('12가3456')).toBeInTheDocument();

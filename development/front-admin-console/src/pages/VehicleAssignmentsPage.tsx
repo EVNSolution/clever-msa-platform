@@ -6,6 +6,7 @@ import { listDrivers } from '../api/drivers';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { listCompanies } from '../api/organization';
 import { listVehicleMasters } from '../api/vehicles';
+import { PageLayout } from '../components/PageLayout';
 import { getAssignmentRouteRef } from '../routeRefs';
 import type { Company, DriverProfile, DriverVehicleAssignment, VehicleMaster } from '../types';
 import { formatAssignmentStatusLabel } from '../uiLabels';
@@ -88,21 +89,25 @@ export function VehicleAssignmentsPage({ client }: VehicleAssignmentsPageProps) 
   }
 
   return (
-    <section className="panel">
-      <div className="panel-header panel-header-inline">
-        <div>
-          <p className="panel-kicker">배정 레지스트리</p>
-          <h2>차량 배정 목록</h2>
-        </div>
+    <PageLayout
+      actions={
         <Link className="button primary" to="/vehicle-assignments/new">
           배정 생성
         </Link>
-      </div>
-      {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
-      {isLoading ? (
-        <p className="empty-state">배정 정보를 불러오는 중입니다...</p>
-      ) : assignments.length ? (
-        <table className="table compact">
+      }
+      subtitle="배송원-차량 배정 상태를 같은 화면에서 운영합니다."
+      title="차량 배정"
+    >
+      <section className="panel">
+        <div className="panel-header">
+          <p className="panel-kicker">차량 배정</p>
+          <h2>배정 목록</h2>
+        </div>
+        {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
+        {isLoading ? (
+          <p className="empty-state">배정 정보를 불러오는 중입니다...</p>
+        ) : assignments.length ? (
+          <table className="table compact">
           <thead>
             <tr>
               <th>배송원</th>
@@ -137,10 +142,11 @@ export function VehicleAssignmentsPage({ client }: VehicleAssignmentsPageProps) 
               );
             })}
           </tbody>
-        </table>
-      ) : (
-        <p className="empty-state">등록된 배정 정보가 없습니다.</p>
-      )}
-    </section>
+          </table>
+        ) : (
+          <p className="empty-state">등록된 배정 정보가 없습니다.</p>
+        )}
+      </section>
+    </PageLayout>
   );
 }

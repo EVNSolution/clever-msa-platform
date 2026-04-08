@@ -5,6 +5,7 @@ import { deleteCompany, getCompany, listFleets } from '../api/organization';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { getCompanyRouteRef, getFleetRouteRef } from '../routeRefs';
 import type { Company, Fleet } from '../types';
+import { PageLayout } from '../components/PageLayout';
 
 type CompanyDetailPageProps = {
   client: HttpClient;
@@ -87,29 +88,45 @@ export function CompanyDetailPage({ client }: CompanyDetailPageProps) {
   }
 
   return (
-    <div className="data-grid two-columns relationship-grid">
+    <PageLayout
+      actions={
+        <>
+          {company ? (
+            <Link className="button ghost" to={`/companies/${getCompanyRouteRef(company)}/edit`}>
+              회사 수정
+            </Link>
+          ) : null}
+          <button className="button ghost" disabled={isDeleting || !company} onClick={() => void handleDelete()} type="button">
+            {isDeleting ? '삭제 중...' : '회사 삭제'}
+          </button>
+        </>
+      }
+      contentClassName="data-grid two-columns relationship-grid"
+      subtitle="회사 정본과 하위 플릿 연결 상태를 함께 확인합니다."
+      title={company?.name ?? '회사 상세'}
+    >
       <section className="panel">
-        <div className="panel-header panel-header-inline">
-          <div>
-            <p className="panel-kicker">회사 상세</p>
-            <h2>{company?.name ?? '회사 상세'}</h2>
-          </div>
-          <div className="inline-actions">
-            {company ? (
-              <Link className="button ghost" to={`/companies/${getCompanyRouteRef(company)}/edit`}>
-                회사 수정
-              </Link>
-            ) : null}
-            <button className="button ghost" disabled={isDeleting || !company} onClick={() => void handleDelete()} type="button">
-              {isDeleting ? '삭제 중...' : '회사 삭제'}
-            </button>
-          </div>
+        <div className="panel-header">
+          <p className="panel-kicker">회사 요약</p>
+          <h3>기본 정보</h3>
         </div>
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
         {isLoading ? (
           <p className="empty-state">회사를 불러오는 중입니다...</p>
         ) : company ? (
           <div className="stack">
+            <div className="summary-strip">
+              <article className="summary-item">
+                <span>Company</span>
+                <strong>{company.name}</strong>
+                <small>현재 보고 있는 회사 정본 문맥입니다.</small>
+              </article>
+              <article className="summary-item">
+                <span>Fleets</span>
+                <strong>{fleets.length}</strong>
+                <small>이 회사에 연결된 플릿 수</small>
+              </article>
+            </div>
             <dl className="detail-list">
               <div>
                 <dt>회사 이름</dt>
@@ -137,44 +154,48 @@ export function CompanyDetailPage({ client }: CompanyDetailPageProps) {
       </section>
 
       <section className="panel">
-        <div className="panel-header panel-header-inline">
-          <div>
-            <p className="panel-kicker">하위 플릿</p>
-            <h2>이 회사에 속한 플릿</h2>
-          </div>
+        <div className="panel-header">
+          <p className="panel-kicker">하위 플릿</p>
+          <h3>이 회사에 속한 플릿</h3>
         </div>
         {isLoading ? (
           <p className="empty-state">플릿을 불러오는 중입니다...</p>
         ) : fleets.length ? (
-          <table className="table compact">
-            <thead>
-              <tr>
-                <th>플릿</th>
-              </tr>
-            </thead>
-            <tbody>
-              {fleets.map((fleet) => {
-                const detailPath = `/companies/${companyRef}/fleets/${getFleetRouteRef(fleet)}`;
+          <>
+            <div className="panel-toolbar">
+              <span className="table-meta">플릿 행을 선택하면 상세로 이동하고, 같은 회사 문맥을 유지합니다.</span>
+              <span className="table-meta">총 {fleets.length}개 플릿</span>
+            </div>
+            <table className="table compact">
+              <thead>
+                <tr>
+                  <th>플릿</th>
+                </tr>
+              </thead>
+              <tbody>
+                {fleets.map((fleet) => {
+                  const detailPath = `/companies/${companyRef}/fleets/${getFleetRouteRef(fleet)}`;
 
-                return (
-                  <tr
-                    key={fleet.fleet_id}
-                    className="interactive-row"
-                    data-detail-path={detailPath}
-                    onClick={() => navigate(detailPath)}
-                    onKeyDown={(event) => handleFleetRowKeyDown(event, detailPath)}
-                    tabIndex={0}
-                  >
-                    <td>{fleet.name}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                  return (
+                    <tr
+                      key={fleet.fleet_id}
+                      className="interactive-row"
+                      data-detail-path={detailPath}
+                      onClick={() => navigate(detailPath)}
+                      onKeyDown={(event) => handleFleetRowKeyDown(event, detailPath)}
+                      tabIndex={0}
+                    >
+                      <td>{fleet.name}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </>
         ) : (
           <p className="empty-state">이 회사에 연결된 플릿이 없습니다.</p>
         )}
       </section>
-    </div>
+    </PageLayout>
   );
 }

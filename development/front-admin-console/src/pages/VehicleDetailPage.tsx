@@ -8,6 +8,7 @@ import {
 } from '../api/vehicles';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { listCompanies } from '../api/organization';
+import { PageLayout } from '../components/PageLayout';
 import { getVehicleRouteRef } from '../routeRefs';
 import type { Company, VehicleOperatorAccess, VehicleOpsSummary } from '../types';
 import {
@@ -149,21 +150,23 @@ export function VehicleDetailPage({ client }: VehicleDetailPageProps) {
   }
 
   return (
-    <div className="stack large-gap">
-      <section className="panel">
-        <div className="panel-header panel-header-inline">
-          <div>
-            <p className="panel-kicker">차량 상세</p>
-            <h2>{vehicle?.plate_number ?? '차량 상세'}</h2>
+    <PageLayout
+      actions={
+        vehicle ? (
+          <Link className="button ghost" to={`/vehicles/${getVehicleRouteRef(vehicle)}/edit`}>
+            차량 수정
+          </Link>
+        ) : null
+      }
+      subtitle="차량 정본, 운영사 접근, 단말 상태를 함께 확인합니다."
+      title={vehicle?.plate_number ?? '차량 상세'}
+    >
+      <div className="stack large-gap">
+        <section className="panel">
+          <div className="panel-header">
+            <p className="panel-kicker">차량 요약</p>
+            <h2>기본 정보</h2>
           </div>
-          <div className="inline-actions">
-            {vehicle ? (
-              <Link className="button ghost" to={`/vehicles/${getVehicleRouteRef(vehicle)}/edit`}>
-                차량 수정
-              </Link>
-            ) : null}
-          </div>
-        </div>
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
         {isLoading ? (
           <p className="empty-state">차량 정보를 불러오는 중입니다...</p>
@@ -261,13 +264,13 @@ export function VehicleDetailPage({ client }: VehicleDetailPageProps) {
         ) : (
           <p className="empty-state">차량을 찾을 수 없습니다.</p>
         )}
-      </section>
+        </section>
 
-      <section className="panel">
-        <div className="panel-header">
-          <p className="panel-kicker">운영사 접근</p>
-          <h2>이 차량의 운영사 접근 기록</h2>
-        </div>
+        <section className="panel">
+          <div className="panel-header">
+            <p className="panel-kicker">운영사 접근</p>
+            <h2>이 차량의 운영사 접근 기록</h2>
+          </div>
         {isLoading ? (
           <p className="empty-state">운영사 접근을 불러오는 중입니다...</p>
         ) : accesses.length ? (
@@ -307,7 +310,8 @@ export function VehicleDetailPage({ client }: VehicleDetailPageProps) {
         ) : (
           <p className="empty-state">등록된 운영사 접근 정보가 없습니다.</p>
         )}
-      </section>
-    </div>
+        </section>
+      </div>
+    </PageLayout>
   );
 }

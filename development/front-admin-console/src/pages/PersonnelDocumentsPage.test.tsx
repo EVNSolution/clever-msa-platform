@@ -54,10 +54,12 @@ describe('PersonnelDocumentsPage', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByRole('heading', { name: '인사문서 목록' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '인사문서' })).toBeInTheDocument();
     expect(screen.getByLabelText('기사 필터')).toBeInTheDocument();
     expect(screen.getByLabelText('문서 종류 필터')).toBeInTheDocument();
     expect(await screen.findByText('2026 근로 계약서')).toBeInTheDocument();
+    expect(screen.getByText('기사 연결 문서 상태와 만료 일정을 함께 확인합니다.')).toBeInTheDocument();
+    expect(screen.getByText('총 1건 문서')).toBeInTheDocument();
     const table = screen.getByRole('table');
     expect(within(table).getByText('홍길동')).toBeInTheDocument();
     expect(within(table).getByText('계약서')).toBeInTheDocument();

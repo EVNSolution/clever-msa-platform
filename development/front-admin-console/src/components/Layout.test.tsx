@@ -5,8 +5,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { Layout } from './Layout';
 
 describe('Layout', () => {
-  it('omits standalone terminal navigation from the admin shell', () => {
-    render(
+  it('renders grouped drawer navigation instead of a flat top navigation bar', () => {
+    const { container } = render(
       <MemoryRouter>
         <Layout
           session={{
@@ -33,20 +33,22 @@ describe('Layout', () => {
     );
 
     expect(screen.getByRole('link', { name: '대시보드' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '계정 요청' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '공지' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '지원' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '알림' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '인사문서' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '조직 관리' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '차량' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '배송원' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '운영' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '배차 계획' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '정산' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '회사' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '권역' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '인사문서' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '차량' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '차량 배정' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '배차' })).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: '단말기' })).not.toBeInTheDocument();
+    expect(screen.getAllByRole('link', { name: '내 계정' })).toHaveLength(2);
+    expect(container.querySelector('.console-home-icon')).toBeNull();
   });
 
-  it('hides settlement navigation for vehicle managers', () => {
+  it('hides settlement and dispatch groups for vehicle managers', () => {
     render(
       <MemoryRouter>
         <Layout
@@ -74,21 +76,23 @@ describe('Layout', () => {
     );
 
     expect(screen.getByRole('link', { name: '대시보드' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '차량' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '배송원' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '운영' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '공지' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '지원' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '알림' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '인사문서' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '권역' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '인사문서' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '차량' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '차량 배정' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '배송원' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '정산' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: '배차' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '배차 계획' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '회사' })).not.toBeInTheDocument();
   });
 
-  it('hides vehicle navigation for settlement managers', () => {
+  it('hides vehicle group for settlement managers while keeping dispatch and settlement groups', () => {
     render(
       <MemoryRouter>
         <Layout
@@ -116,13 +120,16 @@ describe('Layout', () => {
     );
 
     expect(screen.getByRole('link', { name: '대시보드' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '배송원' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '운영' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '정산' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '배차 계획' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '공지' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '지원' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '알림' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '인사문서' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '권역' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '인사문서' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '정산' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: '정산 조회' })).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: '배차' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '배송원' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '차량' })).not.toBeInTheDocument();
@@ -130,7 +137,7 @@ describe('Layout', () => {
     expect(screen.queryByRole('link', { name: '회사' })).not.toBeInTheDocument();
   });
 
-  it('shows dispatch and settlement navigation for fleet managers without vehicle or company menus', () => {
+  it('shows dispatch and settlement groups for fleet managers without vehicle or company groups', () => {
     render(
       <MemoryRouter>
         <Layout
@@ -158,13 +165,16 @@ describe('Layout', () => {
     );
 
     expect(screen.getByRole('link', { name: '대시보드' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '배송원' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '운영' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '정산' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '배차 계획' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '공지' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '지원' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '알림' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '인사문서' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '권역' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '인사문서' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '정산' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: '정산 조회' })).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: '배차' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '배송원' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '차량' })).not.toBeInTheDocument();

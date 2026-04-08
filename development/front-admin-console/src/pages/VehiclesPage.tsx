@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { listVehicleMasters } from '../api/vehicles';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { listCompanies } from '../api/organization';
+import { PageLayout } from '../components/PageLayout';
 import { getVehicleRouteRef } from '../routeRefs';
 import type { Company, VehicleMaster } from '../types';
 import { formatLifecycleStatusLabel } from '../uiLabels';
@@ -65,21 +66,25 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
   }
 
   return (
-    <section className="panel">
-      <div className="panel-header panel-header-inline">
-        <div>
-          <p className="panel-kicker">차량 목록</p>
-          <h2>차량 마스터 관리자 조회</h2>
-        </div>
+    <PageLayout
+      actions={
         <Link className="button primary" to="/vehicles/new">
           차량 생성
         </Link>
-      </div>
-      {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
-      {isLoading ? (
-        <p className="empty-state">차량 마스터를 불러오는 중입니다...</p>
-      ) : vehicleMasters.length ? (
-        <table className="table compact">
+      }
+      subtitle="차량 정본과 제조사 상태를 같은 화면에서 관리합니다."
+      title="차량"
+    >
+      <section className="panel">
+        <div className="panel-header">
+          <p className="panel-kicker">차량</p>
+          <h2>차량 목록</h2>
+        </div>
+        {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
+        {isLoading ? (
+          <p className="empty-state">차량 마스터를 불러오는 중입니다...</p>
+        ) : vehicleMasters.length ? (
+          <table className="table compact">
           <thead>
             <tr>
               <th>번호판</th>
@@ -109,10 +114,11 @@ export function VehiclesPage({ client }: VehiclesPageProps) {
               );
             })}
           </tbody>
-        </table>
-      ) : (
-        <p className="empty-state">등록된 차량 마스터가 없습니다.</p>
-      )}
-    </section>
+          </table>
+        ) : (
+          <p className="empty-state">등록된 차량 마스터가 없습니다.</p>
+        )}
+      </section>
+    </PageLayout>
   );
 }

@@ -208,38 +208,33 @@ export function SettlementResultsPage({ client }: SettlementResultsPageProps) {
 
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">결과 handoff</p>
-          <h2>결과 요약</h2>
-          <p className="empty-state">실행이 끝난 뒤에는 현재 문맥 기준 결과만 확인합니다.</p>
+          <p className="panel-kicker">정산 결과</p>
+          <h2>정산 결과 요약</h2>
         </div>
-        <div className="settlement-flow-shell">
-          <article className="shell-card">
-            <strong>현재 문맥</strong>
-            <span>{currentContextLabel}</span>
-            <dl className="shell-metric-list">
-              <div>
-                <dt>정산 실행</dt>
-                <dd>{filteredRuns.length}</dd>
-              </div>
-              <div>
-                <dt>정산 항목</dt>
-                <dd>{filteredItems.length}</dd>
-              </div>
-              <div>
-                <dt>총 금액</dt>
-                <dd>{totalAmount.toFixed(2)}</dd>
-              </div>
-            </dl>
+        <div className="summary-strip">
+          <article className="summary-item">
+            <span>Current Context</span>
+            <strong>{currentContextLabel}</strong>
+            <small>선택한 회사와 플릿 기준 결과만 보여줍니다.</small>
           </article>
-          <article className="shell-card">
-            <strong>예외 보정</strong>
-            <span>결과 수정이 필요할 때만 항목 생성/수정을 사용합니다.</span>
-            <div className="inline-actions">
-              <button className="button primary" onClick={openCreateItemModal} type="button">
-                정산 항목 생성
-              </button>
-            </div>
+          <article className="summary-item">
+            <span>Settlement Run</span>
+            <strong>{filteredRuns.length}</strong>
+            <small>현재 문맥에서 확인 가능한 실행 수</small>
           </article>
+          <article className="summary-item">
+            <span>Settlement Item</span>
+            <strong>{filteredItems.length}</strong>
+            <small>기사별 지급 항목 수</small>
+          </article>
+          <article className="summary-item">
+            <span>Total Amount</span>
+            <strong>{totalAmount.toFixed(2)}</strong>
+            <small>현재 문맥 기준 결과 합계</small>
+          </article>
+        </div>
+        <div className="panel-toolbar">
+          <span className="table-meta">실행이 끝난 결과를 확인하는 화면입니다. 수동 보정이 필요할 때만 결과 항목을 추가하거나 수정합니다.</span>
         </div>
       </section>
 
@@ -252,6 +247,14 @@ export function SettlementResultsPage({ client }: SettlementResultsPageProps) {
           <button className="button primary" onClick={openCreateItemModal} type="button">
             정산 항목 생성
           </button>
+        </div>
+        <div className="panel-toolbar">
+          <span className="table-meta">결과 항목은 실행별 기사 지급 상태를 보여주며, 필요한 경우에만 수동 보정합니다.</span>
+          <div className="panel-toolbar-actions">
+            <span className="table-meta">실행 {filteredRuns.length}건</span>
+            <span className="table-meta">항목 {filteredItems.length}건</span>
+            <span className="table-meta">총액 {totalAmount.toFixed(2)}</span>
+          </div>
         </div>
         {isLoading ? (
           <p className="empty-state">정산 항목을 불러오는 중입니다...</p>
@@ -307,6 +310,18 @@ export function SettlementResultsPage({ client }: SettlementResultsPageProps) {
         title={editingItemId ? '정산 항목 수정' : '정산 항목 생성'}
       >
         <form className="form-stack" onSubmit={handleItemSubmit}>
+          <div className="summary-strip">
+            <article className="summary-item">
+              <span>현재 실행</span>
+              <strong>{itemForm.settlement_run_id ? getRunLabel(itemForm.settlement_run_id) : '미선택'}</strong>
+              <small>결과 항목이 귀속될 실행입니다.</small>
+            </article>
+            <article className="summary-item">
+              <span>배송원</span>
+              <strong>{itemForm.driver_id ? getDriverName(drivers, itemForm.driver_id) : '미선택'}</strong>
+              <small>기사별 결과 항목으로 지급 상태를 관리합니다.</small>
+            </article>
+          </div>
           <label className="field">
             <span>정산 실행</span>
             <select

@@ -441,27 +441,28 @@ export function SettlementCriteriaPage({ client }: SettlementCriteriaPageProps) 
 
       <section className="panel">
         <div className="panel-header">
-          <p className="panel-kicker">정산 기준</p>
+          <p className="panel-kicker">정산 기준 운영</p>
           <h2>정책 요약</h2>
+          <p className="empty-state">정책, 버전, 회사 연결을 한 흐름에서 유지합니다.</p>
         </div>
         {isLoading ? (
           <p className="empty-state">정산 기준을 불러오는 중입니다...</p>
         ) : (
-          <div className="metric-grid">
-            <article className="metric-card">
-              <span className="panel-kicker">Policy</span>
+          <div className="summary-strip">
+            <article className="summary-item">
+              <span>Policy</span>
               <strong>{policies.length}</strong>
-              <span className="empty-state">등록된 정산 정책 수</span>
+              <small>등록된 정산 정책 수</small>
             </article>
-            <article className="metric-card">
-              <span className="panel-kicker">Version</span>
+            <article className="summary-item">
+              <span>Version</span>
               <strong>{versions.length}</strong>
-              <span className="empty-state">등록된 정책 버전 수</span>
+              <small>등록된 정책 버전 수</small>
             </article>
-            <article className="metric-card">
-              <span className="panel-kicker">Assignment</span>
+            <article className="summary-item">
+              <span>Assignment</span>
               <strong>{assignments.length}</strong>
-              <span className="empty-state">회사/플릿 연결 수</span>
+              <small>회사/플릿 연결 수</small>
             </article>
           </div>
         )}
@@ -480,43 +481,49 @@ export function SettlementCriteriaPage({ client }: SettlementCriteriaPageProps) 
         {isLoading ? (
           <p className="empty-state">정책을 불러오는 중입니다...</p>
         ) : policies.length ? (
-          <table className="table compact">
-            <thead>
-              <tr>
-                <th>코드</th>
-                <th>이름</th>
-                <th>상태</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {policies.map((policy) => (
-                <tr
-                  key={policy.policy_id}
-                  className={`interactive-row${editingPolicyId === policy.policy_id ? ' is-selected' : ''}`}
-                  onClick={() => selectPolicy(policy)}
-                  onKeyDown={(event) => handlePolicyRowKeyDown(event, policy)}
-                  tabIndex={0}
-                >
-                  <td>{policy.policy_code}</td>
-                  <td>{policy.name}</td>
-                  <td>{formatPolicyStatusLabel(policy.status)}</td>
-                  <td>
-                    <button
-                      className="button ghost small"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        void handlePolicyDelete(policy.policy_id);
-                      }}
-                      type="button"
-                    >
-                      삭제
-                    </button>
-                  </td>
+          <>
+            <div className="panel-toolbar">
+              <span className="table-meta">정책 코어와 활성 상태를 먼저 고정하고, 세부 규칙은 버전에서 관리합니다.</span>
+              <span className="table-meta">총 {policies.length}개 정책</span>
+            </div>
+            <table className="table compact">
+              <thead>
+                <tr>
+                  <th>코드</th>
+                  <th>이름</th>
+                  <th>상태</th>
+                  <th />
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {policies.map((policy) => (
+                  <tr
+                    key={policy.policy_id}
+                    className={`interactive-row${editingPolicyId === policy.policy_id ? ' is-selected' : ''}`}
+                    onClick={() => selectPolicy(policy)}
+                    onKeyDown={(event) => handlePolicyRowKeyDown(event, policy)}
+                    tabIndex={0}
+                  >
+                    <td>{policy.policy_code}</td>
+                    <td>{policy.name}</td>
+                    <td>{formatPolicyStatusLabel(policy.status)}</td>
+                    <td>
+                      <button
+                        className="button ghost small"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          void handlePolicyDelete(policy.policy_id);
+                        }}
+                        type="button"
+                      >
+                        삭제
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
         ) : (
           <p className="empty-state">정책이 없습니다.</p>
         )}
@@ -535,45 +542,51 @@ export function SettlementCriteriaPage({ client }: SettlementCriteriaPageProps) 
         {isLoading ? (
           <p className="empty-state">정책 버전을 불러오는 중입니다...</p>
         ) : versions.length ? (
-          <table className="table compact">
-            <thead>
-              <tr>
-                <th>정책</th>
-                <th>버전</th>
-                <th>상태</th>
-                <th>게시 시각</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {versions.map((version) => (
-                <tr
-                  key={version.policy_version_id}
-                  className={`interactive-row${editingVersionId === version.policy_version_id ? ' is-selected' : ''}`}
-                  onClick={() => selectVersion(version)}
-                  onKeyDown={(event) => handleVersionRowKeyDown(event, version)}
-                  tabIndex={0}
-                >
-                  <td>{getPolicyName(version.policy_id)}</td>
-                  <td>v{version.version_number}</td>
-                  <td>{formatPolicyVersionStatusLabel(version.status)}</td>
-                  <td>{version.published_at ?? '-'}</td>
-                  <td>
-                    <button
-                      className="button ghost small"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        void handleVersionDelete(version.policy_version_id);
-                      }}
-                      type="button"
-                    >
-                      삭제
-                    </button>
-                  </td>
+          <>
+            <div className="panel-toolbar">
+              <span className="table-meta">버전에서 실제 rule payload와 게시 상태를 관리합니다.</span>
+              <span className="table-meta">총 {versions.length}개 버전</span>
+            </div>
+            <table className="table compact">
+              <thead>
+                <tr>
+                  <th>정책</th>
+                  <th>버전</th>
+                  <th>상태</th>
+                  <th>게시 시각</th>
+                  <th />
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {versions.map((version) => (
+                  <tr
+                    key={version.policy_version_id}
+                    className={`interactive-row${editingVersionId === version.policy_version_id ? ' is-selected' : ''}`}
+                    onClick={() => selectVersion(version)}
+                    onKeyDown={(event) => handleVersionRowKeyDown(event, version)}
+                    tabIndex={0}
+                  >
+                    <td>{getPolicyName(version.policy_id)}</td>
+                    <td>v{version.version_number}</td>
+                    <td>{formatPolicyVersionStatusLabel(version.status)}</td>
+                    <td>{version.published_at ?? '-'}</td>
+                    <td>
+                      <button
+                        className="button ghost small"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          void handleVersionDelete(version.policy_version_id);
+                        }}
+                        type="button"
+                      >
+                        삭제
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
         ) : (
           <p className="empty-state">정책 버전이 없습니다.</p>
         )}
@@ -592,49 +605,55 @@ export function SettlementCriteriaPage({ client }: SettlementCriteriaPageProps) 
         {isLoading ? (
           <p className="empty-state">정책 연결을 불러오는 중입니다...</p>
         ) : assignments.length ? (
-          <table className="table compact">
-            <thead>
-              <tr>
-                <th>정책 버전</th>
-                <th>회사</th>
-                <th>플릿</th>
-                <th>기간</th>
-                <th>상태</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {assignments.map((assignment) => (
-                <tr
-                  key={assignment.assignment_id}
-                  className={`interactive-row${editingAssignmentId === assignment.assignment_id ? ' is-selected' : ''}`}
-                  onClick={() => selectAssignment(assignment)}
-                  onKeyDown={(event) => handleAssignmentRowKeyDown(event, assignment)}
-                  tabIndex={0}
-                >
-                  <td>{getVersionLabel(assignment.policy_version_id)}</td>
-                  <td>{getCompanyName(companies, assignment.company_id)}</td>
-                  <td>{getFleetName(fleets, assignment.fleet_id)}</td>
-                  <td>
-                    {assignment.effective_start_date} ~ {assignment.effective_end_date ?? '계속'}
-                  </td>
-                  <td>{formatPolicyStatusLabel(assignment.status)}</td>
-                  <td>
-                    <button
-                      className="button ghost small"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        void handleAssignmentDelete(assignment.assignment_id);
-                      }}
-                      type="button"
-                    >
-                      삭제
-                    </button>
-                  </td>
+          <>
+            <div className="panel-toolbar">
+              <span className="table-meta">회사와 플릿에 어떤 정책 버전이 언제부터 적용되는지 연결 상태를 유지합니다.</span>
+              <span className="table-meta">총 {assignments.length}개 연결</span>
+            </div>
+            <table className="table compact">
+              <thead>
+                <tr>
+                  <th>정책 버전</th>
+                  <th>회사</th>
+                  <th>플릿</th>
+                  <th>기간</th>
+                  <th>상태</th>
+                  <th />
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {assignments.map((assignment) => (
+                  <tr
+                    key={assignment.assignment_id}
+                    className={`interactive-row${editingAssignmentId === assignment.assignment_id ? ' is-selected' : ''}`}
+                    onClick={() => selectAssignment(assignment)}
+                    onKeyDown={(event) => handleAssignmentRowKeyDown(event, assignment)}
+                    tabIndex={0}
+                  >
+                    <td>{getVersionLabel(assignment.policy_version_id)}</td>
+                    <td>{getCompanyName(companies, assignment.company_id)}</td>
+                    <td>{getFleetName(fleets, assignment.fleet_id)}</td>
+                    <td>
+                      {assignment.effective_start_date} ~ {assignment.effective_end_date ?? '계속'}
+                    </td>
+                    <td>{formatPolicyStatusLabel(assignment.status)}</td>
+                    <td>
+                      <button
+                        className="button ghost small"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          void handleAssignmentDelete(assignment.assignment_id);
+                        }}
+                        type="button"
+                      >
+                        삭제
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
         ) : (
           <p className="empty-state">정책 연결이 없습니다.</p>
         )}

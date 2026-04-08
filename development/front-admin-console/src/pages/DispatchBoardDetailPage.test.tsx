@@ -26,6 +26,7 @@ const apiMocks = vi.hoisted(() => ({
   updateDispatchWorkRule: vi.fn(),
   updateDispatchAssignment: vi.fn(),
   listDailyDeliveryInputSnapshots: vi.fn(),
+  bootstrapDailySnapshotsFromDispatch: vi.fn(),
 }));
 
 vi.mock('../api/dispatchOps', () => ({
@@ -54,6 +55,7 @@ vi.mock('../api/dispatchRegistry', () => ({
 
 vi.mock('../api/deliveryRecords', () => ({
   listDailyDeliveryInputSnapshots: apiMocks.listDailyDeliveryInputSnapshots,
+  bootstrapDailySnapshotsFromDispatch: apiMocks.bootstrapDailySnapshotsFromDispatch,
 }));
 
 vi.mock('../api/drivers', () => ({
@@ -92,6 +94,11 @@ function mockOutsourcedDriverLists(activeDrivers: unknown[], archivedDrivers: un
 describe('DispatchBoardDetailPage', () => {
   beforeEach(() => {
     apiMocks.listDailyDeliveryInputSnapshots.mockResolvedValue([]);
+    apiMocks.bootstrapDailySnapshotsFromDispatch.mockResolvedValue({
+      created_count: 1,
+      skipped_count: 0,
+      created_snapshot_ids: ['snapshot-1'],
+    });
   });
 
   it('renders board rows and unassigns an assignment', async () => {
@@ -181,9 +188,9 @@ describe('DispatchBoardDetailPage', () => {
       </MemoryRouter>,
     );
 
-    await screen.findByRole('heading', { name: '서울 플릿' });
+    await screen.findByText('12가3456');
+    expect(screen.getByText('dispatch unit과 운영 입력을 함께 관리합니다.')).toBeInTheDocument();
     expect(screen.getByText('정산 입력 스냅샷 완료')).toBeInTheDocument();
-    expect(screen.getByText('12가3456')).toBeInTheDocument();
     expect(screen.getAllByText('홍길동').length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole('button', { name: '배정 해제' }));
     await waitFor(() => {
@@ -194,6 +201,79 @@ describe('DispatchBoardDetailPage', () => {
           assignment_status: 'unassigned',
           unassigned_at: expect.any(String),
         }),
+      );
+    });
+  });
+
+  it('bootstraps settlement input snapshots from dispatch context', async () => {
+    apiMocks.listDispatchPlans.mockResolvedValue([
+      {
+        dispatch_plan_id: 'dispatch-plan-1',
+        company_id: '30000000-0000-0000-0000-000000000001',
+        fleet_id: '40000000-0000-0000-0000-000000000001',
+        dispatch_date: '2026-03-24',
+        planned_volume: 120,
+        dispatch_status: 'draft',
+      },
+    ]);
+    apiMocks.getDispatchSummary.mockResolvedValue({
+      dispatch_date: '2026-03-24',
+      fleet_id: '40000000-0000-0000-0000-000000000001',
+      planned_volume: 120,
+      planned_assignment_count: 1,
+      matched_count: 1,
+      not_started_count: 0,
+      dispatch_unit_changed_count: 0,
+      unplanned_current_count: 0,
+    });
+    apiMocks.getDispatchBoard.mockResolvedValue([
+      {
+        dispatch_date: '2026-03-24',
+        vehicle_schedule_id: 'vehicle-schedule-1',
+        dispatch_assignment_id: 'dispatch-assignment-1',
+        shift_slot: 'A',
+        vehicle_id: 'vehicle-1',
+        plate_number: '12가3456',
+        planned_driver_kind: 'internal',
+        outsourced_driver_id: null,
+        planned_driver_id: 'driver-1',
+        planned_driver_name: '홍길동',
+        current_driver_id: 'driver-1',
+        current_driver_name: '홍길동',
+        dispatch_status: 'matched',
+        warnings: [],
+      },
+    ]);
+    mockOutsourcedDriverLists([]);
+    apiMocks.listVehicleSchedules.mockResolvedValue([]);
+    apiMocks.listDispatchAssignments.mockResolvedValue([]);
+    apiMocks.listDispatchWorkRules.mockResolvedValue([]);
+    apiMocks.listDriverDayExceptions.mockResolvedValue([]);
+    apiMocks.listVehicleMasters.mockResolvedValue([]);
+    apiMocks.listDrivers.mockResolvedValue([]);
+
+    render(
+      <MemoryRouter initialEntries={['/dispatch/boards/41/2026-03-24']}>
+        <Routes>
+          <Route
+            path="/dispatch/boards/:fleetRef/:dispatchDate"
+            element={<DispatchBoardDetailPage client={{ request: vi.fn() }} />}
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole('heading', { name: '서울 플릿' });
+    fireEvent.click(screen.getByRole('button', { name: '정산 입력으로 넘기기' }));
+
+    await waitFor(() => {
+      expect(apiMocks.bootstrapDailySnapshotsFromDispatch).toHaveBeenCalledWith(
+        expect.anything(),
+        {
+          company_id: '30000000-0000-0000-0000-000000000001',
+          fleet_id: '40000000-0000-0000-0000-000000000001',
+          service_date: '2026-03-24',
+        },
       );
     });
   });
@@ -293,6 +373,7 @@ describe('DispatchBoardDetailPage', () => {
     );
 
     await screen.findByRole('heading', { name: '운영 기사', level: 3 });
+    expect(screen.getByText('dispatch unit과 운영 입력을 함께 관리합니다.')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '아카이브 기사', level: 3 })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: '운영 기사' })).toBeInTheDocument();
     expect(screen.queryByRole('option', { name: '아카이브 기사' })).not.toBeInTheDocument();

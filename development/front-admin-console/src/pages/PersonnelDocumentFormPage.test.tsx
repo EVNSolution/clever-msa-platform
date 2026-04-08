@@ -63,6 +63,8 @@ describe('PersonnelDocumentFormPage', () => {
     );
 
     expect(await screen.findByRole('heading', { name: '인사문서 등록' })).toBeInTheDocument();
+    expect(screen.getByText('기사 연결 상태를 유지한 채 문서 메타데이터를 입력합니다.')).toBeInTheDocument();
+    expect(screen.getByText('기사 선택과 문서 수명주기 설정을 먼저 고정합니다.')).toBeInTheDocument();
     fireEvent.change(await screen.findByLabelText('기사'), { target: { value: '10000000-0000-0000-0000-000000000001' } });
     fireEvent.change(screen.getByLabelText('문서 종류'), { target: { value: 'contract' } });
     fireEvent.change(screen.getByLabelText('상태'), { target: { value: 'active' } });

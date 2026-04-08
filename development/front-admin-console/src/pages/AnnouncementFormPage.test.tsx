@@ -40,6 +40,11 @@ describe('AnnouncementFormPage', () => {
       </MemoryRouter>,
     );
 
+    expect(screen.getByRole('heading', { name: '공지 생성' })).toBeInTheDocument();
+    expect(screen.getByText('공지 메타데이터와 게시 설정을 같은 입력 흐름에서 관리합니다.')).toBeInTheDocument();
+    expect(screen.getByText('게시 설정 요약')).toBeInTheDocument();
+    expect(screen.getByText('입력 전 기본 상태를 먼저 확인하고 저장합니다.')).toBeInTheDocument();
+
     fireEvent.change(screen.getByLabelText('슬러그'), { target: { value: 'ops-update' } });
     fireEvent.change(screen.getByLabelText('제목'), { target: { value: '운영 공지' } });
     fireEvent.change(screen.getByLabelText('본문'), { target: { value: '이번 주 운영 변경사항' } });

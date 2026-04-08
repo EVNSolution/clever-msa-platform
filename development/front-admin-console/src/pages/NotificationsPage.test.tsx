@@ -94,6 +94,7 @@ describe('NotificationsPage', () => {
     );
 
     await screen.findByRole('heading', { name: '알림 관리' });
+    expect(screen.getByText('일반 알림과 push 발송 이력을 함께 운영합니다.')).toBeInTheDocument();
     expect(screen.getAllByText('문의 답변 등록').length).toBeGreaterThan(0);
 
     fireEvent.change(screen.getByLabelText('대상 account_id'), {
@@ -156,6 +157,7 @@ describe('NotificationsPage', () => {
     );
 
     await screen.findByRole('heading', { name: '알림' });
+    expect(screen.getByText('내 계정으로 도착한 일반 알림과 지원 답변을 확인합니다.')).toBeInTheDocument();
     expect(apiMocks.listGeneralNotifications).toHaveBeenCalledWith(expect.anything(), {
       recipient_account_id: '20000000-0000-0000-0000-000000000002',
     });

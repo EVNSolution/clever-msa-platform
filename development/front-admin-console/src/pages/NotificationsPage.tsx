@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { canManageNotificationScope } from '../authScopes';
 import { createPushSend, listGeneralNotifications, listPushDeliveryLogs, updateNotificationStatus } from '../api/notifications';
 import { getErrorMessage, type HttpClient, type SessionPayload } from '../api/http';
+import { PageLayout } from '../components/PageLayout';
 import type { GeneralNotification, PushDeliveryLog } from '../types';
 import { formatNotificationStatusLabel, formatPushDeliveryStatusLabel } from '../uiLabels';
 
@@ -69,11 +70,7 @@ function SelfServiceNotifications({
   }
 
   return (
-    <section className="panel">
-      <div className="panel-header">
-        <p className="panel-kicker">알림</p>
-        <h2>알림</h2>
-      </div>
+    <PageLayout subtitle="내 계정으로 도착한 일반 알림과 지원 답변을 확인합니다." title="알림">
       <p className="empty-state">지원 답변이 등록되면 이 알림함에 일반 알림으로 함께 도착합니다.</p>
       {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
       {isLoading ? (
@@ -123,7 +120,7 @@ function SelfServiceNotifications({
       ) : (
         <p className="empty-state">수신한 알림이 없습니다.</p>
       )}
-    </section>
+    </PageLayout>
   );
 }
 
@@ -210,11 +207,12 @@ function ManagementNotifications({ client }: { client: HttpClient }) {
   }
 
   return (
-    <div className="stack large-gap">
+    <PageLayout subtitle="일반 알림과 push 발송 이력을 함께 운영합니다." title="알림 관리">
+      <div className="stack large-gap">
       <section className="panel form-panel">
         <div className="panel-header">
           <p className="panel-kicker">알림 발송</p>
-          <h2>알림 관리</h2>
+          <h2>발송 입력</h2>
         </div>
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
         <div className="form-grid">
@@ -319,7 +317,8 @@ function ManagementNotifications({ client }: { client: HttpClient }) {
           )}
         </section>
       </div>
-    </div>
+      </div>
+    </PageLayout>
   );
 }
 
@@ -332,13 +331,9 @@ export function NotificationsPage({ client, session }: NotificationsPageProps) {
 
   if (!recipientAccountId) {
     return (
-      <section className="panel">
-        <div className="panel-header">
-          <p className="panel-kicker">알림</p>
-          <h2>알림</h2>
-        </div>
+      <PageLayout subtitle="내 계정으로 도착한 일반 알림과 지원 답변을 확인합니다." title="알림">
         <p className="empty-state">알림 계정 문맥이 없습니다.</p>
-      </section>
+      </PageLayout>
     );
   }
 

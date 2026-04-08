@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { createVehicleMaster, getVehicleMaster, updateVehicleMaster, type VehicleMasterPayload } from '../api/vehicles';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { listCompanies } from '../api/organization';
+import { PageLayout } from '../components/PageLayout';
 import { getVehicleRouteRef } from '../routeRefs';
 import type { Company } from '../types';
 
@@ -112,16 +113,20 @@ export function VehicleFormPage({ client, mode }: VehicleFormPageProps) {
   const cancelHref = isEdit && vehicleRef ? `/vehicles/${vehicleRef}` : '/vehicles';
 
   return (
-    <section className="panel form-panel">
-      <div className="panel-header">
-        <p className="panel-kicker">차량 입력</p>
-        <h2>{isEdit ? '차량 마스터 수정' : '차량 마스터 생성'}</h2>
-      </div>
-      {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
-      {isLoading ? (
-        <p className="empty-state">차량 정보를 불러오는 중입니다...</p>
-      ) : (
-        <form className="form-stack" onSubmit={handleSubmit}>
+    <PageLayout
+      subtitle="차량 정본과 제조사 메타데이터를 같은 입력 흐름에서 관리합니다."
+      title={isEdit ? '차량 마스터 수정' : '차량 마스터 생성'}
+    >
+      <section className="panel form-panel">
+        <div className="panel-header">
+          <p className="panel-kicker">차량 입력</p>
+          <h2>차량 기본 정보 입력</h2>
+        </div>
+        {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
+        {isLoading ? (
+          <p className="empty-state">차량 정보를 불러오는 중입니다...</p>
+        ) : (
+          <form className="form-stack" onSubmit={handleSubmit}>
           <label className="field">
             <span>제조사 회사</span>
             <select
@@ -189,8 +194,9 @@ export function VehicleFormPage({ client, mode }: VehicleFormPageProps) {
               취소
             </Link>
           </div>
-        </form>
-      )}
-    </section>
+          </form>
+        )}
+      </section>
+    </PageLayout>
   );
 }

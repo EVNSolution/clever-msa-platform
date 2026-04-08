@@ -87,8 +87,8 @@ describe('SettlementResultsPage', () => {
       </MemoryRouter>,
     );
 
-    await screen.findByRole('heading', { name: '결과 요약' });
-    expect(screen.getByText('현재 문맥')).toBeInTheDocument();
+    await screen.findByRole('heading', { name: '정산 결과 요약' });
+    expect(screen.queryByText('예외 보정')).not.toBeInTheDocument();
     expect(screen.getByText('Seed Company / Seed Fleet')).toBeInTheDocument();
   });
 });

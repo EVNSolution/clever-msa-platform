@@ -52,7 +52,9 @@ describe('VehicleFormPage', () => {
     await waitFor(() => {
       expect(apiMocks.getVehicleMaster).toHaveBeenCalledWith(client, '1');
     });
-    expect(screen.getByDisplayValue('12가3456')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('Model X')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '차량 마스터 수정' })).toBeInTheDocument();
+    expect(screen.getByText('차량 정본과 제조사 메타데이터를 같은 입력 흐름에서 관리합니다.')).toBeInTheDocument();
+    expect(await screen.findByDisplayValue('12가3456')).toBeInTheDocument();
+    expect(await screen.findByDisplayValue('Model X')).toBeInTheDocument();
   });
 });

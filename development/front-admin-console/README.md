@@ -1,4 +1,4 @@
-# front-admin-console
+# front-web-console
 
 이 repo는 현재 플랫폼의 단일 웹 콘솔 runtime을 소유한다.
 
@@ -19,7 +19,8 @@
 - 모바일 앱 UI
 
 주의:
-- repo 경로 이름은 아직 `front-admin-console`이지만, 사용자-facing current truth는 `통합 웹 콘솔`이다.
+- repo 경로 이름은 `front-web-console`이다.
+- 사용자-facing current truth는 `통합 웹 콘솔`이다.
 - 별도 `front-operator-console`는 active runtime이 아니라 legacy reference다.
 
 아키텍처 정본:

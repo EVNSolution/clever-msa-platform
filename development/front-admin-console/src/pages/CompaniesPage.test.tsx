@@ -40,7 +40,7 @@ describe('CompaniesPage', () => {
       </MemoryRouter>,
     );
 
-    await screen.findByText(/회사 루트 목록/i);
+    await screen.findByRole('heading', { name: '회사·플릿' });
     const row = screen.getByText('Seed Company').closest('tr');
     expect(screen.getByText('Seed Company')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /회사 생성/i })).toHaveAttribute('href', '/companies/new');
@@ -48,6 +48,6 @@ describe('CompaniesPage', () => {
     expect(screen.queryByRole('link', { name: '보기' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '수정' })).not.toBeInTheDocument();
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
-    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getAllByText('2').length).toBeGreaterThan(0);
   });
 });

@@ -108,6 +108,9 @@ describe('RegionDetailPage', () => {
     renderPage();
 
     expect(await screen.findByRole('heading', { name: '서울 A 권역' })).toBeInTheDocument();
+    expect(screen.getByText('권역 정본과 최신 분석 snapshot을 한 문맥에서 확인합니다.')).toBeInTheDocument();
+    expect(screen.getByText('정본 정보와 최신 분석 요약을 같은 권역 문맥에서 검토합니다.')).toBeInTheDocument();
+    expect(screen.getByText('총 1건 일별 통계')).toBeInTheDocument();
     expect(screen.getByText('SEOUL-A')).toBeInTheDocument();
     expect(screen.getByText('Polygon')).toBeInTheDocument();
     expect(screen.getAllByText('2026-04-05').length).toBeGreaterThan(0);
@@ -134,6 +137,8 @@ describe('RegionDetailPage', () => {
     renderPage(settlementManagerSession);
 
     expect(await screen.findByRole('heading', { name: '서울 A 권역' })).toBeInTheDocument();
+    expect(screen.getByText('권역 정본과 최신 분석 snapshot을 한 문맥에서 확인합니다.')).toBeInTheDocument();
+    expect(screen.getByText('정본 정보와 최신 분석 요약을 같은 권역 문맥에서 검토합니다.')).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '권역 수정' })).not.toBeInTheDocument();
   });
 });

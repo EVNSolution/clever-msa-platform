@@ -127,6 +127,9 @@ describe('AccountsPage', () => {
 
     await screen.findByText('홍길동');
     expect(screen.getByText('현재 권한으로 처리할 수 있는 하위 요청과 관리자 계정만 표시합니다.')).toBeInTheDocument();
+    expect(screen.getByText('요청 처리와 관리자 계정 운영을 한 화면에서 이어서 처리합니다.')).toBeInTheDocument();
+    expect(screen.getByText('대기 또는 설정 중 요청')).toBeInTheDocument();
+    expect(screen.getByText('현재 활성 관리자 계정')).toBeInTheDocument();
     expect(screen.getAllByText('알파 회사').length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: '대기' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '설정 중' })).toBeInTheDocument();
@@ -136,10 +139,12 @@ describe('AccountsPage', () => {
     expect(screen.getByText('검토 중입니다.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '승인' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '반려' })).toBeInTheDocument();
+    expect(screen.getByText('총 1건 요청')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '활성 관리자 계정' })).toBeInTheDocument();
     expect(screen.getAllByText('차량 관리자').length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: '권한 변경' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '계정 종료' })).toBeInTheDocument();
+    expect(screen.getByText('총 1명 관리자')).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /계정 생성/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('option', { name: '회사 전체 관리자' })).not.toBeInTheDocument();
     expect(screen.getByRole('option', { name: '플릿 관리자' })).toBeInTheDocument();

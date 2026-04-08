@@ -11,6 +11,7 @@ import { listDrivers } from '../api/drivers';
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { listCompanies } from '../api/organization';
 import { listVehicleMasters } from '../api/vehicles';
+import { PageLayout } from '../components/PageLayout';
 import { getAssignmentRouteRef } from '../routeRefs';
 import type { Company, DriverProfile, DriverVehicleAssignment, VehicleMaster } from '../types';
 
@@ -140,16 +141,20 @@ export function VehicleAssignmentFormPage({ client, mode }: VehicleAssignmentFor
   const cancelHref = isEdit && assignmentRef ? `/vehicle-assignments/${assignmentRef}` : '/vehicle-assignments';
 
   return (
-    <section className="panel form-panel">
-      <div className="panel-header">
-        <p className="panel-kicker">배정 입력</p>
-        <h2>{isEdit ? '배정 수정' : '배정 생성'}</h2>
-      </div>
-      {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
-      {isLoading ? (
-        <p className="empty-state">배정 정보를 불러오는 중입니다...</p>
-      ) : (
-        <form className="form-stack" onSubmit={handleSubmit}>
+    <PageLayout
+      subtitle="배송원과 차량 연결 상태를 같은 입력 흐름에서 관리합니다."
+      title={isEdit ? '배정 수정' : '배정 생성'}
+    >
+      <section className="panel form-panel">
+        <div className="panel-header">
+          <p className="panel-kicker">배정 입력</p>
+          <h2>배정 기본 정보 입력</h2>
+        </div>
+        {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
+        {isLoading ? (
+          <p className="empty-state">배정 정보를 불러오는 중입니다...</p>
+        ) : (
+          <form className="form-stack" onSubmit={handleSubmit}>
           <label className="field">
             <span>배송원</span>
             <select
@@ -212,8 +217,9 @@ export function VehicleAssignmentFormPage({ client, mode }: VehicleAssignmentFor
               취소
             </Link>
           </div>
-        </form>
-      )}
-    </section>
+          </form>
+        )}
+      </section>
+    </PageLayout>
   );
 }

@@ -5,6 +5,7 @@ import { createFleet, getCompany, getFleet, updateFleet } from '../api/organizat
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { getCompanyRouteRef, getFleetRouteRef } from '../routeRefs';
 import type { Company } from '../types';
+import { PageLayout } from '../components/PageLayout';
 
 type FleetFormPageProps = {
   client: HttpClient;
@@ -115,34 +116,56 @@ export function FleetFormPage({ client, mode }: FleetFormPageProps) {
         : '/companies';
 
   return (
-    <section className="panel form-panel">
-      <div className="panel-header">
-        <p className="panel-kicker">플릿 입력</p>
-        <h2>{isEdit ? '플릿 수정' : '플릿 생성'}</h2>
-      </div>
-      {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
-      {isLoading ? (
-        <p className="empty-state">플릿 입력 화면을 준비하는 중입니다...</p>
-      ) : (
-        <form className="form-stack" onSubmit={handleSubmit}>
-          <label className="field">
-            <span>상위 회사</span>
-            <input readOnly value={company?.name ?? ''} />
-          </label>
-          <label className="field">
-            <span>플릿 이름</span>
-            <input onChange={(event) => setName(event.target.value)} value={name} />
-          </label>
-          <div className="form-actions">
-            <button className="button primary" disabled={isSaving} type="submit">
-              {isSaving ? '저장 중...' : isEdit ? '플릿 수정' : '플릿 생성'}
-            </button>
-            <Link className="button ghost" to={cancelHref}>
-              취소
-            </Link>
-          </div>
-        </form>
-      )}
-    </section>
+    <PageLayout
+      subtitle="회사 문맥을 유지한 채 플릿 정보를 입력합니다."
+      title={isEdit ? '플릿 수정' : '플릿 생성'}
+    >
+      <section className="panel form-panel">
+        <div className="panel-header">
+          <p className="panel-kicker">플릿 입력</p>
+          <h2>{isEdit ? '플릿 수정' : '플릿 생성'}</h2>
+          <p className="empty-state">회사 문맥과 플릿 이름을 먼저 고정한 뒤 저장합니다.</p>
+        </div>
+        {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
+        {isLoading ? (
+          <p className="empty-state">플릿 입력 화면을 준비하는 중입니다...</p>
+        ) : (
+          <form className="form-stack" onSubmit={handleSubmit}>
+            <div className="summary-strip">
+              <article className="summary-item">
+                <span>Mode</span>
+                <strong>{isEdit ? '수정' : '생성'}</strong>
+                <small>현재 플릿 입력 모드</small>
+              </article>
+              <article className="summary-item">
+                <span>Company</span>
+                <strong>{company?.name ?? '-'}</strong>
+                <small>상위 회사 문맥</small>
+              </article>
+            </div>
+            <div className="panel-toolbar">
+              <span className="table-meta">회사 문맥을 유지한 상태에서 플릿 이름만 입력합니다.</span>
+              <span className="table-meta">입력 요약</span>
+            </div>
+            <label className="field">
+              <span>상위 회사</span>
+              <input readOnly value={company?.name ?? ''} />
+            </label>
+            <label className="field">
+              <span>플릿 이름</span>
+              <input onChange={(event) => setName(event.target.value)} value={name} />
+            </label>
+            <div className="form-actions">
+              <button className="button primary" disabled={isSaving} type="submit">
+                {isSaving ? '저장 중...' : isEdit ? '플릿 수정' : '플릿 생성'}
+              </button>
+              <Link className="button ghost" to={cancelHref}>
+                취소
+              </Link>
+            </div>
+          </form>
+        )}
+      </section>
+    </PageLayout>
   );
 }

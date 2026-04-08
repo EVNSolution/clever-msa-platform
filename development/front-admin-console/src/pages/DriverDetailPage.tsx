@@ -7,6 +7,7 @@ import { getDriver360 } from '../api/driver360';
 import { deleteDriver, getDriver } from '../api/drivers';
 import { getErrorMessage, type HttpClient, type SessionPayload } from '../api/http';
 import { listCompanies, listFleets } from '../api/organization';
+import { PageLayout } from '../components/PageLayout';
 import { getDriverRouteRef } from '../routeRefs';
 import type { Company, Driver360Summary, DriverAccountLinkSummary, DriverProfile, Fleet } from '../types';
 import { formatAccountStatusLabel, formatPayoutStatusLabel, formatSettlementStatusLabel } from '../uiLabels';
@@ -118,12 +119,8 @@ export function DriverDetailPage({ client, session }: DriverDetailPageProps) {
   }
 
   return (
-    <section className="panel">
-      <div className="panel-header panel-header-inline">
-        <div>
-          <p className="panel-kicker">배송원 상세</p>
-          <h2>{driver?.name ?? '배송원 상세'}</h2>
-        </div>
+    <PageLayout
+      actions={
         <div className="inline-actions">
           {driver && canManageDriverProfiles ? (
             <Link className="button ghost" to={`/drivers/${getDriverRouteRef(driver)}/edit`}>
@@ -136,7 +133,10 @@ export function DriverDetailPage({ client, session }: DriverDetailPageProps) {
             </button>
           ) : null}
         </div>
-      </div>
+      }
+      subtitle="배송원 정본과 계정·정산 문맥을 함께 확인합니다."
+      title={driver?.name ?? '배송원 상세'}
+    >
       {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
       {driverSummaryError ? <div className="error-banner">{driverSummaryError}</div> : null}
       {isLoading ? (
@@ -147,7 +147,7 @@ export function DriverDetailPage({ client, session }: DriverDetailPageProps) {
             <article className="panel subtle-panel">
               <div className="panel-header">
                 <p className="panel-kicker">기본 정보</p>
-                <h3>{driver.name}</h3>
+                <h3>기본 프로필</h3>
               </div>
               <dl className="detail-list">
                 <div>
@@ -269,6 +269,6 @@ export function DriverDetailPage({ client, session }: DriverDetailPageProps) {
       ) : (
         <p className="empty-state">배송원을 찾을 수 없습니다.</p>
       )}
-    </section>
+    </PageLayout>
   );
 }

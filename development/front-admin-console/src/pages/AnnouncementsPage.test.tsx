@@ -67,7 +67,10 @@ describe('AnnouncementsPage', () => {
     );
 
     await screen.findByText('운영 공지');
-    expect(screen.getByRole('heading', { name: '공지 목록' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '공지' })).toBeInTheDocument();
+    expect(screen.getByText('운영 공지와 노출 상태를 같은 화면에서 관리합니다.')).toBeInTheDocument();
+    expect(screen.getByText('공지 운영')).toBeInTheDocument();
+    expect(screen.getByText('총 1건 공지')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '공지 생성' })).toBeInTheDocument();
     expect(screen.getByText('게시됨')).toBeInTheDocument();
     expect(screen.getByText('운영자용')).toBeInTheDocument();
@@ -112,6 +115,9 @@ describe('AnnouncementsPage', () => {
     );
 
     await screen.findByRole('heading', { name: '공지' });
+    expect(screen.getByText('게시된 공지와 운영 안내를 한 문맥에서 확인합니다.')).toBeInTheDocument();
+    expect(screen.getByText('게시 공지')).toBeInTheDocument();
+    expect(screen.getByText('현재 게시 기준으로 노출 가능한 공지만 표시합니다.')).toBeInTheDocument();
     expect(apiMocks.listAnnouncements).toHaveBeenCalledWith(expect.anything(), { status: 'published' });
     expect(screen.getByText('이번 주 운영 변경사항')).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '공지 생성' })).not.toBeInTheDocument();

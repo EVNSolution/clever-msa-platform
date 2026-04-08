@@ -6,6 +6,17 @@ export type DailyDeliveryInputSnapshotPayload = Omit<
   DailyDeliveryInputSnapshot,
   'daily_delivery_input_snapshot_id'
 >;
+export type DispatchSnapshotBootstrapPayload = {
+  company_id: string;
+  fleet_id: string;
+  service_date: string;
+};
+
+export type DispatchSnapshotBootstrapResult = {
+  created_count: number;
+  skipped_count: number;
+  created_snapshot_ids: string[];
+};
 
 export function listDeliveryRecords(client: HttpClient) {
   return client.request<DeliveryRecord[]>('/delivery-record/records/');
@@ -92,4 +103,17 @@ export function deleteDailyDeliveryInputSnapshot(client: HttpClient, snapshotId:
   return client.request<void>(`/delivery-record/daily-snapshots/${snapshotId}/`, {
     method: 'DELETE',
   });
+}
+
+export function bootstrapDailySnapshotsFromDispatch(
+  client: HttpClient,
+  payload: DispatchSnapshotBootstrapPayload,
+) {
+  return client.request<DispatchSnapshotBootstrapResult>(
+    '/delivery-record/daily-snapshots/bootstrap-from-dispatch/',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  );
 }

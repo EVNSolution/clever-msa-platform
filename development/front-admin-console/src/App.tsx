@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
-import { login, logout, recoverIdentity, signupRequestIntake } from './api/auth';
+import { login, logout, signupRequestIntake } from './api/auth';
 import { createHttpClient, DEFAULT_API_BASE_URL, getErrorMessage, type HttpClient, type SessionPayload } from './api/http';
 import { listPublicCompanies } from './api/organization';
 import { Layout } from './components/Layout';
@@ -186,37 +186,6 @@ export default function App() {
     }
   }
 
-  async function handleRecover(payload: {
-    name: string;
-    birthDate: string;
-    email: string;
-    password: string;
-    privacyPolicyConsented: boolean;
-    locationPolicyConsented: boolean;
-  }) {
-    setIsSubmitting(true);
-    setAuthError(null);
-    setAuthStatusMessage(null);
-    try {
-      const nextSession = await recoverIdentity({
-        name: payload.name,
-        birth_date: payload.birthDate,
-        email: payload.email,
-        password: payload.password,
-        privacy_policy_version: 'v1.0',
-        privacy_policy_consented: payload.privacyPolicyConsented,
-        location_policy_version: 'v1.0',
-        location_policy_consented: payload.locationPolicyConsented,
-      });
-      sessionRef.current = nextSession;
-      setSession(nextSession);
-    } catch (error) {
-      setAuthError(getErrorMessage(error, 'identity를 복구할 수 없습니다.'));
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
   async function handleLogout() {
     try {
       await logout();
@@ -235,7 +204,6 @@ export default function App() {
         isLoadingCompanies={isLoadingCompanies}
         isSubmitting={isSubmitting}
         onLogin={handleLogin}
-        onRecover={handleRecover}
         onSignup={handleSignup}
         statusMessage={authStatusMessage}
       />

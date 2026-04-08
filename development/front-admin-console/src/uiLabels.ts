@@ -299,6 +299,8 @@ export function formatDeliveryRecordStatusLabel(value: string | null | undefined
 
 export function formatDeliverySnapshotStatusLabel(value: string | null | undefined) {
   switch (value) {
+    case 'draft':
+      return 'draft snapshot';
     case 'active':
       return '활성';
     case 'superseded':

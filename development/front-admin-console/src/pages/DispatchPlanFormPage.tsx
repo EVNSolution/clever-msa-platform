@@ -5,6 +5,7 @@ import { createDispatchPlan, getDispatchPlan, updateDispatchPlan } from '../api/
 import { getErrorMessage, type HttpClient } from '../api/http';
 import { listCompanies, listFleets } from '../api/organization';
 import type { Company, Fleet } from '../types';
+import { PageLayout } from '../components/PageLayout';
 
 type DispatchPlanFormPageProps = {
   client: HttpClient;
@@ -140,80 +141,85 @@ export function DispatchPlanFormPage({ client, mode }: DispatchPlanFormPageProps
   const cancelHref = '/dispatch/boards';
 
   return (
-    <section className="panel form-panel">
-      <div className="panel-header">
-        <p className="panel-kicker">예상 물량 입력</p>
-        <h2>{isEdit ? '예상 물량 수정' : '예상 물량 입력'}</h2>
-      </div>
-      {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
-      {isLoading ? (
-        <p className="empty-state">배차 계획을 불러오는 중입니다...</p>
-      ) : (
-        <form className="form-stack" onSubmit={handleSubmit}>
-          <label className="field">
-            <span>회사</span>
-            <select
-              onChange={(event) => {
-                const nextCompanyId = event.target.value;
-                setCompanyId(nextCompanyId);
-                const nextFleet = fleets.find((fleet) => fleet.company_id === nextCompanyId);
-                setFleetId(nextFleet?.fleet_id ?? '');
-              }}
-              value={companyId}
-            >
-              <option value="">회사 선택</option>
-              {companies.map((company) => (
-                <option key={company.company_id} value={company.company_id}>
-                  {company.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="field">
-            <span>플릿</span>
-            <select onChange={(event) => setFleetId(event.target.value)} value={fleetId}>
-              <option value="">플릿 선택</option>
-              {fleetOptions.map((fleet) => (
-                <option key={fleet.fleet_id} value={fleet.fleet_id}>
-                  {fleet.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="field">
-            <span>배차일</span>
-            <input onChange={(event) => setDispatchDate(event.target.value)} value={dispatchDate} />
-          </label>
-          <label className="field">
-            <span>예상 물량</span>
-            <input
-              aria-label="예상 물량"
-              onChange={(event) => setPlannedVolume(event.target.value)}
-              type="number"
-              value={plannedVolume}
-            />
-          </label>
-          <label className="field">
-            <span>상태</span>
-            <select
-              onChange={(event) => setDispatchStatus(event.target.value as 'draft' | 'published' | 'closed')}
-              value={dispatchStatus}
-            >
-              <option value="draft">draft</option>
-              <option value="published">published</option>
-              <option value="closed">closed</option>
-            </select>
-          </label>
-          <div className="form-actions">
-            <button className="button primary" disabled={isSaving} type="submit">
-              {isSaving ? '저장 중...' : isEdit ? '예상 물량 수정' : '예상 물량 입력'}
-            </button>
-            <Link className="button ghost" to={cancelHref}>
-              취소
-            </Link>
-          </div>
-        </form>
-      )}
-    </section>
+    <PageLayout
+      subtitle="회사, 플릿, 날짜 기준 예상 물량을 배차 보드 전 단계에서 준비합니다."
+      title={isEdit ? '예상 물량 수정' : '예상 물량 입력'}
+    >
+      <section className="panel form-panel">
+        <div className="panel-header">
+          <p className="panel-kicker">예상 물량 입력</p>
+          <h2>배차 계획 입력</h2>
+        </div>
+        {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
+        {isLoading ? (
+          <p className="empty-state">배차 계획을 불러오는 중입니다...</p>
+        ) : (
+          <form className="form-stack" onSubmit={handleSubmit}>
+            <label className="field">
+              <span>회사</span>
+              <select
+                onChange={(event) => {
+                  const nextCompanyId = event.target.value;
+                  setCompanyId(nextCompanyId);
+                  const nextFleet = fleets.find((fleet) => fleet.company_id === nextCompanyId);
+                  setFleetId(nextFleet?.fleet_id ?? '');
+                }}
+                value={companyId}
+              >
+                <option value="">회사 선택</option>
+                {companies.map((company) => (
+                  <option key={company.company_id} value={company.company_id}>
+                    {company.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>플릿</span>
+              <select onChange={(event) => setFleetId(event.target.value)} value={fleetId}>
+                <option value="">플릿 선택</option>
+                {fleetOptions.map((fleet) => (
+                  <option key={fleet.fleet_id} value={fleet.fleet_id}>
+                    {fleet.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>배차일</span>
+              <input onChange={(event) => setDispatchDate(event.target.value)} value={dispatchDate} />
+            </label>
+            <label className="field">
+              <span>예상 물량</span>
+              <input
+                aria-label="예상 물량"
+                onChange={(event) => setPlannedVolume(event.target.value)}
+                type="number"
+                value={plannedVolume}
+              />
+            </label>
+            <label className="field">
+              <span>상태</span>
+              <select
+                onChange={(event) => setDispatchStatus(event.target.value as 'draft' | 'published' | 'closed')}
+                value={dispatchStatus}
+              >
+                <option value="draft">draft</option>
+                <option value="published">published</option>
+                <option value="closed">closed</option>
+              </select>
+            </label>
+            <div className="form-actions">
+              <button className="button primary" disabled={isSaving} type="submit">
+                {isSaving ? '저장 중...' : isEdit ? '예상 물량 수정' : '예상 물량 입력'}
+              </button>
+              <Link className="button ghost" to={cancelHref}>
+                취소
+              </Link>
+            </div>
+          </form>
+        )}
+      </section>
+    </PageLayout>
   );
 }

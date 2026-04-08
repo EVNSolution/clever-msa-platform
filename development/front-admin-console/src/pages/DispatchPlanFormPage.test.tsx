@@ -67,6 +67,7 @@ describe('DispatchPlanFormPage', () => {
     );
 
     await screen.findByDisplayValue('120');
+    expect(screen.getByText('회사, 플릿, 날짜 기준 예상 물량을 배차 보드 전 단계에서 준비합니다.')).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('예상 물량'), { target: { value: '180' } });
     fireEvent.click(screen.getByRole('button', { name: '예상 물량 수정' }));
     await waitFor(() => {

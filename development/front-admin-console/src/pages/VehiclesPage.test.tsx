@@ -43,7 +43,8 @@ describe('Admin VehiclesPage', () => {
       </MemoryRouter>,
     );
 
-    await screen.findByRole('heading', { name: /차량 마스터 관리자 조회/i });
+    await screen.findByRole('heading', { name: '차량' });
+    expect(screen.getByText('차량 정본과 제조사 상태를 같은 화면에서 관리합니다.')).toBeInTheDocument();
     const row = screen.getByText('12가3456').closest('tr');
     expect(screen.getByRole('link', { name: /차량 생성/i })).toHaveAttribute('href', '/vehicles/new');
     expect(row).toHaveAttribute('data-detail-path', '/vehicles/1');

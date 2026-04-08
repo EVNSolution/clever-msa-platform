@@ -31,29 +31,29 @@ export function listSupportTickets(client: HttpClient, params: ListSupportTicket
     query.set('requester_account_id', params.requester_account_id);
   }
   const suffix = query.size ? `?${query.toString()}` : '';
-  return client.request<SupportTicket[]>(`/support/tickets/${suffix}`);
+  return client.request<SupportTicket[]>(`/ticket/tickets/${suffix}`);
 }
 
 export function createSupportTicket(client: HttpClient, payload: SupportTicketWritePayload) {
-  return client.request<SupportTicket>('/support/tickets/', {
+  return client.request<SupportTicket>('/ticket/tickets/', {
     method: 'POST',
     body: JSON.stringify(payload),
   });
 }
 
 export function updateSupportTicket(client: HttpClient, ticketRef: string, payload: Partial<SupportTicketWritePayload>) {
-  return client.request<SupportTicket>(`/support/tickets/${ticketRef}/`, {
+  return client.request<SupportTicket>(`/ticket/tickets/${ticketRef}/`, {
     method: 'PATCH',
     body: JSON.stringify(payload),
   });
 }
 
 export function listSupportTicketResponses(client: HttpClient, ticketId: string) {
-  return client.request<SupportTicketResponse[]>(`/support/ticket-responses/?ticket_id=${ticketId}`);
+  return client.request<SupportTicketResponse[]>(`/ticket/ticket-responses/?ticket_id=${ticketId}`);
 }
 
 export function createSupportTicketResponse(client: HttpClient, payload: SupportTicketResponseWritePayload) {
-  return client.request<SupportTicketResponse>('/support/ticket-responses/', {
+  return client.request<SupportTicketResponse>('/ticket/ticket-responses/', {
     method: 'POST',
     body: JSON.stringify(payload),
   });

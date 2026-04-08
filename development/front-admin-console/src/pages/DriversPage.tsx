@@ -6,6 +6,7 @@ import { listManageableDriverAccounts } from '../api/driverAccounts';
 import { createDriverAccountLink, listDriverAccountLinks, unlinkDriverAccountLink } from '../api/driverAccountLinks';
 import { listDrivers } from '../api/drivers';
 import { listCompanies, listFleets } from '../api/organization';
+import { PageLayout } from '../components/PageLayout';
 import { getErrorMessage, type HttpClient, type SessionPayload } from '../api/http';
 import { getDriverRouteRef } from '../routeRefs';
 import type { Company, DriverAccountLinkSummary, DriverAccountSummary, DriverProfile, Fleet } from '../types';
@@ -143,83 +144,88 @@ export function DriversPage({ client, session }: DriversPageProps) {
   }
 
   return (
-    <section className="panel">
-      <div className="panel-header panel-header-inline">
-        <div>
-          <p className="panel-kicker">배송원 목록</p>
-          <h2>Driver Profile HR 관리자 조회</h2>
-        </div>
-        {canManageDriverProfiles ? (
+    <PageLayout
+      actions={
+        canManageDriverProfiles ? (
           <Link className="button primary" to="/drivers/new">
             배송원 생성
           </Link>
-        ) : null}
-      </div>
-      {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
-      {isLoading ? <p className="empty-state">배송원을 불러오는 중입니다...</p> : (
-        <table className="table compact">
-          <thead><tr><th>이름</th><th>배송원 계정</th><th>회사</th><th>플릿</th><th>계정 연결</th></tr></thead>
-          <tbody>
-            {drivers.map((driver) => {
-              const detailPath = driver.route_no != null ? `/drivers/${getDriverRouteRef(driver)}` : null;
-              const activeLink = getActiveDriverAccountLink(driver.driver_id);
-              const availableAccounts = getAvailableDriverAccounts(driver);
+        ) : null
+      }
+      subtitle="배송원 정본과 계정 연결 상태를 같은 화면에서 관리합니다."
+      title="배송원"
+    >
+      <section className="panel">
+        <div className="panel-header">
+          <p className="panel-kicker">배송원</p>
+          <h2>배송원 목록</h2>
+        </div>
+        {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
+        {isLoading ? <p className="empty-state">배송원을 불러오는 중입니다...</p> : (
+          <table className="table compact">
+            <thead><tr><th>이름</th><th>배송원 계정</th><th>회사</th><th>플릿</th><th>계정 연결</th></tr></thead>
+            <tbody>
+              {drivers.map((driver) => {
+                const detailPath = driver.route_no != null ? `/drivers/${getDriverRouteRef(driver)}` : null;
+                const activeLink = getActiveDriverAccountLink(driver.driver_id);
+                const availableAccounts = getAvailableDriverAccounts(driver);
 
-              return (
-                <tr
-                  key={driver.driver_id}
-                  className={detailPath ? 'interactive-row' : undefined}
-                  data-detail-path={detailPath ?? undefined}
-                  onClick={detailPath ? () => navigate(detailPath) : undefined}
-                  onKeyDown={detailPath ? (event) => handleRowKeyDown(event, detailPath) : undefined}
-                  tabIndex={detailPath ? 0 : undefined}
-                >
-                  <td>{driver.name}</td>
-                  <td>{activeLink?.email ?? '미연결'}</td>
-                  <td>{getCompanyName(driver.company_id)}</td>
-                  <td>{getFleetName(driver.fleet_id)}</td>
-                  <td>
-                    <div className="inline-actions" onClick={stopRowNavigation} onKeyDown={stopRowNavigation}>
-                      {activeLink ? (
-                        <button className="button ghost small" onClick={() => void handleUnlinkDriverAccount(activeLink.driver_account_link_id)} type="button">
-                          연결 해제
-                        </button>
-                      ) : (
-                        <>
-                          <select
-                            onChange={(event) =>
-                              setSelectedDriverAccounts((current) => ({
-                                ...current,
-                                [driver.driver_id]: event.target.value,
-                              }))
-                            }
-                            value={selectedDriverAccounts[driver.driver_id] ?? ''}
-                          >
-                            <option value="">배송원 계정 선택</option>
-                            {availableAccounts.map((account) => (
-                              <option key={account.driver_account_id} value={account.driver_account_id}>
-                                {account.identity.name}
-                              </option>
-                            ))}
-                          </select>
-                          <button
-                            className="button ghost small"
-                            disabled={!selectedDriverAccounts[driver.driver_id]}
-                            onClick={() => void handleLinkDriverAccount(driver)}
-                            type="button"
-                          >
-                            계정 연결
+                return (
+                  <tr
+                    key={driver.driver_id}
+                    className={detailPath ? 'interactive-row' : undefined}
+                    data-detail-path={detailPath ?? undefined}
+                    onClick={detailPath ? () => navigate(detailPath) : undefined}
+                    onKeyDown={detailPath ? (event) => handleRowKeyDown(event, detailPath) : undefined}
+                    tabIndex={detailPath ? 0 : undefined}
+                  >
+                    <td>{driver.name}</td>
+                    <td>{activeLink?.email ?? '미연결'}</td>
+                    <td>{getCompanyName(driver.company_id)}</td>
+                    <td>{getFleetName(driver.fleet_id)}</td>
+                    <td>
+                      <div className="inline-actions" onClick={stopRowNavigation} onKeyDown={stopRowNavigation}>
+                        {activeLink ? (
+                          <button className="button ghost small" onClick={() => void handleUnlinkDriverAccount(activeLink.driver_account_link_id)} type="button">
+                            연결 해제
                           </button>
-                        </>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      )}
-    </section>
+                        ) : (
+                          <>
+                            <select
+                              onChange={(event) =>
+                                setSelectedDriverAccounts((current) => ({
+                                  ...current,
+                                  [driver.driver_id]: event.target.value,
+                                }))
+                              }
+                              value={selectedDriverAccounts[driver.driver_id] ?? ''}
+                            >
+                              <option value="">배송원 계정 선택</option>
+                              {availableAccounts.map((account) => (
+                                <option key={account.driver_account_id} value={account.driver_account_id}>
+                                  {account.identity.name}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              className="button ghost small"
+                              disabled={!selectedDriverAccounts[driver.driver_id]}
+                              onClick={() => void handleLinkDriverAccount(driver)}
+                              type="button"
+                            >
+                              계정 연결
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
+      </section>
+    </PageLayout>
   );
 }

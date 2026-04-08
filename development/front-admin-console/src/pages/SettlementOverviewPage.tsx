@@ -29,8 +29,8 @@ export function SettlementOverviewPage({ client }: SettlementOverviewPageProps) 
   const [drivers, setDrivers] = useState<DriverProfile[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [fleets, setFleets] = useState<Fleet[]>([]);
-  const [selectedDriverId, setSelectedDriverId] = useState('');
-  const [latestDriverSettlement, setLatestDriverSettlement] = useState<DriverLatestSettlement | null>(null);
+  const [latestDriverSettlements, setLatestDriverSettlements] = useState<DriverLatestSettlement[]>([]);
+  const [hasLoadedDriverSummaries, setHasLoadedDriverSummaries] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [driverSummaryError, setDriverSummaryError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -60,7 +60,6 @@ export function SettlementOverviewPage({ client }: SettlementOverviewPageProps) 
         setDrivers(driverResponse);
         setCompanies(companyResponse);
         setFleets(fleetResponse);
-        setSelectedDriverId((current) => current || driverResponse[0]?.driver_id || '');
       } catch (error) {
         if (!ignore) {
           setErrorMessage(getErrorMessage(error));
@@ -79,26 +78,35 @@ export function SettlementOverviewPage({ client }: SettlementOverviewPageProps) 
   }, [client]);
 
   useEffect(() => {
-    if (!selectedDriverId) {
-      setLatestDriverSettlement(null);
+    if (!drivers.length) {
+      setLatestDriverSettlements([]);
       setDriverSummaryError(null);
+      setHasLoadedDriverSummaries(true);
       return;
     }
-
     let ignore = false;
 
-    async function loadLatestDriverSettlement() {
+    async function loadLatestDriverSettlements() {
       setIsDriverSummaryLoading(true);
       setDriverSummaryError(null);
+      setHasLoadedDriverSummaries(false);
       try {
-        const response = await getDriverLatestSettlement(client, selectedDriverId);
+        const results = await Promise.allSettled(drivers.map((driver) => getDriverLatestSettlement(client, driver.driver_id)));
         if (!ignore) {
-          setLatestDriverSettlement(response);
+          const fulfilled = results
+            .filter((result): result is PromiseFulfilledResult<DriverLatestSettlement> => result.status === 'fulfilled')
+            .map((result) => result.value);
+          const failedCount = results.length - fulfilled.length;
+
+          setLatestDriverSettlements(fulfilled);
+          setDriverSummaryError(failedCount > 0 ? '일부 배송원의 최신 정산을 불러오지 못했습니다.' : null);
+          setHasLoadedDriverSummaries(true);
         }
       } catch (error) {
         if (!ignore) {
-          setLatestDriverSettlement(null);
+          setLatestDriverSettlements([]);
           setDriverSummaryError(getErrorMessage(error));
+          setHasLoadedDriverSummaries(true);
         }
       } finally {
         if (!ignore) {
@@ -107,11 +115,15 @@ export function SettlementOverviewPage({ client }: SettlementOverviewPageProps) 
       }
     }
 
-    void loadLatestDriverSettlement();
+    void loadLatestDriverSettlements();
     return () => {
       ignore = true;
     };
-  }, [client, selectedDriverId]);
+  }, [client, drivers]);
+
+  const latestRun = runs[0] ?? null;
+  const latestItem = items[0] ?? null;
+  const latestDriverSettlementCount = latestDriverSettlements.length;
 
   return (
     <div className="stack large-gap">
@@ -121,91 +133,84 @@ export function SettlementOverviewPage({ client }: SettlementOverviewPageProps) 
         <div className="panel-header">
           <p className="panel-kicker">정산 조회</p>
           <h2>정산 운영 요약</h2>
+          <p className="empty-state">최근 정산 실행, 기사별 결과, 배송원 최신 정산을 한 화면에서 확인합니다.</p>
         </div>
         {isLoading ? (
           <p className="empty-state">정산 조회 데이터를 불러오는 중입니다...</p>
         ) : (
-          <div className="metric-grid">
-            <article className="metric-card">
-              <span className="panel-kicker">Run</span>
+          <div className="summary-strip">
+            <article className="summary-item">
+              <span>Settlement Runs</span>
               <strong>{runs.length}</strong>
-              <span className="empty-state">현재 읽을 수 있는 정산 실행 수</span>
+              <small>
+                최신 실행:{' '}
+                {latestRun
+                  ? `${getCompanyName(companies, latestRun.company_id)} / ${getFleetName(fleets, latestRun.fleet_id)}`
+                  : '없음'}
+              </small>
             </article>
-            <article className="metric-card">
-              <span className="panel-kicker">Item</span>
+            <article className="summary-item">
+              <span>Settlement Items</span>
               <strong>{items.length}</strong>
-              <span className="empty-state">현재 읽을 수 있는 정산 결과 수</span>
+              <small>최신 지급 상태: {latestItem ? formatPayoutStatusLabel(latestItem.payout_status) : '없음'}</small>
             </article>
-            <article className="metric-card">
-              <span className="panel-kicker">Driver</span>
+            <article className="summary-item">
+              <span>Drivers</span>
               <strong>{drivers.length}</strong>
-              <span className="empty-state">정산 조회에 연결된 배송원 수</span>
+              <small>최신 정산 조회 가능: {latestDriverSettlementCount}명</small>
             </article>
           </div>
         )}
       </section>
 
-      <section className="panel form-panel">
+      <section className="panel">
         <div className="panel-header">
           <p className="panel-kicker">배송원 기준</p>
           <h2>최신 정산 조회</h2>
+          <p className="empty-state">배송원을 따로 선택하지 않고 전체 최신 정산 상태를 한 번에 확인합니다.</p>
         </div>
-        <label className="field">
-          <span>배송원</span>
-          <select onChange={(event) => setSelectedDriverId(event.target.value)} value={selectedDriverId}>
-            {drivers.map((driver) => (
-              <option key={driver.driver_id} value={driver.driver_id}>
-                {driver.name}
-              </option>
-            ))}
-          </select>
-        </label>
         {driverSummaryError ? <div className="error-banner">{driverSummaryError}</div> : null}
-        {isDriverSummaryLoading ? (
+        {!hasLoadedDriverSummaries || isDriverSummaryLoading ? (
           <p className="empty-state">배송원 최신 정산을 불러오는 중입니다...</p>
-        ) : latestDriverSettlement ? (
-          <dl className="detail-list">
-            <div>
-              <dt>배송원</dt>
-              <dd>{getDriverName(drivers, latestDriverSettlement.driver_id)}</dd>
-            </div>
-            <div>
-              <dt>배송이력 존재</dt>
-              <dd>{formatNullableBooleanLabel(latestDriverSettlement.delivery_history_present)}</dd>
-            </div>
-            <div>
-              <dt>근태 추정</dt>
-              <dd>{formatNullableBooleanLabel(latestDriverSettlement.attendance_inferred_from_delivery_history)}</dd>
-            </div>
-            <div>
-              <dt>최신 정산</dt>
-              <dd>
-                {latestDriverSettlement.latest_settlement
-                  ? `${latestDriverSettlement.latest_settlement.period_start} ~ ${latestDriverSettlement.latest_settlement.period_end}`
-                  : '정산 이력 없음'}
-              </dd>
-            </div>
-            <div>
-              <dt>정산 상태</dt>
-              <dd>
-                {latestDriverSettlement.latest_settlement
-                  ? formatSettlementStatusLabel(latestDriverSettlement.latest_settlement.status)
-                  : '정산 이력 없음'}
-              </dd>
-            </div>
-            <div>
-              <dt>지급 상태</dt>
-              <dd>
-                {latestDriverSettlement.latest_settlement
-                  ? formatPayoutStatusLabel(latestDriverSettlement.latest_settlement.payout_status)
-                  : '정산 이력 없음'}
-              </dd>
-            </div>
-            <div>
-              <dt>금액</dt>
-              <dd>{latestDriverSettlement.latest_settlement?.amount ?? '정산 이력 없음'}</dd>
-            </div>
-          </dl>
+        ) : latestDriverSettlements.length ? (
+          <table className="table compact">
+            <thead>
+              <tr>
+                <th>배송원</th>
+                <th>정산 상태</th>
+                <th>지급 상태</th>
+                <th>금액</th>
+                <th>최신 정산</th>
+                <th>배송이력</th>
+                <th>근태 추정</th>
+              </tr>
+            </thead>
+            <tbody>
+              {latestDriverSettlements.map((driverSettlement) => (
+                <tr key={driverSettlement.driver_id}>
+                  <td>{getDriverName(drivers, driverSettlement.driver_id)}</td>
+                  <td>
+                    {driverSettlement.latest_settlement
+                      ? formatSettlementStatusLabel(driverSettlement.latest_settlement.status)
+                      : '없음'}
+                  </td>
+                  <td>
+                    {driverSettlement.latest_settlement
+                      ? formatPayoutStatusLabel(driverSettlement.latest_settlement.payout_status)
+                      : '없음'}
+                  </td>
+                  <td>{driverSettlement.latest_settlement?.amount ?? '-'}</td>
+                  <td>
+                    {driverSettlement.latest_settlement
+                      ? `${driverSettlement.latest_settlement.period_start} ~ ${driverSettlement.latest_settlement.period_end}`
+                      : '정산 이력 없음'}
+                  </td>
+                  <td>{formatNullableBooleanLabel(driverSettlement.delivery_history_present)}</td>
+                  <td>{formatNullableBooleanLabel(driverSettlement.attendance_inferred_from_delivery_history)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         ) : (
           <p className="empty-state">조회할 배송원이 없습니다.</p>
         )}
@@ -216,6 +221,10 @@ export function SettlementOverviewPage({ client }: SettlementOverviewPageProps) 
           <div className="panel-header">
             <p className="panel-kicker">Run Read</p>
             <h2>정산 실행 조회</h2>
+          </div>
+          <div className="panel-toolbar">
+            <span className="table-meta">최근 실행 순으로 run을 읽고 상태 흐름을 확인합니다.</span>
+            <span className="table-meta">총 {runs.length}건</span>
           </div>
           {isLoading ? (
             <p className="empty-state">정산 실행 조회를 불러오는 중입니다...</p>
@@ -251,6 +260,10 @@ export function SettlementOverviewPage({ client }: SettlementOverviewPageProps) 
           <div className="panel-header">
             <p className="panel-kicker">Item Read</p>
             <h2>정산 결과 조회</h2>
+          </div>
+          <div className="panel-toolbar">
+            <span className="table-meta">기사별 금액과 지급 상태를 결과 기준으로 읽습니다.</span>
+            <span className="table-meta">총 {items.length}건</span>
           </div>
           {isLoading ? (
             <p className="empty-state">정산 결과 조회를 불러오는 중입니다...</p>

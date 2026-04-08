@@ -16,6 +16,7 @@ import {
 } from '../api/identity';
 import { listCompanies } from '../api/organization';
 import { getManagerRole, isSystemAdmin } from '../authScopes';
+import { PageLayout } from '../components/PageLayout';
 import type {
   Company,
   IdentityConsentCurrent,
@@ -223,6 +224,7 @@ export function AccountPage({ client, session, onSessionChange }: AccountPagePro
   }
 
   return (
+    <PageLayout subtitle="프로필, 로그인 수단, 요청 이력을 한 화면에서 관리합니다." title="내 계정">
     <div className="stack">
       <section className="panel">
         <div className="panel-header">
@@ -429,5 +431,6 @@ export function AccountPage({ client, session, onSessionChange }: AccountPagePro
         ) : null}
       </section>
     </div>
+    </PageLayout>
   );
 }
