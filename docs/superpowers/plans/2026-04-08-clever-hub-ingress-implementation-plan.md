@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Replace the temporary dev public-IP access path with a formal `clever-hub.com -> ALB -> edge-api-gateway` ingress path, while preserving the existing dev deployment flow.
+**Goal:** Replace the temporary dev public-IP access path with a formal `hub.evnlogistics.com -> ALB -> edge-api-gateway` ingress path, while preserving the existing dev deployment flow.
 
 **Architecture:** Keep the current runtime topology and central deploy control-plane intact. Add a dedicated ingress provisioning path in `clever-deploy-control`, teach the gateway to expose a stable health endpoint and canonical forwarded-header behavior, then cut traffic over to the ALB-backed domain and remove the temporary `8080` exposure.
 
@@ -175,7 +175,7 @@ Do not remove the temporary rule before the verification step exists.
 
 - [ ] **Step 4: Add Route53 alias step**
 
-Create or update the apex/host record for `clever-hub.com` as an ALB alias record.
+Create or update the host record for `hub.evnlogistics.com` as an ALB alias record.
 
 Keep the script idempotent so repeated runs reconcile instead of duplicating resources.
 
@@ -342,11 +342,11 @@ gh workflow run "Provision Public Ingress" \
   -R EVNSolution/clever-deploy-control \
   -f environment=dev \
   -f aws_region=ap-northeast-2 \
-  -f domain_name=clever-hub.com \
-  -f hosted_zone_id=REPLACE_ME \
-  -f vpc_id=REPLACE_ME \
-  -f subnet_ids=REPLACE_ME_COMMA_SEPARATED \
-  -f alb_security_group_id=REPLACE_ME \
+  -f domain_name=hub.evnlogistics.com \
+  -f hosted_zone_id=Z076700617WGX6BQVRJS0 \
+  -f vpc_id=vpc-015c89247f96e9221 \
+  -f subnet_ids=subnet-08a44476ad1e1d81b,subnet-0738efee37ad66209 \
+  -f alb_security_group_id=sg-0c99cc1e90d4a00bd \
   -f app_host_security_group_id=sg-0fa02ce5fa2ef7911 \
   -f target_port=8080 \
   -f retire_temporary_8080=false
@@ -360,7 +360,7 @@ Expected:
 Run:
 
 ```bash
-DOMAIN_NAME=clever-hub.com \
+DOMAIN_NAME=hub.evnlogistics.com \
 /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/scripts/deploy/verify-public-ingress.sh
 ```
 
