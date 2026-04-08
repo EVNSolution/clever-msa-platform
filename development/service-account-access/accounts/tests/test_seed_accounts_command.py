@@ -17,8 +17,8 @@ class SeedAccountsCommandTests(TestCase):
     @patch.dict(
         os.environ,
         {
-            "SEED_ADMIN_EMAIL": "admin@example.com",
-            "SEED_ADMIN_PASSWORD": "change-me",
+            "SEED_ADMIN_EMAIL": "seed-admin@example.com",
+            "SEED_ADMIN_PASSWORD": "imjing12!",
         },
         clear=False,
     )
@@ -43,14 +43,14 @@ class SeedAccountsCommandTests(TestCase):
         )
 
         email_credential = EmailCredential.objects.get(identity_login_method__identity=identity)
-        self.assertEqual(email_credential.email, "admin@example.com")
+        self.assertEqual(email_credential.email, "seed-admin@example.com")
         self.assertTrue(PasswordCredential.objects.get(identity=identity))
 
     @patch.dict(
         os.environ,
         {
-            "SEED_ADMIN_EMAIL": "admin@example.com",
-            "SEED_ADMIN_PASSWORD": "change-me",
+            "SEED_ADMIN_EMAIL": "seed-admin@example.com",
+            "SEED_ADMIN_PASSWORD": "imjing12!",
         },
         clear=False,
     )

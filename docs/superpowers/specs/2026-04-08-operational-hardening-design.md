@@ -143,7 +143,7 @@ seed 정책은 환경별로 분리한다.
 
 ### Implication
 
-현재 dev에서 확인한 `admin@example.com / change-me`는 dev용 검증 상태일 뿐이다.
+현재 dev에서 확인한 `seed-admin@example.com / imjing12!`는 dev용 검증 상태일 뿐이다.
 
 이 계정 모델을 prod 정책으로 그대로 가져가면 안 된다.
 
