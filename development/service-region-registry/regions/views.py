@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from regions.models import Region
+from regions.permissions_navigation import require_nav_access
 from regions.permissions import AdminOnlyAccess
 from regions.serializers import HealthSerializer, RegionSerializer
 
@@ -46,6 +47,10 @@ class RegionListCreateView(generics.ListCreateAPIView):
 
         return queryset
 
+    def get(self, request, *args, **kwargs):
+        require_nav_access(request, "regions")
+        return super().get(request, *args, **kwargs)
+
 
 class RegionDetailView(
     mixins.RetrieveModelMixin,
@@ -59,6 +64,7 @@ class RegionDetailView(
     http_method_names = ["get", "patch", "options", "head"]
 
     def get(self, request, *args, **kwargs):
+        require_nav_access(request, "regions")
         return self.retrieve(request, *args, **kwargs)
 
     def patch(self, request, *args, **kwargs):

@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from organizations.models import Company, Fleet
+from organizations.permissions_navigation import require_nav_access
 from organizations.permissions import AuthenticatedReadAdminWrite
 from organizations.serializers import CompanySerializer, FleetSerializer
 
@@ -47,6 +48,14 @@ class CompanyViewSet(PublicRefLookupMixin, viewsets.ModelViewSet):
     raw_id_field = "company_id"
     permission_classes = [AuthenticatedReadAdminWrite]
 
+    def list(self, request, *args, **kwargs):
+        require_nav_access(request, "companies")
+        return super().list(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        require_nav_access(request, "companies")
+        return super().retrieve(request, *args, **kwargs)
+
     @action(
         detail=False,
         methods=["get"],
@@ -67,3 +76,11 @@ class FleetViewSet(PublicRefLookupMixin, viewsets.ModelViewSet):
     lookup_url_kwarg = "fleet_ref"
     raw_id_field = "fleet_id"
     permission_classes = [AuthenticatedReadAdminWrite]
+
+    def list(self, request, *args, **kwargs):
+        require_nav_access(request, "companies")
+        return super().list(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        require_nav_access(request, "companies")
+        return super().retrieve(request, *args, **kwargs)

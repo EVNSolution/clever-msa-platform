@@ -27,10 +27,10 @@ def _polygon():
 class RegionApiTests(TestCase):
     def setUp(self) -> None:
         self.client = APIClient()
-        self.admin_token = self._issue_token("admin")
-        self.user_token = self._issue_token("user")
+        self.admin_token = self._issue_token("admin", allowed_nav_keys=["regions"])
+        self.user_token = self._issue_token("user", allowed_nav_keys=[])
 
-    def _issue_token(self, role: str) -> str:
+    def _issue_token(self, role: str, *, allowed_nav_keys: list[str] | None = None) -> str:
         now = datetime.now(timezone.utc)
         payload = {
             "sub": str(uuid4()),
@@ -43,6 +43,8 @@ class RegionApiTests(TestCase):
             "jti": str(uuid4()),
             "type": "access",
         }
+        if allowed_nav_keys is not None:
+            payload["allowed_nav_keys"] = allowed_nav_keys
         return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
     def _authenticate(self, token: str) -> None:
@@ -147,3 +149,20 @@ class RegionApiTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data["code"], "validation_error")
         self.assertIn("polygon_geojson", response.data["details"])
+
+    def test_admin_without_regions_nav_key_cannot_list_regions(self) -> None:
+        self._authenticate(self._issue_token("admin", allowed_nav_keys=[]))
+
+        response = self.client.get("/")
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
+
+    def test_admin_without_regions_nav_key_cannot_read_region_detail(self) -> None:
+        region = self._create_region(region_code="seo-blocked")
+        self._authenticate(self._issue_token("admin", allowed_nav_keys=[]))
+
+        response = self.client.get(f"/{region.region_id}/")
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(set(response.data.keys()), {"code", "message", "details"})

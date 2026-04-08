@@ -10,10 +10,10 @@ from rest_framework.test import APIClient
 class OrganizationApiTests(TestCase):
     def setUp(self) -> None:
         self.client = APIClient()
-        self.admin_token = self._issue_token("admin")
-        self.user_token = self._issue_token("user")
+        self.admin_token = self._issue_token("admin", allowed_nav_keys=["companies"])
+        self.user_token = self._issue_token("user", allowed_nav_keys=[])
 
-    def _issue_token(self, role: str) -> str:
+    def _issue_token(self, role: str, *, allowed_nav_keys: list[str] | None = None) -> str:
         now = datetime.now(timezone.utc)
         payload = {
             "sub": str(uuid4()),
@@ -26,6 +26,8 @@ class OrganizationApiTests(TestCase):
             "jti": str(uuid4()),
             "type": "access",
         }
+        if allowed_nav_keys is not None:
+            payload["allowed_nav_keys"] = allowed_nav_keys
         return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
     def _authenticate(self, token: str) -> None:
@@ -121,4 +123,20 @@ class OrganizationApiTests(TestCase):
         response = self.client.get("/companies/999999/")
 
         self.assertEqual(response.status_code, 404)
+        self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
+
+    def test_admin_without_companies_nav_key_cannot_list_companies(self):
+        self._authenticate(self._issue_token("admin", allowed_nav_keys=[]))
+
+        response = self.client.get("/companies/")
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
+
+    def test_admin_without_companies_nav_key_cannot_list_fleets(self):
+        self._authenticate(self._issue_token("admin", allowed_nav_keys=[]))
+
+        response = self.client.get("/fleets/")
+
+        self.assertEqual(response.status_code, 403)
         self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
