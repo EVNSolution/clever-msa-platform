@@ -11,10 +11,10 @@ from rest_framework.test import APIClient
 class VehicleApiTests(TestCase):
     def setUp(self) -> None:
         self.client = APIClient()
-        self.admin_token = self._issue_token("admin")
-        self.user_token = self._issue_token("user")
+        self.admin_token = self._issue_token("admin", allowed_nav_keys=["vehicles"])
+        self.user_token = self._issue_token("user", allowed_nav_keys=[])
 
-    def _issue_token(self, role: str) -> str:
+    def _issue_token(self, role: str, *, allowed_nav_keys: list[str] | None = None) -> str:
         now = datetime.now(timezone.utc)
         payload = {
             "sub": str(uuid4()),
@@ -27,6 +27,8 @@ class VehicleApiTests(TestCase):
             "jti": str(uuid4()),
             "type": "access",
         }
+        if allowed_nav_keys is not None:
+            payload["allowed_nav_keys"] = allowed_nav_keys
         return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
     def _issue_token_without_sub(self, role: str) -> str:
@@ -358,6 +360,30 @@ class VehicleApiTests(TestCase):
             self._vehicle_operator_access_payload(vehicle=vehicle_b),
             format="json",
         )
+
+    def test_admin_without_vehicles_nav_key_cannot_list_vehicle_masters(self):
+        self._authenticate(self._issue_token("admin", allowed_nav_keys=[]))
+
+        response = self.client.get("/vehicle-masters/")
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
+
+    def test_admin_without_vehicles_nav_key_cannot_read_vehicle_operator_access_detail(self):
+        self._authenticate(self.admin_token)
+        vehicle = self._create_vehicle_master()
+        create_response = self.client.post(
+            "/vehicle-operator-accesses/",
+            self._vehicle_operator_access_payload(vehicle=vehicle),
+            format="json",
+        )
+        access_id = create_response.data["vehicle_operator_access_id"]
+
+        self._authenticate(self._issue_token("admin", allowed_nav_keys=[]))
+        response = self.client.get(f"/vehicle-operator-accesses/{access_id}/")
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
         self.assertEqual(second_access.status_code, 201)
 
         response = self.client.get(

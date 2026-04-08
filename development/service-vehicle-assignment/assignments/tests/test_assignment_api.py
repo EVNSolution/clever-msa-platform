@@ -15,10 +15,10 @@ from assignments.models import DriverVehicleAssignment
 class DriverVehicleAssignmentApiTests(TestCase):
     def setUp(self) -> None:
         self.client = APIClient()
-        self.admin_token = self._issue_token("admin")
-        self.user_token = self._issue_token("user")
+        self.admin_token = self._issue_token("admin", allowed_nav_keys=["vehicle_assignments"])
+        self.user_token = self._issue_token("user", allowed_nav_keys=["vehicle_assignments"])
 
-    def _issue_token(self, role: str) -> str:
+    def _issue_token(self, role: str, *, allowed_nav_keys: list[str] | None = None) -> str:
         now = datetime.now(timezone.utc)
         payload = {
             "sub": str(uuid4()),
@@ -31,6 +31,8 @@ class DriverVehicleAssignmentApiTests(TestCase):
             "jti": str(uuid4()),
             "type": "access",
         }
+        if allowed_nav_keys is not None:
+            payload["allowed_nav_keys"] = allowed_nav_keys
         return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
     def _authenticate(self, token: str) -> None:
@@ -306,3 +308,33 @@ class DriverVehicleAssignmentApiTests(TestCase):
             ).status_code,
             403,
         )
+
+    def test_user_without_vehicle_assignments_nav_key_cannot_list_assignments(self):
+        self._authenticate(self._issue_token("user", allowed_nav_keys=[]))
+
+        response = self.client.get("/assignments/")
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
+
+    def test_user_without_vehicle_assignments_nav_key_cannot_read_assignment_detail(self):
+        self._authenticate(self.admin_token)
+        payload = self._payload()
+        with patch(
+            "assignments.services.source_clients.SourceClients.get_vehicle",
+            return_value=self._vehicle_response(payload),
+        ), patch(
+            "assignments.services.source_clients.SourceClients.list_vehicle_operator_accesses",
+            return_value=self._operator_accesses_response(payload),
+        ), patch(
+            "assignments.services.source_clients.SourceClients.get_driver",
+            return_value=self._driver_response(payload),
+        ):
+            create_response = self.client.post("/assignments/", payload, format="json")
+        assignment_id = create_response.data["driver_vehicle_assignment_id"]
+
+        self._authenticate(self._issue_token("user", allowed_nav_keys=[]))
+        response = self.client.get(f"/assignments/{assignment_id}/")
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(set(response.data.keys()), {"code", "message", "details"})

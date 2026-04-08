@@ -17,6 +17,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from assignments.models import DriverVehicleAssignment
+from assignments.permissions_navigation import require_nav_access
 from assignments.permissions import AuthenticatedReadAdminWrite
 from assignments.serializers import DriverVehicleAssignmentSerializer, HealthSerializer
 
@@ -34,6 +35,10 @@ class AssignmentListCreateView(generics.ListCreateAPIView):
     queryset = DriverVehicleAssignment.objects.all()
     serializer_class = DriverVehicleAssignmentSerializer
     permission_classes = [AuthenticatedReadAdminWrite]
+
+    def get(self, request, *args, **kwargs):
+        require_nav_access(request, "vehicle_assignments")
+        return super().get(request, *args, **kwargs)
 
 
 class AssignmentDetailView(
@@ -71,6 +76,7 @@ class AssignmentDetailView(
         return obj
 
     def get(self, request, *args, **kwargs):
+        require_nav_access(request, "vehicle_assignments")
         return self.retrieve(request, *args, **kwargs)
 
     def patch(self, request, *args, **kwargs):

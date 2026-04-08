@@ -25,6 +25,7 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 
 from vehicles.models import VehicleMaster, VehicleOperatorAccess
+from vehicles.permissions_navigation import require_nav_access
 from vehicles.permissions import AuthenticatedReadAdminWrite
 from vehicles.serializers import (
     HealthSerializer,
@@ -47,6 +48,10 @@ class VehicleMasterListCreateView(generics.ListCreateAPIView):
     queryset = VehicleMaster.objects.all()
     serializer_class = VehicleMasterSerializer
     permission_classes = [AuthenticatedReadAdminWrite]
+
+    def get(self, request, *args, **kwargs):
+        require_nav_access(request, "vehicles")
+        return super().get(request, *args, **kwargs)
 
 
 class VehicleMasterDetailView(
@@ -84,6 +89,7 @@ class VehicleMasterDetailView(
         return obj
 
     def get(self, request, *args, **kwargs):
+        require_nav_access(request, "vehicles")
         return self.retrieve(request, *args, **kwargs)
 
     def patch(self, request, *args, **kwargs):
@@ -122,6 +128,10 @@ class VehicleOperatorAccessListCreateView(generics.ListCreateAPIView):
             queryset = queryset.filter(access_status=access_status)
         return queryset
 
+    def get(self, request, *args, **kwargs):
+        require_nav_access(request, "vehicles")
+        return super().get(request, *args, **kwargs)
+
 
 class VehicleOperatorAccessDetailView(
     mixins.RetrieveModelMixin,
@@ -135,6 +145,7 @@ class VehicleOperatorAccessDetailView(
     http_method_names = ["get", "patch", "options", "head"]
 
     def get(self, request, *args, **kwargs):
+        require_nav_access(request, "vehicles")
         return self.retrieve(request, *args, **kwargs)
 
     def patch(self, request, *args, **kwargs):

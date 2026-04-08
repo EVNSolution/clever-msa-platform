@@ -15,6 +15,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from personneldocuments.models import PersonnelDocument
+from personneldocuments.permissions_navigation import require_nav_access
 from personneldocuments.permissions import AdminOnlyAccess
 from personneldocuments.serializers import HealthSerializer, PersonnelDocumentSerializer
 
@@ -57,4 +58,9 @@ class PersonnelDocumentViewSet(viewsets.ModelViewSet):
 
     @extend_schema(parameters=LIST_PARAMETERS)
     def list(self, request, *args, **kwargs):
+        require_nav_access(request, "personnel_documents")
         return super().list(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        require_nav_access(request, "personnel_documents")
+        return super().retrieve(request, *args, **kwargs)

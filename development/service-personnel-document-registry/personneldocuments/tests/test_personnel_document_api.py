@@ -18,11 +18,11 @@ from personneldocuments.services.source_clients import (
 class PersonnelDocumentApiTests(TestCase):
     def setUp(self) -> None:
         self.client = APIClient()
-        self.admin_token = self._issue_token(role="admin")
-        self.user_token = self._issue_token(role="user")
+        self.admin_token = self._issue_token(role="admin", allowed_nav_keys=["personnel_documents"])
+        self.user_token = self._issue_token(role="user", allowed_nav_keys=[])
         self.driver_id = str(UUID("10000000-0000-0000-0000-000000000001"))
 
-    def _issue_token(self, *, role: str) -> str:
+    def _issue_token(self, *, role: str, allowed_nav_keys: list[str] | None = None) -> str:
         now = datetime.now(timezone.utc)
         payload = {
             "sub": str(uuid4()),
@@ -35,6 +35,8 @@ class PersonnelDocumentApiTests(TestCase):
             "jti": str(uuid4()),
             "type": "access",
         }
+        if allowed_nav_keys is not None:
+            payload["allowed_nav_keys"] = allowed_nav_keys
         return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
     def _admin_client(self) -> APIClient:
@@ -205,3 +207,27 @@ class PersonnelDocumentApiTests(TestCase):
 
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data["code"], "permission_denied")
+
+    def test_admin_without_personnel_documents_nav_key_cannot_list_documents(self) -> None:
+        client = APIClient()
+        client.credentials(
+            HTTP_AUTHORIZATION=f"Bearer {self._issue_token(role='admin', allowed_nav_keys=[])}"
+        )
+
+        response = client.get("/documents/")
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
+
+    @patch("personneldocuments.services.source_clients.SourceClients.validate_driver_exists", return_value=None)
+    def test_admin_without_personnel_documents_nav_key_cannot_read_document_detail(self, _mock_validate_driver) -> None:
+        document = self._create_document()
+        client = APIClient()
+        client.credentials(
+            HTTP_AUTHORIZATION=f"Bearer {self._issue_token(role='admin', allowed_nav_keys=[])}"
+        )
+
+        response = client.get(f"/documents/{document.personnel_document_id}/")
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
