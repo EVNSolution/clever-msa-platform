@@ -19,6 +19,9 @@ from accounts.models import DriverAccountLink, Identity, PasswordCredential
 from accounts.permissions import IsAuthenticatedAccount
 from accounts.session_principal import IdentitySessionPrincipal
 from accounts.serializers import (
+    CompanyManagedNavigationPolicyListSerializer,
+    CompanyManagedNavigationPolicyResetSerializer,
+    CompanyManagedNavigationPolicyUpdateSerializer,
     DriverAccountLinkCreateSerializer,
     DriverAccountListSerializer,
     DriverAccountLinkSummarySerializer,
@@ -32,6 +35,8 @@ from accounts.serializers import (
     IdentityLoginMethodDeleteSerializer,
     IdentityLoginMethodListSerializer,
     IdentityLoginMethodSerializer,
+    ManagedNavigationPolicyListSerializer,
+    ManagedNavigationPolicyUpdateSerializer,
     IdentityPasswordSerializer,
     IdentityProfileSerializer,
     IdentityProfileUpdateSerializer,
@@ -39,7 +44,9 @@ from accounts.serializers import (
     ManagerAccountListSerializer,
     ManagerAccountRoleChangeSerializer,
     ManagerAccountSummarySerializer,
+    NavigationPolicyCurrentSerializer,
     IdentitySignupRequestCreateSerializer,
+    SignupRequestApproveSerializer,
     IdentitySignupRequestSummarySerializer,
     IdentitySignupIntakeResultSerializer,
     IdentitySignupIntakeSerializer,
@@ -55,6 +62,7 @@ from accounts.services.identity_login_method_service import IdentityLoginMethodS
 from accounts.services.identity_recovery_service import IdentityRecoveryService
 from accounts.services.driver_account_link_service import DriverAccountLinkService
 from accounts.services.manager_account_service import ManagerAccountService
+from accounts.services.navigation_policy_service import NavigationPolicyService
 from accounts.services.jwt_service import (
     create_identity_access_token,
     create_identity_refresh_token,
@@ -62,6 +70,19 @@ from accounts.services.jwt_service import (
 )
 from accounts.services.refresh_registry import RefreshRegistry
 from accounts.services.signup_request_service import SignupRequestService
+
+
+def _require_system_admin(principal: IdentitySessionPrincipal) -> None:
+    if principal.system_admin_account is None:
+        raise PermissionDenied("Navigation policy management is allowed only for system admin accounts.")
+
+
+def _require_company_super_admin(principal: IdentitySessionPrincipal) -> None:
+    manager_account = getattr(principal, "manager_account", None)
+    if manager_account is None or manager_account.role_type != "company_super_admin":
+        raise PermissionDenied("Company navigation policy management is allowed only for company super admin accounts.")
+
+
 def _set_refresh_cookie(response: Response, token: str) -> None:
     response.set_cookie(
         settings.REFRESH_COOKIE_NAME,
@@ -518,14 +539,110 @@ class IdentitySignupRequestManagementListView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class IdentityNavigationPolicyView(APIView):
+    permission_classes = [IsAuthenticatedAccount]
+
+    @extend_schema(responses={200: NavigationPolicyCurrentSerializer})
+    def get(self, request):
+        _require_full_identity_session(request)
+        result = NavigationPolicyService().get_allowed_nav_keys_for_principal(request.user)
+        serializer = NavigationPolicyCurrentSerializer(result)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ManagerNavigationPolicyManagementView(APIView):
+    permission_classes = [IsAuthenticatedAccount]
+
+    @extend_schema(responses={200: ManagedNavigationPolicyListSerializer})
+    def get(self, request):
+        _require_full_identity_session(request)
+        _require_system_admin(request.user)
+        serializer = ManagedNavigationPolicyListSerializer(
+            {"policies": NavigationPolicyService().list_global_policy()}
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @extend_schema(request=ManagedNavigationPolicyUpdateSerializer, responses={200: ManagedNavigationPolicyListSerializer})
+    def put(self, request):
+        _require_full_identity_session(request)
+        _require_system_admin(request.user)
+        serializer = ManagedNavigationPolicyUpdateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        service = NavigationPolicyService()
+        for policy in serializer.validated_data["policies"]:
+            service.replace_global_policy(
+                request.user,
+                policy["role_type"],
+                policy["allowed_nav_keys"],
+            )
+        response_serializer = ManagedNavigationPolicyListSerializer(
+            {"policies": service.list_global_policy()}
+        )
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
+
+
+class CompanyNavigationPolicyManagementView(APIView):
+    permission_classes = [IsAuthenticatedAccount]
+
+    @extend_schema(responses={200: CompanyManagedNavigationPolicyListSerializer})
+    def get(self, request):
+        _require_full_identity_session(request)
+        _require_company_super_admin(request.user)
+        serializer = CompanyManagedNavigationPolicyListSerializer(
+            {"policies": NavigationPolicyService().list_company_policy(request.user)}
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @extend_schema(request=CompanyManagedNavigationPolicyUpdateSerializer, responses={200: CompanyManagedNavigationPolicyListSerializer})
+    def put(self, request):
+        _require_full_identity_session(request)
+        _require_company_super_admin(request.user)
+        serializer = CompanyManagedNavigationPolicyUpdateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        service = NavigationPolicyService()
+        for policy in serializer.validated_data["policies"]:
+            service.replace_company_policy(
+                request.user,
+                policy["role_type"],
+                policy["allowed_nav_keys"],
+            )
+        response_serializer = CompanyManagedNavigationPolicyListSerializer(
+            {"policies": service.list_company_policy(request.user)}
+        )
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
+
+
+class CompanyNavigationPolicyResetView(APIView):
+    permission_classes = [IsAuthenticatedAccount]
+
+    @extend_schema(request=CompanyManagedNavigationPolicyResetSerializer, responses={200: CompanyManagedNavigationPolicyListSerializer})
+    def post(self, request):
+        _require_full_identity_session(request)
+        _require_company_super_admin(request.user)
+        serializer = CompanyManagedNavigationPolicyResetSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        service = NavigationPolicyService()
+        service.reset_company_policy(request.user, serializer.validated_data["role_type"])
+        response_serializer = CompanyManagedNavigationPolicyListSerializer(
+            {"policies": service.list_company_policy(request.user)}
+        )
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
+
+
 class IdentitySignupRequestApproveView(APIView):
     permission_classes = [IsAuthenticatedAccount]
 
-    @extend_schema(responses={200: IdentitySignupRequestSummarySerializer})
+    @extend_schema(request=SignupRequestApproveSerializer, responses={200: IdentitySignupRequestSummarySerializer})
     def post(self, request, request_id):
         _require_full_identity_session(request)
+        serializer = SignupRequestApproveSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         signup_request = SignupRequestService().get_manageable_request(request.user, request_id)
-        updated = SignupRequestService().approve_request(request.user, signup_request)
+        updated = SignupRequestService().approve_request(
+            request.user,
+            signup_request,
+            role_type=serializer.validated_data.get("role_type"),
+        )
         return Response(IdentitySignupRequestSummarySerializer(updated).data, status=status.HTTP_200_OK)
 
 

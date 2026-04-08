@@ -1,6 +1,8 @@
 from django.urls import path
 
 from accounts.views import (
+    CompanyNavigationPolicyManagementView,
+    CompanyNavigationPolicyResetView,
     DriverAccountLinkListView,
     DriverAccountLinkUnlinkView,
     DriverAccountManagementListView,
@@ -13,6 +15,7 @@ from accounts.views import (
     IdentityLoginMethodListCreateView,
     IdentityLogoutView,
     IdentityMeView,
+    IdentityNavigationPolicyView,
     IdentityPasswordView,
     IdentityProfileView,
     IdentityRecoveryView,
@@ -27,6 +30,7 @@ from accounts.views import (
     ManagerAccountArchiveView,
     ManagerAccountChangeRoleView,
     ManagerAccountManagementListView,
+    ManagerNavigationPolicyManagementView,
 )
 
 urlpatterns = [
@@ -41,6 +45,7 @@ urlpatterns = [
     path("identity-refresh/", IdentityRefreshView.as_view(), name="identity-refresh"),
     path("identity-logout/", IdentityLogoutView.as_view(), name="identity-logout"),
     path("identity-me/", IdentityMeView.as_view(), name="identity-me"),
+    path("identity-navigation-policy/", IdentityNavigationPolicyView.as_view(), name="identity-navigation-policy"),
     path("identity-profile/", IdentityProfileView.as_view(), name="identity-profile"),
     path("identity-consent/", IdentityConsentView.as_view(), name="identity-consent"),
     path("identity-consent/withdraw/", IdentityConsentWithdrawView.as_view(), name="identity-consent-withdraw"),
@@ -52,6 +57,9 @@ urlpatterns = [
     path("manager-accounts/manage/", ManagerAccountManagementListView.as_view(), name="manager-account-management-list"),
     path("manager-accounts/<uuid:manager_account_id>/change-role/", ManagerAccountChangeRoleView.as_view(), name="manager-account-change-role"),
     path("manager-accounts/<uuid:manager_account_id>/archive/", ManagerAccountArchiveView.as_view(), name="manager-account-archive"),
+    path("manager-navigation-policy/manage/", ManagerNavigationPolicyManagementView.as_view(), name="manager-navigation-policy-management"),
+    path("company-navigation-policy/manage/", CompanyNavigationPolicyManagementView.as_view(), name="company-navigation-policy-management"),
+    path("company-navigation-policy/reset/", CompanyNavigationPolicyResetView.as_view(), name="company-navigation-policy-reset"),
     path("driver-accounts/manage/", DriverAccountManagementListView.as_view(), name="driver-account-management-list"),
     path("driver-account-links/", DriverAccountLinkListView.as_view(), name="driver-account-link-list"),
     path("driver-account-links/<uuid:link_id>/unlink/", DriverAccountLinkUnlinkView.as_view(), name="driver-account-link-unlink"),

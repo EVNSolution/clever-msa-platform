@@ -152,7 +152,7 @@ class IdentitySignupRequestSummarySerializer(serializers.ModelSerializer):
         if obj.status == IdentitySignupRequest.Status.PENDING:
             return "검토 중입니다."
         if obj.status == IdentitySignupRequest.Status.AWAITING_SETUP:
-            return "설정 중입니다."
+            return "관리자 유형 선택 필요"
         if obj.status == IdentitySignupRequest.Status.APPROVED:
             return "승인되어 사용할 수 있습니다."
         return "반려되었습니다."
@@ -336,6 +336,50 @@ class IdentitySignupRequestCreateSerializer(serializers.Serializer):
 
 class SignupRequestActionSerializer(serializers.Serializer):
     reject_reason = serializers.CharField(required=False, allow_blank=False)
+
+
+class SignupRequestApproveSerializer(serializers.Serializer):
+    role_type = serializers.ChoiceField(
+        choices=ManagerAccount.RoleType.choices,
+        required=False,
+    )
+
+
+class NavigationPolicyCurrentSerializer(serializers.Serializer):
+    allowed_nav_keys = serializers.ListField(child=serializers.CharField())
+    source = serializers.CharField()
+
+
+class ManagedNavigationPolicySerializer(serializers.Serializer):
+    role_type = serializers.ChoiceField(choices=ManagerAccount.RoleType.choices)
+    allowed_nav_keys = serializers.ListField(child=serializers.CharField())
+    source = serializers.CharField(required=False)
+
+
+class ManagedNavigationPolicyListSerializer(serializers.Serializer):
+    policies = ManagedNavigationPolicySerializer(many=True)
+
+
+class ManagedNavigationPolicyUpdateSerializer(serializers.Serializer):
+    policies = ManagedNavigationPolicySerializer(many=True)
+
+
+class CompanyManagedNavigationPolicySerializer(serializers.Serializer):
+    role_type = serializers.ChoiceField(choices=ManagerAccount.RoleType.choices)
+    allowed_nav_keys = serializers.ListField(child=serializers.CharField())
+    source = serializers.CharField(required=False)
+
+
+class CompanyManagedNavigationPolicyListSerializer(serializers.Serializer):
+    policies = CompanyManagedNavigationPolicySerializer(many=True)
+
+
+class CompanyManagedNavigationPolicyUpdateSerializer(serializers.Serializer):
+    policies = CompanyManagedNavigationPolicySerializer(many=True)
+
+
+class CompanyManagedNavigationPolicyResetSerializer(serializers.Serializer):
+    role_type = serializers.ChoiceField(choices=ManagerAccount.RoleType.choices)
 
 
 class IdentityConsentCurrentSerializer(serializers.ModelSerializer):

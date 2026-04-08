@@ -189,6 +189,39 @@ class ManagerAccount(models.Model):
         return super().save(*args, **kwargs)
 
 
+class ManagerNavigationPolicy(models.Model):
+    class Action(models.TextChoices):
+        VIEW = "view", "View"
+
+    class Effect(models.TextChoices):
+        ALLOW = "allow", "Allow"
+        DENY = "deny", "Deny"
+
+    manager_navigation_policy_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    company_id = models.UUIDField(null=True, blank=True)
+    manager_role = models.CharField(max_length=32, choices=ManagerAccount.RoleType.choices)
+    nav_item_key = models.CharField(max_length=64)
+    action = models.CharField(max_length=32, choices=Action.choices, default=Action.VIEW)
+    effect = models.CharField(max_length=16, choices=Effect.choices, default=Effect.ALLOW)
+    updated_by_identity_id = models.UUIDField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("company_id", "manager_role", "nav_item_key", "action")
+        constraints = [
+            models.UniqueConstraint(
+                fields=("manager_role", "nav_item_key", "action"),
+                condition=Q(company_id__isnull=True),
+                name="uniq_global_manager_navigation_policy_role_key_action",
+            ),
+            models.UniqueConstraint(
+                fields=("company_id", "manager_role", "nav_item_key", "action"),
+                condition=Q(company_id__isnull=False),
+                name="uniq_company_manager_navigation_policy_role_key_action",
+            )
+        ]
+
+
 class DriverAccount(models.Model):
     class Status(models.TextChoices):
         ACTIVE = "active", "Active"

@@ -96,7 +96,14 @@ class SignupRequestService:
         else:
             raise PermissionDenied("Request management is not allowed for this account.")
 
-        if status_value:
+        if status_value == IdentitySignupRequest.Status.PENDING:
+            queryset = queryset.filter(
+                status__in=[
+                    IdentitySignupRequest.Status.PENDING,
+                    IdentitySignupRequest.Status.AWAITING_SETUP,
+                ]
+            )
+        elif status_value:
             queryset = queryset.filter(status=status_value)
         return queryset
 
@@ -125,14 +132,27 @@ class SignupRequestService:
         request.save(update_fields=["status", "reject_reason"])
         return request
 
-    def approve_request(self, principal, request: IdentitySignupRequest) -> IdentitySignupRequest:
-        if request.status != IdentitySignupRequest.Status.PENDING:
-            raise ValidationError({"status": ["Only pending requests can be approved."]})
-
-        lifecycle = ProductAccountLifecycleService()
+    def approve_request(
+        self,
+        principal,
+        request: IdentitySignupRequest,
+        *,
+        role_type: str | None = None,
+    ) -> IdentitySignupRequest:
         if request.request_type == IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE:
+            if request.status not in {
+                IdentitySignupRequest.Status.PENDING,
+                IdentitySignupRequest.Status.AWAITING_SETUP,
+            }:
+                raise ValidationError({"status": ["Only active manager requests can be approved."]})
+            if role_type is None:
+                raise ValidationError({"role_type": ["Role type is required for manager approval."]})
+
+            self._validate_manager_role_type(principal, role_type)
+            lifecycle = ProductAccountLifecycleService()
+
             with transaction.atomic():
-                if request.is_re_request:
+                if request.status == IdentitySignupRequest.Status.PENDING and request.is_re_request:
                     active_manager = ManagerAccount.objects.filter(
                         identity=request.identity,
                         status=ManagerAccount.Status.ACTIVE,
@@ -157,7 +177,18 @@ class SignupRequestService:
                             account_id=new_driver_account.driver_account_id,
                         )
 
-                request.status = IdentitySignupRequest.Status.AWAITING_SETUP
+                manager_account = ManagerAccount.objects.create(
+                    identity=request.identity,
+                    company_id=request.company_id,
+                    role_type=role_type,
+                    status=ManagerAccount.Status.ACTIVE,
+                )
+                IdentityAccountLink.objects.create(
+                    identity=request.identity,
+                    account_type=IdentityAccountLink.AccountType.MANAGER,
+                    account_id=manager_account.manager_account_id,
+                )
+                request.status = IdentitySignupRequest.Status.APPROVED
                 self._stamp_reviewer(principal, request)
                 request.save(
                     update_fields=[
@@ -167,6 +198,10 @@ class SignupRequestService:
                     ]
                 )
                 return request
+
+        lifecycle = ProductAccountLifecycleService()
+        if request.status != IdentitySignupRequest.Status.PENDING:
+            raise ValidationError({"status": ["Only pending requests can be approved."]})
 
         with transaction.atomic():
             if request.is_re_request:
@@ -197,6 +232,18 @@ class SignupRequestService:
                 ]
             )
             return request
+
+    def _validate_manager_role_type(self, principal, role_type: str) -> None:
+        if getattr(principal, "system_admin_account", None) is None:
+            manager_account = getattr(principal, "manager_account", None)
+            if manager_account is None or manager_account.role_type != ManagerAccount.RoleType.COMPANY_SUPER_ADMIN:
+                raise PermissionDenied("Manager setup is not allowed for this account.")
+            if role_type not in {
+                ManagerAccount.RoleType.VEHICLE_MANAGER,
+                ManagerAccount.RoleType.SETTLEMENT_MANAGER,
+                ManagerAccount.RoleType.FLEET_MANAGER,
+            }:
+                raise PermissionDenied("Company super admin can configure only lower manager roles.")
 
     def reject_request(
         self,
@@ -235,16 +282,7 @@ class SignupRequestService:
         if request.status != IdentitySignupRequest.Status.AWAITING_SETUP:
             raise ValidationError({"status": ["Request is not awaiting setup."]})
 
-        if getattr(principal, "system_admin_account", None) is None:
-            manager_account = getattr(principal, "manager_account", None)
-            if manager_account is None or manager_account.role_type != ManagerAccount.RoleType.COMPANY_SUPER_ADMIN:
-                raise PermissionDenied("Manager setup is not allowed for this account.")
-            if role_type not in {
-                ManagerAccount.RoleType.VEHICLE_MANAGER,
-                ManagerAccount.RoleType.SETTLEMENT_MANAGER,
-                ManagerAccount.RoleType.FLEET_MANAGER,
-            }:
-                raise PermissionDenied("Company super admin can configure only lower manager roles.")
+        self._validate_manager_role_type(principal, role_type)
 
         with transaction.atomic():
             manager_account = ManagerAccount.objects.create(
