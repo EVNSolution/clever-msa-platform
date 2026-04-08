@@ -23,6 +23,7 @@ from accounts.models import (
 from accounts.session_principal import IdentitySessionPrincipal
 from accounts.services.refresh_registry import RefreshRegistry
 from accounts.services.jwt_service import decode_token
+from accounts.services.navigation_policy_service import NavigationPolicyService
 
 
 class SignupIntakeApiTests(TestCase):
@@ -1036,6 +1037,36 @@ class ManagerAccountManagementApiTests(TestCase):
         self.assertEqual(len(response.data["accounts"]), 1)
         self.assertEqual(response.data["accounts"][0]["manager_account_id"], str(vehicle_account.manager_account_id))
 
+    def test_vehicle_manager_without_accounts_nav_key_cannot_list_manager_accounts(self):
+        vehicle_identity = self._create_identity_with_password(
+            name="권한 차단 차량 관리자",
+            birth_date="1990-01-02",
+            email="nav-block-manager@example.com",
+            password="nav-block-pass-123",
+        )
+        self._create_manager_account(
+            identity=vehicle_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.VEHICLE_MANAGER,
+        )
+        system_identity = self._create_identity_with_password(
+            name="권한 설정 시스템 관리자",
+            birth_date="1980-01-01",
+            email="nav-policy-system@example.com",
+            password="nav-policy-system-pass-123",
+        )
+        SystemAdminAccount.objects.create(identity=system_identity)
+        NavigationPolicyService().replace_global_policy(
+            IdentitySessionPrincipal.from_identity(system_identity),
+            ManagerAccount.RoleType.VEHICLE_MANAGER,
+            ["dashboard", "vehicles"],
+        )
+
+        self._login_identity("nav-block-manager@example.com", "nav-block-pass-123")
+        response = self.client.get("/manager-accounts/manage/")
+
+        self.assertEqual(response.status_code, 403)
+
     def test_company_super_admin_can_change_lower_manager_role_in_place(self):
         super_identity = self._create_identity_with_password(
             name="역할 전환 총괄",
@@ -1308,6 +1339,36 @@ class DriverAccountManagementApiTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data["accounts"]), 1)
         self.assertEqual(response.data["accounts"][0]["driver_account_id"], str(own_driver_account.driver_account_id))
+
+    def test_vehicle_manager_without_accounts_nav_key_cannot_list_driver_accounts(self):
+        vehicle_identity = self._create_identity_with_password(
+            name="권한 차단 차량 관리자 B",
+            birth_date="1990-01-02",
+            email="nav-block-driver@example.com",
+            password="nav-block-driver-pass-123",
+        )
+        ManagerAccount.objects.create(
+            identity=vehicle_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.VEHICLE_MANAGER,
+        )
+        system_identity = self._create_identity_with_password(
+            name="권한 설정 시스템 관리자 B",
+            birth_date="1980-01-01",
+            email="nav-policy-system-b@example.com",
+            password="nav-policy-system-b-pass-123",
+        )
+        SystemAdminAccount.objects.create(identity=system_identity)
+        NavigationPolicyService().replace_global_policy(
+            IdentitySessionPrincipal.from_identity(system_identity),
+            ManagerAccount.RoleType.VEHICLE_MANAGER,
+            ["dashboard", "vehicles"],
+        )
+
+        self._login_identity("nav-block-driver@example.com", "nav-block-driver-pass-123")
+        response = self.client.get("/driver-accounts/manage/")
+
+        self.assertEqual(response.status_code, 403)
 
     @patch("accounts.services.driver_account_link_service.DriverProfileCompanyLookupClient.get_driver_company_id")
     def test_vehicle_manager_can_link_driver_account_to_driver(self, get_driver_company_id):
@@ -1613,6 +1674,23 @@ class IdentityFinalCutoverApiTests(TestCase):
         self.assertEqual(payload["role"], "admin")
         self.assertEqual(payload["role_type"], ManagerAccount.RoleType.VEHICLE_MANAGER)
         self.assertEqual(payload["email"], "final-contract@example.com")
+        self.assertEqual(
+            payload["allowed_nav_keys"],
+            [
+                "dashboard",
+                "account",
+                "accounts",
+                "announcements",
+                "support",
+                "notifications",
+                "regions",
+                "vehicles",
+                "vehicle_assignments",
+                "drivers",
+                "personnel_documents",
+            ],
+        )
+        self.assertEqual(payload["navigation_policy_source"], "default")
 
     def test_identity_refresh_keeps_final_session_shape(self):
         self._provision_vehicle_manager(
@@ -1633,6 +1711,9 @@ class IdentityFinalCutoverApiTests(TestCase):
         self.assertEqual(refresh_response.data["email"], "refresh-final@example.com")
         self.assertEqual(refresh_response.data["active_account"]["account_type"], "manager")
         self.assertIn("access_token", refresh_response.data)
+        payload = decode_token(refresh_response.data["access_token"], "access")
+        self.assertIn("allowed_nav_keys", payload)
+        self.assertEqual(payload["navigation_policy_source"], "default")
 
     def test_identity_me_returns_current_identity_session_shape(self):
         identity, manager_account = self._provision_vehicle_manager(

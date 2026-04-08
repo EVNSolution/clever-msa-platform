@@ -17,6 +17,7 @@ except ModuleNotFoundError:
 
 from accounts.models import DriverAccountLink, Identity, PasswordCredential
 from accounts.permissions import IsAuthenticatedAccount
+from accounts.permissions_navigation import require_nav_access
 from accounts.session_principal import IdentitySessionPrincipal
 from accounts.serializers import (
     CompanyManagedNavigationPolicyListSerializer,
@@ -525,6 +526,7 @@ class IdentitySignupRequestManagementListView(APIView):
     @extend_schema(responses={200: SignupRequestListSerializer})
     def get(self, request):
         _require_full_identity_session(request)
+        require_nav_access(request, "accounts")
         requests = SignupRequestService().list_manageable_requests(
             request.user,
             status_value=request.query_params.get("status"),
@@ -635,6 +637,7 @@ class IdentitySignupRequestApproveView(APIView):
     @extend_schema(request=SignupRequestApproveSerializer, responses={200: IdentitySignupRequestSummarySerializer})
     def post(self, request, request_id):
         _require_full_identity_session(request)
+        require_nav_access(request, "accounts")
         serializer = SignupRequestApproveSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         signup_request = SignupRequestService().get_manageable_request(request.user, request_id)
@@ -652,6 +655,7 @@ class IdentitySignupRequestRejectView(APIView):
     @extend_schema(request=SignupRequestActionSerializer, responses={200: IdentitySignupRequestSummarySerializer})
     def post(self, request, request_id):
         _require_full_identity_session(request)
+        require_nav_access(request, "accounts")
         serializer = SignupRequestActionSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         signup_request = SignupRequestService().get_manageable_request(request.user, request_id)
@@ -669,6 +673,7 @@ class IdentitySignupRequestCompleteSetupView(APIView):
     @extend_schema(request=SignupRequestSetupSerializer, responses={200: IdentitySignupRequestSummarySerializer})
     def post(self, request, request_id):
         _require_full_identity_session(request)
+        require_nav_access(request, "accounts")
         serializer = SignupRequestSetupSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         signup_request = SignupRequestService().get_manageable_request(request.user, request_id)
@@ -686,6 +691,7 @@ class ManagerAccountManagementListView(APIView):
     @extend_schema(responses={200: ManagerAccountListSerializer})
     def get(self, request):
         _require_full_identity_session(request)
+        require_nav_access(request, "accounts")
         accounts = ManagerAccountService().list_manageable_accounts(request.user)
         serializer = ManagerAccountListSerializer({"accounts": accounts})
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -697,6 +703,7 @@ class ManagerAccountChangeRoleView(APIView):
     @extend_schema(request=ManagerAccountRoleChangeSerializer, responses={200: ManagerAccountSummarySerializer})
     def post(self, request, manager_account_id):
         _require_full_identity_session(request)
+        require_nav_access(request, "accounts")
         serializer = ManagerAccountRoleChangeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         target_account = ManagerAccountService().get_manageable_account(request.user, manager_account_id)
@@ -714,6 +721,7 @@ class ManagerAccountArchiveView(APIView):
     @extend_schema(responses={200: ManagerAccountSummarySerializer})
     def post(self, request, manager_account_id):
         _require_full_identity_session(request)
+        require_nav_access(request, "accounts")
         target_account = ManagerAccountService().get_manageable_account(request.user, manager_account_id)
         updated = ManagerAccountService().archive_account(request.user, target_account)
         return Response(ManagerAccountSummarySerializer(updated).data, status=status.HTTP_200_OK)
@@ -725,6 +733,7 @@ class DriverAccountManagementListView(APIView):
     @extend_schema(responses={200: DriverAccountListSerializer})
     def get(self, request):
         _require_full_identity_session(request)
+        require_nav_access(request, "accounts")
         accounts = DriverAccountLinkService().list_manageable_driver_accounts(request.user)
         serializer = DriverAccountListSerializer({"accounts": accounts})
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -736,6 +745,7 @@ class DriverAccountLinkListView(APIView):
     @extend_schema(responses={200: DriverAccountLinkSummarySerializer(many=True)})
     def get(self, request):
         _require_full_identity_session(request)
+        require_nav_access(request, "accounts")
         if request.user.active_account_type not in {"system_admin", "manager"}:
             raise PermissionDenied("Driver account links are visible only to admin accounts.")
 
@@ -762,6 +772,7 @@ class DriverAccountLinkListView(APIView):
     @extend_schema(request=DriverAccountLinkCreateSerializer, responses={201: DriverAccountLinkSummarySerializer})
     def post(self, request):
         _require_full_identity_session(request)
+        require_nav_access(request, "accounts")
         if request.user.active_account_type not in {"system_admin", "manager"}:
             raise PermissionDenied("Driver account links are manageable only by admin accounts.")
         serializer = DriverAccountLinkCreateSerializer(data=request.data)
@@ -780,6 +791,7 @@ class DriverAccountLinkUnlinkView(APIView):
     @extend_schema(responses={200: DriverAccountLinkSummarySerializer})
     def post(self, request, link_id):
         _require_full_identity_session(request)
+        require_nav_access(request, "accounts")
         if request.user.active_account_type not in {"system_admin", "manager"}:
             raise PermissionDenied("Driver account links are manageable only by admin accounts.")
         link = DriverAccountLinkService().get_manageable_link(request.user, link_id)

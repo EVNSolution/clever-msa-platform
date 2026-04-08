@@ -5,6 +5,8 @@ import jwt
 from django.conf import settings
 from rest_framework.exceptions import AuthenticationFailed
 
+from accounts.services.navigation_policy_service import NavigationPolicyService
+
 
 def _utcnow() -> datetime:
     return datetime.now(timezone.utc)
@@ -37,6 +39,10 @@ def _identity_payload(principal, token_type: str, lifetime):
         payload["company_id"] = principal.company_id
     if principal.role_type is not None:
         payload["role_type"] = principal.role_type
+    if token_type == "access":
+        policy = NavigationPolicyService().get_allowed_nav_keys_for_principal(principal)
+        payload["allowed_nav_keys"] = policy["allowed_nav_keys"]
+        payload["navigation_policy_source"] = policy["source"]
     return payload
 
 
