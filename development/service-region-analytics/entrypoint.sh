@@ -6,4 +6,4 @@ if [ "$#" -gt 0 ]; then
 fi
 
 python manage.py migrate --noinput
-exec gunicorn -w "${GUNICORN_WORKERS:-4}" -t "${GUNICORN_TIMEOUT:-120}" --bind 0.0.0.0:8000 config.wsgi:application
+exec gunicorn config.wsgi:application   --bind 0.0.0.0:8000   --workers "${GUNICORN_WORKERS:-2}"   --timeout "${GUNICORN_TIMEOUT:-60}"

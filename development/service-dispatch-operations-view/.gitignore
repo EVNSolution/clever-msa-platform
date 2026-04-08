@@ -1,3 +1,6 @@
 __pycache__/
 *.py[cod]
 db.sqlite3
+.venv312
+.DS_Store
+.venv*
