@@ -20,7 +20,7 @@
 - 중앙 배포 제어는 `EVNSolution/clever-deploy-control`로 분리됐다.
 - `GitHub Actions + AWS OIDC + EC2 app-host + SSM + docker compose` 배포 경로는 dev에서 실제 검증됐다.
 - 주요 서비스와 묶음 배포는 dev에서 성공했다.
-- 프론트는 현재 `front-admin-console` 배포 repo에 `codex/web-layout-refresh`의 `front-web-console` 정본 스냅샷을 이식한 임시 상태다.
+- 프론트 canonical/runtime repo는 현재 `front-web-console`이며, compose runtime alias는 아직 `admin-front`를 유지한다.
 - 외부 공개는 아직 정식 ingress가 아니라 public IP + 임시 포트 개방 상태다.
 
 즉, 지금은 “배포 레이어를 만드는 단계”는 넘겼고, “정식 운영 구조로 수렴시키는 단계”에 들어왔다.
@@ -130,10 +130,9 @@
 
 ### Current State
 
-- 실제 정본으로 확인된 것은 `codex/web-layout-refresh` 브랜치의 `development/front-web-console`이다.
-- 현재 배포 repo 이름은 `front-admin-console`이다.
-- dev 런타임은 `front-admin-console` repo에 `front-web-console` 스냅샷을 덮어써서 운영 중이다.
-- 즉 내용과 이름이 일치하지 않는다.
+- 실제 정본과 배포 repo 이름은 현재 `front-web-console`로 맞춰졌다.
+- 다만 dev 런타임 compose service alias는 아직 `admin-front`를 유지한다.
+- 즉 repo/path naming cutover는 완료됐고, runtime service naming cutover가 다음 단계다.
 
 ### Why It Matters
 

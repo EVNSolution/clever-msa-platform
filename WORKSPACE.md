@@ -85,8 +85,7 @@ clever-msa-platform/
 
 - `integration-local-stack`
 - `edge-api-gateway`
-- `front-operator-console`
-- `front-admin-console`
+- `front-web-console`
 - `service-organization-registry`
 - `service-account-access`
 - `service-driver-profile`
@@ -148,7 +147,7 @@ clever-msa-platform/
 
 - `docs/` 정본 구조는 생성 및 1차 복사 완료
 - `integration-local-stack`는 실제 이동 완료
-- `edge-api-gateway`, `front-operator-console`, `front-admin-console`는 target 위치로 이동 완료
+- `edge-api-gateway`, `front-web-console`는 target 위치로 이동 완료
 - `service-organization-registry`는 target 위치로 이동 완료
 - `service-account-access`는 target 위치로 이동 완료
 - `service-driver-profile`는 target 위치로 이동 완료

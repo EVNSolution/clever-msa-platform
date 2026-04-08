@@ -26,8 +26,7 @@
 | --- | --- | --- | --- | --- | --- |
 | `integration-local-stack` | integration | 현재 compose, env, seed, smoke 자산을 한곳에서 관리 | 분리된 repo들을 로컬에서 묶는 통합 실행 셸 | `development/integration-local-stack/` | `migrated-target` |
 | `edge-api-gateway` | edge | gateway routing과 reverse proxy | 다중 서비스의 단일 진입 edge | `development/edge-api-gateway/` | `migrated-target` |
-| `front-operator-console` | front | 운영자 화면, 일반 사용자용 front | 운영자/현장용 메인 UI | `development/front-operator-console/` | `migrated-target` |
-| `front-admin-console` | front | 관리자 화면 | 관리용 UI, master/assignment 관리 | `development/front-admin-console/` | `migrated-target` |
+| `front-web-console` | front | surviving 단일 웹 콘솔 | 권한 기반 통합 웹 UI 정본 | `development/front-web-console/` | `migrated-target` |
 | `service-organization-registry` | service | 회사/플릿 정본 | 조직 기준 마스터 registry | `development/service-organization-registry/` | `migrated-target` |
 | `service-account-access` | service | 계정, 인증, 토큰, 접근 제어 | 계정 출입구와 접근 제어의 정본 | `development/service-account-access/` | `migrated-target` |
 | `service-driver-profile` | service | 배송원 기본 프로필 정본 | 배송원 기본정보와 계정 연결 참조 | `development/service-driver-profile/` | `migrated-target` |
@@ -125,7 +124,7 @@
 
 1. `docs/`를 source of truth로 먼저 고정
 2. `integration-local-stack` 분리 완료
-3. `edge-api-gateway`, `front-operator-console`, `front-admin-console` 분리 완료
+3. `edge-api-gateway`, `front-web-console` 분리 완료
 4. direct-move service repo 분리
    - `service-organization-registry` 이동 완료
    - `service-account-access` 이동 완료
