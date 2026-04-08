@@ -25,6 +25,7 @@ from dispatch.services.outsourced_driver_lifecycle_service import (
     OutsourcedDriverArchiveBlockedError,
     OutsourcedDriverLifecycleService,
 )
+from dispatch.permissions_navigation import require_nav_access
 from dispatch.permissions import AuthenticatedReadAdminWrite
 from dispatch.serializers import (
     DispatchAssignmentSerializer,
@@ -64,6 +65,10 @@ class DispatchPlanListCreateView(generics.ListCreateAPIView):
             queryset = queryset.filter(dispatch_date=dispatch_date)
         return queryset
 
+    def get(self, request, *args, **kwargs):
+        require_nav_access(request, "dispatch")
+        return super().get(request, *args, **kwargs)
+
 
 class DispatchPlanDetailView(
     mixins.RetrieveModelMixin,
@@ -77,6 +82,7 @@ class DispatchPlanDetailView(
     http_method_names = ["get", "patch", "options", "head"]
 
     def get(self, request, *args, **kwargs):
+        require_nav_access(request, "dispatch")
         return self.retrieve(request, *args, **kwargs)
 
     def patch(self, request, *args, **kwargs):
@@ -101,6 +107,10 @@ class VehicleScheduleListCreateView(generics.ListCreateAPIView):
             queryset = queryset.filter(vehicle_id=vehicle_id)
         return queryset
 
+    def get(self, request, *args, **kwargs):
+        require_nav_access(request, "dispatch")
+        return super().get(request, *args, **kwargs)
+
 
 class VehicleScheduleDetailView(
     mixins.RetrieveModelMixin,
@@ -114,6 +124,7 @@ class VehicleScheduleDetailView(
     http_method_names = ["get", "patch", "options", "head"]
 
     def get(self, request, *args, **kwargs):
+        require_nav_access(request, "dispatch")
         return self.retrieve(request, *args, **kwargs)
 
     def patch(self, request, *args, **kwargs):
@@ -147,6 +158,10 @@ class DispatchAssignmentListCreateView(generics.ListCreateAPIView):
             queryset = queryset.filter(outsourced_driver_id=outsourced_driver_id)
         return queryset
 
+    def get(self, request, *args, **kwargs):
+        require_nav_access(request, "dispatch")
+        return super().get(request, *args, **kwargs)
+
 
 class DispatchAssignmentDetailView(
     mixins.RetrieveModelMixin,
@@ -160,6 +175,7 @@ class DispatchAssignmentDetailView(
     http_method_names = ["get", "patch", "options", "head"]
 
     def get(self, request, *args, **kwargs):
+        require_nav_access(request, "dispatch")
         return self.retrieve(request, *args, **kwargs)
 
     def patch(self, request, *args, **kwargs):
@@ -195,6 +211,10 @@ class OutsourcedDriverListCreateView(generics.ListCreateAPIView):
             queryset = queryset.filter(status=status_param)
         return queryset
 
+    def get(self, request, *args, **kwargs):
+        require_nav_access(request, "dispatch")
+        return super().get(request, *args, **kwargs)
+
 
 class OutsourcedDriverDetailView(
     mixins.RetrieveModelMixin,
@@ -208,6 +228,7 @@ class OutsourcedDriverDetailView(
     http_method_names = ["get", "patch", "options", "head"]
 
     def get(self, request, *args, **kwargs):
+        require_nav_access(request, "dispatch")
         return self.retrieve(request, *args, **kwargs)
 
     def patch(self, request, *args, **kwargs):
@@ -257,6 +278,10 @@ class DispatchWorkRuleListCreateView(generics.ListCreateAPIView):
             queryset = queryset.filter(system_kind=system_kind)
         return queryset
 
+    def get(self, request, *args, **kwargs):
+        require_nav_access(request, "dispatch")
+        return super().get(request, *args, **kwargs)
+
 
 class DispatchWorkRuleDetailView(
     mixins.RetrieveModelMixin,
@@ -273,6 +298,7 @@ class DispatchWorkRuleDetailView(
     http_method_names = ["get", "patch", "delete", "options", "head"]
 
     def get(self, request, *args, **kwargs):
+        require_nav_access(request, "dispatch")
         return self.retrieve(request, *args, **kwargs)
 
     def patch(self, request, *args, **kwargs):
@@ -316,6 +342,10 @@ class DriverDayExceptionListCreateView(generics.ListCreateAPIView):
             queryset = queryset.filter(work_rule_id=work_rule_id)
         return queryset
 
+    def get(self, request, *args, **kwargs):
+        require_nav_access(request, "dispatch")
+        return super().get(request, *args, **kwargs)
+
 
 class DriverDayExceptionDetailView(
     mixins.RetrieveModelMixin,
@@ -330,6 +360,7 @@ class DriverDayExceptionDetailView(
     http_method_names = ["get", "patch", "delete", "options", "head"]
 
     def get(self, request, *args, **kwargs):
+        require_nav_access(request, "dispatch")
         return self.retrieve(request, *args, **kwargs)
 
     def patch(self, request, *args, **kwargs):
