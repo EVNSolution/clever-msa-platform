@@ -147,29 +147,31 @@ admin-front:
 
 Do not rename `admin-front` yet.
 
-- [ ] **Step 3: Update deploy-control metadata to the renamed repo/path while preserving the runtime alias**
-
-In `services.yaml` and deploy inventory/reference docs:
-- rename target key and repo/path to `front-web-console`
-- keep compose service note as `admin-front` during this stage
-- update remote checkout path to `/srv/clever/front-web-console`
-
-- [ ] **Step 4: Execute the explicit user gate before remote deploy**
+- [ ] **Step 3: Execute the explicit user gate before repo cutover**
 
 Pause and request the user to:
 1. Regenerate the read-only token
 2. Update SSM `/clever/deploy/github/read-token`
 3. Confirm the renamed GitHub repo is readable from the token scope
 
-Do not continue to deployment until the user confirms this is complete.
+Do not continue to repo rename or deployment until the user confirms this is complete.
 
-- [ ] **Step 5: Rename the GitHub repository and push the path change**
+- [ ] **Step 4: Rename the GitHub repository and push the path change**
 
 Expected GitHub repo transition:
 - from: `EVNSolution/front-admin-console`
 - to: `EVNSolution/front-web-console`
 
-Then push the renamed local repo `main` and platform/deploy-control metadata commits.
+Push the renamed frontend repo first, before changing any live deploy-control metadata.
+
+- [ ] **Step 5: Update deploy-control metadata to the renamed repo/path while preserving the runtime alias**
+
+In `services.yaml` and deploy inventory/reference docs:
+- rename target key and repo/path to `front-web-console`
+- keep compose service note as `admin-front` during this stage
+- update remote checkout path to `/srv/clever/front-web-console`
+
+This step must happen only after the GitHub repo rename has completed successfully.
 
 - [ ] **Step 6: Verify compose config renders from the renamed path**
 
