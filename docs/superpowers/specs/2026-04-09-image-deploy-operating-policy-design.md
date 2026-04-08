@@ -1,0 +1,114 @@
+# 2026-04-09 Image Deploy Operating Policy
+
+## Purpose
+
+This document fixes the standard operating rule for CLEVER MSA image deployments after the ECR-based rollout baseline was established.
+
+The rule is simple:
+
+- service repos produce images
+- the central control repo performs deployments
+- the default deployment unit is a release bundle, not an immediate per-repo deploy
+
+## Source of Truth
+
+- Platform policy and planning live in this repository.
+- Central deploy runtime, workflows, and runbooks live in `clever-deploy-control`.
+- Service repos own only application code and image production.
+
+## Default Operating Model
+
+### 1. Service repos are build-only
+
+For image-migrated services, a service repo change should normally do only this:
+
+- build Docker image
+- push image to ECR
+- record the resulting image tag through the normal GitHub Actions evidence trail
+
+The service repo should not be treated as the primary deployment entrypoint.
+
+### 2. Central deploy repo is deploy-only
+
+Actual runtime rollout should happen from `clever-deploy-control`.
+
+The central repo is responsible for:
+
+- release target selection
+- matrix and wave orchestration
+- SSM dispatch
+- host-side image state coordination
+- rollout evidence
+- rollback coordination
+
+### 3. Default deployment unit is a release bundle
+
+When multiple repos changed during the same working cycle, the normal path is:
+
+1. finish code changes in each affected service repo
+2. build and push images for each affected service
+3. define the release candidate service set
+4. execute one central matrix deploy for that set
+
+This avoids fragmented host state and reduces partial-rollout drift.
+
+### 4. Matrix + wave is the standard rollout path
+
+The standard release path is:
+
+`service repo build -> ECR push -> central matrix deploy -> wave execution on EC2 hosts`
+
+Direct one-off host manipulation is not the standard workflow.
+
+## Release Candidate Rule
+
+A release candidate bundle is the set of image-backed services that should move together in one rollout.
+
+The bundle should include:
+
+- every service changed in the current work cycle
+- any image-backed dependency that must move with them for runtime compatibility
+
+The bundle should be handed to the central deploy workflow as one target list.
+
+## Exceptions
+
+The default rule can be bypassed only in explicit cases.
+
+### Allowed exceptions
+
+- emergency production hotfix explicitly approved for single-target rollout
+- verification of a non-migrated service that still uses source deploy
+- temporary UI-only validation where the user explicitly asks for immediate deployment
+
+### Non-default behavior
+
+If an exception is used, it should be called out as an exception, not treated as the new standard.
+
+## Agent Working Rule
+
+When operating on CLEVER MSA deployable repos:
+
+- do not immediately deploy from a service repo after each code change
+- prefer finishing the image build first
+- prefer handing deployment to `clever-deploy-control`
+- prefer one matrix deploy for the full release candidate bundle
+- use direct single-target deployment only when the user explicitly asks for the exception path
+
+## Implications for Ongoing Migration
+
+This policy applies only to image-migrated services.
+
+Services that still use source deploy may temporarily continue under the old contract, but the target end state remains:
+
+- service repo: image producer
+- central repo: deploy orchestrator
+
+## Completion Criteria for This Policy
+
+This policy is considered active when:
+
+- new deployment work follows build-only in service repos
+- central deploy is the normal rollout entrypoint
+- image-backed changes are grouped into release bundles by default
+
