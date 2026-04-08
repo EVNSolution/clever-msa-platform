@@ -20,8 +20,8 @@
 - 중앙 배포 제어는 `EVNSolution/clever-deploy-control`로 분리됐다.
 - `GitHub Actions + AWS OIDC + EC2 app-host + SSM + docker compose` 배포 경로는 dev에서 실제 검증됐다.
 - 주요 서비스와 묶음 배포는 dev에서 성공했다.
-- 프론트 canonical/runtime repo는 현재 `front-web-console`이며, compose runtime alias는 아직 `admin-front`를 유지한다.
-- 외부 공개는 아직 정식 ingress가 아니라 public IP + 임시 포트 개방 상태다.
+- 프론트 canonical/runtime repo와 compose runtime service는 모두 `front-web-console` / `web-console`으로 수렴했다.
+- 외부 공개는 `hub.evnlogistics.com -> ALB -> edge-api-gateway` 정식 ingress 경로로 동작 중이다.
 
 즉, 지금은 “배포 레이어를 만드는 단계”는 넘겼고, “정식 운영 구조로 수렴시키는 단계”에 들어왔다.
 
@@ -131,8 +131,8 @@
 ### Current State
 
 - 실제 정본과 배포 repo 이름은 현재 `front-web-console`로 맞춰졌다.
-- 다만 dev 런타임 compose service alias는 아직 `admin-front`를 유지한다.
-- 즉 repo/path naming cutover는 완료됐고, runtime service naming cutover가 다음 단계다.
+- dev 런타임 compose service도 `web-console`로 수렴했다.
+- 즉 프론트 repo/path/runtime naming cutover는 Stage B까지 완료된 상태다.
 
 ### Why It Matters
 
