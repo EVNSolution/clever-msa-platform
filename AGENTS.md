@@ -19,6 +19,7 @@
 
 - If a freshly cloned root workspace is missing child repo contents, run `git submodule update --init --recursive`.
 - After pulling root changes that move child repo pointers, run `git submodule update --init --recursive` again.
+- The first recursive submodule init can take noticeable time because it clones many private child repos in sequence.
 - Do not reintroduce root-tracked implementation snapshots for active `development/*` repos.
 - New `development/*` repos must be registered from the root as linked child repos immediately.
 

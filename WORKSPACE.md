@@ -63,6 +63,7 @@ clever-msa-platform/
 로컬 clone/update 규칙:
 - 루트를 새로 clone한 뒤에는 `git submodule update --init --recursive`를 실행한다.
 - root pull 이후 child repo 포인터가 바뀌면 다시 `git submodule update --init --recursive`를 실행한다.
+- 첫 `git submodule update --init --recursive`는 private child repo를 순차 clone하므로 시간이 걸릴 수 있다. 실패로 보기 전에 먼저 진행 중인지 확인한다.
 - 구현 코드는 child repo에서 수정하고, root는 umbrella visibility와 platform docs를 관리한다.
 
 현재 목표 repo 이름 규칙:
