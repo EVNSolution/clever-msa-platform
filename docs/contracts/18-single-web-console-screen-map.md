@@ -32,7 +32,7 @@
 | `/drivers/:driverRef/edit` | limited edit | `/drivers/:driverRef/edit` | `/drivers/:driverRef/edit` | shared route 유지, 권한별 폼 분기 |
 | `/vehicles` | read list | `/vehicles` | `/vehicles` | shared route 유지, 권한별 row/action 분기 |
 | `/vehicles/:vehicleRef` | read detail | `/vehicles/:vehicleRef` | `/vehicles/:vehicleRef` | shared route 유지, 권한별 panel 분기 |
-| `/settlements` | read summary | `/settlements/*` | `/settlements` | admin 그룹 route 안으로 재구성 완료 |
+| `/settlements` | settlement overview + processing flow | `정산 > 정산 조회 / 정산 처리` | `/settlements/overview`, `/settlements/criteria`, `/settlements/inputs`, `/settlements/runs`, `/settlements/results` | 좌측 네비게이션에서 `정산` 상위 그룹 아래 `정산 조회`와 `정산 처리`를 제공, overview는 read-only로 분리, process 화면은 가로 탭 흐름 유지 |
 
 ## Governance Route Contract Sync
 
@@ -72,9 +72,10 @@ Legacy route는 runtime에서 삭제하지 않고 redirect alias로만 유지한
 
 ### 3. `SettlementsPage`
 
-- `front-admin-console`의 settlement 그룹 route로 흡수 완료
-- `read-only summary`는 shared page
-- `criteria / inputs / runs / results` 중 write 성격은 권한 있는 사용자에게만 노출
+- `front-web-console`의 settlement 영역으로 흡수 완료
+- 좌측 네비게이션에서 `정산` 상위 그룹 아래 `정산 조회`와 `정산 처리`를 제공
+- `정산 조회`는 read-only overview
+- `정산 처리`는 `정산 기준 / 정산 입력 / 정산 실행 / 정산 결과` 가로 탭 흐름
 
 ## Operator Route Without Separate Value
 
@@ -97,8 +98,9 @@ Legacy route는 runtime에서 삭제하지 않고 redirect alias로만 유지한
 2. `front-operator-console` only pages 기능 admin repo 이관 완료
 3. shared route role-based panel 분기 완료
 4. settlement shared read를 admin route tree 안으로 재구성 완료
-5. gateway와 compose를 단일 웹 runtime으로 변경
-6. `front-operator-console`를 active flow에서 제거
+5. settlement shared read를 `정산` 그룹 아래 `정산 조회`와 `정산 처리`로 재구성하고, process 화면은 horizontal tabs로 유지
+6. gateway와 compose를 단일 웹 runtime으로 변경
+7. `front-operator-console`를 active flow에서 제거
 
 ## 완료 기준
 
