@@ -15,11 +15,11 @@ class DispatchOpsApiTests(TestCase):
         self.dispatch_date = "2026-03-24"
         self.fleet_id = "11111111-1111-1111-1111-111111111111"
 
-    def _issue_token(self) -> str:
+    def _issue_token(self, role: str = "user", allowed_nav_keys: list[str] | None = None) -> str:
         now = datetime.now(timezone.utc)
         payload = {
-            "email": "user@example.com",
-            "role": "user",
+            "email": f"{role}@example.com",
+            "role": role,
             "iss": settings.JWT_ISSUER,
             "aud": settings.JWT_AUDIENCE,
             "iat": int(now.timestamp()),
@@ -28,6 +28,8 @@ class DispatchOpsApiTests(TestCase):
             "type": "access",
             "sub": str(uuid4()),
         }
+        if allowed_nav_keys is not None:
+            payload["allowed_nav_keys"] = allowed_nav_keys
         return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
     def test_health_endpoint_allows_anonymous_access(self):
@@ -358,6 +360,37 @@ class DispatchOpsApiTests(TestCase):
 
         self.assertEqual(response.status_code, 400)
         mock_build_board.assert_not_called()
+
+    def test_admin_without_dispatch_nav_key_is_denied(self):
+        token = self._issue_token(role="admin", allowed_nav_keys=["vehicles"])
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+
+        self.assertEqual(
+            self.client.get("/board/", {"dispatch_date": self.dispatch_date, "fleet_id": self.fleet_id}).status_code,
+            403,
+        )
+
+    @patch("dispatchops.views.DispatchBoardService.build_board")
+    def test_admin_with_dispatch_nav_key_can_read(self, mock_build_board):
+        mock_build_board.return_value = {
+            "board": [],
+            "summary": {
+                "dispatch_date": self.dispatch_date,
+                "fleet_id": self.fleet_id,
+                "planned_volume": 0,
+                "planned_assignment_count": 0,
+                "matched_count": 0,
+                "not_started_count": 0,
+                "dispatch_unit_changed_count": 0,
+                "unplanned_current_count": 0,
+            },
+        }
+        token = self._issue_token(role="admin", allowed_nav_keys=["dispatch"])
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+
+        response = self.client.get("/board/", {"dispatch_date": self.dispatch_date, "fleet_id": self.fleet_id})
+
+        self.assertEqual(response.status_code, 200)
 
     @patch("dispatchops.views.DispatchBoardService.build_board")
     def test_summary_endpoint_returns_400_for_invalid_fleet_id(self, mock_build_board):

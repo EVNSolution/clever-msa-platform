@@ -2,7 +2,8 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import PermissionDenied, ValidationError
 
-from accounts.models import ManagerAccount
+from accounts.models import CompanyManagerRole, ManagerAccount
+from accounts.services.company_manager_role_service import CompanyManagerRoleService
 from accounts.services.product_account_lifecycle_service import ProductAccountLifecycleService
 
 
@@ -28,9 +29,10 @@ class ManagerAccountService:
             raise PermissionDenied("Manager account management is not allowed for this account.")
 
         if manager_account.role_type == ManagerAccount.RoleType.COMPANY_SUPER_ADMIN:
+            CompanyManagerRoleService().ensure_default_roles(manager_account.company_id)
             return queryset.filter(company_id=manager_account.company_id).filter(
                 Q(manager_account_id=manager_account.manager_account_id)
-                | Q(role_type__in=self.LOWER_MANAGER_ROLES)
+                | ~Q(role_type=ManagerAccount.RoleType.COMPANY_SUPER_ADMIN)
             )
 
         return queryset.filter(manager_account_id=manager_account.manager_account_id)
@@ -55,19 +57,26 @@ class ManagerAccountService:
                 raise PermissionDenied("Manager role change is not allowed for this account.")
             if principal_manager.manager_account_id == manager_account.manager_account_id:
                 raise PermissionDenied("You cannot change your own manager role.")
+            if principal_manager.company_id != manager_account.company_id:
+                raise PermissionDenied("Company super admin can change only manager roles in the same company.")
 
-        if manager_account.role_type not in self.LOWER_MANAGER_ROLES or role_type not in self.LOWER_MANAGER_ROLES:
-            raise ValidationError(
-                {
-                    "role_type": [
-                        "Only vehicle_manager, settlement_manager, and fleet_manager can change role in place."
-                    ]
-                }
-            )
+        CompanyManagerRoleService().ensure_default_roles(manager_account.company_id)
+        target_role = CompanyManagerRole.objects.filter(
+            company_id=manager_account.company_id,
+            code=role_type,
+            is_active=True,
+        ).first()
+        if target_role is None:
+            raise ValidationError({"role_type": ["Manager role does not exist for this company."]})
+        if (
+            getattr(principal, "system_admin_account", None) is None
+            and target_role.code == ManagerAccount.RoleType.COMPANY_SUPER_ADMIN
+        ):
+            raise PermissionDenied("Company super admin cannot assign company super admin role.")
         if manager_account.role_type == role_type:
             raise ValidationError({"role_type": ["Manager already has this role."]})
 
-        manager_account.role_type = role_type
+        manager_account.role_type = target_role.code
         manager_account.save(update_fields=["role_type"])
         return manager_account
 

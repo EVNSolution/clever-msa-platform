@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from announcements.models import Announcement
+from announcements.permissions_navigation import require_nav_access
 from announcements.permissions import AdminOnlyAccess, AuthenticatedAnnouncementAccess, is_admin
 from announcements.serializers import AnnouncementSerializer, HealthSerializer
 
@@ -31,6 +32,8 @@ class AnnouncementListCreateView(generics.ListCreateAPIView):
     permission_classes = [AuthenticatedAnnouncementAccess]
 
     def get_queryset(self):
+        if self.request.method.lower() == "get":
+            require_nav_access(self.request, "announcements")
         queryset = Announcement.objects.all()
         user = self.request.user
 
@@ -75,6 +78,7 @@ class AnnouncementDetailView(
     http_method_names = ["get", "patch", "options", "head"]
 
     def get(self, request, *args, **kwargs):
+        require_nav_access(request, "announcements")
         return self.retrieve(request, *args, **kwargs)
 
     def patch(self, request, *args, **kwargs):

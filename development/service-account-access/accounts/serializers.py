@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth.hashers import check_password
 
 from accounts.models import (
+    CompanyManagerRole,
     DriverAccount,
     DriverAccountLink,
     EmailCredential,
@@ -20,6 +21,22 @@ from accounts.services.identity_login_method_service import IdentityLoginMethodS
 from accounts.services.social_provider_service import SocialProviderService
 from accounts.services.signup_intake_service import SignupIntakeService
 from accounts.services.signup_request_service import SignupRequestService
+
+
+def resolve_manager_role_display_name(company_id, role_type: str | None) -> str | None:
+    if not role_type:
+        return None
+
+    company_role = None
+    if company_id is not None:
+        company_role = CompanyManagerRole.objects.filter(
+            company_id=company_id,
+            code=role_type,
+            is_active=True,
+        ).first()
+    if company_role is not None:
+        return company_role.display_name
+    return dict(ManagerAccount.RoleType.choices).get(role_type, role_type)
 
 
 class HealthSerializer(serializers.Serializer):
@@ -67,10 +84,12 @@ class ActiveAccountSerializer(serializers.Serializer):
     account_id = serializers.UUIDField()
     company_id = serializers.UUIDField(required=False, allow_null=True)
     role_type = serializers.CharField(required=False, allow_null=True)
+    role_display_name = serializers.CharField(required=False, allow_null=True)
 
 
 class ManagerAccountSummarySerializer(serializers.ModelSerializer):
     identity = IdentitySummarySerializer(read_only=True)
+    role_display_name = serializers.SerializerMethodField()
 
     class Meta:
         model = ManagerAccount
@@ -79,9 +98,13 @@ class ManagerAccountSummarySerializer(serializers.ModelSerializer):
             "identity",
             "company_id",
             "role_type",
+            "role_display_name",
             "status",
             "created_at",
         )
+
+    def get_role_display_name(self, obj: ManagerAccount) -> str:
+        return resolve_manager_role_display_name(obj.company_id, obj.role_type)
 
 
 class ManagerAccountListSerializer(serializers.Serializer):
@@ -89,7 +112,7 @@ class ManagerAccountListSerializer(serializers.Serializer):
 
 
 class ManagerAccountRoleChangeSerializer(serializers.Serializer):
-    role_type = serializers.ChoiceField(choices=ManagerAccount.RoleType.choices)
+    role_type = serializers.CharField()
 
 
 class DriverAccountSummarySerializer(serializers.ModelSerializer):
@@ -339,10 +362,7 @@ class SignupRequestActionSerializer(serializers.Serializer):
 
 
 class SignupRequestApproveSerializer(serializers.Serializer):
-    role_type = serializers.ChoiceField(
-        choices=ManagerAccount.RoleType.choices,
-        required=False,
-    )
+    role_type = serializers.CharField(required=False)
 
 
 class NavigationPolicyCurrentSerializer(serializers.Serializer):
@@ -350,36 +370,37 @@ class NavigationPolicyCurrentSerializer(serializers.Serializer):
     source = serializers.CharField()
 
 
-class ManagedNavigationPolicySerializer(serializers.Serializer):
-    role_type = serializers.ChoiceField(choices=ManagerAccount.RoleType.choices)
+class CompanyManagerRoleSerializer(serializers.Serializer):
+    company_manager_role_id = serializers.UUIDField()
+    company_id = serializers.UUIDField()
+    code = serializers.CharField()
+    display_name = serializers.CharField()
+    is_system_required = serializers.BooleanField()
+    is_default = serializers.BooleanField()
     allowed_nav_keys = serializers.ListField(child=serializers.CharField())
-    source = serializers.CharField(required=False)
+    assigned_count = serializers.IntegerField()
+    can_delete = serializers.BooleanField()
+    delete_block_reason = serializers.CharField(allow_null=True, required=False)
 
 
-class ManagedNavigationPolicyListSerializer(serializers.Serializer):
-    policies = ManagedNavigationPolicySerializer(many=True)
+class CompanyManagerRoleListSerializer(serializers.Serializer):
+    roles = CompanyManagerRoleSerializer(many=True)
 
 
-class ManagedNavigationPolicyUpdateSerializer(serializers.Serializer):
-    policies = ManagedNavigationPolicySerializer(many=True)
+class CompanyManagerRoleCreateSerializer(serializers.Serializer):
+    company_id = serializers.UUIDField()
+    display_name = serializers.CharField(max_length=120)
 
 
-class CompanyManagedNavigationPolicySerializer(serializers.Serializer):
-    role_type = serializers.ChoiceField(choices=ManagerAccount.RoleType.choices)
-    allowed_nav_keys = serializers.ListField(child=serializers.CharField())
-    source = serializers.CharField(required=False)
+class CompanyManagerRoleUpdateSerializer(serializers.Serializer):
+    display_name = serializers.CharField(max_length=120, required=False)
+    allowed_nav_keys = serializers.ListField(child=serializers.CharField(), required=False)
 
-
-class CompanyManagedNavigationPolicyListSerializer(serializers.Serializer):
-    policies = CompanyManagedNavigationPolicySerializer(many=True)
-
-
-class CompanyManagedNavigationPolicyUpdateSerializer(serializers.Serializer):
-    policies = CompanyManagedNavigationPolicySerializer(many=True)
-
-
-class CompanyManagedNavigationPolicyResetSerializer(serializers.Serializer):
-    role_type = serializers.ChoiceField(choices=ManagerAccount.RoleType.choices)
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        if not attrs:
+            raise serializers.ValidationError("At least one field must be provided.")
+        return attrs
 
 
 class IdentityConsentCurrentSerializer(serializers.ModelSerializer):
@@ -537,7 +558,7 @@ class IdentityPasswordSerializer(serializers.Serializer):
 
 
 class SignupRequestSetupSerializer(serializers.Serializer):
-    role_type = serializers.ChoiceField(choices=ManagerAccount.RoleType.choices)
+    role_type = serializers.CharField()
 
 class DriverAccountLinkSummarySerializer(serializers.ModelSerializer):
     driver_account_id = serializers.UUIDField(source="driver_account.driver_account_id")

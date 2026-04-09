@@ -1,206 +1,152 @@
-# CLEVER Manager Navigation Policy Company Override
+# CLEVER Manager Navigation Policy Company Override Design
 
-## Purpose
+## Status
 
-이 문서는 `관리자 네비게이션 정책`의 Phase 2 확장으로서 `회사별 override` 설계를 고정한다.
+- 이 문서는 초기 `company override row` 설계에서 현재 `회사별 관리자 역할 카탈로그` 구현으로 업데이트한 최종 상태를 기록한다.
+- 파일명은 유지하지만, 현재 구현은 더 이상 별도 override row 모델을 채택하지 않는다.
 
-현재 전역(global) 정책이 이미 구현된 상태에서, 이번 문서의 목표는 아래다.
+## Final Decision
 
-1. 회사 관리자가 자기 회사 범위에서만 메뉴 노출 정책을 조정할 수 있게 한다.
-2. 전역 정책과 회사별 정책의 책임 경계를 분리한다.
-3. 역할 생성이 아닌 `정책 override`를 우선 확장 축으로 고정한다.
+회사별 메뉴 정책은 별도 `company override` 행으로 저장하지 않는다.
 
-## Primary Decision
+대신 각 회사의 역할 카탈로그 레코드인 `CompanyManagerRole`이 아래를 직접 가진다.
 
-회사별 확장의 첫 단계는 아래로 고정한다.
+- `code`
+- `display_name`
+- `allowed_nav_keys`
+- `is_system_required`
 
-- 시스템 관리자는 전역 기본 정책을 관리한다.
-- 회사 관리자는 자기 회사 범위의 `manager_role -> allowed_nav_keys`만 override 할 수 있다.
-- 회사 관리자는 새 관리자 유형을 만들 수 없다.
-- 정책 계산 순서는 `company override -> global policy -> default fallback`이다.
-
-즉, Phase 2는 `role creation`이 아니라 `policy override`다.
-
-## Why This Boundary Matters
-
-### 1. 역할 생성은 너무 빠르게 권한 모델을 오염시킨다
-
-회사별 관리자가 임의 역할을 생성하게 열어두면 아래 문제가 생긴다.
-
-- 역할 이름 체계가 무너진다.
-- 정책 추적과 감사가 어려워진다.
-- API 권한 모델과 UI 정책 모델이 분리되기 쉽다.
-- 회사별 예외가 시스템 전체 역할 체계를 침식한다.
-
-따라서 초기 확장에서는 역할 생성권을 열지 않는다.
-
-### 2. 실제 운영 요구는 대부분 override로 해결 가능하다
-
-현재 예상 요구는 아래 형태다.
-
-- A 회사는 플릿 관리자에게 배차를 보여준다.
-- B 회사는 플릿 관리자에게 배차를 숨긴다.
-- C 회사는 차량 관리자에게 인사문서를 보여주지 않는다.
-
-이건 새 역할 없이도 override만으로 처리할 수 있다.
-
-## Scope
-
-### Included
-
-- 회사별 관리자 네비게이션 정책 override
-- 회사 관리자용 정책 편집 화면
-- 현재 로그인 사용자 기준 회사 override 반영 정책 조회
-- 전역 정책 상속 여부 표시
-
-### Not Included
-
-- 회사별 새 관리자 유형 생성
-- 임의 속성 생성
-- action 단위 세분화
-- API authorization override
-- row-level 데이터 권한
+즉 회사별 메뉴 공개/비공개의 source of truth는 `CompanyManagerRole.allowed_nav_keys`다.
 
 ## Ownership Model
 
-### Global Owner
+### System Admin
 
-- 시스템 관리자
-- 역할: 전역 기본 정책 정의
+- 모든 회사 선택 가능
+- 모든 회사의 역할 생성, 수정, 삭제 가능
+- 모든 회사의 메뉴 정책 편집 가능
+- 강제 수정 가능
 
-### Company Owner
+### Company Super Admin
 
-- 회사 전체 관리자(`company_super_admin`)
-- 역할: 자기 회사 범위 정책 override
+- 자기 회사만 관리 가능
+- 자기 회사의 역할 생성, 수정, 삭제 가능
+- 자기 회사의 메뉴 정책 편집 가능
 
-### Non-Owners
+### Other Manager Roles
 
+- 정책 편집 불가
+- 역할 CRUD 불가
+
+## Role Catalog Model
+
+각 회사는 자기 역할 카탈로그를 가진다.
+
+기본 역할:
+
+- `company_super_admin`
 - `vehicle_manager`
 - `settlement_manager`
 - `fleet_manager`
 
-이들은 정책을 편집하지 않는다.
+추가 규칙:
 
-## Policy Resolution Order
+1. `company_super_admin`은 필수 역할이다.
+2. 회사 전체 관리자와 시스템 관리자는 새 역할을 추가할 수 있다.
+3. 기본 역할도 배정이 없으면 삭제할 수 있다.
+4. 이미 관리자 계정이 배정된 역할은 삭제할 수 없다.
+5. 역할 이름은 `display_name`으로 변경할 수 있다.
+6. 내부 식별은 `code`로 유지한다.
 
-정책 계산은 아래 순서로 한다.
+## Navigation Policy Model
 
-1. 시스템 관리자 계정이면 전체 허용
-2. 회사 override가 있으면 그 값 사용
-3. 전역 저장 정책이 있으면 그 값 사용
-4. 둘 다 없으면 코드 기본 fallback 사용
+정책 저장 단위는 `manager_role -> allowed_nav_keys`가 아니라 아래다.
 
-즉 회사 override는 전역 정책을 덮어쓴다.
+- `company_manager_role_id -> allowed_nav_keys`
 
-## Data Model Extension
+즉 메뉴 공개/비공개는 선택한 회사 역할 하나를 기준으로 직접 편집한다.
 
-Phase 2에서 필요한 최소 추가 필드는 아래다.
+## UI Model
 
-- `company_id`
-- `is_override`
+### System Admin
 
-권장 저장 형태는 아래 둘 중 하나다.
+- 메뉴: `관리 > 메뉴 정책`
+- 경로: `/admin/menu-policy`
+- 기능:
+  - 회사 선택
+  - 역할 선택
+  - 허용 메뉴 편집
+  - 미리보기
 
-### Option A. 동일 테이블 확장
+### Company Super Admin
 
-- `manager_role`
-- `company_id nullable`
-- `nav_item_key`
-- `action`
-- `effect`
+- 메뉴: `관리 > 회사 메뉴 정책`
+- 경로: `/company/menu-policy`
+- 기능:
+  - 현재 회사 고정
+  - 역할 선택
+  - 허용 메뉴 편집
 
-의미:
-- `company_id is null` = global policy
-- `company_id set` = company override
+### Role Management
 
-### Option B. override 전용 별도 테이블
+- 메뉴: `관리 > 관리자 역할`
+- 경로: `/admin/manager-roles`
+- 기능:
+  - 회사 선택
+  - 역할 생성
+  - 이름 변경
+  - 삭제 제한 표시
 
-- `ManagerNavigationPolicy` = global
-- `CompanyManagerNavigationPolicy` = override
+## API Model
 
-권장:
-- `Option A`
-- 이유: 정책 해석 축이 같고 resolution order가 단순하다.
+현재 구현은 아래 API를 사용한다.
 
-## UI Decision
+- `GET /api/auth/company-manager-roles/?company_id=<company_id>`
+- `POST /api/auth/company-manager-roles/`
+- `PATCH /api/auth/company-manager-roles/<role_id>/`
+- `DELETE /api/auth/company-manager-roles/<role_id>/`
+- `GET /api/auth/identity-navigation-policy/`
 
-회사 관리자 화면에는 `회사 관리자 권한 정책` 또는 기존 정책 화면의 회사 범위 버전을 둔다.
+구식 API는 제거되었다.
 
-권장 UI:
+- `GET /api/auth/company-navigation-policy/manage/`
+- `PUT /api/auth/company-navigation-policy/manage/`
+- `POST /api/auth/company-navigation-policy/reset/`
 
-- 현재 로그인 회사 고정 표시
-- 관리자 유형 선택
-- 현재 적용 정책 source 표시
-  - `company override`
-  - `global policy`
-  - `default fallback`
-- 메뉴 체크박스 편집
-- `전역 기본값으로 되돌리기` 액션
+## Policy Resolution
 
-즉 회사 관리자는 자기 회사 기준으로만 수정하고, 다른 회사 정책은 볼 수 없다.
+현재 로그인 사용자의 허용 메뉴 계산은 아래를 따른다.
 
-## API Decision
+1. 시스템 관리자면 전체 허용
+2. 활성 manager account가 참조하는 회사 역할이 있으면 그 `allowed_nav_keys` 사용
+3. 없으면 코드 기본 fallback
 
-Phase 2 API는 아래가 필요하다.
-
-1. 현재 로그인 사용자 허용 메뉴 조회
-- 회사 override 반영 결과 반환
-
-2. 회사 관리자용 정책 조회
-- 현재 회사의 override 상태 반환
-- source와 inherited 여부 반환
-
-3. 회사 관리자용 정책 저장
-- 현재 회사 범위에서만 허용
-
-4. 회사 관리자용 reset
-- 현재 회사 override 삭제
-- 전역 정책 상속 상태로 복귀
+즉 현재 주 경로는 `CompanyManagerRole.allowed_nav_keys`다.
 
 ## Security Decision
 
-회사 관리자는 아래를 절대 할 수 없다.
+1. 시스템 관리자는 모든 회사에 대해 강제 수정 가능
+2. 회사 전체 관리자는 자기 회사만 수정 가능
+3. 일반 관리자는 정책/역할 편집 불가
+4. 배정된 역할 삭제 불가
+5. `company_super_admin` 삭제 불가
 
-- 다른 회사 정책 조회/수정
-- 새 역할 생성
-- 전역 정책 수정
-- 시스템 관리자 전용 메뉴 정책 변경
+## Why This Replaced Separate Company Override Rows
 
-즉 회사 override는 회사 범위의 제한된 편집권이다.
+초기 override row 접근은 아래 문제를 가졌다.
 
-## Audit Decision
+- 역할 카탈로그와 정책 저장이 분리됨
+- 역할 생성/삭제 요구를 수용하지 못함
+- UI가 `역할 관리`와 `메뉴 정책`을 분리해 설명하기 어려움
+- 회사별 custom role을 실제 계정 승인/배정 흐름에 태우기 어려움
 
-회사별 override부터는 감사 흔적이 필요하다.
+회사 역할 카탈로그가 정책과 역할 관리를 함께 소유하는 현재 구조가 운영 요구에 더 맞는다.
 
-최소 기록 항목:
+## Final Summary
 
-- `updated_by_identity_id`
-- `updated_at`
-- `company_id`
-- `manager_role`
-- 변경 전/후 허용 메뉴 집합
-
-Phase 2 구현에서는 간단한 변경 이력 모델 또는 structured log를 남겨야 한다.
-
-## Compatibility Decision
-
-Phase 2는 Phase 1 전역 정책과 충돌 없이 올라가야 한다.
-
-전환 원칙:
-
-1. 기존 global policy API 유지
-2. current-user policy API는 내부 해석만 company override 대응으로 확장
-3. company override가 없는 회사는 기존 동작 그대로 유지
-
-즉 기존 사용자 경험은 깨지지 않아야 한다.
-
-## Final Decision Summary
-
-1. 회사별 확장은 `override`부터 시작한다.
-2. 회사 관리자는 자기 회사 정책만 수정할 수 있다.
-3. 회사 관리자는 역할을 새로 만들 수 없다.
-4. 정책 계산 순서는 `company override -> global policy -> default fallback`이다.
-5. 현재 로그인 사용자 policy API는 이 순서를 반영하도록 확장된다.
-6. 회사 override부터는 최소 감사 흔적이 필요하다.
-
-즉 Phase 2의 핵심은 `회사별 관리자 네비게이션 정책 override`이며, 이는 전역 정책 위에 쌓이는 제한된 편집권으로 다룬다.
+1. 회사별 메뉴 정책의 source of truth는 `CompanyManagerRole.allowed_nav_keys`다.
+2. 시스템 관리자는 모든 회사를 관리한다.
+3. 회사 전체 관리자는 자기 회사만 관리한다.
+4. 역할은 회사별 카탈로그로 관리된다.
+5. 배정된 역할과 `company_super_admin`은 삭제 제한이 있다.
+6. 구식 company override endpoint와 reset 개념은 더 이상 현재 모델의 중심이 아니다.

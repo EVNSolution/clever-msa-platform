@@ -151,7 +151,7 @@ class ManagerAccount(models.Model):
         related_name="manager_accounts",
     )
     company_id = models.UUIDField()
-    role_type = models.CharField(max_length=32, choices=RoleType.choices)
+    role_type = models.CharField(max_length=32)
     status = models.CharField(max_length=16, choices=Status.choices, default=Status.ACTIVE)
     created_at = models.DateTimeField(auto_now_add=True)
     archived_at = models.DateTimeField(null=True, blank=True)
@@ -189,35 +189,25 @@ class ManagerAccount(models.Model):
         return super().save(*args, **kwargs)
 
 
-class ManagerNavigationPolicy(models.Model):
-    class Action(models.TextChoices):
-        VIEW = "view", "View"
-
-    class Effect(models.TextChoices):
-        ALLOW = "allow", "Allow"
-        DENY = "deny", "Deny"
-
-    manager_navigation_policy_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    company_id = models.UUIDField(null=True, blank=True)
-    manager_role = models.CharField(max_length=32, choices=ManagerAccount.RoleType.choices)
-    nav_item_key = models.CharField(max_length=64)
-    action = models.CharField(max_length=32, choices=Action.choices, default=Action.VIEW)
-    effect = models.CharField(max_length=16, choices=Effect.choices, default=Effect.ALLOW)
-    updated_by_identity_id = models.UUIDField(null=True, blank=True)
+class CompanyManagerRole(models.Model):
+    company_manager_role_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    company_id = models.UUIDField()
+    code = models.CharField(max_length=64)
+    display_name = models.CharField(max_length=120)
+    is_system_required = models.BooleanField(default=False)
+    is_default = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    allowed_nav_keys = models.JSONField(default=list, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ("company_id", "manager_role", "nav_item_key", "action")
+        ordering = ("company_id", "-is_system_required", "-is_default", "created_at")
         constraints = [
             models.UniqueConstraint(
-                fields=("manager_role", "nav_item_key", "action"),
-                condition=Q(company_id__isnull=True),
-                name="uniq_global_manager_navigation_policy_role_key_action",
-            ),
-            models.UniqueConstraint(
-                fields=("company_id", "manager_role", "nav_item_key", "action"),
-                condition=Q(company_id__isnull=False),
-                name="uniq_company_manager_navigation_policy_role_key_action",
+                fields=("company_id", "code"),
+                condition=Q(is_active=True),
+                name="uniq_active_company_manager_role_code",
             )
         ]
 

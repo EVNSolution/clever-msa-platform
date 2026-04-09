@@ -1,8 +1,8 @@
 from django.urls import path
 
 from accounts.views import (
-    CompanyNavigationPolicyManagementView,
-    CompanyNavigationPolicyResetView,
+    CompanyManagerRoleDetailView,
+    CompanyManagerRoleListCreateView,
     DriverAccountLinkListView,
     DriverAccountLinkUnlinkView,
     DriverAccountManagementListView,
@@ -30,7 +30,6 @@ from accounts.views import (
     ManagerAccountArchiveView,
     ManagerAccountChangeRoleView,
     ManagerAccountManagementListView,
-    ManagerNavigationPolicyManagementView,
 )
 
 urlpatterns = [
@@ -57,9 +56,8 @@ urlpatterns = [
     path("manager-accounts/manage/", ManagerAccountManagementListView.as_view(), name="manager-account-management-list"),
     path("manager-accounts/<uuid:manager_account_id>/change-role/", ManagerAccountChangeRoleView.as_view(), name="manager-account-change-role"),
     path("manager-accounts/<uuid:manager_account_id>/archive/", ManagerAccountArchiveView.as_view(), name="manager-account-archive"),
-    path("manager-navigation-policy/manage/", ManagerNavigationPolicyManagementView.as_view(), name="manager-navigation-policy-management"),
-    path("company-navigation-policy/manage/", CompanyNavigationPolicyManagementView.as_view(), name="company-navigation-policy-management"),
-    path("company-navigation-policy/reset/", CompanyNavigationPolicyResetView.as_view(), name="company-navigation-policy-reset"),
+    path("company-manager-roles/", CompanyManagerRoleListCreateView.as_view(), name="company-manager-role-list-create"),
+    path("company-manager-roles/<uuid:role_id>/", CompanyManagerRoleDetailView.as_view(), name="company-manager-role-detail"),
     path("driver-accounts/manage/", DriverAccountManagementListView.as_view(), name="driver-account-management-list"),
     path("driver-account-links/", DriverAccountLinkListView.as_view(), name="driver-account-link-list"),
     path("driver-account-links/<uuid:link_id>/unlink/", DriverAccountLinkUnlinkView.as_view(), name="driver-account-link-unlink"),

@@ -14,8 +14,9 @@ class SettlementApiTests(TestCase):
     def setUp(self) -> None:
         self.client = APIClient()
         self.user_token = self._issue_token("user")
+        self.admin_token = self._issue_token("admin")
 
-    def _issue_token(self, role: str) -> str:
+    def _issue_token(self, role: str, allowed_nav_keys: list[str] | None = None) -> str:
         now = datetime.now(timezone.utc)
         payload = {
             "sub": str(uuid4()),
@@ -28,10 +29,15 @@ class SettlementApiTests(TestCase):
             "jti": str(uuid4()),
             "type": "access",
         }
+        if allowed_nav_keys is not None:
+            payload["allowed_nav_keys"] = allowed_nav_keys
         return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
     def _authenticate(self, token: str) -> None:
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+
+    def _authenticate_admin_with_nav_keys(self, *allowed_nav_keys: str) -> None:
+        self._authenticate(self._issue_token("admin", list(allowed_nav_keys)))
 
     def _run_payload(self):
         return {
@@ -221,3 +227,19 @@ class SettlementApiTests(TestCase):
         self.assertEqual(response.status_code, 502)
         self.assertEqual(response.data["code"], "upstream_invalid_response")
         self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
+
+    def test_admin_without_settlements_nav_key_is_denied(self):
+        self._authenticate_admin_with_nav_keys("dispatch")
+
+        self.assertEqual(self.client.get("/runs/").status_code, 403)
+        self.assertEqual(self.client.get("/items/").status_code, 403)
+
+    def test_admin_with_settlements_nav_key_can_read_resources(self):
+        self._authenticate_admin_with_nav_keys("settlements")
+
+        with patch("settlements.views.SourceClients") as mock_source_clients:
+            mock_source_clients.return_value.list_settlement_runs.return_value = []
+            mock_source_clients.return_value.list_settlement_items.return_value = []
+
+            self.assertEqual(self.client.get("/runs/").status_code, 200)
+            self.assertEqual(self.client.get("/items/").status_code, 200)

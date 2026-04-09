@@ -16,7 +16,7 @@ class RegionAnalyticsApiTests(TestCase):
         self.admin_token = self._issue_token("admin")
         self.user_token = self._issue_token("user")
 
-    def _issue_token(self, role: str) -> str:
+    def _issue_token(self, role: str, allowed_nav_keys: list[str] | None = None) -> str:
         now = datetime.now(timezone.utc)
         payload = {
             "sub": str(uuid4()),
@@ -29,10 +29,15 @@ class RegionAnalyticsApiTests(TestCase):
             "jti": str(uuid4()),
             "type": "access",
         }
+        if allowed_nav_keys is not None:
+            payload["allowed_nav_keys"] = allowed_nav_keys
         return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
     def _authenticate(self, token: str) -> None:
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+
+    def _authenticate_admin_with_nav_keys(self, *allowed_nav_keys: str) -> None:
+        self._authenticate(self._issue_token("admin", list(allowed_nav_keys)))
 
     def _daily_payload(self, *, region_code_snapshot: str = "seo-central") -> dict:
         return {
@@ -216,3 +221,15 @@ class RegionAnalyticsApiTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data["code"], "validation_error")
         self.assertIn("completed_delivery_count", response.data["details"])
+
+    def test_admin_without_regions_nav_key_is_denied(self) -> None:
+        self._authenticate_admin_with_nav_keys("vehicles")
+
+        self.assertEqual(self.client.get("/daily-statistics/").status_code, 403)
+        self.assertEqual(self.client.get("/performance-summaries/").status_code, 403)
+
+    def test_admin_with_regions_nav_key_can_read(self) -> None:
+        self._authenticate_admin_with_nav_keys("regions")
+
+        self.assertEqual(self.client.get("/daily-statistics/").status_code, 200)
+        self.assertEqual(self.client.get("/performance-summaries/").status_code, 200)

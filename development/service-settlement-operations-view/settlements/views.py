@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from settlements.exceptions import UpstreamInvalidResponse, UpstreamServiceUnavailable
+from settlements.permissions_navigation import require_nav_access
 from settlements.permissions import AuthenticatedReadOnly
 from settlements.serializers import (
     DriverLatestSettlementSerializer,
@@ -50,6 +51,7 @@ class SettlementRunListView(APIView):
 
     @extend_schema(responses={200: SettlementRunSerializer(many=True)})
     def get(self, request):
+        require_nav_access(request, "settlements")
         try:
             runs = SourceClients().list_settlement_runs(
                 authorization=request.META.get("HTTP_AUTHORIZATION", ""),
@@ -69,6 +71,7 @@ class SettlementRunDetailView(APIView):
 
     @extend_schema(responses={200: SettlementRunSerializer})
     def get(self, request, settlement_run_id):
+        require_nav_access(request, "settlements")
         try:
             run = SourceClients().get_settlement_run(
                 settlement_run_id=str(settlement_run_id),
@@ -91,6 +94,7 @@ class SettlementItemListView(APIView):
 
     @extend_schema(responses={200: SettlementItemSerializer(many=True)})
     def get(self, request):
+        require_nav_access(request, "settlements")
         try:
             items = SourceClients().list_settlement_items(
                 authorization=request.META.get("HTTP_AUTHORIZATION", ""),
@@ -110,6 +114,7 @@ class SettlementItemDetailView(APIView):
 
     @extend_schema(responses={200: SettlementItemSerializer})
     def get(self, request, settlement_item_id):
+        require_nav_access(request, "settlements")
         try:
             item = SourceClients().get_settlement_item(
                 settlement_item_id=str(settlement_item_id),
@@ -132,6 +137,7 @@ class DriverLatestSettlementView(APIView):
 
     @extend_schema(responses={200: DriverLatestSettlementSerializer})
     def get(self, request, driver_id):
+        require_nav_access(request, "settlements")
         try:
             latest_settlement = LatestSettlementSummaryService().build_summary(
                 driver_id=str(driver_id),

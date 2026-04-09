@@ -22,7 +22,7 @@
 | 이전 operator route | 이전 operator 역할 | 현재 단일 웹 대응 | 최종 경로 | 이관 방식 |
 | --- | --- | --- | --- | --- |
 | `/` | dashboard | `DashboardPage` | `/` | 단일 홈/dashboard로 유지 |
-| `/account` | self-service | `/account` | `/account` | shared route 유지 |
+| `/account` | self-service | `/account` | `/me` | self-service canonical path를 `/me`로 이동, legacy redirect 유지 |
 | `/announcements` | published announcement read | `/announcements` | `/announcements` | shared route 유지, 권한별 read/write 분기 |
 | `/support` | self-service support | `/support` | `/support` | shared route 유지, 권한별 panel 분기 |
 | `/notifications` | own inbox read | `/notifications` | `/notifications` | shared route 유지, 권한별 panel 분기 |
@@ -33,6 +33,20 @@
 | `/vehicles` | read list | `/vehicles` | `/vehicles` | shared route 유지, 권한별 row/action 분기 |
 | `/vehicles/:vehicleRef` | read detail | `/vehicles/:vehicleRef` | `/vehicles/:vehicleRef` | shared route 유지, 권한별 panel 분기 |
 | `/settlements` | read summary | `/settlements/*` | `/settlements` | admin 그룹 route 안으로 재구성 완료 |
+
+## Governance Route Contract Sync
+
+관리/회사 거버넌스 화면은 subject-first namespace로 고정한다.
+
+| 화면 | 현재 route | canonical route | 비고 |
+| --- | --- | --- | --- |
+| 내 계정 | `/account` | `/me` | self-service namespace |
+| 계정 요청 | `/accounts` | `/admin/account-requests` | admin governance namespace |
+| 메뉴 정책 | `/admin/navigation-policy` | `/admin/menu-policy` | system admin governance namespace |
+| 관리자 역할 | `/admin/manager-roles` | `/admin/manager-roles` | canonical 유지 |
+| 회사 메뉴 정책 | `/company/navigation-policy` | `/company/menu-policy` | company governance namespace |
+
+Legacy route는 runtime에서 삭제하지 않고 redirect alias로만 유지한다.
 
 ## Operator-only Pages
 

@@ -24,6 +24,14 @@ MSA에서는 같은 대상을 여러 서비스가 참조하므로, 이 문서가
 7. `route_no`는 정산, 이벤트, 로그, 서비스 간 참조 식별자로 사용하지 않는다.
 8. 서비스 간 참조와 도메인 정본 식별자는 계속 `account_id`, `company_id`, `fleet_id` 같은 외부 식별자를 사용한다.
 
+### 브라우저 라우트 namespace 원칙
+
+1. self-service 화면은 `/me/*` namespace를 사용한다.
+2. system admin 거버넌스 화면은 `/admin/*` namespace를 사용한다.
+3. company governance 화면은 `/company/*` namespace를 사용한다.
+4. 도메인 운영 화면은 `/vehicles`, `/drivers`, `/dispatch/*`, `/settlements/*` 같은 resource path를 유지한다.
+5. `/account` 와 `/accounts` 같은 prefix 충돌 쌍은 canonical route로 사용하지 않는다.
+
 ### 브라우저 라우트 번호 적용 원칙
 
 | 항목 | 규칙 |

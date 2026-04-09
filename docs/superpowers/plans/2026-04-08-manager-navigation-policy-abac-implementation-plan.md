@@ -283,7 +283,7 @@ Test scenarios:
 - [ ] **Step 2: Add a system-admin-only route and menu item**
 
 Suggested route:
-- `/admin/navigation-policy`
+- `/admin/menu-policy`
 
 Suggested nav key:
 - `manager_navigation_policy`

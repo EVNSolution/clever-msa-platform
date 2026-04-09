@@ -1,10 +1,11 @@
 from django.contrib.auth.hashers import check_password, make_password
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 from django.utils import timezone
 from rest_framework.test import APIClient
 from unittest.mock import patch
 
 from accounts.models import (
+    CompanyManagerRole,
     DriverAccount,
     DriverAccountLink,
     EmailCredential,
@@ -23,7 +24,6 @@ from accounts.models import (
 from accounts.session_principal import IdentitySessionPrincipal
 from accounts.services.refresh_registry import RefreshRegistry
 from accounts.services.jwt_service import decode_token
-from accounts.services.navigation_policy_service import NavigationPolicyService
 
 
 class SignupIntakeApiTests(TestCase):
@@ -1006,6 +1006,45 @@ class ManagerAccountManagementApiTests(TestCase):
         )
         self.assertNotIn(str(peer_super_account.manager_account_id), returned_ids)
 
+    def test_company_super_admin_lists_same_company_custom_manager_accounts(self):
+        super_identity = self._create_identity_with_password(
+            name="커스텀 역할 총괄",
+            birth_date="1980-01-01",
+            email="custom-list-super@example.com",
+            password="custom-list-super-pass-123",
+        )
+        custom_identity = self._create_identity_with_password(
+            name="커스텀 역할 담당자",
+            birth_date="1992-01-02",
+            email="custom-list-target@example.com",
+            password="custom-list-target-pass-123",
+        )
+        self._create_manager_account(
+            identity=super_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.COMPANY_SUPER_ADMIN,
+        )
+        CompanyManagerRole.objects.create(
+            company_id=self.company_id,
+            code="dispatch_specialist",
+            display_name="배차 전문 관리자",
+            is_system_required=False,
+            is_default=False,
+            allowed_nav_keys=["dashboard", "dispatch"],
+        )
+        custom_account = self._create_manager_account(
+            identity=custom_identity,
+            company_id=self.company_id,
+            role_type="dispatch_specialist",
+        )
+
+        self._login_identity("custom-list-super@example.com", "custom-list-super-pass-123")
+        response = self.client.get("/manager-accounts/manage/")
+
+        self.assertEqual(response.status_code, 200)
+        returned_ids = {row["manager_account_id"] for row in response.data["accounts"]}
+        self.assertIn(str(custom_account.manager_account_id), returned_ids)
+
     def test_vehicle_manager_lists_only_self(self):
         vehicle_identity = self._create_identity_with_password(
             name="차량 관리자",
@@ -1049,17 +1088,13 @@ class ManagerAccountManagementApiTests(TestCase):
             company_id=self.company_id,
             role_type=ManagerAccount.RoleType.VEHICLE_MANAGER,
         )
-        system_identity = self._create_identity_with_password(
-            name="권한 설정 시스템 관리자",
-            birth_date="1980-01-01",
-            email="nav-policy-system@example.com",
-            password="nav-policy-system-pass-123",
-        )
-        SystemAdminAccount.objects.create(identity=system_identity)
-        NavigationPolicyService().replace_global_policy(
-            IdentitySessionPrincipal.from_identity(system_identity),
-            ManagerAccount.RoleType.VEHICLE_MANAGER,
-            ["dashboard", "vehicles"],
+        CompanyManagerRole.objects.create(
+            company_id=self.company_id,
+            code=ManagerAccount.RoleType.VEHICLE_MANAGER,
+            display_name="차량 관리자",
+            is_system_required=False,
+            is_default=True,
+            allowed_nav_keys=["dashboard", "vehicles"],
         )
 
         self._login_identity("nav-block-manager@example.com", "nav-block-pass-123")
@@ -1102,6 +1137,94 @@ class ManagerAccountManagementApiTests(TestCase):
         lower_account.refresh_from_db()
         self.assertEqual(lower_account.role_type, ManagerAccount.RoleType.FLEET_MANAGER)
         self.assertEqual(response.data["manager_account_id"], str(lower_account.manager_account_id))
+
+    def test_company_super_admin_can_change_manager_role_to_custom_company_role(self):
+        super_identity = self._create_identity_with_password(
+            name="커스텀 전환 총괄",
+            birth_date="1980-01-01",
+            email="custom-change-super@example.com",
+            password="custom-change-super-pass-123",
+        )
+        target_identity = self._create_identity_with_password(
+            name="커스텀 전환 대상",
+            birth_date="1990-01-02",
+            email="custom-change-target@example.com",
+            password="custom-change-target-pass-123",
+        )
+        self._create_manager_account(
+            identity=super_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.COMPANY_SUPER_ADMIN,
+        )
+        CompanyManagerRole.objects.create(
+            company_id=self.company_id,
+            code="safety_manager",
+            display_name="안전 관리자",
+            is_system_required=False,
+            is_default=False,
+            allowed_nav_keys=["dashboard", "vehicles"],
+        )
+        target_account = self._create_manager_account(
+            identity=target_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.VEHICLE_MANAGER,
+        )
+
+        self._login_identity("custom-change-super@example.com", "custom-change-super-pass-123")
+        response = self.client.post(
+            f"/manager-accounts/{target_account.manager_account_id}/change-role/",
+            {"role_type": "safety_manager"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        target_account.refresh_from_db()
+        self.assertEqual(target_account.role_type, "safety_manager")
+        self.assertEqual(response.data["role_type"], "safety_manager")
+
+    def test_company_super_admin_can_approve_manager_request_with_custom_company_role(self):
+        super_identity = self._create_identity_with_password(
+            name="커스텀 승인 총괄",
+            birth_date="1980-01-01",
+            email="custom-approve-super@example.com",
+            password="custom-approve-super-pass-123",
+        )
+        request_identity = self._create_identity_with_password(
+            name="커스텀 승인 신청자",
+            birth_date="1990-01-02",
+            email="custom-approve-target@example.com",
+            password="custom-approve-target-pass-123",
+        )
+        self._create_manager_account(
+            identity=super_identity,
+            company_id=self.company_id,
+            role_type=ManagerAccount.RoleType.COMPANY_SUPER_ADMIN,
+        )
+        CompanyManagerRole.objects.create(
+            company_id=self.company_id,
+            code="dispatch_coordinator",
+            display_name="배차 조정 관리자",
+            is_system_required=False,
+            is_default=False,
+            allowed_nav_keys=["dashboard", "dispatch"],
+        )
+        request = IdentitySignupRequest.objects.create(
+            identity=request_identity,
+            request_type=IdentitySignupRequest.RequestType.MANAGER_ACCOUNT_CREATE,
+            company_id=self.company_id,
+            status=IdentitySignupRequest.Status.PENDING,
+        )
+
+        self._login_identity("custom-approve-super@example.com", "custom-approve-super-pass-123")
+        response = self.client.post(
+            f"/identity-signup-requests/{request.identity_signup_request_id}/approve/",
+            {"role_type": "dispatch_coordinator"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        manager_account = ManagerAccount.objects.get(identity=request_identity, status=ManagerAccount.Status.ACTIVE)
+        self.assertEqual(manager_account.role_type, "dispatch_coordinator")
 
     def test_company_super_admin_can_complete_manager_setup_as_fleet_manager(self):
         super_identity = self._create_identity_with_password(
@@ -1352,17 +1475,13 @@ class DriverAccountManagementApiTests(TestCase):
             company_id=self.company_id,
             role_type=ManagerAccount.RoleType.VEHICLE_MANAGER,
         )
-        system_identity = self._create_identity_with_password(
-            name="권한 설정 시스템 관리자 B",
-            birth_date="1980-01-01",
-            email="nav-policy-system-b@example.com",
-            password="nav-policy-system-b-pass-123",
-        )
-        SystemAdminAccount.objects.create(identity=system_identity)
-        NavigationPolicyService().replace_global_policy(
-            IdentitySessionPrincipal.from_identity(system_identity),
-            ManagerAccount.RoleType.VEHICLE_MANAGER,
-            ["dashboard", "vehicles"],
+        CompanyManagerRole.objects.create(
+            company_id=self.company_id,
+            code=ManagerAccount.RoleType.VEHICLE_MANAGER,
+            display_name="차량 관리자",
+            is_system_required=False,
+            is_default=True,
+            allowed_nav_keys=["dashboard", "vehicles"],
         )
 
         self._login_identity("nav-block-driver@example.com", "nav-block-driver-pass-123")
@@ -2239,3 +2358,22 @@ class IdentityLoginMethodApiTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["identity"]["identity_id"], str(identity.identity_id))
         self.assertEqual(response.data["session_kind"], "normal")
+
+
+class ErrorResponseApiTests(SimpleTestCase):
+    def setUp(self) -> None:
+        self.client = APIClient()
+
+    def test_unknown_route_returns_json_error_envelope(self):
+        response = self.client.get("/does-not-exist/")
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response["Content-Type"], "application/json")
+        self.assertEqual(
+            response.json(),
+            {
+                "code": "not_found",
+                "message": "Requested API endpoint was not found.",
+                "details": {},
+            },
+        )

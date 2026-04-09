@@ -15,7 +15,7 @@ class TerminalApiTests(TestCase):
         self.admin_token = self._issue_token("admin")
         self.user_token = self._issue_token("user")
 
-    def _issue_token(self, role: str) -> str:
+    def _issue_token(self, role: str, allowed_nav_keys: list[str] | None = None) -> str:
         now = datetime.now(timezone.utc)
         payload = {
             "sub": str(uuid4()),
@@ -28,10 +28,15 @@ class TerminalApiTests(TestCase):
             "jti": str(uuid4()),
             "type": "access",
         }
+        if allowed_nav_keys is not None:
+            payload["allowed_nav_keys"] = allowed_nav_keys
         return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
     def _authenticate(self, token: str) -> None:
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+
+    def _authenticate_admin_with_nav_keys(self, *allowed_nav_keys: str) -> None:
+        self._authenticate(self._issue_token("admin", list(allowed_nav_keys)))
 
     def _terminal_payload(self, **overrides):
         payload = {
@@ -113,6 +118,18 @@ class TerminalApiTests(TestCase):
             self.client.post("/", self._terminal_payload(), format="json").status_code,
             403,
         )
+
+    def test_admin_without_vehicle_nav_key_is_denied(self):
+        self._authenticate_admin_with_nav_keys("dispatch")
+
+        self.assertEqual(self.client.get("/").status_code, 403)
+        self.assertEqual(self.client.get("/installations/").status_code, 403)
+
+    def test_admin_with_vehicle_nav_key_can_read(self):
+        self._authenticate_admin_with_nav_keys("vehicles")
+
+        self.assertEqual(self.client.get("/").status_code, 200)
+        self.assertEqual(self.client.get("/installations/").status_code, 200)
 
     def test_admin_can_create_installation_for_active_terminal_and_vehicle(self):
         self._authenticate(self.admin_token)

@@ -15,7 +15,7 @@ class AnnouncementApiTests(TestCase):
         self.admin_token = self._issue_token("admin")
         self.user_token = self._issue_token("user")
 
-    def _issue_token(self, role: str) -> str:
+    def _issue_token(self, role: str, *, allowed_nav_keys: list[str] | None = None) -> str:
         now = datetime.now(timezone.utc)
         payload = {
             "sub": str(uuid4()),
@@ -28,6 +28,8 @@ class AnnouncementApiTests(TestCase):
             "jti": str(uuid4()),
             "type": "access",
         }
+        if allowed_nav_keys is not None:
+            payload["allowed_nav_keys"] = allowed_nav_keys
         return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
     def _authenticate(self, token: str) -> None:
@@ -125,6 +127,15 @@ class AnnouncementApiTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual([item["slug"] for item in response.data], ["ops-all", "ops-operator"])
+
+    def test_admin_without_announcements_nav_key_is_denied(self) -> None:
+        self._create_announcement(slug="ops-one")
+        self._authenticate(self._issue_token("admin", allowed_nav_keys=[]))
+
+        response = self.client.get("/")
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data["message"], "This API is not allowed by current navigation policy.")
 
     def test_admin_can_crud_announcements(self) -> None:
         self._authenticate(self.admin_token)

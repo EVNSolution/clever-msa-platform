@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from terminals.models import TerminalInstallation, TerminalRegistry
+from terminals.permissions_navigation import require_nav_access
 from terminals.permissions import AuthenticatedReadAdminWrite
 from terminals.serializers import (
     CheckImeiQuerySerializer,
@@ -39,6 +40,7 @@ class CheckImeiView(APIView):
         responses={200: CheckImeiResultSerializer},
     )
     def get(self, request):
+        require_nav_access(request, "vehicles")
         imei = request.query_params.get("imei", "").strip()
         return Response({"imei": imei, "exists": TerminalRegistry.objects.filter(imei=imei).exists()})
 
@@ -47,6 +49,11 @@ class TerminalRegistryListCreateView(generics.ListCreateAPIView):
     queryset = TerminalRegistry.objects.all()
     serializer_class = TerminalRegistrySerializer
     permission_classes = [AuthenticatedReadAdminWrite]
+
+    def get_queryset(self):
+        if self.request.method == "GET":
+            require_nav_access(self.request, "vehicles")
+        return super().get_queryset()
 
 
 class TerminalRegistryDetailView(
@@ -60,6 +67,11 @@ class TerminalRegistryDetailView(
     permission_classes = [AuthenticatedReadAdminWrite]
     http_method_names = ["get", "patch", "options", "head"]
 
+    def get_queryset(self):
+        if self.request.method == "GET":
+            require_nav_access(self.request, "vehicles")
+        return super().get_queryset()
+
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
@@ -72,6 +84,11 @@ class TerminalInstallationListCreateView(generics.ListCreateAPIView):
     serializer_class = TerminalInstallationSerializer
     permission_classes = [AuthenticatedReadAdminWrite]
 
+    def get_queryset(self):
+        if self.request.method == "GET":
+            require_nav_access(self.request, "vehicles")
+        return super().get_queryset()
+
 
 class TerminalInstallationDetailView(
     mixins.RetrieveModelMixin,
@@ -83,6 +100,11 @@ class TerminalInstallationDetailView(
     lookup_field = "terminal_installation_id"
     permission_classes = [AuthenticatedReadAdminWrite]
     http_method_names = ["get", "patch", "options", "head"]
+
+    def get_queryset(self):
+        if self.request.method == "GET":
+            require_nav_access(self.request, "vehicles")
+        return super().get_queryset()
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)

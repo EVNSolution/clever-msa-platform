@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from regionanalytics.models import RegionDailyStatistic, RegionPerformanceSummary
+from regionanalytics.permissions_navigation import require_nav_access
 from regionanalytics.permissions import AdminOnlyAccess
 from regionanalytics.serializers import (
     HealthSerializer,
@@ -34,6 +35,8 @@ class RegionDailyStatisticListCreateView(generics.ListCreateAPIView):
     permission_classes = [AdminOnlyAccess]
 
     def get_queryset(self):
+        if self.request.method == "GET":
+            require_nav_access(self.request, "regions")
         queryset = RegionDailyStatistic.objects.all()
 
         region_id = self.request.query_params.get("region_id")
@@ -62,6 +65,11 @@ class RegionDailyStatisticDetailView(
     permission_classes = [AdminOnlyAccess]
     http_method_names = ["get", "patch", "options", "head"]
 
+    def get_queryset(self):
+        if self.request.method == "GET":
+            require_nav_access(self.request, "regions")
+        return super().get_queryset()
+
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
@@ -74,6 +82,8 @@ class RegionPerformanceSummaryListCreateView(generics.ListCreateAPIView):
     permission_classes = [AdminOnlyAccess]
 
     def get_queryset(self):
+        if self.request.method == "GET":
+            require_nav_access(self.request, "regions")
         queryset = RegionPerformanceSummary.objects.all()
 
         region_id = self.request.query_params.get("region_id")
@@ -109,6 +119,11 @@ class RegionPerformanceSummaryDetailView(
     lookup_field = "region_performance_summary_id"
     permission_classes = [AdminOnlyAccess]
     http_method_names = ["get", "patch", "options", "head"]
+
+    def get_queryset(self):
+        if self.request.method == "GET":
+            require_nav_access(self.request, "regions")
+        return super().get_queryset()
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)

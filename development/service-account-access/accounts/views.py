@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status
-from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
+from rest_framework.exceptions import AuthenticationFailed, PermissionDenied, ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -20,9 +20,10 @@ from accounts.permissions import IsAuthenticatedAccount
 from accounts.permissions_navigation import require_nav_access
 from accounts.session_principal import IdentitySessionPrincipal
 from accounts.serializers import (
-    CompanyManagedNavigationPolicyListSerializer,
-    CompanyManagedNavigationPolicyResetSerializer,
-    CompanyManagedNavigationPolicyUpdateSerializer,
+    CompanyManagerRoleCreateSerializer,
+    CompanyManagerRoleListSerializer,
+    CompanyManagerRoleSerializer,
+    CompanyManagerRoleUpdateSerializer,
     DriverAccountLinkCreateSerializer,
     DriverAccountListSerializer,
     DriverAccountLinkSummarySerializer,
@@ -36,8 +37,6 @@ from accounts.serializers import (
     IdentityLoginMethodDeleteSerializer,
     IdentityLoginMethodListSerializer,
     IdentityLoginMethodSerializer,
-    ManagedNavigationPolicyListSerializer,
-    ManagedNavigationPolicyUpdateSerializer,
     IdentityPasswordSerializer,
     IdentityProfileSerializer,
     IdentityProfileUpdateSerializer,
@@ -46,6 +45,7 @@ from accounts.serializers import (
     ManagerAccountRoleChangeSerializer,
     ManagerAccountSummarySerializer,
     NavigationPolicyCurrentSerializer,
+    resolve_manager_role_display_name,
     IdentitySignupRequestCreateSerializer,
     SignupRequestApproveSerializer,
     IdentitySignupRequestSummarySerializer,
@@ -57,6 +57,7 @@ from accounts.serializers import (
     SignupRequestSetupSerializer,
     StatusMessageSerializer,
 )
+from accounts.services.company_manager_role_service import CompanyManagerRoleService
 from accounts.services.identity_auth_service import IdentityAuthService
 from accounts.services.identity_consent_service import IdentityConsentService
 from accounts.services.identity_login_method_service import IdentityLoginMethodService
@@ -71,18 +72,6 @@ from accounts.services.jwt_service import (
 )
 from accounts.services.refresh_registry import RefreshRegistry
 from accounts.services.signup_request_service import SignupRequestService
-
-
-def _require_system_admin(principal: IdentitySessionPrincipal) -> None:
-    if principal.system_admin_account is None:
-        raise PermissionDenied("Navigation policy management is allowed only for system admin accounts.")
-
-
-def _require_company_super_admin(principal: IdentitySessionPrincipal) -> None:
-    manager_account = getattr(principal, "manager_account", None)
-    if manager_account is None or manager_account.role_type != "company_super_admin":
-        raise PermissionDenied("Company navigation policy management is allowed only for company super admin accounts.")
-
 
 def _set_refresh_cookie(response: Response, token: str) -> None:
     response.set_cookie(
@@ -123,6 +112,10 @@ def _serialize_active_account(principal):
         payload["company_id"] = str(active_account.company_id)
     if hasattr(active_account, "role_type"):
         payload["role_type"] = active_account.role_type
+        payload["role_display_name"] = resolve_manager_role_display_name(
+            getattr(active_account, "company_id", None),
+            active_account.role_type,
+        )
     return payload
 
 
@@ -552,83 +545,68 @@ class IdentityNavigationPolicyView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class ManagerNavigationPolicyManagementView(APIView):
+class CompanyManagerRoleListCreateView(APIView):
     permission_classes = [IsAuthenticatedAccount]
 
-    @extend_schema(responses={200: ManagedNavigationPolicyListSerializer})
+    @extend_schema(responses={200: CompanyManagerRoleListSerializer})
     def get(self, request):
         _require_full_identity_session(request)
-        _require_system_admin(request.user)
-        serializer = ManagedNavigationPolicyListSerializer(
-            {"policies": NavigationPolicyService().list_global_policy()}
-        )
+        require_nav_access(request, "manager_roles")
+        company_id = request.query_params.get("company_id")
+        if not company_id:
+            return Response({"message": "company_id is required."}, status=status.HTTP_400_BAD_REQUEST)
+        roles = CompanyManagerRoleService().list_roles(request.user, company_id)
+        serializer = CompanyManagerRoleListSerializer({"roles": roles})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @extend_schema(request=ManagedNavigationPolicyUpdateSerializer, responses={200: ManagedNavigationPolicyListSerializer})
-    def put(self, request):
-        _require_full_identity_session(request)
-        _require_system_admin(request.user)
-        serializer = ManagedNavigationPolicyUpdateSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        service = NavigationPolicyService()
-        for policy in serializer.validated_data["policies"]:
-            service.replace_global_policy(
-                request.user,
-                policy["role_type"],
-                policy["allowed_nav_keys"],
-            )
-        response_serializer = ManagedNavigationPolicyListSerializer(
-            {"policies": service.list_global_policy()}
-        )
-        return Response(response_serializer.data, status=status.HTTP_200_OK)
-
-
-class CompanyNavigationPolicyManagementView(APIView):
-    permission_classes = [IsAuthenticatedAccount]
-
-    @extend_schema(responses={200: CompanyManagedNavigationPolicyListSerializer})
-    def get(self, request):
-        _require_full_identity_session(request)
-        _require_company_super_admin(request.user)
-        serializer = CompanyManagedNavigationPolicyListSerializer(
-            {"policies": NavigationPolicyService().list_company_policy(request.user)}
-        )
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    @extend_schema(request=CompanyManagedNavigationPolicyUpdateSerializer, responses={200: CompanyManagedNavigationPolicyListSerializer})
-    def put(self, request):
-        _require_full_identity_session(request)
-        _require_company_super_admin(request.user)
-        serializer = CompanyManagedNavigationPolicyUpdateSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        service = NavigationPolicyService()
-        for policy in serializer.validated_data["policies"]:
-            service.replace_company_policy(
-                request.user,
-                policy["role_type"],
-                policy["allowed_nav_keys"],
-            )
-        response_serializer = CompanyManagedNavigationPolicyListSerializer(
-            {"policies": service.list_company_policy(request.user)}
-        )
-        return Response(response_serializer.data, status=status.HTTP_200_OK)
-
-
-class CompanyNavigationPolicyResetView(APIView):
-    permission_classes = [IsAuthenticatedAccount]
-
-    @extend_schema(request=CompanyManagedNavigationPolicyResetSerializer, responses={200: CompanyManagedNavigationPolicyListSerializer})
+    @extend_schema(request=CompanyManagerRoleCreateSerializer, responses={201: CompanyManagerRoleSerializer})
     def post(self, request):
         _require_full_identity_session(request)
-        _require_company_super_admin(request.user)
-        serializer = CompanyManagedNavigationPolicyResetSerializer(data=request.data)
+        require_nav_access(request, "manager_roles")
+        serializer = CompanyManagerRoleCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        service = NavigationPolicyService()
-        service.reset_company_policy(request.user, serializer.validated_data["role_type"])
-        response_serializer = CompanyManagedNavigationPolicyListSerializer(
-            {"policies": service.list_company_policy(request.user)}
+        role = CompanyManagerRoleService().create_role(
+            request.user,
+            serializer.validated_data["company_id"],
+            serializer.validated_data["display_name"],
         )
-        return Response(response_serializer.data, status=status.HTTP_200_OK)
+        return Response(CompanyManagerRoleSerializer(role).data, status=status.HTTP_201_CREATED)
+
+
+class CompanyManagerRoleDetailView(APIView):
+    permission_classes = [IsAuthenticatedAccount]
+
+    @extend_schema(request=CompanyManagerRoleUpdateSerializer, responses={200: CompanyManagerRoleSerializer})
+    def patch(self, request, role_id):
+        _require_full_identity_session(request)
+        require_nav_access(request, "manager_roles")
+        serializer = CompanyManagerRoleUpdateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        service = CompanyManagerRoleService()
+        if "allowed_nav_keys" in serializer.validated_data:
+            role = service.update_role_policy(
+                request.user,
+                role_id,
+                serializer.validated_data["allowed_nav_keys"],
+            )
+        else:
+            role = service.rename_role(
+                request.user,
+                role_id,
+                serializer.validated_data["display_name"],
+            )
+        return Response(CompanyManagerRoleSerializer(role).data, status=status.HTTP_200_OK)
+
+    @extend_schema(responses={204: None, 400: StatusMessageSerializer})
+    def delete(self, request, role_id):
+        _require_full_identity_session(request)
+        require_nav_access(request, "manager_roles")
+        try:
+            CompanyManagerRoleService().delete_role(request.user, role_id)
+        except ValidationError as exc:
+            message = exc.detail[0] if isinstance(exc.detail, list) else str(exc.detail)
+            return Response({"message": message}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class IdentitySignupRequestApproveView(APIView):

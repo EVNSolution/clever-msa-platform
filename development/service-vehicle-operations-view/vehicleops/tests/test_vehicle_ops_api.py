@@ -61,11 +61,17 @@ class VehicleOpsApiTests(TestCase):
             "warnings": [],
         }
 
-    def _issue_token(self, include_sub: bool = True) -> str:
+    def _issue_token(
+        self,
+        include_sub: bool = True,
+        *,
+        role: str = "user",
+        allowed_nav_keys: list[str] | None = None,
+    ) -> str:
         now = datetime.now(timezone.utc)
         payload = {
-            "email": "user@example.com",
-            "role": "user",
+            "email": f"{role}@example.com",
+            "role": role,
             "iss": settings.JWT_ISSUER,
             "aud": settings.JWT_AUDIENCE,
             "iat": int(now.timestamp()),
@@ -75,6 +81,8 @@ class VehicleOpsApiTests(TestCase):
         }
         if include_sub:
             payload["sub"] = str(uuid4())
+        if allowed_nav_keys is not None:
+            payload["allowed_nav_keys"] = allowed_nav_keys
         return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
     def test_health_endpoint_responds(self):
@@ -158,3 +166,19 @@ class VehicleOpsApiTests(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
         self.assertEqual(response.data["code"], "not_found")
+
+    def test_admin_without_vehicles_nav_key_is_denied(self):
+        token = self._issue_token(role="admin", allowed_nav_keys=["dispatch"])
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+
+        self.assertEqual(self.client.get("/vehicles/").status_code, 403)
+
+    @patch("vehicleops.views.VehicleSummaryService.list_summaries")
+    def test_admin_with_vehicles_nav_key_can_read(self, mock_list_summaries):
+        mock_list_summaries.return_value = [self.summary]
+        token = self._issue_token(role="admin", allowed_nav_keys=["vehicles"])
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+
+        response = self.client.get("/vehicles/")
+
+        self.assertEqual(response.status_code, 200)

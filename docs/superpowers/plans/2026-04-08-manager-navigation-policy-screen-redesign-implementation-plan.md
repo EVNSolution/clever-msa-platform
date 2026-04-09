@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** `/admin/navigation-policy`를 역할별 정책 워크벤치로 재설계해 전역 관리자 메뉴 정책을 이해하고 수정하기 쉽게 만든다.
+**Goal:** `/admin/menu-policy`를 역할별 정책 워크벤치로 재설계해 전역 관리자 메뉴 정책을 이해하고 수정하기 쉽게 만든다.
 
 **Architecture:** 기존 정책 API는 최대한 유지하고, `front-web-console`에서 화면 정보 구조를 재구성한다. 역할 레일, 정책 편집 패널, 사이드바 미리보기의 3영역 구조를 만들고, 현재 역할 단위 편집 흐름으로 단순화한다.
 
@@ -176,7 +176,7 @@ gh workflow run "Central MSA Deploy Dispatch" \
 ```
 
 - [ ] **Step 3: 수동 확인**
-- `/admin/navigation-policy`
+- `/admin/menu-policy`
 - 역할 전환
 - 메뉴 토글
 - 미리보기
@@ -192,5 +192,5 @@ git commit -m "fix: polish manager navigation policy workspace"
 ## Rollout Notes
 
 - 이번 작업은 정책 모델 변경이 아니라 화면 정보 구조 개선이다.
-- `/company/navigation-policy`는 이번 구조가 안정되면 같은 패턴으로 재설계한다.
+- `/company/menu-policy`는 이번 구조가 안정되면 같은 패턴으로 재설계한다.
 - 정책 메타 메뉴는 1차 편집 대상에서 제외해 혼란을 줄인다.

@@ -3,11 +3,13 @@ from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import PermissionDenied, ValidationError
 
 from accounts.models import (
+    CompanyManagerRole,
     DriverAccount,
     IdentityAccountLink,
     IdentitySignupRequest,
     ManagerAccount,
 )
+from accounts.services.company_manager_role_service import CompanyManagerRoleService
 from accounts.services.product_account_lifecycle_service import ProductAccountLifecycleService
 
 
@@ -148,7 +150,7 @@ class SignupRequestService:
             if role_type is None:
                 raise ValidationError({"role_type": ["Role type is required for manager approval."]})
 
-            self._validate_manager_role_type(principal, role_type)
+            self._validate_manager_role_type(principal, request.company_id, role_type)
             lifecycle = ProductAccountLifecycleService()
 
             with transaction.atomic():
@@ -233,17 +235,24 @@ class SignupRequestService:
             )
             return request
 
-    def _validate_manager_role_type(self, principal, role_type: str) -> None:
+    def _validate_manager_role_type(self, principal, company_id, role_type: str) -> None:
+        CompanyManagerRoleService().ensure_default_roles(company_id)
+        role = CompanyManagerRole.objects.filter(
+            company_id=company_id,
+            code=role_type,
+            is_active=True,
+        ).first()
+        if role is None:
+            raise ValidationError({"role_type": ["Manager role does not exist for this company."]})
+
         if getattr(principal, "system_admin_account", None) is None:
             manager_account = getattr(principal, "manager_account", None)
             if manager_account is None or manager_account.role_type != ManagerAccount.RoleType.COMPANY_SUPER_ADMIN:
                 raise PermissionDenied("Manager setup is not allowed for this account.")
-            if role_type not in {
-                ManagerAccount.RoleType.VEHICLE_MANAGER,
-                ManagerAccount.RoleType.SETTLEMENT_MANAGER,
-                ManagerAccount.RoleType.FLEET_MANAGER,
-            }:
-                raise PermissionDenied("Company super admin can configure only lower manager roles.")
+            if manager_account.company_id != company_id:
+                raise PermissionDenied("Company super admin can configure only roles in the same company.")
+            if role.code == ManagerAccount.RoleType.COMPANY_SUPER_ADMIN:
+                raise PermissionDenied("Company super admin cannot configure company super admin role.")
 
     def reject_request(
         self,
@@ -282,7 +291,7 @@ class SignupRequestService:
         if request.status != IdentitySignupRequest.Status.AWAITING_SETUP:
             raise ValidationError({"status": ["Request is not awaiting setup."]})
 
-        self._validate_manager_role_type(principal, role_type)
+        self._validate_manager_role_type(principal, request.company_id, role_type)
 
         with transaction.atomic():
             manager_account = ManagerAccount.objects.create(

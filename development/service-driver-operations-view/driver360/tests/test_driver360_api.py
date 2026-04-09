@@ -50,12 +50,12 @@ class Driver360ApiTests(TestCase):
             "warnings": [],
         }
 
-    def _issue_token(self) -> str:
+    def _issue_token(self, role: str = "user", allowed_nav_keys: list[str] | None = None) -> str:
         now = datetime.now(timezone.utc)
         payload = {
             "sub": str(uuid4()),
-            "email": "user@example.com",
-            "role": "user",
+            "email": f"{role}@example.com",
+            "role": role,
             "iss": settings.JWT_ISSUER,
             "aud": settings.JWT_AUDIENCE,
             "iat": int(now.timestamp()),
@@ -63,6 +63,8 @@ class Driver360ApiTests(TestCase):
             "jti": str(uuid4()),
             "type": "access",
         }
+        if allowed_nav_keys is not None:
+            payload["allowed_nav_keys"] = allowed_nav_keys
         return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
     def test_health_endpoint_responds(self):
@@ -100,3 +102,21 @@ class Driver360ApiTests(TestCase):
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(set(response.data.keys()), {"code", "message", "details"})
+
+    def test_admin_without_drivers_nav_key_is_denied(self):
+        token = self._issue_token(role="admin", allowed_nav_keys=["vehicles"])
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+
+        response = self.client.get("/drivers/1/")
+
+        self.assertEqual(response.status_code, 403)
+
+    @patch("driver360.views.DriverSummaryService.build_summary")
+    def test_admin_with_drivers_nav_key_can_read(self, mock_build_summary):
+        mock_build_summary.return_value = self.summary
+        token = self._issue_token(role="admin", allowed_nav_keys=["drivers"])
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+
+        response = self.client.get("/drivers/1/")
+
+        self.assertEqual(response.status_code, 200)

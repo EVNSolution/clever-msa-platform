@@ -11,6 +11,7 @@ from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from driver360.permissions_navigation import require_nav_access
 from driver360.permissions import AuthenticatedReadOnly
 from driver360.serializers import Driver360SummarySerializer, HealthSerializer
 from driver360.services.driver_summary_service import DriverSummaryService
@@ -30,6 +31,7 @@ class Driver360DetailView(APIView):
 
     @extend_schema(responses={200: Driver360SummarySerializer})
     def get(self, request, driver_ref):
+        require_nav_access(request, "drivers")
         summary = DriverSummaryService().build_summary(
             driver_ref=str(driver_ref),
             authorization=request.META.get("HTTP_AUTHORIZATION", ""),

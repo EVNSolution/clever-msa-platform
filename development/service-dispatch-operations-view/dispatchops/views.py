@@ -11,6 +11,7 @@ from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from dispatchops.permissions_navigation import require_nav_access
 from dispatchops.permissions import AuthenticatedReadOnly
 from dispatchops.serializers import (
     DispatchOpsBoardRowSerializer,
@@ -63,6 +64,7 @@ class BoardView(APIView):
         responses={200: DispatchOpsBoardRowSerializer(many=True)},
     )
     def get(self, request):
+        require_nav_access(request, "dispatch")
         query_serializer = DispatchOpsQuerySerializer(data=request.query_params)
         query_serializer.is_valid(raise_exception=True)
         result = DispatchBoardService().build_board(
@@ -83,6 +85,7 @@ class SummaryView(APIView):
         responses={200: DispatchOpsSummarySerializer},
     )
     def get(self, request):
+        require_nav_access(request, "dispatch")
         query_serializer = DispatchOpsQuerySerializer(data=request.query_params)
         query_serializer.is_valid(raise_exception=True)
         result = DispatchBoardService().build_board(

@@ -73,17 +73,14 @@
 - 상태: 적합
 - 근거: 로그인 화면 분리, 세션 유지 규칙 적용, 에러 표시 규칙 적용.
 
-### 2. `accounts`
+### 2. `account-requests`
 
 - 상태: 적합
 - 현재 라우트
-  - `/accounts`
-  - `/accounts/new`
-  - `/accounts/:accountRef`
-  - `/accounts/:accountRef/edit`
+  - `/admin/account-requests`
 - 근거
-  - 목록, 생성, 상세, 수정이 분리돼 있다.
-  - 브라우저 URL이 `route_no`를 따른다.
+  - 관리자 계정 CRUD가 아니라 auth request 관리 화면으로 정리됐다.
+  - self-service `/me`와 admin governance `/admin/account-requests`가 namespace로 분리돼 있다.
 
 ### 3. `companies`
 
