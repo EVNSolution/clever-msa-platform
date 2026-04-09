@@ -4,3 +4,21 @@
 [submodule "development/service-announcement-registry"]
 	path = development/service-announcement-registry
 	url = https://github.com/EVNSolution/service-announcement-registry
+[submodule "development/service-notification-hub"]
+	path = development/service-notification-hub
+	url = https://github.com/EVNSolution/service-notification-hub
+[submodule "development/service-personnel-document-registry"]
+	path = development/service-personnel-document-registry
+	url = https://github.com/EVNSolution/service-personnel-document-registry
+[submodule "development/service-region-analytics"]
+	path = development/service-region-analytics
+	url = https://github.com/EVNSolution/service-region-analytics
+[submodule "development/service-region-registry"]
+	path = development/service-region-registry
+	url = https://github.com/EVNSolution/service-region-registry
+[submodule "development/service-support-registry"]
+	path = development/service-support-registry
+	url = https://github.com/EVNSolution/service-support-registry
+[submodule "development/service-telemetry-dead-letter"]
+	path = development/service-telemetry-dead-letter
+	url = https://github.com/EVNSolution/service-telemetry-dead-letter
