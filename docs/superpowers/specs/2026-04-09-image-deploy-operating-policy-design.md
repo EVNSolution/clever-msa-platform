@@ -42,6 +42,22 @@ The normal verification path is:
 
 This rule exists because many UX changes in CLEVER MSA depend on gateway routing, auth state, error envelopes, and service contract changes.
 
+### 1b. Frontend edit loop must not rebuild Docker images on every save
+
+During active frontend work, the normal local loop is:
+
+1. keep the integrated backend and gateway stack running from `development/integration-local-stack`
+2. run the frontend with the host dev server from the child repo
+3. use the frontend dev server for rapid UI iteration and HMR
+4. use Docker image rebuild only for final integrated verification, not for each edit
+
+The standard split is:
+
+- `http://localhost:5174` = frontend dev loop
+- `http://localhost:8080` = integrated gateway and backend verification
+
+This rule exists because repeated `docker build` on frontend edits adds avoidable Docker Desktop latency without improving the normal UI feedback loop.
+
 ### 2. Central deploy repo is deploy-only
 
 Actual runtime rollout should happen from `clever-deploy-control`.
