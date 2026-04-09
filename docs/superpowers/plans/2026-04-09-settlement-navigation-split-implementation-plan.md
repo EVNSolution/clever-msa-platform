@@ -41,12 +41,10 @@
 - Read only: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.tsx`
 - Read only: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/SettlementSectionLayout.tsx`
 
-- [ ] **Step 1: GitNexus impact analysis를 먼저 실행한다**
-- `gitnexus_impact({target: "navigationGroups", direction: "upstream"})`
-- `gitnexus_impact({target: "App", direction: "upstream"})`
-- `gitnexus_impact({target: "SettlementSectionLayout", direction: "upstream"})`
-- direct caller, affected process, risk level을 기록한다.
-- HIGH 또는 CRITICAL이면 구현 전에 사용자에게 다시 알린다.
+- [ ] **Step 1: 영향 범위와 호출 지점을 먼저 점검한다**
+- `navigation.ts`, `App.tsx`, `SettlementSectionLayout.tsx`를 기준으로 어떤 화면과 테스트가 직접 영향을 받는지 정리한다.
+- 최소 확인 대상은 `Layout`, `App`, `SettlementSectionLayout`, settlement e2e spec이다.
+- 변경으로 깨질 수 있는 직접 caller, route contract, smoke path를 기록한다.
 
 - [ ] **Step 2: 현재 테스트 baseline을 저장한다**
 
@@ -264,9 +262,9 @@ Expected:
 - `정산 처리` 진입 시 탭/문맥 바 있음 확인
 - `정산 기준 -> 입력 -> 실행 -> 결과` 흐름이 자연스러운지 확인
 
-- [ ] **Step 4: GitNexus 변경 감지를 실행한다**
-- staged commit 전 `gitnexus_detect_changes({scope: "all"})` 또는 staged 기준으로 확인한다.
-- settlement navigation split와 관련 없는 심볼이 잡히면 staging을 다시 정리한다.
+- [ ] **Step 4: 변경 범위를 다시 점검한다**
+- staged commit 전 settlement navigation split와 무관한 파일이 섞이지 않았는지 다시 확인한다.
+- route, layout, e2e, contract doc 범위를 벗어난 변경이 있으면 staging을 다시 정리한다.
 
 - [ ] **Step 5: Commit**
 
@@ -279,4 +277,4 @@ git commit -m "docs: sync settlement navigation split contract"
 
 - 이 작업은 권한 모델 변경이 아니다. `settlements` 단일 nav key를 유지한다.
 - 현재 worktree에 unrelated changes가 많으므로, 반드시 plan에 적힌 파일만 선택적으로 stage한다.
-- `SettlementSectionLayout` 심볼 이름을 바꾸고 싶다면, rename 전에 반드시 `gitnexus_rename(..., dry_run: true)`로 영향 범위를 확인한다.
+- `SettlementSectionLayout` 심볼 이름을 바꾸고 싶다면, 먼저 import 지점과 route usage를 직접 확인한 뒤 rename 범위를 좁혀서 진행한다.

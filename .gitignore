@@ -25,7 +25,6 @@ db.sqlite3
 
 development/integration-local-stack/compose/api-docs/clever-unified.openapi.yaml
 development/integration-local-stack/compose/api-docs/service-schemas/
-.gitnexus
 
 # Local assistant and workspace-only artifacts.
 .DS_Store
