@@ -14,6 +14,10 @@ Move the root `clever-msa-platform` workspace from the current mixed `snapshot +
 
 Create an inventory table for every first-level repo under `development/`.
 
+Current inventory artifact:
+
+- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-09-development-linked-child-repos-inventory.md`
+
 For each repo, record:
 
 1. repo path
