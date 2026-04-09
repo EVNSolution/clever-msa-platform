@@ -22,3 +22,6 @@
 [submodule "development/service-telemetry-dead-letter"]
 	path = development/service-telemetry-dead-letter
 	url = https://github.com/EVNSolution/service-telemetry-dead-letter
+[submodule "development/service-driver-profile"]
+	path = development/service-driver-profile
+	url = https://github.com/EVNSolution/service-driver-profile
