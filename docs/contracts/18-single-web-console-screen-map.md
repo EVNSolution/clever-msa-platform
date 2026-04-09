@@ -32,6 +32,7 @@
 | `/drivers/:driverRef/edit` | limited edit | `/drivers/:driverRef/edit` | `/drivers/:driverRef/edit` | shared route 유지, 권한별 폼 분기 |
 | `/vehicles` | read list | `/vehicles` | `/vehicles` | shared route 유지, 권한별 row/action 분기 |
 | `/vehicles/:vehicleRef` | read detail | `/vehicles/:vehicleRef` | `/vehicles/:vehicleRef` | shared route 유지, 권한별 panel 분기 |
+| `/dispatch` | dispatch board + upload preview/confirm | `배차 계획 > 배차` | `/dispatch/boards`, `/dispatch/boards/:fleetRef/:dispatchDate` | 배차 보드 상세에서 배차표 업로드 preview/confirm, 용차/특근 보정, 정산 입력 handoff까지 소유 |
 | `/settlements` | settlement overview + processing flow | `정산 > 정산 조회 / 정산 처리` | `/settlements/overview`, `/settlements/criteria`, `/settlements/inputs`, `/settlements/runs`, `/settlements/results` | 좌측 네비게이션에서 `정산` 상위 그룹 아래 `정산 조회`와 `정산 처리`를 제공, overview는 read-only로 분리, process 화면은 가로 탭 흐름 유지 |
 
 ## Governance Route Contract Sync
@@ -76,6 +77,14 @@ Legacy route는 runtime에서 삭제하지 않고 redirect alias로만 유지한
 - 좌측 네비게이션에서 `정산` 상위 그룹 아래 `정산 조회`와 `정산 처리`를 제공
 - `정산 조회`는 read-only overview
 - `정산 처리`는 `정산 기준 / 정산 입력 / 정산 실행 / 정산 결과` 가로 탭 흐름
+- `정산 입력`은 수기 입력 중심이 아니라, 배차 업로드로부터 만들어진 `delivery record + daily snapshot` 검토를 우선하는 upload-first review screen으로 고정
+
+### 4. `Dispatch Upload Flow`
+
+- `front-web-console`의 배차 상세 화면이 배차표 업로드 preview/confirm 흐름을 소유
+- 엑셀 row의 `배송매니저 이름`은 배송원 `external_user_name` 기준 매칭
+- `박스 수`는 정산 근거, `가구 수`와 권역 문자열은 review metadata로만 유지
+- 확정된 업로드 row는 delivery-record snapshot bootstrap의 원천으로 사용
 
 ## Operator Route Without Separate Value
 
@@ -98,9 +107,10 @@ Legacy route는 runtime에서 삭제하지 않고 redirect alias로만 유지한
 2. `front-operator-console` only pages 기능 admin repo 이관 완료
 3. shared route role-based panel 분기 완료
 4. settlement shared read를 admin route tree 안으로 재구성 완료
-5. settlement shared read를 `정산` 그룹 아래 `정산 조회`와 `정산 처리`로 재구성하고, process 화면은 horizontal tabs로 유지
-6. gateway와 compose를 단일 웹 runtime으로 변경
-7. `front-operator-console`를 active flow에서 제거
+5. dispatch board detail에 배차표 업로드 preview/confirm 흐름을 통합
+6. settlement shared read를 `정산` 그룹 아래 `정산 조회`와 `정산 처리`로 재구성하고, process 화면은 horizontal tabs로 유지
+7. gateway와 compose를 단일 웹 runtime으로 변경
+8. `front-operator-console`를 active flow에서 제거
 
 ## 완료 기준
 
