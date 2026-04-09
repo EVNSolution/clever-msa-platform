@@ -12,8 +12,8 @@ It is the Phase 1 inventory artifact for:
 ## Summary
 
 - total first-level repos under `development/`: 26
-- current `linked_child_repo`: 15
-- current `tracked_snapshot`: 11
+- current `linked_child_repo`: 16
+- current `tracked_snapshot`: 10
 - current mixed state risk: medium
 
 ## Column Note
@@ -34,7 +34,7 @@ It estimates how disruptive the `tracked_snapshot -> linked_child_repo` conversi
 | `development/service-delivery-record` | `tracked_snapshot` | `https://github.com/EVNSolution/service-delivery-record` | `5eb58e0` | high | batch 4 - settlement/delivery |
 | `development/service-dispatch-operations-view` | `tracked_snapshot` | `https://github.com/EVNSolution/service-dispatch-operations-view` | `16b5637` | high | batch 4 - core runtime |
 | `development/service-dispatch-registry` | `tracked_snapshot` | `https://github.com/EVNSolution/service-dispatch-registry` | `d55ff66` | high | batch 4 - core runtime |
-| `development/service-driver-operations-view` | `tracked_snapshot` | `https://github.com/EVNSolution/service-driver-operations-view` | `7422127` | medium | batch 3 - operator/read services |
+| `development/service-driver-operations-view` | `linked_child_repo` | `https://github.com/EVNSolution/service-driver-operations-view` | `7422127` | medium | converted in batch 3 |
 | `development/service-driver-profile` | `linked_child_repo` | `https://github.com/EVNSolution/service-driver-profile` | `772ea15` | medium | converted in batch 2 |
 | `development/service-notification-hub` | `linked_child_repo` | `https://github.com/EVNSolution/service-notification-hub` | `f870689` | low | converted in batch 1 |
 | `development/service-organization-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-organization-registry` | `d0500d3` | medium | converted in batch 2 |
@@ -90,6 +90,8 @@ Convert operator-facing read services once the linked child repo procedure is st
 - `service-driver-operations-view`
 - `service-vehicle-operations-view`
 
+Batch 3 status: in progress.
+
 ### Batch 4 - Core runtime and settlement/delivery services
 
 Leave policy-critical and workflow-heavy services until the procedure is proven on lower-risk batches.
@@ -111,6 +113,6 @@ Convert orchestration last.
 
 ## Immediate Follow-up
 
-1. start batch 3 with one operator/read service
+1. complete batch 3 with the remaining operator/read service
 2. keep using the completed batch 1 and batch 2 repos as linked child repo reference examples
 3. document any GitHub browsing or local clone friction discovered during batch 3

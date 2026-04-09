@@ -43,3 +43,6 @@
 [submodule "development/service-vehicle-assignment"]
 	path = development/service-vehicle-assignment
 	url = https://github.com/EVNSolution/service-vehicle-assignment
+[submodule "development/service-driver-operations-view"]
+	path = development/service-driver-operations-view
+	url = https://github.com/EVNSolution/service-driver-operations-view
