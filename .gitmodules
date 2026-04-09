@@ -25,3 +25,6 @@
 [submodule "development/service-driver-profile"]
 	path = development/service-driver-profile
 	url = https://github.com/EVNSolution/service-driver-profile
+[submodule "development/service-organization-registry"]
+	path = development/service-organization-registry
+	url = https://github.com/EVNSolution/service-organization-registry

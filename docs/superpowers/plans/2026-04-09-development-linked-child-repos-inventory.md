@@ -12,8 +12,8 @@ It is the Phase 1 inventory artifact for:
 ## Summary
 
 - total first-level repos under `development/`: 26
-- current `linked_child_repo`: 8
-- current `tracked_snapshot`: 18
+- current `linked_child_repo`: 10
+- current `tracked_snapshot`: 16
 - current mixed state risk: medium
 
 ## Column Note
@@ -35,9 +35,9 @@ It estimates how disruptive the `tracked_snapshot -> linked_child_repo` conversi
 | `development/service-dispatch-operations-view` | `tracked_snapshot` | `https://github.com/EVNSolution/service-dispatch-operations-view` | `16b5637` | high | batch 4 - core runtime |
 | `development/service-dispatch-registry` | `tracked_snapshot` | `https://github.com/EVNSolution/service-dispatch-registry` | `d55ff66` | high | batch 4 - core runtime |
 | `development/service-driver-operations-view` | `tracked_snapshot` | `https://github.com/EVNSolution/service-driver-operations-view` | `7422127` | medium | batch 3 - operator/read services |
-| `development/service-driver-profile` | `tracked_snapshot` | `https://github.com/EVNSolution/service-driver-profile` | `772ea15` | medium | batch 2 - medium risk services |
+| `development/service-driver-profile` | `linked_child_repo` | `https://github.com/EVNSolution/service-driver-profile` | `772ea15` | medium | converted in batch 2 |
 | `development/service-notification-hub` | `linked_child_repo` | `https://github.com/EVNSolution/service-notification-hub` | `f870689` | low | converted in batch 1 |
-| `development/service-organization-registry` | `tracked_snapshot` | `https://github.com/EVNSolution/service-organization-registry` | `d0500d3` | medium | batch 2 - medium risk services |
+| `development/service-organization-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-organization-registry` | `d0500d3` | medium | converted in batch 2 |
 | `development/service-personnel-document-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-personnel-document-registry` | `c8a407e` | low | converted in batch 1 |
 | `development/service-region-analytics` | `linked_child_repo` | `https://github.com/EVNSolution/service-region-analytics` | `606972e` | low | converted in batch 1 |
 | `development/service-region-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-region-registry` | `571c7aa` | low | converted in batch 1 |
@@ -81,6 +81,8 @@ Convert medium-risk services next after the conversion procedure is proven.
 - `service-terminal-registry`
 - `service-vehicle-assignment`
 
+Batch 2 status: in progress.
+
 ### Batch 3 - Operator and read services
 
 Convert operator-facing read services once the linked child repo procedure is stable.
@@ -109,6 +111,6 @@ Convert orchestration last.
 
 ## Immediate Follow-up
 
-1. start batch 2 with one medium-friction service
+1. continue batch 2 with the remaining medium-friction services
 2. keep using `development/front-web-console` and the completed batch 1 repos as linked child repo reference examples
 3. document any GitHub browsing or local clone friction discovered during batch 2
