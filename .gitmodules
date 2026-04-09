@@ -28,3 +28,18 @@
 [submodule "development/service-organization-registry"]
 	path = development/service-organization-registry
 	url = https://github.com/EVNSolution/service-organization-registry
+[submodule "development/service-settlement-payroll"]
+	path = development/service-settlement-payroll
+	url = https://github.com/EVNSolution/service-settlement-payroll
+[submodule "development/service-telemetry-hub"]
+	path = development/service-telemetry-hub
+	url = https://github.com/EVNSolution/service-telemetry-hub
+[submodule "development/service-telemetry-listener"]
+	path = development/service-telemetry-listener
+	url = https://github.com/EVNSolution/service-telemetry-listener
+[submodule "development/service-terminal-registry"]
+	path = development/service-terminal-registry
+	url = https://github.com/EVNSolution/service-terminal-registry
+[submodule "development/service-vehicle-assignment"]
+	path = development/service-vehicle-assignment
+	url = https://github.com/EVNSolution/service-vehicle-assignment

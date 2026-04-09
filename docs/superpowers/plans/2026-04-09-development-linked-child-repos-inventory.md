@@ -12,8 +12,8 @@ It is the Phase 1 inventory artifact for:
 ## Summary
 
 - total first-level repos under `development/`: 26
-- current `linked_child_repo`: 10
-- current `tracked_snapshot`: 16
+- current `linked_child_repo`: 15
+- current `tracked_snapshot`: 11
 - current mixed state risk: medium
 
 ## Column Note
@@ -42,14 +42,14 @@ It estimates how disruptive the `tracked_snapshot -> linked_child_repo` conversi
 | `development/service-region-analytics` | `linked_child_repo` | `https://github.com/EVNSolution/service-region-analytics` | `606972e` | low | converted in batch 1 |
 | `development/service-region-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-region-registry` | `571c7aa` | low | converted in batch 1 |
 | `development/service-settlement-operations-view` | `tracked_snapshot` | `https://github.com/EVNSolution/service-settlement-operations-view` | `19f3f20` | high | batch 4 - settlement/delivery |
-| `development/service-settlement-payroll` | `tracked_snapshot` | `https://github.com/EVNSolution/service-settlement-payroll` | `1743922` | medium | batch 2 - medium risk services |
+| `development/service-settlement-payroll` | `linked_child_repo` | `https://github.com/EVNSolution/service-settlement-payroll` | `1743922` | medium | converted in batch 2 |
 | `development/service-settlement-registry` | `tracked_snapshot` | `https://github.com/EVNSolution/service-settlement-registry` | `f1fe90b` | high | batch 4 - settlement/delivery |
 | `development/service-support-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-support-registry` | `8722a1a` | low | converted in batch 1 |
 | `development/service-telemetry-dead-letter` | `linked_child_repo` | `https://github.com/EVNSolution/service-telemetry-dead-letter` | `b4cd887` | low | converted in batch 1 |
-| `development/service-telemetry-hub` | `tracked_snapshot` | `https://github.com/EVNSolution/service-telemetry-hub` | `8871de3` | medium | batch 2 - medium risk services |
-| `development/service-telemetry-listener` | `tracked_snapshot` | `https://github.com/EVNSolution/service-telemetry-listener` | `014461c` | medium | batch 2 - medium risk services |
-| `development/service-terminal-registry` | `tracked_snapshot` | `https://github.com/EVNSolution/service-terminal-registry` | `2bdd9c0` | medium | batch 2 - medium risk services |
-| `development/service-vehicle-assignment` | `tracked_snapshot` | `https://github.com/EVNSolution/service-vehicle-assignment` | `bc65116` | medium | batch 2 - medium risk services |
+| `development/service-telemetry-hub` | `linked_child_repo` | `https://github.com/EVNSolution/service-telemetry-hub` | `8871de3` | medium | converted in batch 2 |
+| `development/service-telemetry-listener` | `linked_child_repo` | `https://github.com/EVNSolution/service-telemetry-listener` | `014461c` | medium | converted in batch 2 |
+| `development/service-terminal-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-terminal-registry` | `2bdd9c0` | medium | converted in batch 2 |
+| `development/service-vehicle-assignment` | `linked_child_repo` | `https://github.com/EVNSolution/service-vehicle-assignment` | `bc65116` | medium | converted in batch 2 |
 | `development/service-vehicle-operations-view` | `tracked_snapshot` | `https://github.com/EVNSolution/service-vehicle-operations-view` | `9855062` | medium | batch 3 - operator/read services |
 | `development/service-vehicle-registry` | `tracked_snapshot` | `https://github.com/EVNSolution/service-vehicle-registry` | `7750d2b` | high | batch 4 - core runtime |
 
@@ -81,7 +81,7 @@ Convert medium-risk services next after the conversion procedure is proven.
 - `service-terminal-registry`
 - `service-vehicle-assignment`
 
-Batch 2 status: in progress.
+Batch 2 status: completed.
 
 ### Batch 3 - Operator and read services
 
@@ -111,6 +111,6 @@ Convert orchestration last.
 
 ## Immediate Follow-up
 
-1. continue batch 2 with the remaining medium-friction services
-2. keep using `development/front-web-console` and the completed batch 1 repos as linked child repo reference examples
-3. document any GitHub browsing or local clone friction discovered during batch 2
+1. start batch 3 with one operator/read service
+2. keep using the completed batch 1 and batch 2 repos as linked child repo reference examples
+3. document any GitHub browsing or local clone friction discovered during batch 3
