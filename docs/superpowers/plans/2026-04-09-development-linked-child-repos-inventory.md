@@ -12,9 +12,9 @@ It is the Phase 1 inventory artifact for:
 ## Summary
 
 - total first-level repos under `development/`: 26
-- current `linked_child_repo`: 17
-- current `tracked_snapshot`: 9
-- current mixed state risk: medium
+- current `linked_child_repo`: 25
+- current `tracked_snapshot`: 1
+- current mixed state risk: low
 
 ## Column Note
 
@@ -27,13 +27,13 @@ It estimates how disruptive the `tracked_snapshot -> linked_child_repo` conversi
 | Repo | Current representation | Origin remote | Root-visible commit | Migration friction | Proposed batch |
 |---|---|---|---|---|---|
 | `development/front-web-console` | `linked_child_repo` | `https://github.com/EVNSolution/front-web-console` | `f38704c` | high | already linked / reference pattern |
-| `development/edge-api-gateway` | `tracked_snapshot` | `https://github.com/EVNSolution/edge-api-gateway` | `9564fe8` | high | batch 4 - core runtime |
+| `development/edge-api-gateway` | `linked_child_repo` | `https://github.com/EVNSolution/edge-api-gateway` | `9564fe8` | high | converted in batch 4 |
 | `development/integration-local-stack` | `tracked_snapshot` | `https://github.com/EVNSolution/integration-local-stack` | `9847120` | high | batch 5 - orchestration |
-| `development/service-account-access` | `tracked_snapshot` | `https://github.com/EVNSolution/service-account-access` | `b0612cc` | high | batch 4 - core runtime |
+| `development/service-account-access` | `linked_child_repo` | `https://github.com/EVNSolution/service-account-access` | `b0612cc` | high | converted in batch 4 |
 | `development/service-announcement-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-announcement-registry` | `2ebb324` | low | converted in batch 1 |
-| `development/service-delivery-record` | `tracked_snapshot` | `https://github.com/EVNSolution/service-delivery-record` | `5eb58e0` | high | batch 4 - settlement/delivery |
-| `development/service-dispatch-operations-view` | `tracked_snapshot` | `https://github.com/EVNSolution/service-dispatch-operations-view` | `16b5637` | high | batch 4 - core runtime |
-| `development/service-dispatch-registry` | `tracked_snapshot` | `https://github.com/EVNSolution/service-dispatch-registry` | `d55ff66` | high | batch 4 - core runtime |
+| `development/service-delivery-record` | `linked_child_repo` | `https://github.com/EVNSolution/service-delivery-record` | `5eb58e0` | high | converted in batch 4 |
+| `development/service-dispatch-operations-view` | `linked_child_repo` | `https://github.com/EVNSolution/service-dispatch-operations-view` | `16b5637` | high | converted in batch 4 |
+| `development/service-dispatch-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-dispatch-registry` | `d55ff66` | high | converted in batch 4 |
 | `development/service-driver-operations-view` | `linked_child_repo` | `https://github.com/EVNSolution/service-driver-operations-view` | `7422127` | medium | converted in batch 3 |
 | `development/service-driver-profile` | `linked_child_repo` | `https://github.com/EVNSolution/service-driver-profile` | `772ea15` | medium | converted in batch 2 |
 | `development/service-notification-hub` | `linked_child_repo` | `https://github.com/EVNSolution/service-notification-hub` | `f870689` | low | converted in batch 1 |
@@ -41,9 +41,9 @@ It estimates how disruptive the `tracked_snapshot -> linked_child_repo` conversi
 | `development/service-personnel-document-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-personnel-document-registry` | `c8a407e` | low | converted in batch 1 |
 | `development/service-region-analytics` | `linked_child_repo` | `https://github.com/EVNSolution/service-region-analytics` | `606972e` | low | converted in batch 1 |
 | `development/service-region-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-region-registry` | `571c7aa` | low | converted in batch 1 |
-| `development/service-settlement-operations-view` | `tracked_snapshot` | `https://github.com/EVNSolution/service-settlement-operations-view` | `19f3f20` | high | batch 4 - settlement/delivery |
+| `development/service-settlement-operations-view` | `linked_child_repo` | `https://github.com/EVNSolution/service-settlement-operations-view` | `19f3f20` | high | converted in batch 4 |
 | `development/service-settlement-payroll` | `linked_child_repo` | `https://github.com/EVNSolution/service-settlement-payroll` | `1743922` | medium | converted in batch 2 |
-| `development/service-settlement-registry` | `tracked_snapshot` | `https://github.com/EVNSolution/service-settlement-registry` | `f1fe90b` | high | batch 4 - settlement/delivery |
+| `development/service-settlement-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-settlement-registry` | `f1fe90b` | high | converted in batch 4 |
 | `development/service-support-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-support-registry` | `8722a1a` | low | converted in batch 1 |
 | `development/service-telemetry-dead-letter` | `linked_child_repo` | `https://github.com/EVNSolution/service-telemetry-dead-letter` | `b4cd887` | low | converted in batch 1 |
 | `development/service-telemetry-hub` | `linked_child_repo` | `https://github.com/EVNSolution/service-telemetry-hub` | `8871de3` | medium | converted in batch 2 |
@@ -51,7 +51,7 @@ It estimates how disruptive the `tracked_snapshot -> linked_child_repo` conversi
 | `development/service-terminal-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-terminal-registry` | `2bdd9c0` | medium | converted in batch 2 |
 | `development/service-vehicle-assignment` | `linked_child_repo` | `https://github.com/EVNSolution/service-vehicle-assignment` | `bc65116` | medium | converted in batch 2 |
 | `development/service-vehicle-operations-view` | `linked_child_repo` | `https://github.com/EVNSolution/service-vehicle-operations-view` | `9855062` | medium | converted in batch 3 |
-| `development/service-vehicle-registry` | `tracked_snapshot` | `https://github.com/EVNSolution/service-vehicle-registry` | `7750d2b` | high | batch 4 - core runtime |
+| `development/service-vehicle-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-vehicle-registry` | `7750d2b` | high | converted in batch 4 |
 
 ## Batch Intent
 
@@ -105,6 +105,8 @@ Leave policy-critical and workflow-heavy services until the procedure is proven 
 - `service-settlement-registry`
 - `service-vehicle-registry`
 
+Batch 4 status: completed.
+
 ### Batch 5 - Orchestration
 
 Convert orchestration last.
@@ -113,6 +115,6 @@ Convert orchestration last.
 
 ## Immediate Follow-up
 
-1. start batch 4 with one core runtime or settlement/delivery service
-2. keep using the completed batch 1 through batch 3 repos as linked child repo reference examples
-3. document any GitHub browsing or local clone friction discovered during batch 4
+1. complete batch 5 by converting the orchestration repo
+2. keep using the completed batch 1 through batch 4 repos as linked child repo reference examples
+3. document any GitHub browsing or local clone friction discovered after the final conversion
