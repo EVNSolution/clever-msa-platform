@@ -184,7 +184,7 @@ clever-msa-platform/
 
 ## Workspace Governance Update (2026-04-09)
 
-- The active `clever-msa-platform` root is docs-only for architecture, contracts, mappings, rollout, and operating policy.
+- The active `clever-msa-platform` root is the umbrella workspace for platform docs, contracts, rollout, and `development/*` repo visibility.
 - Runtime implementation code under `development/` remains owned by each independent child repo.
-- The root must not newly track child runtime code by snapshot, embedded repo, or whitelist exceptions.
-- If the root needs to reference child repo state, use docs, repo maps, rollout notes, or commit references instead of re-ingesting code.
+- The root GitHub view must expose `development/*` repos consistently and must not hide one child repo selectively while others remain visible.
+- Child repo implementation ownership stays in the child repo even when the root workspace also exposes that repo for umbrella visibility.

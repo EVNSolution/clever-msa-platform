@@ -1,0 +1,3 @@
+[submodule "development/front-web-console"]
+	path = development/front-web-console
+	url = https://github.com/EVNSolution/front-web-console
