@@ -46,3 +46,6 @@
 [submodule "development/service-driver-operations-view"]
 	path = development/service-driver-operations-view
 	url = https://github.com/EVNSolution/service-driver-operations-view
+[submodule "development/service-vehicle-operations-view"]
+	path = development/service-vehicle-operations-view
+	url = https://github.com/EVNSolution/service-vehicle-operations-view

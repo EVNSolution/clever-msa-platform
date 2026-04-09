@@ -12,8 +12,8 @@ It is the Phase 1 inventory artifact for:
 ## Summary
 
 - total first-level repos under `development/`: 26
-- current `linked_child_repo`: 16
-- current `tracked_snapshot`: 10
+- current `linked_child_repo`: 17
+- current `tracked_snapshot`: 9
 - current mixed state risk: medium
 
 ## Column Note
@@ -50,7 +50,7 @@ It estimates how disruptive the `tracked_snapshot -> linked_child_repo` conversi
 | `development/service-telemetry-listener` | `linked_child_repo` | `https://github.com/EVNSolution/service-telemetry-listener` | `014461c` | medium | converted in batch 2 |
 | `development/service-terminal-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-terminal-registry` | `2bdd9c0` | medium | converted in batch 2 |
 | `development/service-vehicle-assignment` | `linked_child_repo` | `https://github.com/EVNSolution/service-vehicle-assignment` | `bc65116` | medium | converted in batch 2 |
-| `development/service-vehicle-operations-view` | `tracked_snapshot` | `https://github.com/EVNSolution/service-vehicle-operations-view` | `9855062` | medium | batch 3 - operator/read services |
+| `development/service-vehicle-operations-view` | `linked_child_repo` | `https://github.com/EVNSolution/service-vehicle-operations-view` | `9855062` | medium | converted in batch 3 |
 | `development/service-vehicle-registry` | `tracked_snapshot` | `https://github.com/EVNSolution/service-vehicle-registry` | `7750d2b` | high | batch 4 - core runtime |
 
 ## Batch Intent
@@ -90,7 +90,7 @@ Convert operator-facing read services once the linked child repo procedure is st
 - `service-driver-operations-view`
 - `service-vehicle-operations-view`
 
-Batch 3 status: in progress.
+Batch 3 status: completed.
 
 ### Batch 4 - Core runtime and settlement/delivery services
 
@@ -113,6 +113,6 @@ Convert orchestration last.
 
 ## Immediate Follow-up
 
-1. complete batch 3 with the remaining operator/read service
-2. keep using the completed batch 1 and batch 2 repos as linked child repo reference examples
-3. document any GitHub browsing or local clone friction discovered during batch 3
+1. start batch 4 with one core runtime or settlement/delivery service
+2. keep using the completed batch 1 through batch 3 repos as linked child repo reference examples
+3. document any GitHub browsing or local clone friction discovered during batch 4
