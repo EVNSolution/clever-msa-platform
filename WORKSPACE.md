@@ -55,9 +55,15 @@ clever-msa-platform/
 
 원칙:
 - 각 디렉토리는 독립 repo 전제다.
+- 루트에서는 모든 `development/*`를 linked child repo로 노출한다.
 - 서비스는 다른 서비스 내부 구현을 import하지 않는다.
 - 공유 코드는 기본 금지다.
 - cross-service 연결은 계약 문서와 API 기준으로만 관리한다.
+
+로컬 clone/update 규칙:
+- 루트를 새로 clone한 뒤에는 `git submodule update --init --recursive`를 실행한다.
+- root pull 이후 child repo 포인터가 바뀌면 다시 `git submodule update --init --recursive`를 실행한다.
+- 구현 코드는 child repo에서 수정하고, root는 umbrella visibility와 platform docs를 관리한다.
 
 현재 목표 repo 이름 규칙:
 - `integration-*`
@@ -141,36 +147,15 @@ clever-msa-platform/
 7. archive는 문서 전용이다. 코드와 runtime 자산은 archive로 보내지 않는다.
 8. repo-local `AGENTS.md`는 예외 규칙이 많은 repo에만 둔다. 현재 허용 범위는 플랫폼 루트, `development/integration-local-stack/`, `development/edge-api-gateway/`까지다.
 
-## Current Migration State
+## Current Workspace State
 
-현재 시점은 `docs + integration + first direct-move repos migrated` 상태다.
+현재 시점은 `development/* linked child repo migration completed` 상태다.
 
-- `docs/` 정본 구조는 생성 및 1차 복사 완료
-- `integration-local-stack`는 실제 이동 완료
-- `edge-api-gateway`, `front-web-console`는 target 위치로 이동 완료
-- `service-organization-registry`는 target 위치로 이동 완료
-- `service-account-access`는 target 위치로 이동 완료
-- `service-driver-profile`는 target 위치로 이동 완료
-- `service-vehicle-registry`는 target 위치로 이동 완료
-- `service-vehicle-assignment`는 target 위치로 이동 완료
-- `service-vehicle-operations-view`는 target 위치로 이동 완료
-- `service-driver-operations-view`는 target 위치로 이동 완료
-- `service-settlement-payroll`는 runtime 구현 완료, settlement write owner로 target repo가 활성화됐다
-- `service-settlement-operations-view`는 read-only runtime으로 target repo가 활성화됐다
-- `service-settlement-registry`는 runtime 구현 완료, target repo가 활성화됐다
-- `service-delivery-record`는 runtime 구현 완료, target repo가 활성화됐다
-- `service-terminal-registry`는 runtime 구현 완료, target repo가 활성화됐다
-- `service-telemetry-hub`는 runtime 구현 완료, target repo가 활성화됐다
-- `service-telemetry-listener`는 MQTT ingress worker runtime 구현 완료, target repo가 활성화됐다
-- `service-telemetry-dead-letter`는 runtime 구현 완료, target repo가 활성화됐다
-- `service-dispatch-registry`는 runtime 구현 완료, target repo가 활성화됐다
-- `service-dispatch-operations-view`는 runtime 구현 완료, target repo가 활성화됐다
-- `service-region-registry`는 runtime 구현 완료, target repo가 활성화됐다
-- `service-region-analytics`는 runtime 구현 완료, target repo가 활성화됐다
-- `service-notification-hub`는 runtime 구현 완료, target repo가 활성화됐다
-- `service-announcement-registry`는 runtime 구현 완료, target repo가 활성화됐다
-- `service-support-registry`는 runtime 구현 완료, target repo가 활성화됐다
-- old `MSA-Server/services`에는 direct runtime source가 더 이상 남아 있지 않다
+- `docs/`는 platform source of truth다.
+- active `development/*` repo는 모두 independent child repo다.
+- 루트는 각 child repo를 linked child repo로 노출한다.
+- active child repo에 대한 root-tracked implementation snapshot은 더 이상 남아 있지 않다.
+- old `MSA-Server/services`에는 direct runtime source가 더 이상 남아 있지 않다.
 
 ## Out Of Scope For This Root
 
@@ -188,3 +173,4 @@ clever-msa-platform/
 - Runtime implementation code under `development/` remains owned by each independent child repo.
 - The root GitHub view must expose `development/*` repos consistently and must not hide one child repo selectively while others remain visible.
 - Child repo implementation ownership stays in the child repo even when the root workspace also exposes that repo for umbrella visibility.
+- New `development/*` repos must be added as linked child repos from day one.

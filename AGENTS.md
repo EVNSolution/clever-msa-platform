@@ -4,7 +4,7 @@
 
 - This directory is the active platform root for CLEVER MSA work.
 - Treat `docs/` as the source of truth for architecture, boundaries, mappings, contracts, and rollout decisions.
-- Treat `development/` as a set of independent implementation repos. Do not treat this root as a shared runtime codebase.
+- Treat `development/` as a set of independent implementation repos exposed from the root as linked child repos. Do not treat this root as a shared runtime codebase.
 - Start from [WORKSPACE.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md) and [repo-map.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md) before moving files or changing repo boundaries.
 
 ## Repo Selection Rules
@@ -14,6 +14,13 @@
 - If the task is gateway routing or edge entry behavior, work in `development/edge-api-gateway/`.
 - If the task is operator UI or admin UI behavior, work in the matching `front-*` repo only.
 - If the task is backend behavior, work in the matching `service-*` repo only.
+
+## Linked Child Repo Rules
+
+- If a freshly cloned root workspace is missing child repo contents, run `git submodule update --init --recursive`.
+- After pulling root changes that move child repo pointers, run `git submodule update --init --recursive` again.
+- Do not reintroduce root-tracked implementation snapshots for active `development/*` repos.
+- New `development/*` repos must be registered from the root as linked child repos immediately.
 
 ## Boundary Rules
 
