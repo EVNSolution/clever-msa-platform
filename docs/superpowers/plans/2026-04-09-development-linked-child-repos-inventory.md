@@ -12,9 +12,9 @@ It is the Phase 1 inventory artifact for:
 ## Summary
 
 - total first-level repos under `development/`: 26
-- current `linked_child_repo`: 2
-- current `tracked_snapshot`: 24
-- current mixed state risk: high
+- current `linked_child_repo`: 8
+- current `tracked_snapshot`: 18
+- current mixed state risk: medium
 
 ## Column Note
 
@@ -36,16 +36,16 @@ It estimates how disruptive the `tracked_snapshot -> linked_child_repo` conversi
 | `development/service-dispatch-registry` | `tracked_snapshot` | `https://github.com/EVNSolution/service-dispatch-registry` | `d55ff66` | high | batch 4 - core runtime |
 | `development/service-driver-operations-view` | `tracked_snapshot` | `https://github.com/EVNSolution/service-driver-operations-view` | `7422127` | medium | batch 3 - operator/read services |
 | `development/service-driver-profile` | `tracked_snapshot` | `https://github.com/EVNSolution/service-driver-profile` | `772ea15` | medium | batch 2 - medium risk services |
-| `development/service-notification-hub` | `tracked_snapshot` | `https://github.com/EVNSolution/service-notification-hub` | `f870689` | low | batch 1 - low risk services |
+| `development/service-notification-hub` | `linked_child_repo` | `https://github.com/EVNSolution/service-notification-hub` | `f870689` | low | converted in batch 1 |
 | `development/service-organization-registry` | `tracked_snapshot` | `https://github.com/EVNSolution/service-organization-registry` | `d0500d3` | medium | batch 2 - medium risk services |
-| `development/service-personnel-document-registry` | `tracked_snapshot` | `https://github.com/EVNSolution/service-personnel-document-registry` | `c8a407e` | low | batch 1 - low risk services |
-| `development/service-region-analytics` | `tracked_snapshot` | `https://github.com/EVNSolution/service-region-analytics` | `606972e` | low | batch 1 - low risk services |
-| `development/service-region-registry` | `tracked_snapshot` | `https://github.com/EVNSolution/service-region-registry` | `571c7aa` | low | batch 1 - low risk services |
+| `development/service-personnel-document-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-personnel-document-registry` | `c8a407e` | low | converted in batch 1 |
+| `development/service-region-analytics` | `linked_child_repo` | `https://github.com/EVNSolution/service-region-analytics` | `606972e` | low | converted in batch 1 |
+| `development/service-region-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-region-registry` | `571c7aa` | low | converted in batch 1 |
 | `development/service-settlement-operations-view` | `tracked_snapshot` | `https://github.com/EVNSolution/service-settlement-operations-view` | `19f3f20` | high | batch 4 - settlement/delivery |
 | `development/service-settlement-payroll` | `tracked_snapshot` | `https://github.com/EVNSolution/service-settlement-payroll` | `1743922` | medium | batch 2 - medium risk services |
 | `development/service-settlement-registry` | `tracked_snapshot` | `https://github.com/EVNSolution/service-settlement-registry` | `f1fe90b` | high | batch 4 - settlement/delivery |
-| `development/service-support-registry` | `tracked_snapshot` | `https://github.com/EVNSolution/service-support-registry` | `8722a1a` | low | batch 1 - low risk services |
-| `development/service-telemetry-dead-letter` | `tracked_snapshot` | `https://github.com/EVNSolution/service-telemetry-dead-letter` | `b4cd887` | low | batch 1 - low risk services |
+| `development/service-support-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-support-registry` | `8722a1a` | low | converted in batch 1 |
+| `development/service-telemetry-dead-letter` | `linked_child_repo` | `https://github.com/EVNSolution/service-telemetry-dead-letter` | `b4cd887` | low | converted in batch 1 |
 | `development/service-telemetry-hub` | `tracked_snapshot` | `https://github.com/EVNSolution/service-telemetry-hub` | `8871de3` | medium | batch 2 - medium risk services |
 | `development/service-telemetry-listener` | `tracked_snapshot` | `https://github.com/EVNSolution/service-telemetry-listener` | `014461c` | medium | batch 2 - medium risk services |
 | `development/service-terminal-registry` | `tracked_snapshot` | `https://github.com/EVNSolution/service-terminal-registry` | `2bdd9c0` | medium | batch 2 - medium risk services |
@@ -66,6 +66,8 @@ Start with low-change supporting repos where ownership is already obvious and ro
 - `service-region-registry`
 - `service-support-registry`
 - `service-telemetry-dead-letter`
+
+Batch 1 status: completed.
 
 ### Batch 2 - Medium friction services
 
@@ -107,6 +109,6 @@ Convert orchestration last.
 
 ## Immediate Follow-up
 
-1. standardize one conversion checklist for `tracked_snapshot -> linked_child_repo`
-2. continue batch 1 with the remaining low friction services
-3. use `development/front-web-console` and `development/service-announcement-registry` as current linked child repo reference examples
+1. start batch 2 with one medium-friction service
+2. keep using `development/front-web-console` and the completed batch 1 repos as linked child repo reference examples
+3. document any GitHub browsing or local clone friction discovered during batch 2
