@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler as drf_exception_handler
@@ -25,22 +26,38 @@ def _extract_message(detail):
     return str(detail)
 
 
+def build_api_error_payload(status_code: int, message: str | None = None, details: object | None = None):
+    resolved_message = message or _ERROR_CODE_MAP.get(status_code, "request_error").replace("_", " ").title()
+    resolved_details = {} if details is None else details
+    return {
+        "code": _ERROR_CODE_MAP.get(status_code, "request_error"),
+        "message": resolved_message,
+        "details": resolved_details,
+    }
+
+
+def json_api_error_response(status_code: int, message: str | None = None, details: object | None = None):
+    return JsonResponse(
+        build_api_error_payload(status_code, message=message, details=details),
+        status=status_code,
+    )
+
+
 def api_exception_handler(exc, context):
     response = drf_exception_handler(exc, context)
     if response is None:
         return Response(
-            {
-                "code": _ERROR_CODE_MAP[status.HTTP_500_INTERNAL_SERVER_ERROR],
-                "message": "Unexpected server error.",
-                "details": {},
-            },
+            build_api_error_payload(
+                status.HTTP_500_INTERNAL_SERVER_ERROR,
+                message="Unexpected server error.",
+            ),
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
     details = response.data if isinstance(response.data, dict) else {"detail": response.data}
-    response.data = {
-        "code": _ERROR_CODE_MAP.get(response.status_code, "request_error"),
-        "message": _extract_message(response.data),
-        "details": details,
-    }
+    response.data = build_api_error_payload(
+        response.status_code,
+        message=_extract_message(response.data),
+        details=details,
+    )
     return response
