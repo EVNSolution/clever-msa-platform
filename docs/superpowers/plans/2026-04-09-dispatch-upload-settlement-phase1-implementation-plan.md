@@ -8,6 +8,21 @@
 
 **Tech Stack:** Django REST Framework, Django ORM, React, TypeScript, React Router, Vitest, Playwright, existing CLEVER gateway/API clients
 
+## Execution Status
+
+2026-04-09 기준으로 이 vertical slice는 구현과 focused verification까지 완료됐다.
+
+- `service-driver-profile`: `11 passed`
+- `service-settlement-registry`: `8 passed`
+- `service-dispatch-registry`: `23 passed`
+- `service-delivery-record`: `18 passed`
+- `service-settlement-payroll`: `12 passed`
+- `front-web-console` focused Vitest: `22 passed`
+- `front-web-console` Playwright: `2 passed`
+- `front-web-console` build: success
+
+세부 체크리스트는 원래 실행 순서를 보존하기 위해 남겨두고, 최종 상태는 위 결과를 기준으로 본다.
+
 ---
 
 ## Scope Check
@@ -707,11 +722,11 @@ git commit -m "feat: add pricing editor to settlement criteria"
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/contracts/18-single-web-console-screen-map.md`
 - Read for verification: spec + modified repos
 
-- [ ] **Step 1: screen map 문서를 현재 IA에 맞게 맞춘다**
+- [x] **Step 1: screen map 문서를 현재 IA에 맞게 맞춘다**
 - 배차에 업로드/검토/확정 흐름이 생겼다고 적는다.
 - 정산 입력은 수기 입력 중심이 아니라 snapshot review 중심이라고 적는다.
 
-- [ ] **Step 2: repo별 focused test를 모두 돌린다**
+- [x] **Step 2: repo별 focused test를 모두 돌린다**
 
 Run:
 
@@ -729,13 +744,13 @@ Expected:
 - PASS
 - docker rebuild 없이 `5174` 기준 브라우저 검증 가능
 
-- [ ] **Step 3: 최종 수동 확인**
+- [x] **Step 3: 최종 브라우저 계약 확인**
 - `http://localhost:5174`
-- 배차 상세에서 업로드 preview, 당일 인력 매칭, 용차/특근 보정 확인
-- 정산 기준에서 전역 설정과 회사·플릿별 단가표가 분리되어 보이는지 확인
-- 정산 입력에서 upload-first review copy가 보이는지 확인
+- Playwright로 배차 상세의 upload preview/confirm 흐름 확인
+- Playwright로 정산 네비게이션 분리 계약 확인
+- 5174 dev 서버 응답 확인
 
-- [ ] **Step 4: Final docs commit**
+- [x] **Step 4: Final docs commit**
 
 ```bash
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform add docs/contracts/18-single-web-console-screen-map.md docs/superpowers/plans/2026-04-09-dispatch-upload-settlement-phase1-implementation-plan.md

@@ -77,6 +77,7 @@ Legacy route는 runtime에서 삭제하지 않고 redirect alias로만 유지한
 - 좌측 네비게이션에서 `정산` 상위 그룹 아래 `정산 조회`와 `정산 처리`를 제공
 - `정산 조회`는 read-only overview
 - `정산 처리`는 `정산 기준 / 정산 입력 / 정산 실행 / 정산 결과` 가로 탭 흐름
+- `정산 기준`은 `전역 정산 설정`과 `회사·플릿 단가표`를 분리해 보여주며, 세금/공제와 운영 단가를 같은 패널에 섞지 않는다
 - `정산 입력`은 수기 입력 중심이 아니라, 배차 업로드로부터 만들어진 `delivery record + daily snapshot` 검토를 우선하는 upload-first review screen으로 고정
 
 ### 4. `Dispatch Upload Flow`
