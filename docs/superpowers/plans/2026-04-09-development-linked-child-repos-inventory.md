@@ -12,8 +12,8 @@ It is the Phase 1 inventory artifact for:
 ## Summary
 
 - total first-level repos under `development/`: 26
-- current `linked_child_repo`: 1
-- current `tracked_snapshot`: 25
+- current `linked_child_repo`: 2
+- current `tracked_snapshot`: 24
 - current mixed state risk: high
 
 ## Column Note
@@ -30,7 +30,7 @@ It estimates how disruptive the `tracked_snapshot -> linked_child_repo` conversi
 | `development/edge-api-gateway` | `tracked_snapshot` | `https://github.com/EVNSolution/edge-api-gateway` | `9564fe8` | high | batch 4 - core runtime |
 | `development/integration-local-stack` | `tracked_snapshot` | `https://github.com/EVNSolution/integration-local-stack` | `9847120` | high | batch 5 - orchestration |
 | `development/service-account-access` | `tracked_snapshot` | `https://github.com/EVNSolution/service-account-access` | `b0612cc` | high | batch 4 - core runtime |
-| `development/service-announcement-registry` | `tracked_snapshot` | `https://github.com/EVNSolution/service-announcement-registry` | `2ebb324` | low | batch 1 - low risk services |
+| `development/service-announcement-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-announcement-registry` | `2ebb324` | low | converted in batch 1 |
 | `development/service-delivery-record` | `tracked_snapshot` | `https://github.com/EVNSolution/service-delivery-record` | `5eb58e0` | high | batch 4 - settlement/delivery |
 | `development/service-dispatch-operations-view` | `tracked_snapshot` | `https://github.com/EVNSolution/service-dispatch-operations-view` | `16b5637` | high | batch 4 - core runtime |
 | `development/service-dispatch-registry` | `tracked_snapshot` | `https://github.com/EVNSolution/service-dispatch-registry` | `d55ff66` | high | batch 4 - core runtime |
@@ -108,5 +108,5 @@ Convert orchestration last.
 ## Immediate Follow-up
 
 1. standardize one conversion checklist for `tracked_snapshot -> linked_child_repo`
-2. execute batch 1 first
-3. keep `development/front-web-console` as the reference example while the rest migrate
+2. continue batch 1 with the remaining low friction services
+3. use `development/front-web-console` and `development/service-announcement-registry` as current linked child repo reference examples
