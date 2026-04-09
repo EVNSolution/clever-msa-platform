@@ -181,3 +181,10 @@ clever-msa-platform/
 - 실행용 compose 파일
 - build artifact
 - node_modules, venv, generated runtime output
+
+## Workspace Governance Update (2026-04-09)
+
+- The active `clever-msa-platform` root is docs-only for architecture, contracts, mappings, rollout, and operating policy.
+- Runtime implementation code under `development/` remains owned by each independent child repo.
+- The root must not newly track child runtime code by snapshot, embedded repo, or whitelist exceptions.
+- If the root needs to reference child repo state, use docs, repo maps, rollout notes, or commit references instead of re-ingesting code.

@@ -26,3 +26,18 @@ db.sqlite3
 development/integration-local-stack/compose/api-docs/clever-unified.openapi.yaml
 development/integration-local-stack/compose/api-docs/service-schemas/
 .gitnexus
+
+# Independent implementation repos should not be re-tracked from the platform root.
+development/front-web-console/
+
+# Local assistant and workspace-only artifacts.
+.DS_Store
+.codex/
+.worktrees/
+.pytest_cache/
+.claude/
+CLAUDE.md
+development/.claude/
+development/AGENTS.md
+development/CLAUDE.md
+__pycache__/
