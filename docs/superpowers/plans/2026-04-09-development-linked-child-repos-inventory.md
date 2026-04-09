@@ -12,9 +12,9 @@ It is the Phase 1 inventory artifact for:
 ## Summary
 
 - total first-level repos under `development/`: 26
-- current `linked_child_repo`: 25
-- current `tracked_snapshot`: 1
-- current mixed state risk: low
+- current `linked_child_repo`: 26
+- current `tracked_snapshot`: 0
+- current mixed state risk: eliminated
 
 ## Column Note
 
@@ -28,7 +28,7 @@ It estimates how disruptive the `tracked_snapshot -> linked_child_repo` conversi
 |---|---|---|---|---|---|
 | `development/front-web-console` | `linked_child_repo` | `https://github.com/EVNSolution/front-web-console` | `f38704c` | high | already linked / reference pattern |
 | `development/edge-api-gateway` | `linked_child_repo` | `https://github.com/EVNSolution/edge-api-gateway` | `9564fe8` | high | converted in batch 4 |
-| `development/integration-local-stack` | `tracked_snapshot` | `https://github.com/EVNSolution/integration-local-stack` | `9847120` | high | batch 5 - orchestration |
+| `development/integration-local-stack` | `linked_child_repo` | `https://github.com/EVNSolution/integration-local-stack` | `88f8781` | high | converted in batch 5 |
 | `development/service-account-access` | `linked_child_repo` | `https://github.com/EVNSolution/service-account-access` | `b0612cc` | high | converted in batch 4 |
 | `development/service-announcement-registry` | `linked_child_repo` | `https://github.com/EVNSolution/service-announcement-registry` | `2ebb324` | low | converted in batch 1 |
 | `development/service-delivery-record` | `linked_child_repo` | `https://github.com/EVNSolution/service-delivery-record` | `5eb58e0` | high | converted in batch 4 |
@@ -113,8 +113,10 @@ Convert orchestration last.
 
 - `integration-local-stack`
 
+Batch 5 status: completed.
+
 ## Immediate Follow-up
 
-1. complete batch 5 by converting the orchestration repo
-2. keep using the completed batch 1 through batch 4 repos as linked child repo reference examples
-3. document any GitHub browsing or local clone friction discovered after the final conversion
+1. update the migration plan and governance docs to reflect that the linked child repo migration is complete
+2. document any GitHub browsing or local clone friction discovered after the final conversion
+3. treat future `development/*` additions as linked child repos from day one

@@ -73,3 +73,6 @@
 [submodule "development/service-vehicle-registry"]
 	path = development/service-vehicle-registry
 	url = https://github.com/EVNSolution/service-vehicle-registry
+[submodule "development/integration-local-stack"]
+	path = development/integration-local-stack
+	url = https://github.com/EVNSolution/integration-local-stack
