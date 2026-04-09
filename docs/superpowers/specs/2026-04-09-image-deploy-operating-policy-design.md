@@ -74,6 +74,18 @@ The standard release path is:
 
 Direct one-off host manipulation is not the standard workflow.
 
+### 4a. Central deploy checks API docs freshness before rollout
+
+The central deploy repo should check platform API docs freshness before rollout begins.
+
+The default rule is:
+
+- `clever-deploy-control` checks the latest `refresh-api-docs.yml` run on `clever-msa-platform` `main`
+- if the latest run is not successful, rollout stops
+- an operator can bypass the gate only through an explicit exception input
+
+This keeps API docs refresh coupled to rollout evidence without moving deploy ownership back into service repos.
+
 ## Environment Template Rule
 
 `integration-local-stack` maintains separate environment template sets for local verification and deployed runtime.
@@ -107,6 +119,7 @@ The default rule can be bypassed only in explicit cases.
 - emergency production hotfix explicitly approved for single-target rollout
 - verification of a non-migrated service that still uses source deploy
 - temporary UI-only validation where the user explicitly asks for immediate deployment
+- explicit API docs gate bypass for a release that is approved to roll out without waiting for a fresh docs-success signal
 
 ### Non-default behavior
 
@@ -121,6 +134,7 @@ When operating on CLEVER MSA deployable repos:
 - prefer handing deployment to `clever-deploy-control`
 - prefer one matrix deploy for the full release candidate bundle
 - use direct single-target deployment only when the user explicitly asks for the exception path
+- treat API docs freshness check as part of the normal central deploy path, not as an optional follow-up task
 
 ## Implications for Ongoing Migration
 

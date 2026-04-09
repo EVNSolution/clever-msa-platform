@@ -30,10 +30,11 @@
 ### 2. API 문서 living guide 동기화
 
 - `development/integration-local-stack/compose/api-docs/service-schemas/` 아래 exported schema 파일은 현재 22개다.
-- 반면 `docs/mappings/08-current-msa-api-docs-reading-guide.md`의 schema-backed 목록은 17개만 적고 있다.
-- 현재 unified OpenAPI verify 기준 active service도 22개다.
+- `docs/mappings/08-current-msa-api-docs-reading-guide.md`도 현재 schema-backed 목록 22개로 동기화되었다.
+- central deploy는 이제 API docs freshness gate를 가진다.
+- 현재 남은 gap은 per-service schema diff나 artifact content 검증까지는 아직 하지 않는다는 점이다.
 
-즉 API 문서 산출물은 최신인데, 사람이 읽는 가이드 문서가 뒤처져 있다. 문서 정합성 리팩토링이 필요하다.
+즉 사람 읽는 가이드와 산출물 간 목록 mismatch는 정리됐다. 다음 리팩토링 포인트는 `freshness gate`를 넘어서 `service-level schema change review`를 어디까지 자동화할지 정하는 일이다.
 
 ### 3. 서비스 bootstrap 중복 축소
 
@@ -63,8 +64,9 @@
 
 1. 완료된 implementation plan이 `docs/rollout/plans/`에서 빠진다.
 2. API docs reading guide가 current schema-backed truth와 맞는다.
-3. 새 service runtime을 찍어낼 수 있는 bootstrap 규칙 또는 generator가 생긴다.
-4. 반복되는 smoke 검증을 재사용 가능한 로컬 스크립트로 돌릴 수 있다.
+3. API docs refresh와 중앙 배포의 관계, 그리고 freshness gate의 한계가 운영 문서에 명확히 적혀 있다.
+4. 새 service runtime을 찍어낼 수 있는 bootstrap 규칙 또는 generator가 생긴다.
+5. 반복되는 smoke 검증을 재사용 가능한 로컬 스크립트로 돌릴 수 있다.
 
 ## 연결 문서
 

@@ -120,10 +120,15 @@ service-owned OpenAPI export가 없는 서비스는 각 서비스 코드의 `vie
 현재 대상:
 
 - `service-account-access`
+- `service-announcement-registry`
 - `service-personnel-document-registry`
 - `service-delivery-record`
 - `service-organization-registry`
 - `service-driver-profile`
+- `service-region-registry`
+- `service-region-analytics`
+- `service-support-registry`
+- `service-notification-hub`
 - `service-vehicle-registry`
 - `service-vehicle-assignment`
 - `service-vehicle-operations-view`
@@ -160,6 +165,36 @@ exported schema가 없거나 export에 실패하면 자동으로 route inventory
 즉 지금 단계의 문서는 `현재 MSA route inventory + ownership guide`, 그리고 일부 서비스의 `service-owned schema`를 합친 상태에 가깝다.
 
 정확한 request/response schema 범위를 넓히려면 이후 각 서비스에 service-owned OpenAPI exporter를 더 붙여야 한다.
+
+## Refresh 와 배포 연동 상태
+
+현재 API docs 운영 방식은 아래처럼 연결되어 있다.
+
+1. API docs refresh
+   - workflow: `.github/workflows/refresh-api-docs.yml`
+   - trigger:
+     - `pull_request`
+     - `push` to `main`
+     - `workflow_dispatch`
+   - output:
+     - `development/integration-local-stack/compose/api-docs/`
+     - GitHub artifact `clever-current-msa-api-docs`
+
+2. 중앙 배포
+   - `clever-deploy-control` central deploy는 API docs freshness gate를 가진다.
+   - 대상 workflow:
+     - `clever-msa-platform/.github/workflows/refresh-api-docs.yml`
+   - 기본 모드:
+     - `api_docs_gate=enforce`
+   - 예외 모드:
+     - `api_docs_gate=skip`
+
+현재 결론:
+
+1. API docs는 CI refresh와는 연동된다.
+2. 중앙 배포는 latest refresh run success를 기본 precondition으로 확인한다.
+3. 다만 이 gate는 per-service schema diff가 아니라 freshness gate다.
+4. 즉 운영 기준으로는 `배포 완료`가 `API docs freshness gate 통과`를 포함하지만, 서비스별 세밀한 schema review까지 자동 보장하는 것은 아니다.
 
 ## 운영 원칙
 
