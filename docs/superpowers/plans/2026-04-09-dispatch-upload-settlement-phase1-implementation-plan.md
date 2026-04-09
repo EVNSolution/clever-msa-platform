@@ -15,9 +15,10 @@
 - `service-driver-profile`: `11 passed`
 - `service-settlement-registry`: `8 passed`
 - `service-dispatch-registry`: `23 passed`
-- `service-delivery-record`: `18 passed`
-- `service-settlement-payroll`: `12 passed`
+- `service-delivery-record`: `19 passed`
+- `service-settlement-payroll`: `14 passed`
 - `front-web-console` focused Vitest: `22 passed`
+- `front-web-console` pricing create regression: `3 passed`
 - `front-web-console` Playwright: `2 passed`
 - `front-web-console` build: success
 
