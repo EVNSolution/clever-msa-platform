@@ -26,7 +26,7 @@ For each repo, record:
    - tracked snapshot
    - linked child repo
    - hidden / inconsistent
-4. local operational sensitivity
+4. migration friction
    - low
    - medium
    - high
@@ -35,7 +35,7 @@ For each repo, record:
 Expected outcome:
 
 - a clear list of repos that still need conversion from root-tracked snapshot to linked child repo
-- a clear list of high-risk repos that should migrate later
+- a clear list of high-friction repos that should migrate later
 
 ## Phase 2. Standardize The Conversion Procedure
 
@@ -54,7 +54,7 @@ This phase should produce a short runbook or checklist that every later batch fo
 
 ## Phase 3. Convert Low-Risk Repos First
 
-Start with repos that have low coordination risk and low day-to-day churn.
+Start with repos that have low migration friction and low day-to-day churn.
 
 Recommended early batch candidates:
 

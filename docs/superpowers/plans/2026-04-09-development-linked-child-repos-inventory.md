@@ -16,9 +16,15 @@ It is the Phase 1 inventory artifact for:
 - current `tracked_snapshot`: 25
 - current mixed state risk: high
 
+## Column Note
+
+`Migration friction` means workspace conversion friction, not runtime failure risk.
+
+It estimates how disruptive the `tracked_snapshot -> linked_child_repo` conversion may be for local contributor habits, GitHub browsing patterns, and workspace maintenance.
+
 ## Inventory
 
-| Repo | Current representation | Origin remote | Root-visible commit | Sensitivity | Proposed batch |
+| Repo | Current representation | Origin remote | Root-visible commit | Migration friction | Proposed batch |
 |---|---|---|---|---|---|
 | `development/front-web-console` | `linked_child_repo` | `https://github.com/EVNSolution/front-web-console` | `f38704c` | high | already linked / reference pattern |
 | `development/edge-api-gateway` | `tracked_snapshot` | `https://github.com/EVNSolution/edge-api-gateway` | `9564fe8` | high | batch 4 - core runtime |
@@ -49,7 +55,7 @@ It is the Phase 1 inventory artifact for:
 
 ## Batch Intent
 
-### Batch 1 - Low risk services
+### Batch 1 - Low friction services
 
 Start with low-change supporting repos where ownership is already obvious and rollout impact is limited.
 
@@ -61,7 +67,7 @@ Start with low-change supporting repos where ownership is already obvious and ro
 - `service-support-registry`
 - `service-telemetry-dead-letter`
 
-### Batch 2 - Medium risk services
+### Batch 2 - Medium friction services
 
 Convert medium-risk services next after the conversion procedure is proven.
 
