@@ -8,6 +8,7 @@ The rule is simple:
 
 - service repos produce images
 - the central control repo performs deployments
+- local UI and UX work is verified against the integrated local stack before rollout
 - the default deployment unit is a release bundle, not an immediate per-repo deploy
 
 ## Source of Truth
@@ -27,6 +28,19 @@ For image-migrated services, a service repo change should normally do only this:
 - record the resulting image tag through the normal GitHub Actions evidence trail
 
 The service repo should not be treated as the primary deployment entrypoint.
+
+### 1a. Local integrated verification comes before rollout
+
+UI and UX work must not be judged only from an isolated frontend dev server.
+
+The normal verification path is:
+
+1. complete the change locally
+2. verify it against the integrated local stack in `development/integration-local-stack`
+3. include any required gateway or backend changes in the same local validation cycle
+4. only after that, build images and hand rollout to the central deploy repo
+
+This rule exists because many UX changes in CLEVER MSA depend on gateway routing, auth state, error envelopes, and service contract changes.
 
 ### 2. Central deploy repo is deploy-only
 
@@ -59,6 +73,19 @@ The standard release path is:
 `service repo build -> ECR push -> central matrix deploy -> wave execution on EC2 hosts`
 
 Direct one-off host manipulation is not the standard workflow.
+
+## Environment Template Rule
+
+`integration-local-stack` maintains separate environment template sets for local verification and deployed runtime.
+
+- local verification templates live in `development/integration-local-stack/infra/env/local/`
+- deployed runtime templates live in `development/integration-local-stack/infra/env/deploy/`
+
+The rule is:
+
+- local compose uses `local/`
+- deploy compose uses `deploy/`
+- local-only conveniences such as debug flags must not leak into deploy templates
 
 ## Release Candidate Rule
 
@@ -111,4 +138,3 @@ This policy is considered active when:
 - new deployment work follows build-only in service repos
 - central deploy is the normal rollout entrypoint
 - image-backed changes are grouped into release bundles by default
-
