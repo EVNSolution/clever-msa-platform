@@ -306,10 +306,7 @@ seed가 끝나지 않으면:
 
 - 시스템 관리자
   - `seed-admin@example.com`
-  - `imjing12!`
-- 정산 관리자
-  - `seed-settlement-manager@example.com`
-  - `change-me-settlement-manager`
+  - `ChangeMe123!`
 
 ## Current Test Flow For Driver -> Dispatch -> Settlement
 
@@ -488,7 +485,7 @@ curl -i http://127.0.0.1:8080/api/org/companies/public/
 ```bash
 curl -i -X POST http://127.0.0.1:8080/api/auth/identity-login/ \
   -H 'Content-Type: application/json' \
-  -d '{"email":"seed-settlement-manager@example.com","password":"change-me-settlement-manager"}'
+  -d '{"email":"seed-admin@example.com","password":"ChangeMe123!"}'
 ```
 
 ### Frontend Proxy Smoke
