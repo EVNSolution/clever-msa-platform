@@ -35,6 +35,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
+          token: ${{ secrets.GH_ACTIONS_REPO_READ_TOKEN != '' && secrets.GH_ACTIONS_REPO_READ_TOKEN || github.token }}
 
       - name: Verify linked child repos are present
         run: |
