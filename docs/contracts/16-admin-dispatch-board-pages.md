@@ -2,32 +2,34 @@
 
 ## 문서 목적
 
-이 문서는 `front-admin-console`의 배차 1차 화면 구조를 current truth 기준으로 고정한다.
+이 문서는 `front-web-console`의 배차 1차 화면 구조를 current truth 기준으로 고정한다.
 
 이번 문서는 아래를 먼저 결정한다.
 
 1. 배차 화면의 상위 컨텍스트
-2. `dispatch_unit board`를 어떤 화면 구조로 다루는가
-3. `예상 물량`, `용차 기사`, `날짜별 근무 예외`를 어디에서 다루는가
+2. 배차 보드 상세가 어떤 운영 흐름을 소유하는가
+3. `예상 물량`, `용차 기사`, `날짜별 근무 예외`, `배차표 업로드`를 어디에서 다루는가
 4. admin web에서 어느 화면이 write owner처럼 행동하는가
 
 ## 적용 범위
 
-- `front-admin-console`
+- `front-web-console`
 - `service-dispatch-registry`
 - `service-dispatch-operations-view`
 - `service-vehicle-assignment`
 - `service-vehicle-registry`
 - `service-driver-profile`
+- `service-delivery-record`
 
 ## 기본 원칙
 
-1. 배차 1차는 `front-admin-console`만 대상으로 한다.
+1. 배차 1차는 `front-web-console`만 대상으로 한다.
 2. 배차 상위 컨텍스트는 `company + fleet + dispatch_date`다.
 3. 화면의 핵심 row는 `vehicle` 단독이 아니라 날짜 기준 `dispatch_unit`이다.
 4. `dispatch_unit board`는 정본 페이지가 아니라 운영 보드다.
 5. 정본은 계속 `dispatch_plan`, `vehicle_schedule`, `dispatch_assignment`에 남는다.
 6. `용차 기사`와 `날짜별 근무 예외`는 운영 입력으로만 다룬다.
+7. 배차표 업로드 preview/confirm은 배차 보드 상세가 소유한다.
 
 ## 페이지 구조
 
@@ -44,10 +46,10 @@
 ## 라우트 기준
 
 1. `/dispatch/boards`
-2. `/dispatch/boards/:dispatchPlanRef`
+2. `/dispatch/boards/:fleetRef/:dispatchDate`
 3. `/dispatch/plans/:dispatchPlanRef/edit`
 
-`dispatchPlanRef`는 `fleet + dispatch_date` 문맥을 대표하는 browser route key다.
+배차 보드 상세 route는 `fleetRef + dispatchDate` 문맥을 직접 쓴다.
 
 ## 1. 배차 보드 목록
 
@@ -76,27 +78,25 @@
 
 ### 화면 역할
 
-`/dispatch/boards/:dispatchPlanRef`는 실제 운영 보드다.
+`/dispatch/boards/:fleetRef/:dispatchDate`는 실제 운영 보드다.
 
 이 화면은 아래를 같은 문맥 안에서 다룬다.
 
 1. 날짜 기준 `dispatch_unit` 목록
 2. `vehicle`, `driver` 조건 요약
 3. 배차 CRUD 액션
-4. 용차 기사 추가/삭제
-5. 날짜별 `휴무`, `특근` 예외 입력
-6. 차량-배송원 관리 화면으로의 이동
+4. 배차표 업로드 preview/confirm
+5. 용차 기사 추가/삭제
+6. 날짜별 `휴무`, `특근` 예외 입력
+7. 정산 입력용 snapshot bootstrap과 handoff
+8. 차량-배송원 관리 화면으로의 이동
 
 ### 용차 기사 최소 저장
 
 1. `용차 기사`는 보드 임시 상태가 아니라 `dispatch_plan` 문맥에 저장된 최소 엔티티여야 한다.
 2. 보드 상세에서 생성/수정/아카이브한다.
 3. `용차 기사`는 물리 삭제하지 않는다.
-4. 정산 입력 스냅샷이 찍히기 전에는 아카이브할 수 없다.
-5. 같은 날짜/플릿의 정산 입력 스냅샷이 존재할 때만 아카이브할 수 있다.
-6. `dispatch_assignment`는 내부 `driver` 대신 `용차 기사`를 참조할 수 있어야 한다.
-7. 아카이브 가능 여부는 `service-delivery-record`의 해당 날짜 `daily input snapshot` 존재 여부로 계산한다.
-8. `service-settlement-*`의 결과/지급 상태는 이 화면의 아카이브 unlock 조건이 아니다.
+4. `dispatch_assignment`는 내부 `driver` 대신 `용차 기사`를 참조할 수 있어야 한다.
 
 ### row 기준
 
@@ -109,10 +109,12 @@
 이 화면에서 1차에 허용하는 액션은 아래다.
 
 1. `dispatch_plan`, `vehicle_schedule`, `dispatch_assignment` 기준 CRUD
-2. 용차 기사 추가/수정/아카이브
-3. 회사별 근무 규칙 생성
-4. 특정 날짜의 `휴무`, `특근` 예외 입력/해제
-5. 관련 차량/배송원 관리 화면으로 deep link 이동
+2. upload batch preview/confirm
+3. 용차 기사 추가/수정/아카이브
+4. 회사별 근무 규칙 생성
+5. 특정 날짜의 `휴무`, `특근` 예외 입력/해제
+6. delivery-record snapshot bootstrap
+7. 관련 차량/배송원/정산 입력 화면으로 deep link 이동
 
 ### 쓰기 ownership
 
@@ -156,16 +158,11 @@
 6. 회사 관리자는 자기 회사의 근무 규칙명을 만들 수 있지만, 각 규칙은 시스템 의미 `출근`, `휴무`, `특근` 중 하나에 매핑되어야 한다.
 7. `한 배송원 + 한 날짜`에는 예외를 하나만 둔다.
 8. 예외 입력 대상은 해당 날짜에 계획된 내부 배송원만이다.
-9. 회사 관리자는 사용하지 않는 근무 규칙을 삭제할 수 있다.
-10. 날짜 예외 입력의 규칙 선택지는 `휴무`, `특근`에 매핑된 규칙만 노출한다.
-11. 회사 관리자는 근무 규칙 이름을 수정할 수 있다.
-12. 같은 의미에 매핑된 회사 규칙은 이름이 다르면 여러 개 허용한다.
 
 ## 권한 해석
 
 1. `system_admin`, `company_super_admin`는 배차 화면 전체를 운영할 수 있다.
-2. `fleet_manager`는 1차에서 `settlement_manager`와 동일 scope로 본다.
-3. 따라서 배차 화면의 1차 write 권한은 `settlement_manager`와 동일하게 해석할 수 있다.
+2. `fleet_manager`와 `settlement_manager`는 1차에서 배차 화면 write scope를 가진다.
 
 ## 비스코프
 
@@ -180,4 +177,5 @@
 
 - [10-front-ui-rules.md](10-front-ui-rules.md)
 - [13-admin-vehicle-and-assignment-pages.md](13-admin-vehicle-and-assignment-pages.md)
+- [14-settlement-upload-first-ux-flow.md](14-settlement-upload-first-ux-flow.md)
 - [../decisions/specs/2026-04-05-dispatch-admin-board-design.md](../decisions/specs/2026-04-05-dispatch-admin-board-design.md)

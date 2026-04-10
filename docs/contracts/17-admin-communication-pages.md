@@ -12,7 +12,7 @@
 
 ## 적용 범위
 
-- `front-admin-console`
+- `front-web-console`
 - `service-announcement-registry`
 - `service-support-registry`
 - `service-notification-hub`

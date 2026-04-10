@@ -2,13 +2,13 @@
 
 ## 문서 목적
 
-이 문서는 `front-admin-console` 단일 웹 콘솔의 공통 UI 규칙을 고정한다.
+이 문서는 `front-web-console` 단일 웹 콘솔의 공통 UI 규칙을 고정한다.
 
 목표는 탭마다 다른 입력 레이아웃을 줄이고, 목록/상세/수정의 역할을 분리해서 운영형 화면을 일관되게 유지하는 것이다.
 
 ## 적용 범위
 
-- `development/front-admin-console/`
+- `development/front-web-console/`
 
 ## 기본 원칙
 
@@ -368,12 +368,12 @@
 - `정산 실행`
 - `정산 결과`
 
-위 화면은 `front-admin-console`에만 둔다.
+위 화면은 `front-web-console` 안의 정산 처리 write route에만 둔다.
 
 ### 3. 정산 조회는 shared read 화면으로 본다
 
 - `정산 조회`는 `admin`과 `operator`가 모두 본다.
-- 두 콘솔은 서로 다른 앱이지만, 같은 read contract를 공유한다.
+- 같은 단일 웹에서 권한에 따라 같은 read contract를 공유한다.
 - shared 정산 조회는 항상 read-only다.
 
 ### 4. Shared 정산 조회의 연결 규칙
@@ -385,15 +385,14 @@
 
 ### 5. 정산 UI 1차 범위는 그룹 페이지 분리까지만 본다
 
-- 이번 단계의 settlement UI 정리는 `기준 / 입력 / 실행 / 결과 / 조회` 그룹 라우트 분리까지를 완료 기준으로 둔다.
+- 이번 단계의 settlement UI 정리는 좌측 `정산 조회 / 정산 처리` 분리와, `정산 처리` 안의 `기준 / 입력 / 실행 / 결과` 탭 정리까지를 완료 기준으로 둔다.
 - `policy`, `version`, `assignment`, `delivery-record`, `snapshot`, `run`, `item` 각각의 상세 / 생성 / 수정 라우트 세분화는 후속 단계로 남긴다.
 - `operator` settlement 화면은 shared read summary 화면 한 장으로 유지한다.
 - `admin` settlement의 생성 / 수정은 그룹 페이지 안에서 모달로 연다.
 - settlement 하위 write 리소스는 별도 full-page 생성 폼을 두지 않는다.
-- settlement 그룹 상단에는 카드형 단계 이동만 둔다.
-- settlement 그룹 상단의 별도 버튼형 보조 네비게이션과 `현재 단계` 요약 블록은 두지 않는다.
-- `정산 입력`의 기본 CTA는 `엑셀 업로드`다.
-- `정산 입력`은 `업로드 -> 검증 -> 실행` 흐름으로 읽혀야 한다.
+- 좌측 네비게이션에는 `정산` 그룹 아래 `정산 조회`와 `정산 처리`를 둔다.
+- `정산 처리` 화면 안에는 `정산 기준 / 정산 입력 / 정산 실행 / 정산 결과` 가로 탭만 둔다.
+- `정산 입력`은 `배차 업로드 결과 검토 -> 예외 보정 -> 실행` 흐름으로 읽혀야 한다.
 - `정산 입력`의 개별 생성은 기본 경로가 아니라 예외 보정용 보조 액션이다.
 - 정산 그룹 write 화면은 `company / fleet` 문맥을 페이지 사이에서 유지해야 한다.
 

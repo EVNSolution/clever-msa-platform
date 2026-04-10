@@ -21,7 +21,7 @@
 | `service-personnel-document-registry` | `personnel-document-registry-api` | `/api/personnel-documents/` | `active runtime` | 기사 인사문서 메타데이터 정본 |
 | `service-delivery-record` | `delivery-record-api` | `/api/delivery-record/` | `active runtime` | 배송 원천 기록과 일별 집계 입력 snapshot 정본 |
 | `service-settlement-payroll` | `settlement-payroll-api` | `/api/settlements/` | `active runtime` | 정산 결과 write owner |
-| `service-settlement-registry` | `settlement-registry-api` | `/api/settlement-registry/` | `active runtime` | 정산 정책, 버전, assignment registry |
+| `service-settlement-registry` | `settlement-registry-api` | `/api/settlement-registry/` | `active runtime` | 전역 정산 설정, 회사·플릿 단가표, 남아 있는 정책 호환 surface |
 | `service-settlement-operations-view` | `settlement-ops-api` | `/api/settlement-ops/` | `active runtime` | 정산 read-only operations view |
 | `service-driver-operations-view` | `driver-ops-api` | `/api/driver-ops/` | `active runtime` | 기사 운영 summary query |
 | `service-vehicle-registry` | `vehicle-asset-api` | `/api/vehicles/` | `active runtime` | 차량 자산 정본 |

@@ -341,7 +341,7 @@
       </mxGeometry>
     </mxCell>
 
-    <mxCell id="301" value="&lt;b&gt;Front&lt;/b&gt;&lt;br&gt;front-admin-console (single web)&lt;br&gt;access token in memory&lt;br&gt;credentials: include" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;" vertex="1" parent="40">
+    <mxCell id="301" value="&lt;b&gt;Front&lt;/b&gt;&lt;br&gt;front-web-console (single web)&lt;br&gt;access token in memory&lt;br&gt;credentials: include" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;" vertex="1" parent="40">
       <mxGeometry x="20" y="60" width="200" height="110" as="geometry" />
     </mxCell>
     <mxCell id="302" value="&lt;b&gt;edge-api-gateway&lt;/b&gt;&lt;br&gt;Authorization + Cookie forward&lt;br&gt;/api/auth/* route&lt;br&gt;/api/* service prefix route" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;" vertex="1" parent="40">

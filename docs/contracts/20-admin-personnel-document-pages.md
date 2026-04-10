@@ -6,7 +6,7 @@
 
 ## 적용 범위
 
-- `development/front-admin-console/`
+- `development/front-web-console/`
 - `service-personnel-document-registry`
 - `service-driver-profile`
 

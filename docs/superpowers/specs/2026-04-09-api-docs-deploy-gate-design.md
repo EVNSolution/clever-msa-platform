@@ -101,9 +101,10 @@ The central deploy workflow needs read access to Actions runs in `EVNSolution/cl
 
 Required secret:
 
-- `GH_ACTIONS_CLEVER_PLATFORM_READ_TOKEN`
+- preferred: `GH_ACTIONS_REPO_READ_TOKEN`
+- legacy fallback: `GH_ACTIONS_CLEVER_PLATFORM_READ_TOKEN`
 
-The token should have read access only to what is needed to query workflow run state.
+The token should have read access only to what is needed to query workflow run state and private child repos used by the docs refresh checkout.
 
 ### Check logic
 

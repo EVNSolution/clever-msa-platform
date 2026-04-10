@@ -335,16 +335,16 @@ services:
     deploy_command: "scripts/deploy/runner.sh --service service-telemetry-dead-letter --env {environment} --mode ec2 --artifact {artifact}"
     rollback_command: "scripts/deploy/rollback.sh --service service-telemetry-dead-letter --env {environment}"
 
-  - service_id: front-admin-console
-    repo: development/front-admin-console
+  - service_id: front-web-console
+    repo: development/front-web-console
     runtime: ec2
     artifact: source:git
     wave: 6
     depends_on: ["edge-api-gateway"]
-    compose_service: admin-front
+    compose_service: web-console
     compose_file: development/integration-local-stack/docker-compose.account-driver-settlement.yml
     remote_repo_dir: /srv/clever/clever-msa-platform
     instance_selector: tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=app-host,instance-state-name=running
     health_check: docker-compose-ps
-    deploy_command: "scripts/deploy/runner.sh --service front-admin-console --env {environment} --mode ec2 --artifact {artifact}"
-    rollback_command: "scripts/deploy/rollback.sh --service front-admin-console --env {environment}"
+    deploy_command: "scripts/deploy/runner.sh --service front-web-console --env {environment} --mode ec2 --artifact {artifact}"
+    rollback_command: "scripts/deploy/rollback.sh --service front-web-console --env {environment}"

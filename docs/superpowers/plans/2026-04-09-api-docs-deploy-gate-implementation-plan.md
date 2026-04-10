@@ -4,7 +4,7 @@
 
 **Goal:** 중앙 배포가 `clever-msa-platform`의 API docs refresh 성공 상태를 rollout 전 precondition으로 검사하도록 만든다.
 
-**Architecture:** `clever-deploy-control`의 central deploy workflow에 `check_api_docs` job을 추가한다. 이 job은 `EVNSolution/clever-msa-platform`의 `refresh-api-docs.yml` 최신 main run 상태를 GitHub API로 읽고, 기본 모드 `enforce`에서는 실패 시 rollout을 중단한다. `skip`은 명시적 예외 경로다.
+**Architecture:** `clever-deploy-control`의 central deploy workflow에 `check_api_docs` job을 추가한다. 이 job은 `EVNSolution/clever-msa-platform`의 `refresh-api-docs.yml` 최신 main run 상태를 GitHub API로 읽고, 기본 모드 `enforce`에서는 실패 시 rollout을 중단한다. docs refresh workflow checkout은 `GH_ACTIONS_REPO_READ_TOKEN`을 우선 사용하고, legacy `GH_ACTIONS_CLEVER_PLATFORM_READ_TOKEN`도 fallback으로 허용한다. `skip`은 명시적 예외 경로다.
 
 **Tech Stack:** GitHub Actions, GitHub REST API, curl, jq, Markdown runbooks
 
@@ -59,7 +59,7 @@ Expected:
 반영 내용:
 - `plan` 이후 실행
 - `deploy`는 `check_api_docs` 성공 이후만 진행
-- `GH_ACTIONS_CLEVER_PLATFORM_READ_TOKEN` 으로 platform repo Actions run 조회
+- `GH_ACTIONS_REPO_READ_TOKEN` 또는 legacy `GH_ACTIONS_CLEVER_PLATFORM_READ_TOKEN`으로 platform repo Actions run 조회
 
 - [ ] **Step 4: gate 로직을 구현한다**
 
@@ -75,7 +75,7 @@ Expected:
 Expected:
 - `api_docs_gate` 입력이 dispatch와 central deploy 양쪽에 존재
 - `deploy` job이 `check_api_docs`를 `needs`로 가진다
-- `GH_ACTIONS_CLEVER_PLATFORM_READ_TOKEN` 참조가 존재한다
+- `GH_ACTIONS_REPO_READ_TOKEN` 또는 legacy `GH_ACTIONS_CLEVER_PLATFORM_READ_TOKEN` 참조가 존재한다
 
 ### Task 3: runbook에 운영 절차와 예외를 반영한다
 

@@ -43,7 +43,7 @@ core / documents 앱은 패키지형 구조라서 `views.py` / `serializers.py` 
 
 ### Web frontend
 
-현재 플랫폼 current truth는 `front-admin-console` 하나의 단일 웹 콘솔이다. 아래 경로는 legacy source를 읽을 때의 공통 frontend source entry로만 사용한다.
+현재 플랫폼 current truth는 `front-web-console` 하나의 단일 웹 콘솔이다. 아래 경로는 legacy source를 읽을 때의 공통 frontend source entry로만 사용한다.
 
 - `ev-dashboard-web-frontend/src/config/env.ts`
 - `ev-dashboard-web-frontend/src/data/remote/repository/auth.repo.ts`

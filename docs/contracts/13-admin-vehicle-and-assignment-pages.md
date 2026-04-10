@@ -2,7 +2,7 @@
 
 ## 문서 목적
 
-이 문서는 `front-admin-console`의 `vehicle`, `vehicle-assignment` 화면을 current truth 기준으로 고정한다.
+이 문서는 `front-web-console`의 `vehicle`, `vehicle-assignment` 화면을 current truth 기준으로 고정한다.
 
 이번 문서는 아래를 먼저 결정한다.
 
@@ -13,7 +13,7 @@
 
 ## 적용 범위
 
-- `front-admin-console`
+- `front-web-console`
 - `service-vehicle-registry`
 - `service-vehicle-operations-view`
 - `service-vehicle-assignment`

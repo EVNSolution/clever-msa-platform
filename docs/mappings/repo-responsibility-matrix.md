@@ -12,8 +12,7 @@
 | --- | --- | --- | --- |
 | `integration-local-stack` | compose, local env examples, smoke scripts, seed orchestration | 도메인 모델, 서비스 내부 로직, 중앙 문서 정본 | 모든 runtime repo |
 | `edge-api-gateway` | routing, reverse proxy, auth forwarding, edge profile | token 발급, 도메인 비즈니스 로직, front code | front repos, service repos |
-| `front-operator-console` | legacy operator UI code kept only until repo cleanup | gateway config, backend logic, active runtime ownership, new UI work | none; migration reference only |
-| `front-admin-console` | 권한 기반 단일 웹 콘솔 UI, CRUD 관리 화면, read/self-service 화면, API clients, page tests | gateway config, backend logic, separate operator runtime | `edge-api-gateway`, registry/assignment APIs |
+| `front-web-console` | 권한 기반 단일 웹 콘솔 UI, CRUD 관리 화면, read/self-service 화면, API clients, page tests | gateway config, backend logic, separate operator runtime | `edge-api-gateway`, registry/assignment APIs |
 | `service-organization-registry` | company, fleet registry | account, driver, assignment, settlement, gateway | `service-account-access` for auth only |
 | `service-account-access` | account, credential, token, refresh, lockout, access rules | driver profile, organization, settlement policy, gateway routing | redis, auth consumers |
 | `service-driver-profile` | driver basic profile, linked account reference | account credential, settlement result, vehicle assignment | `service-account-access`, `service-organization-registry` |
@@ -25,7 +24,7 @@
 | `service-telemetry-hub` | raw ingest API, normalization, latest snapshot, diagnostic/fault flow | MQTT broker subscribe worker, terminal registry lifecycle, vehicle master mutation, assignment workflow | `service-terminal-registry`, `service-vehicle-registry` |
 | `service-telemetry-listener` | MQTT ingress worker, topic subscribe, payload forwarding, retry/drop classification | telemetry DB writes, normalization, latest snapshot persistence, terminal/vehicle master mutation | `service-telemetry-hub`, `mqtt-broker` in `integration-local-stack` |
 | `service-telemetry-dead-letter` | failed telemetry payload append-only storage, producer-key-auth internal ingest, admin read | telemetry raw/timeseries/snapshot truth, automatic replay workflow, vehicle/terminal master mutation | `service-telemetry-listener`, `service-telemetry-hub` later |
-| `service-settlement-registry` | settlement policy, policy version, company/fleet scoped policy assignment registry | settlement run/item writes, delivery source input, payout/result truth | `service-organization-registry`, `service-account-access` for auth only |
+| `service-settlement-registry` | global settlement config, company/fleet pricing table, remaining settlement policy compatibility registry surface | settlement run/item writes, delivery source input, payout/result truth | `service-organization-registry`, `service-account-access` for auth only |
 | `service-delivery-record` | source delivery record, daily aggregation input snapshot truth | settlement run/item writes, payout/result truth, final operations view, payroll/result ownership | `service-driver-profile`, `service-vehicle-assignment` later |
 | `service-settlement-payroll` | settlement run/item writes, deduction, incentive, payout_status, result truth | settlement policy registry, delivery source truth, read-only operations view | `service-delivery-record`, `service-settlement-registry`, `service-driver-profile` |
 | `service-settlement-operations-view` | settlement result read model and operational read API | settlement run/item writes, payout/result truth, source truth ownership | `service-settlement-payroll`, `service-delivery-record` later |

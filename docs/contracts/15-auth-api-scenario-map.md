@@ -22,8 +22,8 @@
 - `development/service-account-access/accounts/services/jwt_service.py`
 - `development/service-account-access/accounts/services/signup_request_service.py`
 - `development/service-account-access/accounts/tests/test_auth_api.py`
-- `development/front-admin-console/src/api/auth.ts`
-- `development/front-admin-console/src/api/http.ts`
+- `development/front-web-console/src/api/auth.ts`
+- `development/front-web-console/src/api/http.ts`
 - `development/edge-api-gateway/nginx.conf`
 - 각 서비스 repo의 `authentication.py`, `permissions.py`
 

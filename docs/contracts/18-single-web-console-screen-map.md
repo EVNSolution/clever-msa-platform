@@ -2,14 +2,14 @@
 
 ## 문서 목적
 
-이 문서는 `front-admin-console` 단일 웹 cutover에서 어떤 화면이 이미 shared route로 흡수됐는지 current migration map으로 정리한다.
+이 문서는 `front-web-console` 단일 웹 cutover에서 어떤 화면이 이미 shared route로 흡수됐는지 current migration map으로 정리한다.
 
 이 문서는 구현 순서와 누락 점검용이다.  
 현재 runtime truth는 `current-runtime-inventory.md`와 이 문서가 함께 따른다.
 
 ## 기준 원칙
 
-1. 최종 단일 웹은 `front-admin-console` 하나다.
+1. 최종 단일 웹은 `front-web-console` 하나다.
 2. 경로는 `admin/operator`로 다시 나누지 않는다.
 3. 같은 경로에서 `role + scope + self-service`로 화면을 분기한다.
 4. `front-operator-console` 기능은 아래 세 분류로 나눈다.
@@ -67,7 +67,7 @@ Legacy route는 runtime에서 삭제하지 않고 redirect alias로만 유지한
 
 ### 2. `Driver360Page`
 
-- `front-admin-console`의 driver detail route로 흡수 완료
+- `front-web-console`의 driver detail route로 흡수 완료
 - detail 상단은 공통으로 유지하고
 - role에 따라 보이는 summary panel만 달라지게 만든다
 
@@ -104,7 +104,7 @@ Legacy route는 runtime에서 삭제하지 않고 redirect alias로만 유지한
 
 ## Cutover Order
 
-1. `front-admin-console`에 `/` dashboard 도입 완료
+1. `front-web-console`에 `/` dashboard 도입 완료
 2. `front-operator-console` only pages 기능 admin repo 이관 완료
 3. shared route role-based panel 분기 완료
 4. settlement shared read를 admin route tree 안으로 재구성 완료

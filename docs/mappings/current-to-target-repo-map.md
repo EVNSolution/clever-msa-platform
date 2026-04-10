@@ -25,8 +25,8 @@
 | Current source | Target destination | Type | Migration mode | Note |
 | --- | --- | --- | --- | --- |
 | `gateway/` | `development/edge-api-gateway/` | runtime repo | `direct-move` | gateway route와 proxy 규칙만 소유 |
-| `front/` | `development/front-operator-console/` | runtime repo | `direct-move` | legacy migration reference only; active runtime target no longer uses a separate operator web |
-| `admin-front/` | `development/front-admin-console/` | runtime repo | `direct-move` | active single-web console target |
+| `front/` | `development/front-web-console/` | runtime repo | `copy-then-retire` | legacy operator web source merged into the active single-web console target |
+| `admin-front/` | `development/front-web-console/` | runtime repo | `direct-move` | active single-web console target |
 | `services/organization-master/` | `development/service-organization-registry/` | runtime repo | `direct-move` | 이동 완료, 현재 active source는 target repo |
 | `services/account-auth/` | `development/service-account-access/` | runtime repo | `direct-move` | 이동 완료, 현재 active source는 target repo |
 | `services/driver-profile/` | `development/service-driver-profile/` | runtime repo | `direct-move` | 이동 완료, 현재 active source는 target repo |

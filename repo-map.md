@@ -44,7 +44,7 @@
 | `service-telemetry-hub` | service | raw ingest API, normalized timeseries, latest snapshot, latest diagnostic runtime | raw ingest, 정규화, snapshot, diagnostic 중심 축 | `development/service-telemetry-hub/` | `migrated-target` |
 | `service-telemetry-listener` | service | MQTT ingress worker runtime | MQTT subscribe, payload forwarding, retry/dead-letter 확장 ingress worker | `development/service-telemetry-listener/` | `migrated-target` |
 | `service-telemetry-dead-letter` | service | failed telemetry payload append-only storage와 admin read runtime | append-only dead-letter 저장, admin read, 수동 재처리 출발점 | `development/service-telemetry-dead-letter/` | `migrated-target` |
-| `service-settlement-registry` | service | 정산 정책, 버전, assignment registry runtime | 정산 기준, 정책, 버전, 적용기간 registry | `development/service-settlement-registry/` | `migrated-target` |
+| `service-settlement-registry` | service | 전역 정산 설정, 회사·플릿 단가표, legacy 정책 호환 surface runtime | 정산 기준 registry, 전역 계산 규칙, 회사·플릿 운영 단가표 | `development/service-settlement-registry/` | `migrated-target` |
 | `service-delivery-record` | service | 배송 원천 기록과 일별 집계 입력 snapshot runtime | 배송원별 원천 기록과 집계 입력 | `development/service-delivery-record/` | `migrated-target` |
 | `service-settlement-payroll` | service | 정산 write owner runtime, `SettlementRun` / `SettlementItem` write | 정산 결과 write owner, `deduction` / `incentive` / `payout_status` 정본 | `development/service-settlement-payroll/` | `migrated-target` |
 | `service-settlement-operations-view` | service | 정산 read-only operations-view runtime | 정산 결과와 운영 조회용 read model | `development/service-settlement-operations-view/` | `migrated-target` |

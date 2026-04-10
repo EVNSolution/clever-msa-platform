@@ -35,7 +35,7 @@
 
 - `service-vehicle-registry` currently owns `vehicle_master + vehicle_operator_access` together.
 - `service-settlement-operations-view` temporarily holds the current placeholder settlement runtime.
-- `service-settlement-registry` is an active runtime repo for settlement policy, version, and assignment registry only.
+- `service-settlement-registry` is an active runtime repo for global settlement config, company/fleet pricing tables, and any remaining settlement policy compatibility surface.
 - `service-delivery-record` is an active runtime repo for delivery source records and daily input snapshots only.
 - `service-terminal-registry` and `service-telemetry-hub` are active runtime repos and must stay within their approved boundary specs.
 
