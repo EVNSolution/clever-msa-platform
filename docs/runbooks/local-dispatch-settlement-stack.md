@@ -330,6 +330,7 @@ seed가 끝나지 않으면:
 - `배차 계획`은 planning-only 화면으로 보고, 업로드 시작점은 `배차표 업로드` 메뉴로 본다
 - 지원 파일명 패턴은 `YYYY-MM-DD`, `YYYY_MM_DD`, `YYYYMMDD`다
 - 지원 패턴을 감지해도 바로 적용하지 않고, 사용자가 한 번 확인해야 검증이 열린다
+- 형식이 맞아도 실제 달력 날짜가 아니면 자동 감지하지 않고 수동 선택으로 처리한다
 
 ## Current Settlement/Dispatch Rules
 
