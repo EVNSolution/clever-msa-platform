@@ -5,14 +5,11 @@ name: Refresh Current MSA API Docs
   pull_request:
     paths:
       - ".github/workflows/refresh-api-docs.yml"
+      - ".gitmodules"
+      - "development/**"
       - "docs/mappings/current-runtime-inventory.md"
       - "docs/mappings/repo-responsibility-matrix.md"
       - "docs/mappings/08-current-msa-api-docs-reading-guide.md"
-      - "development/**/requirements.txt"
-      - "development/**/config/settings.py"
-      - "development/**/urls.py"
-      - "development/**/views.py"
-      - "development/**/serializers.py"
       - "development/integration-local-stack/scripts/*.py"
       - "development/integration-local-stack/compose/api-docs/**"
   push:
@@ -20,14 +17,11 @@ name: Refresh Current MSA API Docs
       - main
     paths:
       - ".github/workflows/refresh-api-docs.yml"
+      - ".gitmodules"
+      - "development/**"
       - "docs/mappings/current-runtime-inventory.md"
       - "docs/mappings/repo-responsibility-matrix.md"
       - "docs/mappings/08-current-msa-api-docs-reading-guide.md"
-      - "development/**/requirements.txt"
-      - "development/**/config/settings.py"
-      - "development/**/urls.py"
-      - "development/**/views.py"
-      - "development/**/serializers.py"
       - "development/integration-local-stack/scripts/*.py"
       - "development/integration-local-stack/compose/api-docs/**"
 
@@ -38,6 +32,46 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Verify linked child repos are present
+        run: |
+          required=(
+            development/service-account-access/requirements.txt
+            development/service-organization-registry/requirements.txt
+            development/service-driver-profile/requirements.txt
+            development/service-personnel-document-registry/requirements.txt
+            development/service-delivery-record/requirements.txt
+            development/service-settlement-payroll/requirements.txt
+            development/service-settlement-registry/requirements.txt
+            development/service-settlement-operations-view/requirements.txt
+            development/service-driver-operations-view/requirements.txt
+            development/service-vehicle-registry/requirements.txt
+            development/service-vehicle-assignment/requirements.txt
+            development/service-vehicle-operations-view/requirements.txt
+            development/service-dispatch-registry/requirements.txt
+            development/service-dispatch-operations-view/requirements.txt
+            development/service-notification-hub/requirements.txt
+            development/service-terminal-registry/requirements.txt
+            development/service-telemetry-hub/requirements.txt
+            development/service-telemetry-dead-letter/requirements.txt
+          )
+
+          missing=0
+          for path in "${required[@]}"; do
+            if [ ! -f "$path" ]; then
+              echo "::error file=$path::Required linked child repo file is missing from the workflow checkout."
+              missing=1
+            fi
+          done
+
+          if [ "$missing" -ne 0 ]; then
+            echo "Missing linked child repo files. Verify submodule checkout for private child repos." >&2
+            git submodule status --recursive || true
+            exit 1
+          fi
 
       - name: Set up Python
         uses: actions/setup-python@v5
