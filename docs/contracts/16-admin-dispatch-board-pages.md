@@ -29,15 +29,17 @@
 4. `dispatch_unit board`는 정본 페이지가 아니라 운영 보드다.
 5. 정본은 계속 `dispatch_plan`, `vehicle_schedule`, `dispatch_assignment`에 남는다.
 6. `용차 기사`와 `날짜별 근무 예외`는 운영 입력으로만 다룬다.
-7. 배차표 업로드 preview/confirm은 배차 보드 상세가 소유한다.
+7. phase 1 MVP에서는 `배차 계획`과 `배차표 업로드`를 분리한다.
+8. 배차 계획이 없어도 배차표 업로드와 단순 정산 준비를 먼저 시작할 수 있어야 한다.
 
 ## 페이지 구조
 
-배차 1차의 admin 페이지는 아래 세 개로 고정한다.
+배차 1차의 admin 페이지는 아래 네 개로 고정한다.
 
-1. `배차 보드 목록`
+1. `배차 계획 목록`
 2. `배차 보드 상세`
 3. `예상 물량 입력/수정`
+4. `배차표 업로드`
 
 기본 진입은 아래로 고정한다.
 
@@ -48,10 +50,13 @@
 1. `/dispatch/boards`
 2. `/dispatch/boards/:fleetRef/:dispatchDate`
 3. `/dispatch/plans/:dispatchPlanRef/edit`
+4. `/dispatch/uploads`
 
 배차 보드 상세 route는 `fleetRef + dispatchDate` 문맥을 직접 쓴다.
 
-## 1. 배차 보드 목록
+`/dispatch/uploads`는 `company + fleet + dispatch_date`만으로 업로드를 시작하는 phase 1 MVP route다.
+
+## 1. 배차 계획 목록
 
 ### 화면 역할
 
@@ -61,6 +66,7 @@
 2. 각 row는 하나의 `dispatch_plan` 문맥을 대표한다.
 3. row click으로 `배차 보드 상세`에 이동한다.
 4. 예상 물량 수정은 `예상 물량 입력/수정` 화면으로만 진입한다.
+5. 배차표 업로드 시작은 별도 `/dispatch/uploads` route로 분리한다.
 
 ### 목록 컬럼
 
@@ -85,7 +91,7 @@
 1. 날짜 기준 `dispatch_unit` 목록
 2. `vehicle`, `driver` 조건 요약
 3. 배차 CRUD 액션
-4. 배차표 업로드 preview/confirm
+4. 배차 계획이 있는 경우의 배차표 업로드 preview/confirm
 5. 용차 기사 추가/삭제
 6. 날짜별 `휴무`, `특근` 예외 입력
 7. 정산 입력용 snapshot bootstrap과 handoff
@@ -104,12 +110,17 @@
 2. 각 row는 해당 날짜에 유효한 `vehicle + driver` 결합체를 같이 보여준다.
 3. 사용자는 차량 정보와 배송원 정보를 한 번에 읽을 수 있어야 한다.
 
+배차 계획이 없는 경우에도 이 화면은 오류 없이 열려야 한다.
+
+- `dispatch_plan` 데이터가 없더라도 상세는 빈 보드 상태와 안내 문구를 보여준다.
+- 업로드는 별도 `/dispatch/uploads` route에서 먼저 시작할 수 있다.
+
 ### 액션 원칙
 
 이 화면에서 1차에 허용하는 액션은 아래다.
 
 1. `dispatch_plan`, `vehicle_schedule`, `dispatch_assignment` 기준 CRUD
-2. upload batch preview/confirm
+2. 배차 계획 연동 문맥의 upload batch preview/confirm
 3. 용차 기사 추가/수정/아카이브
 4. 회사별 근무 규칙 생성
 5. 특정 날짜의 `휴무`, `특근` 예외 입력/해제
@@ -141,6 +152,27 @@
 2. 배차 보드 상세에서 인라인으로 길게 펼치지 않는다.
 3. 수정은 별도 라우트에서 1열 폼으로 처리한다.
 4. 1차에선 `planned_volume` 단일 값으로 유지한다.
+
+## 4. 배차표 업로드
+
+### 화면 역할
+
+`/dispatch/uploads`는 phase 1 MVP에서 배차 계획과 분리된 업로드 시작점이다.
+
+이 화면은 아래를 소유한다.
+
+1. `company`, `fleet`, `dispatch_date` 선택
+2. 엑셀 업로드 preview/confirm
+3. 확정된 upload batch 목록 확인
+4. upload batch 기준 정산 입력 snapshot bootstrap
+5. `정산 입력`으로 handoff
+
+### 규칙
+
+1. `dispatch_plan`은 선택값이 아니라 optional future linkage다.
+2. 업로드 배치는 `company + fleet + dispatch_date` scope를 직접 가진다.
+3. phase 1에서는 업로드만으로 단순 정산 시작이 가능해야 한다.
+4. 향후 phase에서는 동일 scope의 `dispatch_plan`과 upload batch를 연결할 수 있어야 한다.
 
 ## 용차 기사 규칙
 

@@ -32,7 +32,7 @@
 | `/drivers/:driverRef/edit` | limited edit | `/drivers/:driverRef/edit` | `/drivers/:driverRef/edit` | shared route 유지, 권한별 폼 분기 |
 | `/vehicles` | read list | `/vehicles` | `/vehicles` | shared route 유지, 권한별 row/action 분기 |
 | `/vehicles/:vehicleRef` | read detail | `/vehicles/:vehicleRef` | `/vehicles/:vehicleRef` | shared route 유지, 권한별 panel 분기 |
-| `/dispatch` | dispatch board + upload preview/confirm | `배차 계획 > 배차` | `/dispatch/boards`, `/dispatch/boards/:fleetRef/:dispatchDate` | 배차 보드 상세에서 배차표 업로드 preview/confirm, 용차/특근 보정, 정산 입력 handoff까지 소유 |
+| `/dispatch` | dispatch board + upload preview/confirm | `배차 > 배차 계획 / 배차표 업로드` | `/dispatch/boards`, `/dispatch/boards/:fleetRef/:dispatchDate`, `/dispatch/uploads` | phase 1 MVP에서는 `배차 계획`과 `배차표 업로드`를 분리하고, 업로드 route는 `dispatchPlan` 없이도 정산 시작점을 만든다 |
 | `/settlements` | settlement overview + processing flow | `정산 > 정산 조회 / 정산 처리` | `/settlements/overview`, `/settlements/criteria`, `/settlements/inputs`, `/settlements/runs`, `/settlements/results` | 좌측 네비게이션에서 `정산` 상위 그룹 아래 `정산 조회`와 `정산 처리`를 제공, overview는 read-only로 분리, process 화면은 가로 탭 흐름 유지 |
 
 ## Governance Route Contract Sync
@@ -82,10 +82,12 @@ Legacy route는 runtime에서 삭제하지 않고 redirect alias로만 유지한
 
 ### 4. `Dispatch Upload Flow`
 
-- `front-web-console`의 배차 상세 화면이 배차표 업로드 preview/confirm 흐름을 소유
+- `front-web-console`의 `/dispatch/uploads`가 phase 1 MVP 배차표 업로드 시작점을 소유
+- `배차 보드 상세`는 배차 계획 연동 문맥의 업로드 preview/confirm과 운영 보정을 소유
 - 엑셀 row의 `배송매니저 이름`은 배송원 `external_user_name` 기준 매칭
 - `박스 수`는 정산 근거, `가구 수`와 권역 문자열은 review metadata로만 유지
 - 확정된 업로드 row는 delivery-record snapshot bootstrap의 원천으로 사용
+- 이후 phase에서는 동일 `company + fleet + dispatch_date` scope의 `dispatch_plan`과 upload batch를 연결한다
 
 ## Operator Route Without Separate Value
 
@@ -108,7 +110,7 @@ Legacy route는 runtime에서 삭제하지 않고 redirect alias로만 유지한
 2. `front-operator-console` only pages 기능 admin repo 이관 완료
 3. shared route role-based panel 분기 완료
 4. settlement shared read를 admin route tree 안으로 재구성 완료
-5. dispatch board detail에 배차표 업로드 preview/confirm 흐름을 통합
+5. phase 1 MVP에서 `배차 계획`과 `배차표 업로드`를 분리하고, upload-only settlement start를 먼저 연다
 6. settlement shared read를 `정산` 그룹 아래 `정산 조회`와 `정산 처리`로 재구성하고, process 화면은 horizontal tabs로 유지
 7. gateway와 compose를 단일 웹 runtime으로 변경
 8. `front-operator-console`를 active flow에서 제거

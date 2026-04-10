@@ -27,6 +27,7 @@
   - `front-web-console` host Vite dev server
   - 프런트 수정 확인용
   - `/api`는 기본적으로 `http://localhost:8080`으로 프록시된다
+  - 필요하면 remote gateway로 프록시할 수 있다
 - `http://localhost:8080`
   - gateway 뒤의 통합 진입점
   - 최종 통합 확인용
@@ -37,6 +38,72 @@
 - `5174`는 프런트만 서빙한다
 - 앱 자체는 API 의존형이라 backend 없이 실사용 smoke를 할 수는 없다
 - 따라서 로그인, 회사 목록, 배차/정산 API 확인은 결국 `8080` 경로가 살아 있어야 한다
+
+## Choose First
+
+로컬 검증을 시작하기 전에 아래 세 질문으로 먼저 분기한다.
+
+1. `백엔드까지 같이 수정/검증할 건가요, 아니면 프론트만 빠르게 볼 건가요?`
+2. `데이터는 로컬 localhost를 볼 건가요, 실제 프록시를 볼 건가요, 아니면 dev/staging 테스트 타깃을 볼 건가요?`
+3. `실제 DB에 영향을 주는 CRUD를 허용하나요?`
+
+빠른 선택 기준:
+
+- 프론트만 빠르게 확인 + 실데이터 사용
+  - `5174`
+  - `.env.local`
+  - current real proxy target: `https://hub.evnlogistics.com`
+  - `8080`은 굳이 올리지 않는다
+- 프론트만 빠르게 확인 + 더 안전한 테스트 타깃
+  - `5174`
+  - `.env.local-test`
+  - `npm run dev:local-test`
+- 백엔드 개발 또는 API 디버깅
+  - low-CPU hybrid 또는 full Docker
+  - 필요 service를 localhost로 띄운다
+- 최종 통합 확인
+  - `8080`
+  - full Docker stack
+
+## Remote API Dev Mode
+
+`5174`를 유지한 채 remote API를 붙일 수 있다. 이 모드는 프런트만 빠르게 수정하면서 실제 데이터를 확인할 때 쓴다.
+
+실데이터 remote target:
+
+```bash
+cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+npm run dev
+```
+
+`.env.local` 예시:
+
+```env
+VITE_DEV_PROXY_TARGET=https://hub.evnlogistics.com
+```
+
+더 안전한 test target:
+
+```bash
+cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cp .env.local-test.example .env.local-test
+npm run dev:local-test
+```
+
+`.env.local-test` 예시:
+
+```env
+VITE_DEV_PROXY_TARGET=https://<dev-or-staging-gateway-domain>
+```
+
+반드시 사용자에게 보여줄 경고 문구:
+
+`현재 로컬 프론트 테스트의 CRUD는 실제 DB에 영향을 줍니다. 변경을 원하면, PROXY TARGET을 변경하십시오.`
+
+운영 규칙:
+- `.env.local`은 실제 CRUD 영향을 감수하는 확인 모드다
+- `.env.local-test`는 dev/staging 같은 더 안전한 target에 우선 사용한다
+- 마지막 통합 확인은 여전히 `8080` 또는 배포 환경에서 다시 한다
 
 ## Choose A Mode
 
@@ -79,6 +146,27 @@
 ```bash
 cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack
 ```
+
+권장 기동:
+
+```bash
+python3 ./scripts/run_local_startup.py --fresh
+```
+
+stage 순서:
+- `infra`
+- `wave-2-core`
+- `wave-3-domain`
+- `wave-4-integration`
+- `wave-5-views`
+- `edge`
+- `seed`
+- `smoke`
+
+의도:
+- 중앙 배포 wave와 비슷한 사고방식으로 local startup 순서를 맞춘다
+- stage별 health를 확인하고 다음 단계로 넘어간다
+- `seed-runner`는 startup 마지막의 별도 stage로 유지한다
 
 최초 또는 이미지 갱신 후:
 
@@ -166,6 +254,15 @@ curl -i http://127.0.0.1:8080/api/org/companies/public/
 - `GET /api/auth/health/` -> `200`
 - `GET /api/org/companies/public/` -> `200`
 
+runner 사용 시에는 아래 로그가 순서대로 보여야 한다.
+- `wait for wave-2-core health`
+- `wait for wave-3-domain health`
+- `wait for wave-4-integration health`
+- `wait for wave-5-views health`
+- `wait for edge health`
+- `run seed stage`
+- `smoke: ...`
+
 ### Frontend Dev
 
 ```bash
@@ -220,19 +317,19 @@ seed가 끝나지 않으면:
 
 1. `http://localhost:5174` 또는 `http://localhost:8080`에서 로그인
 2. `배송원`에서 기사/배송원 데이터 확인
-3. `배차 > 배차 보드` 이동
-4. 필요하면 `예상 물량 입력`
-5. 목록에서 `보드 열기`
-6. 상세 화면에서 `배차표 업로드`
-7. preview 확인 후 확정
+3. `배차 > 배차표 업로드` 이동
+4. `회사 / 플릿 / 배차일` 선택
+5. 엑셀 업로드 또는 시트 편집
+6. `서버 검증`
+7. `저장` 후 필요 시 `정산 시작`
 8. `정산 > 정산 기준`에서 전역 설정과 회사·플릿 단가표 확인
 9. `정산 > 정산 입력`에서 upload-first review 확인
 10. `정산 실행`
 11. `정산 결과` 조회
 
 주의:
-- `배차표 업로드`는 현재 목록 화면이 아니라 `배차 보드 상세` 안에 있다
-- 목록 화면 CTA는 아직 `예상 물량 입력` 중심이다
+- `배차 계획`과 `배차표 업로드`는 현재 분리된 메뉴다
+- `배차 계획`은 planning-only 화면으로 보고, 업로드 시작점은 `배차표 업로드` 메뉴로 본다
 
 ## Current Settlement/Dispatch Rules
 

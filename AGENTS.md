@@ -39,6 +39,33 @@
 - `service-delivery-record` is an active runtime repo for delivery source records and daily input snapshots only.
 - `service-terminal-registry` and `service-telemetry-hub` are active runtime repos and must stay within their approved boundary specs.
 
+## Remote Frontend Proxy Warning
+
+- If a user configures `front-web-console` `5174` to proxy to a remote API target, explicitly send this warning:
+  - `현재 로컬 프론트 테스트의 CRUD는 실제 DB에 영향을 줍니다. 변경을 원하면, PROXY TARGET을 변경하십시오.`
+- Prefer `.env.local-test` for dev/staging remote targets and reserve `.env.local` for intentional real-data checks.
+
+## Local Verification Questions
+
+- Before starting local verification, ask the user which mode they want.
+- Use these exact branching questions in order:
+  1. `백엔드까지 같이 수정/검증할 건가요, 아니면 프론트만 빠르게 볼 건가요?`
+  2. `데이터는 로컬 localhost를 볼 건가요, 실제 프록시를 볼 건가요, 아니면 dev/staging 테스트 타깃을 볼 건가요?`
+  3. `실제 DB에 영향을 주는 CRUD를 허용하나요?`
+- Map the answers like this:
+  - Frontend-only + real proxy + CRUD allowed
+    - use `front-web-console/.env.local`
+    - current real proxy target is `https://hub.evnlogistics.com`
+    - run `npm run dev`
+    - do not bring up `8080` unless the user explicitly asks for full integration
+  - Frontend-only + safer remote target
+    - use `front-web-console/.env.local-test`
+    - run `npm run dev:local-test`
+  - Backend development + local runtime
+    - use low-CPU hybrid or full Docker depending on the requested scope
+  - Full integration smoke
+    - use `development/integration-local-stack` and `8080`
+
 ## Legacy Workspace
 
 - `../MSA-Server/` is a legacy/reference workspace, not the active implementation root.

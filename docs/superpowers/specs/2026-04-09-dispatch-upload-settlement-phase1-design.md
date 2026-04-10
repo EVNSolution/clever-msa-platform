@@ -150,9 +150,10 @@ Phase 1 기준 서비스 소유 경계는 아래와 같다.
 - 용차/특근 보정
 - 당일 인력 확정 상태
 
-업로드 저장 문맥은 날짜 기준 `dispatch_plan` 아래로 본다.
+업로드 저장 문맥은 phase 1에서 `company + fleet + dispatch_date` scope를 직접 가진다.
 
-- 같은 `company + fleet + dispatch_date` 문맥에서 업로드 batch를 해석한다.
+- `dispatch_plan` 연결은 future linkage이며 phase 1 MVP의 필수 조건이 아니다.
+- 같은 `company + fleet + dispatch_date` 문맥에서 upload batch를 해석한다.
 - 업로드는 독립 정산 입력 정본이 아니라 배차 정본의 보조 source다.
 
 ### `service-driver-profile`
@@ -182,7 +183,7 @@ Phase 1의 화면 책임은 아래처럼 나눈다.
 
 ### 배차
 
-- 배차 보드
+- 배차 계획
 - 배차표 업로드
 - 업로드 결과 검토
 - 용차/특근 보정
@@ -202,6 +203,12 @@ Phase 1의 화면 책임은 아래처럼 나눈다.
 - 기사별 결과
 
 즉 `배차`는 실제 작업자 확정, `정산`은 계산과 결과 관리로 역할을 분리한다.
+
+phase 1 MVP에서는 `배차 계획`과 `배차표 업로드`를 별도 entry로 둔다.
+
+- `배차 계획`은 `dispatch_plan` 정본과 예상 물량 운영을 소유
+- `배차표 업로드`는 `dispatchPlan` 없이도 업로드/확정/정산 준비를 시작
+- 이후 phase에서 두 흐름을 같은 scope 안에서 연결한다
 
 ## Phase 1 Non-Goals
 
