@@ -10,6 +10,7 @@
 - 현재 코드에서 target repo로 가는 이동표: [mappings/current-to-target-repo-map.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-to-target-repo-map.md)
 - repo별 책임 경계: [mappings/repo-responsibility-matrix.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/repo-responsibility-matrix.md)
 - rollout living docs와 active plan 규칙: [rollout/README.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/README.md)
+- 현재 로컬 배차/정산 통합 실행 runbook: [runbooks/local-dispatch-settlement-stack.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/local-dispatch-settlement-stack.md)
 
 - `goals/`: 플랫폼의 목표 상태와 상위 방향
 - `boundaries/`: 서비스 경계와 소유 데이터
