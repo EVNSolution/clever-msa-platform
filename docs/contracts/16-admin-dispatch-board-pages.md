@@ -173,6 +173,9 @@
 2. 업로드 배치는 `company + fleet + dispatch_date` scope를 직접 가진다.
 3. phase 1에서는 업로드만으로 단순 정산 시작이 가능해야 한다.
 4. 향후 phase에서는 동일 scope의 `dispatch_plan`과 upload batch를 연결할 수 있어야 한다.
+5. 파일명에서 배차일을 감지할 때는 즉시 적용하지 않고 사용자 확인 한 번을 거친다.
+6. phase 1에서 지원하는 파일명 날짜 패턴은 `YYYY-MM-DD`, `YYYY_MM_DD`, `YYYYMMDD`다.
+7. 지원 패턴이 아니거나 애매하면 사용자가 `dispatch_date`를 직접 선택한다.
 
 ## 용차 기사 규칙
 

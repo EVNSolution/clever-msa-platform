@@ -210,6 +210,14 @@ phase 1 MVP에서는 `배차 계획`과 `배차표 업로드`를 별도 entry로
 - `배차표 업로드`는 `dispatchPlan` 없이도 업로드/확정/정산 준비를 시작
 - 이후 phase에서 두 흐름을 같은 scope 안에서 연결한다
 
+### Upload Date Detection Rule
+
+배차표 업로드는 파일명에서 `dispatch_date`를 보조 감지할 수 있다.
+
+- 지원 패턴은 `YYYY-MM-DD`, `YYYY_MM_DD`, `YYYYMMDD`
+- 감지된 날짜는 즉시 적용하지 않고 사용자 확인 한 번을 거친다
+- 지원 패턴이 아니거나 애매하면 사용자가 날짜를 직접 선택한다
+
 ## Phase 1 Non-Goals
 
 이번 단계에서 하지 않는 것:
