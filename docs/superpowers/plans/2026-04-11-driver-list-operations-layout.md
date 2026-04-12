@@ -2,311 +2,275 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 배송원 목록 화면을 조밀한 운영형 리스트로 재구성하고, 상단 플릿 필터·검색과 하단 페이지네이션을 추가한다.
+**Goal:** 배송원 목록 화면을 `배차표 업로드`형 표 중심 workbench로 재구성하고, 무외피 필터·저장식 페이지네이션·조밀한 테이블 밀도를 적용한다.
 
-**Architecture:** `DriversPage`는 서버 API를 늘리지 않고 기존 목록 데이터를 한 번 로드한 뒤, 화면 상태로 플릿 필터·검색·페이지네이션을 처리한다. `PageLayout.filters`에 상단 필터를 배치하고, `styles.css`에 배송원 목록 전용 리스트 셸과 푸터 스타일을 추가해 뷰포트 높이를 자연스럽게 채우는 구조로 만든다.
+**Architecture:** 서버 API는 늘리지 않고 `DriversPage`가 기존 목록 데이터를 한 번 로드한 뒤, 화면 상태로 플릿 필터·검색·페이지네이션을 처리한다. 상단 필터는 `PageLayout.filters` 슬롯에 평평한 제어부로 렌더하고, 본문은 흰색 리스트 패널 하나가 높이를 채우도록 유지한다. 기존에 들어간 요약칩, 툴바 외피, 연녹색 강조는 제거하고, 회색 계열의 차분한 운영 화면으로 되돌린다.
 
 **Tech Stack:** React, TypeScript, React Router, Vitest, Testing Library, Vite CSS
 
 ---
 
-### Task 1: 테스트로 현재 요구를 고정
+### Task 1: 테스트로 새 스타일 계약을 고정
 
 **Files:**
-- Modify: `/Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout/src/pages/DriversPage.test.tsx`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DriversPage.test.tsx`
 
-- [ ] **Step 1: 플릿 필터, 검색, 페이지네이션 요구를 검증하는 failing test를 추가한다**
+- [ ] **Step 1: 상단 필터와 하단 페이지네이션의 새 구조를 검증하는 failing test를 추가한다**
 
 ```tsx
-it('filters drivers by fleet and search keyword, then paginates rows', async () => {
-  // 12+ rows across two fleets
-  // select fleet A
-  // search for a driver by name or external_user_name
-  // expect filtered count/meta and first page rows
-  // move to page 2 and verify remaining rows
+it('renders flat filters without summary chips', async () => {
+  renderDriversPage();
+  expect(await screen.findByLabelText('플릿')).toBeInTheDocument();
+  expect(screen.getByLabelText('검색')).toBeInTheDocument();
+  expect(screen.getByText('3명')).toBeInTheDocument();
+  expect(screen.queryByText(/검색어:/)).not.toBeInTheDocument();
+});
+
+it('keeps only footer-owned pagination metadata', async () => {
+  renderDriversPage({ driverCount: 12 });
+  expect(await screen.findByLabelText('노출 수')).toBeInTheDocument();
+  expect(screen.getByLabelText('페이지 번호')).toBeInTheDocument();
+  expect(screen.getAllByText(/1-10 \\/ 12|1-12 \\/ 12/).length).toBe(1);
+});
+```
+
+- [ ] **Step 2: 검색과 플릿 필터, `전체` 페이지 크기 동작을 유지하는 테스트를 갱신한다**
+
+```tsx
+it('filters by fleet and search keyword', async () => {
+  renderDriversPage();
+  await user.selectOptions(screen.getByLabelText('플릿'), 'fleet-1');
+  await user.type(screen.getByLabelText('검색'), 'kim');
+  expect(screen.getByText('Kim Driver')).toBeInTheDocument();
 });
 
 it('supports the all page-size option', async () => {
-  // select "전체"
-  // expect all filtered rows to render
-  // expect single-page pagination state
+  renderDriversPage({ driverCount: 12 });
+  await user.selectOptions(screen.getByLabelText('노출 수'), 'all');
+  expect(screen.getAllByRole('row')).toHaveLength(/* header + all rows */);
 });
 ```
 
-- [ ] **Step 2: 테스트를 실행해 실패를 확인한다**
+- [ ] **Step 3: 테스트를 실행해 실패를 확인한다**
 
-Run: `cd /Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout && npm test -- src/pages/DriversPage.test.tsx --run`
+Run: `cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && npm test -- src/pages/DriversPage.test.tsx --run`
 
-Expected: 신규 필터/검색/페이지네이션 UI를 찾지 못해 FAIL
+Expected: 새 구조 관련 테스트 FAIL
 
-- [ ] **Step 3: 기존 계정 연결 이름 표시와 상세 이동 assertions는 유지한다**
-
-```tsx
-expect(screen.getByText('김기사 계정')).toBeInTheDocument();
-expect(screen.getByText('Kim Driver').closest('tr')).toHaveAttribute('data-detail-path', '/drivers/1');
-```
-
-- [ ] **Step 4: 테스트 파일만 다시 실행해 실패 상태를 고정한다**
-
-Run: `cd /Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout && npm test -- src/pages/DriversPage.test.tsx --run`
-
-Expected: 새 케이스 FAIL, 기존 케이스 PASS 또는 유지
-
-- [ ] **Step 5: 커밋한다**
+- [ ] **Step 4: 테스트 파일만 커밋한다**
 
 ```bash
-cd /Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout
+cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
 git add src/pages/DriversPage.test.tsx
-git commit -m "test: cover driver list filters and pagination"
+git commit -m "test: cover simplified driver list layout"
 ```
 
-### Task 2: DriversPage 상태와 파생 목록 로직 추가
+### Task 2: DriversPage 마크업을 표 중심 workbench로 정리
 
 **Files:**
-- Modify: `/Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout/src/pages/DriversPage.tsx`
-- Reference: `/Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout/src/types.ts`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DriversPage.tsx`
 
-- [ ] **Step 1: 필터/검색/페이지네이션 상태를 추가한다**
-
-```tsx
-const PAGE_SIZE_OPTIONS = [10, 25, 50, 'all'] as const;
-const [selectedFleetId, setSelectedFleetId] = useState('all');
-const [searchTerm, setSearchTerm] = useState('');
-const [pageSize, setPageSize] = useState<(typeof PAGE_SIZE_OPTIONS)[number]>(25);
-const [currentPage, setCurrentPage] = useState(1);
-```
-
-- [ ] **Step 2: 파생 목록 계산을 추가한다**
-
-```tsx
-const normalizedSearchTerm = searchTerm.trim().toLowerCase();
-const filteredDrivers = drivers.filter((driver) => {
-  const matchesFleet = selectedFleetId === 'all' || driver.fleet_id === selectedFleetId;
-  const matchesSearch =
-    normalizedSearchTerm.length === 0 ||
-    driver.name.toLowerCase().includes(normalizedSearchTerm) ||
-    (driver.external_user_name ?? '').toLowerCase().includes(normalizedSearchTerm);
-  return matchesFleet && matchesSearch;
-});
-```
-
-- [ ] **Step 3: 페이지 계산과 페이지 리셋 로직을 추가한다**
-
-```tsx
-useEffect(() => {
-  setCurrentPage(1);
-}, [selectedFleetId, searchTerm, pageSize]);
-
-const totalPages = pageSize === 'all' ? 1 : Math.max(1, Math.ceil(filteredDrivers.length / pageSize));
-const pagedDrivers =
-  pageSize === 'all'
-    ? filteredDrivers
-    : filteredDrivers.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-```
-
-- [ ] **Step 4: 상세 이동, 회사/플릿 표시, 계정 연결 이름 표시가 새 파생 목록에서도 유지되게 바꾼다**
-
-```tsx
-{pagedDrivers.map((driver) => {
-  const activeLink = getActiveDriverAccountLink(driver.driver_id);
-  // keep detailPath, company/fleet names, activeLink identity_name
-})}
-```
-
-- [ ] **Step 5: 테스트를 실행해 로직이 통과하는지 확인한다**
-
-Run: `cd /Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout && npm test -- src/pages/DriversPage.test.tsx --run`
-
-Expected: 로직 관련 테스트 PASS, 스타일/마크업 관련 일부 케이스는 아직 FAIL 가능
-
-- [ ] **Step 6: 커밋한다**
-
-```bash
-cd /Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout
-git add src/pages/DriversPage.tsx src/pages/DriversPage.test.tsx
-git commit -m "feat: add driver list filtering and pagination state"
-```
-
-### Task 3: 상단 필터와 하단 페이지네이션 UI 추가
-
-**Files:**
-- Modify: `/Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout/src/pages/DriversPage.tsx`
-
-- [ ] **Step 1: `PageLayout.filters`에 플릿 드롭다운과 검색 입력을 추가한다**
+- [ ] **Step 1: 상단 필터를 컨테이너 없는 평평한 제어부로 바꾼다**
 
 ```tsx
 const filters = (
   <>
-    <label className="field-inline">
+    <label className="driver-list-filter-inline">
       <span>플릿</span>
-      <select value={selectedFleetId} onChange={(event) => setSelectedFleetId(event.target.value)}>
-        <option value="all">전체</option>
-        {fleets.map((fleet) => (
-          <option key={fleet.fleet_id} value={fleet.fleet_id}>{fleet.name}</option>
-        ))}
-      </select>
+      <select aria-label="플릿" value={selectedFleetId} onChange={...}>...</select>
     </label>
-    <label className="field-inline grow">
+    <label className="driver-list-filter-inline driver-list-filter-search">
       <span>검색</span>
       <input
+        aria-label="검색"
         type="search"
         value={searchTerm}
-        onChange={(event) => setSearchTerm(event.target.value)}
+        onChange={...}
         placeholder="배송원 이름 또는 원청 앱 사용자명"
       />
     </label>
-    <span className="table-meta">{filteredDrivers.length}명</span>
+    <span className="table-meta driver-list-count">{filteredDrivers.length}명</span>
   </>
 );
 ```
 
-- [ ] **Step 2: 리스트 카드 하단에 페이지 크기 셀렉트와 페이지 번호 버튼을 추가한다**
+- [ ] **Step 2: 상단 요약칩, 검색어칩, 중복 범위 표시를 제거한다**
 
 ```tsx
-<footer className="driver-list-footer">
-  <label>
-    <span>노출 수</span>
-    <select value={String(pageSize)}>{/* 10 25 50 all */}</select>
-  </label>
-  <div className="driver-list-pagination">
-    {Array.from({ length: totalPages }, (_, index) => (
-      <button key={index + 1} type="button">{index + 1}</button>
-    ))}
+<div className="panel-header driver-list-shell-header">
+  <div>
+    <p className="panel-kicker">배송원</p>
+    <h2>배송원 목록</h2>
   </div>
-</footer>
+</div>
 ```
 
-- [ ] **Step 3: 필터 결과가 없을 때 리스트 본문 안에서 빈 상태를 보여주게 바꾼다**
+- [ ] **Step 3: 하단 푸터만 페이지네이션 메타를 가지도록 정리한다**
 
 ```tsx
-{pagedDrivers.length === 0 ? (
-  <p className="empty-state">조건에 맞는 배송원이 없습니다.</p>
-) : (
-  <table className="table compact">...</table>
-)}
+<div className="driver-list-footer">
+  <span className="table-meta">{visibleStart}-{visibleEnd} / {filteredDrivers.length}</span>
+  <label className="driver-list-page-size">...</label>
+  <div className="driver-list-pagination" aria-label="페이지 번호">...</div>
+</div>
 ```
 
-- [ ] **Step 4: 테스트를 실행해 UI 요구가 통과하는지 확인한다**
+- [ ] **Step 4: 빈 상태와 상세 이동, 계정 연결 이름 표시는 그대로 유지한다**
 
-Run: `cd /Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout && npm test -- src/pages/DriversPage.test.tsx --run`
+```tsx
+{activeLink?.identity_name ?? ''}
+```
 
-Expected: 새 필터/페이지네이션 테스트 PASS
+- [ ] **Step 5: 테스트를 실행해 마크업 요구가 통과하는지 확인한다**
 
-- [ ] **Step 5: 커밋한다**
+Run: `cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && npm test -- src/pages/DriversPage.test.tsx --run`
+
+Expected: 새 구조 관련 테스트 PASS, 스타일 관련 검증은 아직 일부 미정
+
+- [ ] **Step 6: 페이지 컴포넌트 변경을 커밋한다**
 
 ```bash
-cd /Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout
+cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
 git add src/pages/DriversPage.tsx src/pages/DriversPage.test.tsx
-git commit -m "feat: add driver list filter toolbar and footer controls"
+git commit -m "feat: simplify driver list workbench structure"
 ```
 
-### Task 4: 운영형 리스트 레이아웃과 조밀한 스타일 적용
+### Task 3: CSS를 기준 화면 스타일에 맞게 재정렬
 
 **Files:**
-- Modify: `/Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout/src/styles.css`
-- Modify: `/Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout/src/pages/DriversPage.tsx`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
 
-- [ ] **Step 1: DriversPage 전용 셸 클래스를 추가한다**
+- [ ] **Step 1: 툴바 외피, 요약칩, 연녹색 강조 스타일을 제거한다**
 
-```tsx
-<PageLayout
-  contentClassName="driver-list-page"
-  filters={filters}
-  ...
->
-  <section className="panel driver-list-shell">...</section>
-</PageLayout>
+```css
+.driver-list-toolbar-surface,
+.driver-list-shell-summary,
+.driver-list-summary-pill,
+.driver-list-summary-range {
+  /* remove usage and definitions */
+}
 ```
 
-- [ ] **Step 2: 리스트 카드가 본문 높이를 채우는 CSS를 추가한다**
+- [ ] **Step 2: 필터를 평평한 inline control 형태로 다시 정의한다**
 
 ```css
 .driver-list-page {
-  min-height: 0;
+  grid-auto-rows: minmax(0, 1fr);
 }
 
-.driver-list-shell {
+.driver-list-filter-row {
+  display: flex;
+  align-items: end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.driver-list-filter-inline {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  min-height: calc(100vh - 16rem);
+  gap: 0.28rem;
 }
 ```
 
-- [ ] **Step 3: 행 밀도와 열 폭을 줄이는 스타일을 추가한다**
+- [ ] **Step 3: 리스트 패널과 테이블을 차분한 회색 계열 workbench로 조정한다**
+
+```css
+.driver-list-shell {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-height: calc(100vh - 15rem);
+  padding: 0.95rem 1rem 0.85rem;
+}
+
+.driver-list-table-shell {
+  overflow: auto;
+  border: 1px solid rgba(28, 32, 43, 0.08);
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: none;
+}
+```
+
+- [ ] **Step 4: 테이블 행 밀도와 hover/focus를 더 차분하게 만든다**
 
 ```css
 .driver-list-table th,
 .driver-list-table td {
-  padding: 0.6rem 0.55rem;
-  font-size: 0.92rem;
+  padding: 0.5rem 0.6rem;
 }
 
-.driver-list-table td {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.driver-list-table tbody tr.interactive-row:hover,
+.driver-list-table tbody tr.interactive-row:focus {
+  background: rgba(28, 32, 43, 0.04);
 }
 ```
 
-- [ ] **Step 4: 모바일에서 필터와 푸터가 2줄로 정리되도록 반응형 스타일을 추가한다**
+- [ ] **Step 5: 푸터를 조용한 페이지네이션 바 형태로 정리한다**
+
+```css
+.driver-list-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(28, 32, 43, 0.08);
+  background: #fff;
+}
+```
+
+- [ ] **Step 6: 모바일에서 필터와 푸터가 자연스럽게 줄바꿈되도록 정리한다**
 
 ```css
 @media (max-width: 960px) {
-  .driver-list-toolbar,
+  .driver-list-filter-row,
   .driver-list-footer {
-    grid-template-columns: 1fr;
+    align-items: stretch;
   }
 }
 ```
 
-- [ ] **Step 5: 관련 테스트와 빌드를 실행한다**
+- [ ] **Step 7: 스타일과 페이지를 함께 검증한다**
 
-Run: `cd /Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout && npm test -- src/pages/DriversPage.test.tsx src/pages/DriverDetailPage.test.tsx --run`
+Run: `cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && npm test -- src/pages/DriversPage.test.tsx src/pages/DriverDetailPage.test.tsx --run`
 
 Expected: PASS
 
-Run: `cd /Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout && npm run build`
-
-Expected: PASS with existing bundle-size warning only
-
-- [ ] **Step 6: 커밋한다**
+- [ ] **Step 8: 스타일 변경을 커밋한다**
 
 ```bash
-cd /Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout
-git add src/pages/DriversPage.tsx src/styles.css src/pages/DriversPage.test.tsx
-git commit -m "feat: restyle driver list as responsive operations view"
+cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+git add src/styles.css src/pages/DriversPage.tsx src/pages/DriversPage.test.tsx
+git commit -m "style: align driver list with operations workbench"
 ```
 
-### Task 5: 최종 검증과 정리
+### Task 4: 최종 검증과 정리
 
 **Files:**
-- Verify only: `/Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout/src/pages/DriversPage.tsx`
-- Verify only: `/Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout/src/styles.css`
-- Verify only: `/Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout/src/pages/DriversPage.test.tsx`
-- Reference spec: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-11-driver-list-operations-layout-design.md`
+- Verify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DriversPage.tsx`
+- Verify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
 
-- [ ] **Step 1: 최종 테스트 세트를 실행한다**
+- [ ] **Step 1: 관련 테스트를 최종 실행한다**
 
-Run: `cd /Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout && npm test -- src/pages/DriversPage.test.tsx src/pages/DriverDetailPage.test.tsx --run`
+Run: `cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && npm test -- src/pages/DriversPage.test.tsx src/pages/DriverDetailPage.test.tsx --run`
 
 Expected: PASS
 
-- [ ] **Step 2: 프로덕션 빌드를 실행한다**
+- [ ] **Step 2: 빌드를 실행한다**
 
-Run: `cd /Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout && npm run build`
+Run: `cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && npm run build`
 
-Expected: PASS
+Expected: build succeeds; existing chunk-size warning only if unchanged
 
-- [ ] **Step 3: 워크트리 상태를 확인한다**
+- [ ] **Step 3: 변경 파일만 검토한다**
 
-Run: `cd /Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout && git status --short`
+Run: `cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && git diff -- src/pages/DriversPage.tsx src/pages/DriversPage.test.tsx src/styles.css`
 
-Expected: 의도한 파일만 변경
+Expected: only approved UI simplification changes
 
-- [ ] **Step 4: 최종 커밋을 정리한다**
+- [ ] **Step 4: 최종 커밋한다**
 
 ```bash
-cd /Users/jiin/.config/superpowers/worktrees/front-web-console/codex-driver-list-operations-layout
-git add src/pages/DriversPage.tsx src/styles.css src/pages/DriversPage.test.tsx
-git commit -m "feat: redesign driver list operations layout"
+cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+git add src/pages/DriversPage.tsx src/pages/DriversPage.test.tsx src/styles.css
+git commit -m "feat: restyle driver list as operations table"
 ```

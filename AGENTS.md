@@ -48,17 +48,23 @@
 ## Local Verification Questions
 
 - Before starting local verification, ask the user which mode they want.
-- Use these exact branching questions in order:
+- Before starting `5174`, `8080`, low-CPU hybrid, or full Docker, explicitly send the mode-selection questions below and wait for the user's answer.
+- Do not choose a mode on the user's behalf when the request is only "open it", "bring it up", or "run local verification". Ask first.
+- If you already started the wrong mode, stop, report the current state briefly, and ask which mode to keep.
+- Use this branching flow in order:
   1. `백엔드까지 같이 수정/검증할 건가요, 아니면 프론트만 빠르게 볼 건가요?`
-  2. `데이터는 로컬 localhost를 볼 건가요, 실제 프록시를 볼 건가요, 아니면 dev/staging 테스트 타깃을 볼 건가요?`
-  3. `실제 DB에 영향을 주는 CRUD를 허용하나요?`
+  2. `데이터는 로컬 localhost를 볼 건가요, 원격 실제 프록시를 볼 건가요, 아니면 원격 local-test(dev/staging) 타깃을 볼 건가요?`
+  3. `2번에서 실제 프록시를 골랐다면, 실제 DB에 영향을 주는 CRUD를 허용하나요?`
 - Map the answers like this:
   - Frontend-only + real proxy + CRUD allowed
     - use `front-web-console/.env.local`
     - current real proxy target is `https://hub.evnlogistics.com`
     - run `npm run dev`
     - do not bring up `8080` unless the user explicitly asks for full integration
-  - Frontend-only + safer remote target
+  - Frontend-only + real proxy + CRUD not allowed
+    - do not use `front-web-console/.env.local`
+    - switch to `front-web-console/.env.local-test` or ask for another safe target
+  - Frontend-only + remote local-test(dev/staging) target
     - use `front-web-console/.env.local-test`
     - run `npm run dev:local-test`
   - Backend development + local runtime
