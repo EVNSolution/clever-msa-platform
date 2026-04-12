@@ -39,20 +39,21 @@
 
 - 페이지 제목만 보고도 화면 목적이 바로 읽힌다.
 - 첫 화면 안에 핵심 카드가 최대한 많이 들어온다.
-- 페이지 전체가 아니라 카드 내부만 스크롤된다.
+- 데스크톱 safe branch에서는 페이지 전체가 아니라 카드 내부만 스크롤된다.
 - 각 카드에서 수정과 저장이 가까이 붙어 있다.
 - 모바일/낮은 height에서도 전체 레이아웃이 무너지지 않는다.
 
 ## Primary Decision
 
-`정산 기준` 화면을 `4카드 workboard`로 재구성한다.
+`정산 기준` 화면을 `metadata-driven compact workboard`로 재구성한다.
 
-카드 순서는 아래로 고정한다.
+현재 backend metadata 기준 예상 카드 순서는 아래다.
 
 1. `세율`
-2. `보험`
-3. `기준금액`
-4. `회사·플릿 단가표`
+2. `정산 반영 기준`
+3. `보험료율`
+4. `기타 기준`
+5. `회사·플릿 단가표`
 
 레이아웃 원칙:
 
@@ -61,7 +62,7 @@
 - 본문은 카드만 나열한다.
 - 데스크톱은 `2 x 2` 그리드다.
 - 좁은 width에서는 `1열`로 내린다.
-- 카드 높이는 viewport 기준으로 맞추고, 카드 body만 내부 스크롤한다.
+- 기본은 page scroll fallback을 허용하고, 데스크톱 width + 충분한 viewport height 구간에서만 카드 body 내부 스크롤을 켠다.
 
 ## Information Architecture
 
@@ -83,21 +84,24 @@
 
 ### 2. Card Mapping
 
-카드 구조는 아래 4개로 고정하되, 전역 설정 3카드의 실제 필드/라벨/입력 타입/단위는 모두 backend metadata를 따른다.
+카드 구조는 metadata section을 그대로 따르고, 실제 필드/라벨/입력 타입/단위는 모두 backend metadata를 따른다.
 
-1. `세율`
-2. `보험`
-3. `기준금액`
-4. `회사·플릿 단가표`
+현재 계약 기준:
+
+1. `tax_rates`
+2. `reported_amount`
+3. `insurance_rates`
+4. `thresholds`
+5. `회사·플릿 단가표`
 
 중요한 제약:
 
 - 프런트는 필드 키 목록으로 카드를 하드코딩하지 않는다.
-- 프런트는 metadata의 section 정보와 field metadata를 읽어, 해당 section을 카드 shell 안에 렌더한다.
-- 서버가 이미 `세율 / 보험 / 기준금액`에 해당하는 section 의미를 제공하면 그 section label만 카드 제목으로 치환한다.
-- 서버 응답이 이 3개 section으로 충분히 분리되지 않으면, 프런트는 키 기준 재분류를 추가하지 말고 metadata section 순서를 유지한 카드형 generic renderer로 남긴다.
+- 프런트는 metadata의 section 정보와 field metadata를 읽어, section 단위 카드 shell 안에 렌더한다.
+- 프런트는 section 경계를 다시 합치거나 나누기 위해 field key 기준 분류를 추가하지 않는다.
+- 새 metadata section이 추가되면 프런트는 해당 section을 새 카드로 렌더하고 누락시키지 않는다.
 
-즉 이 spec의 핵심은 `필드 하드코딩`이 아니라 `metadata section을 긴 세로 폼 대신 카드 shell에 재배치`하는 것이다.
+즉 이 spec의 핵심은 `필드 하드코딩`이 아니라 `metadata section을 긴 세로 폼 대신 compact card shell에 재배치`하는 것이다.
 
 `회사·플릿 단가표`는 기존처럼 회사 선택, 플릿 선택, 단가 입력 필드로 유지한다.
 
@@ -107,16 +111,14 @@
 
 저장은 카드 하단에 둔다.
 
-- `세율 저장`
-- `보험 저장`
-- `기준금액 저장`
+- metadata section 카드별 저장
 - `단가표 저장`
 
 저장 버튼은 카드 footer에 고정해, 카드 body를 스크롤해도 항상 같은 자리에서 보이게 한다.
 
 ### 2. Payload behavior
 
-전역 설정 카드 3개는 같은 `settlement-config`를 보지만, 각 카드에서 자기 필드만 PATCH한다.
+각 metadata section 카드는 같은 `settlement-config`를 보지만, 각 카드에서 자기 section field만 PATCH한다.
 
 이렇게 두는 이유:
 
@@ -139,13 +141,15 @@
 
 ### 1. Viewport-fitted page body
 
-`정산 처리` shell 안에서 `정산 기준` 본문은 남은 높이를 모두 쓴다.
+`정산 처리` shell 안에서 `정산 기준` 본문은 가능한 한 남은 높이를 활용한다.
 
 - 이 규칙은 `SettlementCriteriaPage` 최상위 scope class에만 적용한다.
 - 공통 `page-body`나 다른 정산 화면 전역 selector는 건드리지 않는다.
-- page-local workboard wrapper는 `available viewport height` 기준으로 잡는다.
-- page-local workboard wrapper만 `overflow: hidden`을 가진다.
-- 각 카드 body만 `overflow: auto`를 가진다.
+- 기본 동작은 `outer overflow visible + page scroll`이다.
+- `min-width: 980px` 이고 `min-height: 780px` 인 구간에서만 workboard wrapper에 `max-height: calc(100dvh - 17rem)`와 `overflow: hidden`을 둔다.
+- 그 데스크톱 구간에서만 각 카드 body가 `overflow: auto`를 가진다.
+- mobile browser viewport 변화나 낮은 height 구간에서는 card auto height + page scroll fallback을 유지하고 content clipping은 금지한다.
+- 이 화면은 parent `height: 100%` 체인에 기대지 않는다. inner-scroll 분기는 viewport calc만으로 동작해야 한다.
 
 이 원칙은 width 반응형보다 height 반응형을 더 우선한다.
 
@@ -181,11 +185,11 @@
 
 height가 낮을 때:
 
+- 데스크톱 safe branch 밖에서는 page scroll fallback을 유지한다
 - 카드 헤더 높이를 줄인다
-- 카드 body만 스크롤된다
 - 저장 footer는 계속 노출된다
 
-즉 사용자는 페이지 전체를 길게 흔들지 않고, 필요한 카드 안에서만 내려가며 수정한다.
+즉 사용자는 safe branch에서는 카드 안에서 수정하고, low-height/mobile branch에서는 clipped content 없이 page scroll로 내려가며 수정한다.
 
 ### Width 기준
 
@@ -222,10 +226,11 @@ width가 줄면 `1열`
 `SettlementCriteriaPage.test.tsx`에서 아래를 검증한다.
 
 1. 상단 제목만 남고 기존 설명/메타가 사라졌는지
-2. 카드 4개가 렌더되는지
+2. metadata section 카드 + 회사·플릿 단가표 카드가 렌더되는지
 3. 카드별 저장 버튼이 있는지
-4. 전역 설정 저장이 카드별 partial payload를 보내는지
+4. 전역 설정 저장이 section별 partial payload를 보내는지
 5. 회사·플릿 단가표 저장은 기존대로 동작하는지
+6. shell 높이 체인이 허용하는 범위에서만 내부 스크롤이 적용되는지
 
 ### Manual
 
@@ -238,11 +243,12 @@ width가 줄면 `1열`
 
 수동 확인 항목:
 
-1. 첫 화면에서 카드 구조가 한눈에 들어오는지
+1. 첫 화면에서 compact card 구조가 한눈에 들어오는지
 2. page-local workboard만 height를 제어하고 다른 공통 layout은 깨지지 않는지
-3. 카드 body만 스크롤되는지
-4. 저장 버튼이 카드 맥락 안에 붙어 보이는지
-5. 작은 height에서도 footer/button이 가려지지 않는지
+3. `min-width: 980px` and `min-height: 780px` 구간에서는 카드 body만 스크롤되는지
+4. 그보다 작은 width/height 또는 모바일 viewport 변화에서는 page scroll fallback이 자연스럽게 동작하는지
+5. 저장 버튼이 카드 맥락 안에 붙어 보이는지
+6. 작은 height에서도 footer/button이 가려지지 않는지
 
 ## Implementation Boundary
 
@@ -260,8 +266,8 @@ width가 줄면 `1열`
 
 아래가 충족되면 이번 slice 완료로 본다.
 
-1. `/settlements/criteria`가 `4카드 workboard`로 바뀐다.
-2. 페이지 전체보다 카드 내부 스크롤이 우선된다.
+1. `/settlements/criteria`가 metadata-driven compact workboard로 바뀐다.
+2. shell 높이 체인이 허용하는 범위에서 카드 내부 스크롤이 우선된다.
 3. 저장 액션이 카드 하단에 고정된다.
 4. 기존 장황한 설명/메타가 제거된다.
-5. `5174`에서 height 포함 반응형 확인이 끝난다.
+5. `5174` 또는 선택된 검증 모드에서 height 포함 반응형 확인이 끝난다.
