@@ -141,8 +141,9 @@ runtime container and gateway naming은 `driver-ops-api` / `/api/driver-ops/`를
 
 ### Attendance Rule Status
 
-- current runtime에서는 `pending_source`로 고정한다.
-- 이유는 attendance truth가 아직 pending `/api/schedule/*` 분해 범위에 남아 있기 때문이다.
+- current runtime attendance truth owner는 `service-attendance-registry`다.
+- driver 360 summary는 아직 rule status만 노출하지만, 근태 정본 부재를 전제로 삼지 않는다.
+- read-model fan-out이 붙기 전까지는 attendance rule status를 `attendance_registry_backed`로 본다.
 
 ### Delivery History Rule Status
 

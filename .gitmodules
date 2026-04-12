@@ -76,3 +76,6 @@
 [submodule "development/integration-local-stack"]
 	path = development/integration-local-stack
 	url = https://github.com/EVNSolution/integration-local-stack
+[submodule "development/service-attendance-registry"]
+	path = development/service-attendance-registry
+	url = https://github.com/EVNSolution/service-attendance-registry

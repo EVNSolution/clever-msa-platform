@@ -19,6 +19,7 @@
 | `service-organization-registry` | `organization-master-api` | `/api/org/` | `active runtime` | 회사와 플릿 마스터 |
 | `service-driver-profile` | `driver-profile-api` | `/api/drivers/` | `active runtime` | 기사 기본 프로필 정본 |
 | `service-personnel-document-registry` | `personnel-document-registry-api` | `/api/personnel-documents/` | `active runtime` | 기사 인사문서 메타데이터 정본 |
+| `service-attendance-registry` | `attendance-registry-api` | `/api/attendance/` | `active runtime` | 기사 x 일자 근태 truth와 dispatch-derived signal 해석 |
 | `service-delivery-record` | `delivery-record-api` | `/api/delivery-record/` | `active runtime` | 배송 원천 기록과 일별 집계 입력 snapshot 정본 |
 | `service-settlement-payroll` | `settlement-payroll-api` | `/api/settlements/` | `active runtime` | 정산 결과 write owner |
 | `service-settlement-registry` | `settlement-registry-api` | `/api/settlement-registry/` | `active runtime` | 전역 정산 설정, 회사·플릿 단가표, 남아 있는 정책 호환 surface |

@@ -31,6 +31,7 @@
 
 | Gate | Owner service | settlement 쪽 사용 이유 |
 | --- | --- | --- |
+| `/api/attendance/` | `service-attendance-registry` | day-off / exception 제외와 settlement start gate에 필요한 근태 truth다 |
 | `/api/drivers/` | `service-driver-profile` | settlement read summary에 기사 기본 정보가 필요할 수 있다 |
 | `/api/org/` | `service-organization-registry` | company, fleet 기준 정보와 assignment scope 확인에 필요하다 |
 | `/api/auth/` | `service-account-access` | settlement 화면과 admin flow의 인증 진입점이다 |
@@ -43,9 +44,9 @@
 4. 계산 입력 원천과 일별 입력 snapshot은 `/api/delivery-record/`로만 읽거나 적재한다.
 5. `driver-ops`, `driver-360` 같은 read consumer는 payroll direct read 대신 `/api/settlement-ops/`를 쓴다.
 6. `service-settlement-operations-view`는 필요 시 `/api/settlements/`, `/api/delivery-record/`, `/api/drivers/`, `/api/org/` upstream을 fan-out으로 읽을 수 있다.
-7. 현재 settlement 시작 판정은 delivery history 존재 여부로만 잡는다.
-8. 현재 개발 단계에서는 delivery history 존재를 근태 존재의 임시 신호로만 사용한다.
-9. 위 임시 근태 판정은 read-only contract에만 두고, payroll result truth나 delivery source truth에는 저장하지 않는다.
+7. dispatch confirm 이후 settlement 입력 생성 전에는 `/api/attendance/` truth를 먼저 조회한다.
+8. `service-delivery-record`와 `service-settlement-payroll`은 `final_status=worked`만 계산 대상으로 본다.
+9. `day_off`와 `exception`은 attendance upstream truth로 제외하고, payroll result truth가 이를 다시 소유하지 않는다.
 
 ## 금지 연결
 
@@ -66,11 +67,9 @@
 
 ## current read-only inference
 
-1. `GET /api/settlement-ops/drivers/<driver_id>/latest-settlement/`는 payroll latest summary와 별도로 delivery history 존재 여부를 같이 읽을 수 있다.
-2. current inference는 `service-delivery-record`의 `DeliveryRecord` 존재 여부만 사용한다.
-3. current inference는 `confirmed` delivery record 기준으로만 판단한다.
-4. `delivery_history_present=true`이면 current 개발 단계에서는 `attendance_inferred_from_delivery_history=true`로 본다.
-5. 이 값은 임시 read flag일 뿐이고, attendance 정본이나 settlement result truth를 대신하지 않는다.
+1. `GET /api/settlement-ops/drivers/<driver_id>/latest-settlement/`가 legacy read flag를 유지하더라도 settlement start gate는 `/api/attendance/`가 담당한다.
+2. `delivery_history_present` 기반 attendance inference는 deprecated다.
+3. current settlement runtime은 `service-attendance-registry`의 `final_status`를 authoritative truth로 사용한다.
 
 ## 현재 runtime truth 연결
 
@@ -80,6 +79,7 @@
 2. `/api/settlement-ops/` -> `settlement-ops-api`
 3. `/api/settlement-registry/` -> `settlement-registry-api`
 4. `/api/delivery-record/` -> `delivery-record-api`
+5. `/api/attendance/` -> `attendance-registry-api`
 
 ## 연결 문서
 

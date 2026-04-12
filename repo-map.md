@@ -45,6 +45,7 @@
 | `service-telemetry-listener` | service | MQTT ingress worker runtime | MQTT subscribe, payload forwarding, retry/dead-letter 확장 ingress worker | `development/service-telemetry-listener/` | `migrated-target` |
 | `service-telemetry-dead-letter` | service | failed telemetry payload append-only storage와 admin read runtime | append-only dead-letter 저장, admin read, 수동 재처리 출발점 | `development/service-telemetry-dead-letter/` | `migrated-target` |
 | `service-settlement-registry` | service | 전역 정산 설정, 회사·플릿 단가표, legacy 정책 호환 surface runtime | 정산 기준 registry, 전역 계산 규칙, 회사·플릿 운영 단가표 | `development/service-settlement-registry/` | `migrated-target` |
+| `service-attendance-registry` | service | `기사 x 일자` 근태 truth runtime | dispatch-derived signal을 daily attendance truth로 해석하는 registry | `development/service-attendance-registry/` | `migrated-target` |
 | `service-delivery-record` | service | 배송 원천 기록과 일별 집계 입력 snapshot runtime | 배송원별 원천 기록과 집계 입력 | `development/service-delivery-record/` | `migrated-target` |
 | `service-settlement-payroll` | service | 정산 write owner runtime, `SettlementRun` / `SettlementItem` write | 정산 결과 write owner, `deduction` / `incentive` / `payout_status` 정본 | `development/service-settlement-payroll/` | `migrated-target` |
 | `service-settlement-operations-view` | service | 정산 read-only operations-view runtime | 정산 결과와 운영 조회용 read model | `development/service-settlement-operations-view/` | `migrated-target` |
@@ -84,6 +85,11 @@
 - `SettlementRun`, `SettlementItem`, `deduction`, `incentive`, `payout_status`를 소유한다.
 - 정산 정책 registry와 delivery source input truth는 소유하지 않는다.
 
+### `service-attendance-registry`
+- `기사 x 일자` daily truth owner다.
+- phase 1 active source는 dispatch 하나만 둔다.
+- `00`은 payroll rule이 아니라 attendance 해석 규칙으로 처리한다.
+
 ### `service-telemetry-listener`
 - MQTT ingress worker만 소유한다.
 - telemetry DB 쓰기, 정규화, snapshot/diagnostic 저장은 `service-telemetry-hub`에 남긴다.
@@ -94,6 +100,7 @@
 - 자동 replay/status workflow는 아직 들이지 않는다.
 
 ### settlement 4축
+- `service-attendance-registry`는 settlement 바깥의 upstream truth다.
 - `service-settlement-registry`는 규칙과 기준만 소유한다.
 - `service-delivery-record`는 source input만 소유한다.
 - `service-settlement-payroll`는 result write owner다.
