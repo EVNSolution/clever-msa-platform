@@ -41,6 +41,7 @@ jobs:
         run: |
           required=(
             development/service-account-access/requirements.txt
+            development/service-attendance-registry/requirements.txt
             development/service-organization-registry/requirements.txt
             development/service-driver-profile/requirements.txt
             development/service-personnel-document-registry/requirements.txt
@@ -84,6 +85,7 @@ jobs:
           python -m pip install --upgrade pip
           requirements=(
             development/service-account-access/requirements.txt
+            development/service-attendance-registry/requirements.txt
             development/service-organization-registry/requirements.txt
             development/service-driver-profile/requirements.txt
             development/service-personnel-document-registry/requirements.txt
