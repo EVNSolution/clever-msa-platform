@@ -83,36 +83,23 @@
 
 ### 2. Card Mapping
 
-현재 metadata-driven field 구조는 유지하되, 화면에서는 아래 카드로 재배치한다.
+카드 구조는 아래 4개로 고정하되, 전역 설정 3카드의 실제 필드/라벨/입력 타입/단위는 모두 backend metadata를 따른다.
 
-#### 세율 카드
+1. `세율`
+2. `보험`
+3. `기준금액`
+4. `회사·플릿 단가표`
 
-- `income_tax_rate`
-- `vat_tax_rate`
-- `reported_amount_rate`
+중요한 제약:
 
-#### 보험 카드
+- 프런트는 필드 키 목록으로 카드를 하드코딩하지 않는다.
+- 프런트는 metadata의 section 정보와 field metadata를 읽어, 해당 section을 카드 shell 안에 렌더한다.
+- 서버가 이미 `세율 / 보험 / 기준금액`에 해당하는 section 의미를 제공하면 그 section label만 카드 제목으로 치환한다.
+- 서버 응답이 이 3개 section으로 충분히 분리되지 않으면, 프런트는 키 기준 재분류를 추가하지 말고 metadata section 순서를 유지한 카드형 generic renderer로 남긴다.
 
-- `national_pension_rate`
-- `health_insurance_rate`
-- `medical_insurance_rate`
-- `employment_insurance_rate`
-- `industrial_accident_insurance_rate`
-- `special_employment_insurance_rate`
-- `special_industrial_accident_insurance_rate`
+즉 이 spec의 핵심은 `필드 하드코딩`이 아니라 `metadata section을 긴 세로 폼 대신 카드 shell에 재배치`하는 것이다.
 
-#### 기준금액 카드
-
-- `two_insurance_min_settlement_amount`
-- `meal_allowance`
-
-#### 회사·플릿 단가표 카드
-
-- 회사 선택
-- 플릿 선택
-- `box_sale_unit_price`
-- `box_purchase_unit_price`
-- `overtime_fee`
+`회사·플릿 단가표`는 기존처럼 회사 선택, 플릿 선택, 단가 입력 필드로 유지한다.
 
 ## Interaction Decision
 
@@ -154,9 +141,11 @@
 
 `정산 처리` shell 안에서 `정산 기준` 본문은 남은 높이를 모두 쓴다.
 
-- outer content는 `min-height`가 아니라 `available viewport height` 기준으로 잡는다
-- page body는 `overflow: hidden`
-- 각 카드 body만 `overflow: auto`
+- 이 규칙은 `SettlementCriteriaPage` 최상위 scope class에만 적용한다.
+- 공통 `page-body`나 다른 정산 화면 전역 selector는 건드리지 않는다.
+- page-local workboard wrapper는 `available viewport height` 기준으로 잡는다.
+- page-local workboard wrapper만 `overflow: hidden`을 가진다.
+- 각 카드 body만 `overflow: auto`를 가진다.
 
 이 원칙은 width 반응형보다 height 반응형을 더 우선한다.
 
@@ -240,10 +229,17 @@ width가 줄면 `1열`
 
 ### Manual
 
-`5174` 실프록시 기준으로 아래를 본다.
+로컬 수동 검증은 AGENTS의 verification mode selection을 먼저 따른다.
 
-1. 첫 화면에서 카드 4개 구조가 한눈에 들어오는지
-2. 페이지 전체가 길게 밀리지 않는지
+우선순위:
+
+1. mock/unit 기준으로 카드 구조와 overflow 동작을 먼저 확인
+2. 실제 `5174` 검증은 사용자가 모드를 선택한 뒤에만 진행
+
+수동 확인 항목:
+
+1. 첫 화면에서 카드 구조가 한눈에 들어오는지
+2. page-local workboard만 height를 제어하고 다른 공통 layout은 깨지지 않는지
 3. 카드 body만 스크롤되는지
 4. 저장 버튼이 카드 맥락 안에 붙어 보이는지
 5. 작은 height에서도 footer/button이 가려지지 않는지
