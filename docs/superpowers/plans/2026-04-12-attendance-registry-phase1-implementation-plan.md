@@ -362,7 +362,7 @@ Expected:
 - `source_kind=dispatch`
 - `source_reference=dispatch_upload_batch_id`
 - raw scope fields 포함
-- `small_region_text == "00"`이면 `suggested_status=day_off`
+- `box_count == 0 && household_count == 0`이면 `suggested_status=day_off`
 - 그 외 matched driver row는 `suggested_status=worked` 기본값
 
 - [ ] **Step 3: confirm path에 attendance sync를 연결한다**
