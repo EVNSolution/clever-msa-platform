@@ -257,12 +257,14 @@ dispatch confirm 시 아래 대상만 attendance signal로 보낸다.
 
 ### 3. `00` 해석 규칙
 
-`small_region_text == "00"`은 payroll rule이 아니라 dispatch-derived attendance 해석 입력이다.
+`small_region_text == "00"`은 배차표상의 `배송없음` 표기다.
+
+즉 `00`은 payroll rule이 아니라 dispatch-derived attendance 해석 입력이다.
 
 phase 1 current truth는 아래로 고정한다.
 
 1. `00`이고 positive workload가 없으면 `day_off`
-2. `00`인데 workload가 있거나 의미가 모호하면 `exception`
+2. `00`인데 workload가 있으면 `배송없음` 표기와 실제 row payload가 충돌하므로 `exception`
 3. non-`00` matched row는 기본적으로 `worked`
 
 이 규칙을 두는 이유는 `00`을 조용히 정산 대상으로 밀어 넣지 않기 위해서다.
