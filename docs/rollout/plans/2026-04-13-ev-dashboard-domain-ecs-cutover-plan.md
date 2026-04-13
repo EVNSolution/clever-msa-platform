@@ -140,6 +140,42 @@ GitHub Actions
 
 즉 이번 rehearsal은 **front-only ECS pilot** 이며, same-host `/api` 완전 전환이나 Swagger/Django admin 공개까지는 아직 포함하지 않는다.
 
+## Current Auth Slice Result (2026-04-14, KST)
+
+이후 auth/docs/admin slice 를 위한 follow-up deploy가 수행됐다.
+
+- infra workflow run: `24348840946`
+- follow-up gateway image fixes:
+  - `edge-api-gateway` build `24349805208`
+  - `edge-api-gateway` build `24350157862`
+- stack/runtime:
+  - dedicated `service-account-access` Postgres
+  - dedicated Redis
+  - `edge-api-gateway` desired count `1`
+  - `service-account-access` desired count `1`
+
+public smoke 결과:
+
+- `https://next.ev-dashboard.com` -> `200`
+- `https://api.next.ev-dashboard.com/api/auth/health/` -> `200`
+- `https://api.next.ev-dashboard.com/openapi.yaml` -> `200`
+- `https://api.next.ev-dashboard.com/swagger/` -> `200`
+- `https://api.next.ev-dashboard.com/redoc/` -> `200`
+- `https://api.next.ev-dashboard.com/admin/account-access/` -> `302` to login
+- `https://api.next.ev-dashboard.com/admin/account-access/login/` -> `200`
+- `https://api.next.ev-dashboard.com/static/admin/css/base.css` -> `200`
+
+이 success의 boundary는 아래다.
+
+- confirmed:
+  - ALB / ACM / Route53 alias
+  - `web-console` / `account-auth-api` service-connect-backed ingress
+  - auth/docs/admin slice
+- not yet implied:
+  - 전체 backend graph cutover
+  - 기존 `test-test-sh` retire 완료
+  - apex `ev-dashboard.com` 최종 전환
+
 ## Execution Boundary
 
 이번 cutover는 아래 경계를 벗어나지 않는다.
@@ -366,7 +402,7 @@ GitHub Actions
 - 단점:
   - first cutover scope가 커진다.
 
-현재 기준으로는 **Option A -> Option B** 순서를 권장한다.
+현재 기준으로는 **Option A 완료 -> auth/docs/admin 포함한 Option B 부분 검증 완료** 상태다.
 
 ## Risks
 
@@ -405,6 +441,7 @@ ECS/ALB/ACM 검증 없이 apex를 바로 바꾸면 장애 범위가 커진다.
 - same-host `/api/*` ingress 정상
 - `web-console` / `account-auth-api` resolution 정상
 - Swagger / Redoc / Django admin 정상
+- auth slice 전용 Postgres / Redis 정상
 
 ## Done Criteria
 
@@ -424,4 +461,4 @@ ECS/ALB/ACM 검증 없이 apex를 바로 바꾸면 장애 범위가 커진다.
 - 3: 완료 (`front-web-console` dev rehearsal 성공)
 - 4: 완료
 - 5: 완료
-- 8: 미완료 (`edge-api-gateway` / `service-account-access` desired count 0)
+- 8: 완료 (`api.next.ev-dashboard.com` auth/docs/admin smoke 성공)

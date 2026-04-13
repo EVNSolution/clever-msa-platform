@@ -106,6 +106,35 @@ GitHub repo
 
 추가로, `hub.evnlogistics.com/api` 는 `Origin: https://next.ev-dashboard.com` 에 대해 `Access-Control-Allow-Origin` 을 반환하는 것이 확인됐다. 즉 이 pilot은 same-host `/api` 없이도 read-mostly front smoke를 수행할 수 있다.
 
+## Auth Slice Dev Evidence
+
+2026-04-14 KST 기준, auth/docs/admin slice도 dev에서 externally verified 되었다.
+
+- infra workflow run:
+  - `24348840946` `service-account-access` 전용 Postgres/Redis 포함 auth-slice infra deploy 성공
+- follow-up gateway image fixes:
+  - `edge-api-gateway` build `24349805208`
+  - `edge-api-gateway` build `24350157862`
+- public endpoints:
+  - `https://api.next.ev-dashboard.com/api/auth/health/` -> `200`
+  - `https://api.next.ev-dashboard.com/openapi.yaml` -> `200`
+  - `https://api.next.ev-dashboard.com/swagger/` -> `200`
+  - `https://api.next.ev-dashboard.com/redoc/` -> `200`
+  - `https://api.next.ev-dashboard.com/admin/account-access/` -> `302` to login
+  - `https://api.next.ev-dashboard.com/admin/account-access/login/` -> `200`
+  - `https://api.next.ev-dashboard.com/static/admin/css/base.css` -> `200`
+
+이 성공의 의미는 제한적이다.
+
+- 성공 범위:
+  - `front-web-console`
+  - `edge-api-gateway`
+  - `service-account-access`
+  - dedicated Postgres + Redis
+- 아직 비범위:
+  - full backend graph migration
+  - `organization-master-api`, `driver-profile-api` 등 다른 내부 서비스의 ECS 이전
+
 ## Scope Boundary
 
 이 전환 기준이 적용되는 범위:
@@ -240,6 +269,7 @@ pilot 선택 기준:
 - CDK bootstrap asset bucket 권한 부족
 - `infra/package.json` 의존성 또는 `ts-node`, `@types/node` 누락
 - ACM DNS validation 대기 시간을 deploy hang 으로 오판
+- RDS engine version 지원을 region별로 확인하지 않고 generic version(`16.4`)를 고정
 
 ### 4. ECS task cannot pull image
 
@@ -263,6 +293,12 @@ pilot 선택 기준:
 - 따라서 ALB가 `ev-dashboard.com` 의 `/api/*` 를 `edge-api-gateway` 로 보내지 않으면 첫 화면에서도 바로 깨진다.
 - `edge-api-gateway` 는 이미 `web-console:5174`, `account-auth-api:8000` 같은 short upstream 이름을 사용하므로, ECS slice도 Service Connect 또는 동등한 service discovery로 그 이름을 보존해야 한다.
 - front-only pilot에서는 remote API base만 넣으면 끝나는 게 아니다. 새 origin에 대한 CORS 허용도 실제 endpoint로 확인해야 한다.
+
+### 8. ECS gateway fixes can require two passes
+
+- 첫 fix는 Docker DNS resolver `127.0.0.11` 를 AWS VPC resolver 전제로 교체하는 것이었다.
+- 둘째 fix는 core routes를 variable-based `proxy_pass` 에서 direct upstreams 로 바꾸는 것이었다.
+- 즉 `service-account-access` 가 healthy 라고 해서 gateway layer가 자동으로 맞는 것은 아니다. public smoke 기준으로 `/api/auth/health/`, `/openapi.yaml`, `/swagger/`, `/admin/account-access/` 를 같이 봐야 한다.
 
 ## Later-Phase Alternative
 

@@ -37,6 +37,23 @@ Injecting `VITE_API_BASE_URL=https://.../api` is only half of a front-first pilo
 
 `api.next.ev-dashboard.com` can exist in Route53 and ALB listener rules before any API task is running. With `edge-api-gateway` desired count set to `0`, the public result is a real `503` from the load balancer. Treat that as an expected front-only pilot state, not as proof that the ALB or certificate is broken.
 
+## Pin Supported Engine Versions
+
+The first auth-slice infra deploy failed before any app code ran because the stack asked RDS for a PostgreSQL engine version that Seoul does not currently offer. In this environment, `16.4` failed and `16.13` succeeded. Treat engine version support as a live AWS constraint, not as a generic Postgres choice.
+
+## Service Connect Names Are Not Docker DNS
+
+`edge-api-gateway` came from a Docker Compose world where `resolver 127.0.0.11` worked. On ECS/Fargate, that resolver is wrong. For this stack, the safe rule is: do not carry Docker DNS assumptions into ECS unchanged.
+
+## Direct Upstreams Beat Variable DNS For Core Routes
+
+The first ECS gateway fix replaced the Docker resolver, but `proxy_pass` through variables still caused `account-auth-api` to resolve the wrong way at request time. For the core `ev-dashboard` routes, the stable pattern is direct upstreams:
+
+- `proxy_pass http://account-auth-api:8000;`
+- `proxy_pass http://web-console:5174;`
+
+Use request-time variable resolution only where the upstream really needs to stay dynamic.
+
 ## Let Admin Own Its Prefix
 
 The important lesson from this patch is that Django admin should own the public prefix it serves. Hiding a prefixed route behind a gateway rewrite back to `/admin/` breaks redirects, login flow, and follow-up asset requests.
@@ -60,3 +77,15 @@ Local targeted tests are the minimum gate, but edge-facing routes still need a p
 - `/static/admin/css/base.css`
 
 If a larger suite is blocked by local DB credentials or missing daemons, write down the blocker instead of pretending the whole system was verified.
+
+## Auth Slice Success Is Narrow On Purpose
+
+The first successful `api.next.ev-dashboard.com` deploy proves only the auth/docs/admin slice:
+
+- `/api/auth/health/`
+- `/openapi.yaml`
+- `/swagger/`
+- `/redoc/`
+- `/admin/account-access/`
+
+That is enough to validate the first ECS backend slice, but it is not proof that the whole backend graph is already migrated.
