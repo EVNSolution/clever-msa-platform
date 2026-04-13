@@ -111,6 +111,18 @@ GitHub Actions
 -> Route53 alias (ev-dashboard.com)
 ```
 
+## Execution Boundary
+
+이번 cutover는 아래 경계를 벗어나지 않는다.
+
+- current full-system deploy truth는 계속 `clever-deploy-control -> SSM -> EC2 app host -> docker compose` 다.
+- 하지만 이 current path는 `ev-dashboard.com` ECS migration 실행 경로가 아니다.
+- 첫 migration slice는 `front-web-console`, `edge-api-gateway`, `service-account-access` 세 application repo와 `infra-ev-dashboard-platform` 전용 infra repo로 고정한다.
+- shared ALB, ECS services, ACM, Route53, ECS deploy workflow는 `infra-ev-dashboard-platform` 이 소유한다.
+- `front-web-console` apex namespace와 `api.ev-dashboard.com` API/admin/docs namespace는 다시 하나의 `/admin/*` 공간으로 합치지 않는다.
+
+즉, 이번 작업은 **current compose 운영을 유지한 채, `ev-dashboard.com` entry slice만 별도 ECS/CDK runtime으로 교체하는 migration** 이다.
+
 ## Recommended Runtime Shape
 
 ### Entry and TLS
@@ -234,8 +246,8 @@ GitHub Actions
 
 권장 검증 순서:
 
-1. `front-web-console` ECS/CDK stack 생성
-2. 필요하면 `edge-api-gateway` ECS/CDK stack 생성
+1. `infra-ev-dashboard-platform` 에서 shared ALB/ECS/CDK stack 생성
+2. 이 stack 안에 `front-web-console`, `edge-api-gateway`, `service-account-access` 첫 migration slice를 연결
 3. ALB DNS name으로 직접 접속 검증
 4. Route53에 임시 검증 레코드 추가
    - 예: `next.ev-dashboard.com`
@@ -243,7 +255,7 @@ GitHub Actions
 6. `api.ev-dashboard.com/admin/account-access/` 접근 제어 확인
 7. HTTPS, health check, 로그, rollback 검증
 
-즉, `ev-dashboard.com` apex를 바로 실험용으로 쓰지 않는다.
+즉, `ev-dashboard.com` apex를 바로 실험용으로 쓰지 않고, `clever-deploy-control` full-system compose deploy도 이 검증 대체 수단으로 쓰지 않는다.
 
 ### Phase 2. ACM and Route53 preparation
 
@@ -285,7 +297,7 @@ GitHub Actions
 
 가장 안전한 첫 전환:
 
-- `front-web-console` 만 ECS로 올린다.
+- `infra-ev-dashboard-platform` 에서 `front-web-console` 만 먼저 ECS로 올린다.
 - API는 기존 backend target을 그대로 사용한다.
 - 장점:
   - 사용자-facing domain을 먼저 ECS에 얹어볼 수 있다.
@@ -299,7 +311,7 @@ GitHub Actions
 
 도메인 진입점 전체를 같이 옮기려면:
 
-- `front-web-console` + `edge-api-gateway` 를 같이 ECS로 올린다.
+- `infra-ev-dashboard-platform` 에서 `front-web-console` + `edge-api-gateway` 를 같이 ECS로 올린다.
 - `/` 는 front, `/api/*` 는 edge로 ALB rule을 둔다.
 - 장점:
   - domain entrypoint를 runtime boundary까지 같이 정리할 수 있다.
@@ -339,9 +351,10 @@ ECS/ALB/ACM 검증 없이 apex를 바로 바꾸면 장애 범위가 커진다.
 아래가 되면 cutover 준비가 완료된 것으로 본다.
 
 1. 기존 `test-test-sh` retire 방식(scale-down 또는 delete) 확정 완료
-2. `front-web-console` 또는 `front-web-console + edge-api-gateway` ECS stack dev 검증 완료
-3. ACM validation 완료
-4. `next.ev-dashboard.com` 같은 임시 검증 주소에서 HTTPS 확인 완료
-5. apex alias cutover / rollback runbook 준비 완료
-6. 기존 `test-test-sh` direct-IP runtime의 보존/폐기 기준 확정 완료
-7. `api.ev-dashboard.com` Swagger 와 Django admin 접근 제어 검증 완료
+2. `infra-ev-dashboard-platform` 이 shared ALB/ECS/Route53 owner로 문서와 workspace에 고정 완료
+3. `front-web-console` 또는 `front-web-console + edge-api-gateway` ECS stack dev 검증 완료
+4. ACM validation 완료
+5. `next.ev-dashboard.com` 같은 임시 검증 주소에서 HTTPS 확인 완료
+6. apex alias cutover / rollback runbook 준비 완료
+7. 기존 `test-test-sh` direct-IP runtime의 보존/폐기 기준 확정 완료
+8. `api.ev-dashboard.com` Swagger 와 Django admin 접근 제어 검증 완료

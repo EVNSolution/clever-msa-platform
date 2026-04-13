@@ -31,6 +31,7 @@
 | Target repo | Category | Current role | Future role | Current source | Status |
 | --- | --- | --- | --- | --- | --- |
 | `integration-local-stack` | integration | 현재 compose, env, seed, smoke 자산을 한곳에서 관리 | 분리된 repo들을 로컬에서 묶는 통합 실행 셸 | `development/integration-local-stack/` | `migrated-target` |
+| `infra-ev-dashboard-platform` | infra | `ev-dashboard.com` ECS/CDK cutover용 shared runtime infra owner | `front-web-console`, `edge-api-gateway`, `service-account-access` slice의 ALB, ECS, ACM, Route53, deploy workflow 전용 infra repo | `development/infra-ev-dashboard-platform/` | `migrated-target` |
 | `edge-api-gateway` | edge | gateway routing과 reverse proxy | 다중 서비스의 단일 진입 edge | `development/edge-api-gateway/` | `migrated-target` |
 | `front-web-console` | front | surviving 단일 웹 콘솔 | 권한 기반 통합 웹 UI 정본 | `development/front-web-console/` | `migrated-target` |
 | `service-organization-registry` | service | 회사/플릿 정본 | 조직 기준 마스터 registry | `development/service-organization-registry/` | `migrated-target` |
@@ -79,6 +80,12 @@
 ### `service-dispatch-operations-view`
 - 배차 계획과 현재 배정 truth를 비교하는 read-model runtime이다.
 - 배차 정본 쓰기나 현재 배정 정본 쓰기를 소유하지 않는다.
+
+### `infra-ev-dashboard-platform`
+- `ev-dashboard.com` / `api.ev-dashboard.com` entry slice 전용 infra repo다.
+- shared ALB, ECS services, ACM, Route53 alias, deploy workflow를 소유한다.
+- app code, shared library, full-platform catch-all infra repo로 확장하지 않는다.
+- 생성 시점부터 linked child repo로 등록해야 한다.
 
 ### `service-settlement-payroll`
 - 정산 결과 write owner다.

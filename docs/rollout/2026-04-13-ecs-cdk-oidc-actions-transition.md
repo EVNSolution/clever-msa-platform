@@ -73,6 +73,21 @@ GitHub repo
 
 즉, 이번 결정은 **제어면과 인증면은 유지하고 런타임만 ECS/CDK로 확장하는 결정**이다.
 
+## Locked First Migration Slice
+
+첫 migration slice는 아래 네 repo로 고정한다.
+
+- `front-web-console`
+- `edge-api-gateway`
+- `service-account-access`
+- `infra-ev-dashboard-platform`
+
+의미는 아래와 같다.
+
+- `front-web-console`, `edge-api-gateway`, `service-account-access` 는 application/image owner다.
+- `infra-ev-dashboard-platform` 은 `ev-dashboard.com`, `api.ev-dashboard.com` 용 shared ALB, ECS services, ACM, Route53, deploy workflow를 소유하는 전용 infra repo다.
+- 이 slice가 real smoke check를 통과하기 전까지 다른 CLEVER runtime repo를 ECS migration 범위에 넣지 않는다.
+
 ## Scope Boundary
 
 이 전환 기준이 적용되는 범위:
@@ -81,12 +96,14 @@ GitHub repo
 - CDK `infra/`를 동반하는 서비스 repo
 - EC2 경로와 병행 검증할 pilot stack
 - 향후 central deploy control-plane의 ECS 어댑터 확장 검토
+- `front-web-console`, `edge-api-gateway`, `service-account-access` + `infra-ev-dashboard-platform` 첫 migration slice
 
 이 문서 범위 밖:
 
 - 현재 `clever-deploy-control`의 EC2/SSM 배포를 즉시 폐기
 - 모든 서비스 repo를 한 번에 ECS/CDK로 이동
 - 현재 dev/stage/prod host 운영 규칙 폐기
+- `clever-deploy-control` full-system compose deploy를 `ev-dashboard.com` ECS cutover 실행 경로로 사용하는 것
 
 ## CLEVER-Specific Mapping
 
@@ -95,6 +112,8 @@ CLEVER 현재 구조에 맞춘 매핑은 아래다.
 ### 1. 코드 소유권
 
 - application source of truth는 계속 각 `development/<repo>`가 가진다.
+- `ev-dashboard.com` shared runtime stack은 `development/infra-ev-dashboard-platform` 전용 infra repo가 가진다.
+- application repo는 image build와 runtime contract만 소유하고, shared ALB/ACM/Route53/CDK stack은 소유하지 않는다.
 - ECS/CDK 경로의 `infra/`는 해당 서비스 repo 내부 또는 그 서비스 전용 infra repo에 둔다.
 - root workspace는 rollout truth와 boundary 문서만 유지한다.
 
@@ -136,12 +155,12 @@ CLEVER 현재 구조에 맞춘 매핑은 아래다.
 
 권장 순서는 아래다.
 
-1. pilot 대상 1개를 정한다.
-2. 해당 repo에 ECS/Fargate + CDK `infra/`를 만든다.
-3. repo 안에 image build workflow와 ECS/CDK deploy workflow를 만든다.
+1. 첫 migration slice를 `front-web-console`, `edge-api-gateway`, `service-account-access`, `infra-ev-dashboard-platform` 으로 고정한다.
+2. `infra-ev-dashboard-platform` repo에 ECS/Fargate + CDK stack을 만든다.
+3. app repo 안에 image build workflow를 만들고, ECS/CDK deploy workflow는 infra repo가 수행한다.
 4. GitHub OIDC trust와 environment-specific deploy role을 연결한다.
-5. ECR image push -> `cd infra && npx cdk deploy` 경로를 만든다.
-6. dev 환경에서 deploy/rollback/log/alert를 먼저 검증한다.
+5. ECR image push -> infra repo `cdk deploy` 경로를 만든다.
+6. dev 환경에서 deploy/rollback/log/alert/public smoke를 먼저 검증한다.
 7. 이후에만 stage/prod 또는 central control-plane 연계를 검토한다.
 
 pilot 선택 기준:
@@ -161,11 +180,13 @@ pilot 선택 기준:
 
 - 하나의 예제 문서/워크플로 안에서 `GitHub Actions + OIDC + ECS`와 `CodeConnections + CodeBuild`를 섞지 않는다.
 - current path 문서는 current path만, new ECS path 문서는 new ECS path만 설명한다.
+- `ev-dashboard.com` cutover 예제는 `clever-deploy-control` full-system compose deploy를 실행 경로로 사용하지 않는다.
 
 ### 3. Runtime boundary
 
 - 이 전환은 source/build/deploy control-plane을 유지한 채 runtime target을 바꾸는 것이다.
 - 서비스 boundary, docs truth, runtime catalog 책임은 별도 문서에서 계속 관리한다.
+- `ev-dashboard.com/admin/*` apex namespace는 `front-web-console` 이 이미 소유하므로, Django admin을 같은 namespace로 다시 합치지 않는다.
 
 ### 4. Cutover condition
 

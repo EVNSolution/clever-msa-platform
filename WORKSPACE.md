@@ -69,6 +69,8 @@ clever-msa-platform/
 현재 목표 repo 이름 규칙:
 - `integration-*`
   - 로컬 통합 실행 셸
+- `infra-*`
+  - 특정 runtime slice의 ALB, ECS, Route53, CDK deploy를 소유하는 전용 infra repo
 - `edge-*`
   - gateway, edge routing
 - `front-*`
@@ -91,6 +93,7 @@ clever-msa-platform/
 현재 기준 target repo는 아래와 같다.
 
 - `integration-local-stack`
+- `infra-ev-dashboard-platform`
 - `edge-api-gateway`
 - `front-web-console`
 - `service-organization-registry`
@@ -108,6 +111,18 @@ clever-msa-platform/
 - `service-delivery-record`
 - `service-settlement-payroll`
 - `service-settlement-operations-view`
+
+## Active Platform Infra Repo Names
+
+현재 application repo와 별도로, platform-specific runtime cutover를 위해 아래 infra repo 이름을 active target으로 유지한다.
+
+- `infra-ev-dashboard-platform`
+
+이 이름의 의미는 아래와 같다.
+
+- `ev-dashboard.com` / `api.ev-dashboard.com` shared ALB, ECS services, ACM, Route53, deploy workflow owner
+- shared app-code repo가 아니라 `ev-dashboard` slice 전용 infra repo
+- plain 폴더가 아니라 linked child repo로 등록된 대상
 
 ## Additional Planned Domain Units
 
@@ -147,6 +162,7 @@ clever-msa-platform/
 6. `docs/rollout/plans/`는 active plan only다. 완료된 rollout artifact는 `docs/archive/historical/rollout/`로 이동한다.
 7. archive는 문서 전용이다. 코드와 runtime 자산은 archive로 보내지 않는다.
 8. repo-local `AGENTS.md`는 예외 규칙이 많은 repo에만 둔다. 현재 허용 범위는 플랫폼 루트, `development/integration-local-stack/`, `development/edge-api-gateway/`까지다.
+9. `development/infra-*` repo는 platform-specific runtime infra만 소유한다. app code, shared library, cross-domain catch-all infra repo로 키우지 않는다.
 
 ## Current Workspace State
 
