@@ -465,6 +465,177 @@ API 없음.
 5. `CocoaPods`
 6. iOS automation용 `bundler`
 
+## 현재 로컬 환경 점검 결과
+
+이 설계 시점에 확인한 로컬 개발 환경은 아래와 같다.
+
+### 현재 확인된 상태
+
+하드웨어 / OS:
+
+1. `Apple M2`
+2. `RAM 8GB`
+3. 시스템 여유 디스크 약 `61GiB`
+4. `macOS 26.4.1`
+
+현재 설치 확인:
+
+1. `Xcode 26.4`
+2. `VS Code`
+3. `Homebrew`
+4. `Java 21`
+5. `adb`
+
+현재 미설치 또는 미확인:
+
+1. `Flutter SDK`
+2. `Dart SDK`
+3. `FVM`
+4. `CocoaPods`
+5. `Android Studio`
+6. `Android Emulator`
+7. `avdmanager`
+8. 사용 가능한 `iOS Simulator` runtime / device
+
+현재 결론:
+
+1. 이 Mac에서는 Flutter 제한 베타 개발이 가능하다.
+2. 다만 `RAM 8GB`이므로 Android Emulator와 iOS Simulator를 동시에 무겁게 돌리는 방식은 피한다.
+3. 1차 개발 중 UI 테스트는 `시뮬레이터/에뮬레이터 1개 + IDE 1개` 수준으로 운영하는 것이 안전하다.
+
+## 로컬 설치 / 준비 범위
+
+이번 모바일 MVP에는 로컬 설치 준비도 설계 범위에 포함한다.
+
+### 필수 설치
+
+1. `Flutter SDK`
+2. `FVM`
+3. `CocoaPods`
+4. `Android Studio`
+5. Android SDK + Emulator 1세트
+6. iOS Simulator runtime 1세트
+
+### 선택 설치
+
+1. `Sentry CLI`
+2. `Shorebird CLI`
+3. `bundler` + iOS 배포 자동화 도구
+
+### 설치 원칙
+
+1. Flutter는 시스템 전역 버전만 믿지 않고 `FVM`으로 repo-local 버전을 고정한다.
+2. iOS는 `Xcode`를 기준으로 하고, Flutter iOS 의존성은 `CocoaPods`를 먼저 기준으로 둔다.
+3. Android는 `Android Studio` 표준 SDK/AVD 구성을 먼저 완성한 뒤 Flutter와 연결한다.
+4. `Shorebird`는 앱 repo bootstrap과 첫 beta release 흐름이 안정화된 뒤 붙인다.
+
+## 로컬 설치 순서
+
+권장 순서는 아래와 같다.
+
+### 1. Flutter / FVM
+
+1. `Flutter SDK` 설치
+2. `FVM` 설치
+3. 앱 repo에 `.fvmrc`로 Flutter 버전 고정
+4. `flutter doctor`로 1차 점검
+
+### 2. iOS 준비
+
+1. `CocoaPods` 설치
+2. iOS Simulator runtime 다운로드
+3. 최소 1개 iPhone simulator 생성
+4. Xcode license / command line tools 상태 점검
+
+### 3. Android 준비
+
+1. `Android Studio` 설치
+2. Android SDK 기본 구성 설치
+3. ARM64 emulator image 설치
+4. 최소 1개 AVD 생성
+
+### 4. 앱 배포 준비
+
+1. Firebase 프로젝트 연결
+2. Android signing / iOS signing 확인
+3. 제한 베타 배포 계정 연결
+4. 필요 시 `Shorebird` 연결
+
+## 예상 추가 디스크 사용량
+
+정확한 수치는 버전과 캐시에 따라 달라지지만, 현재 로컬 준비에는 아래 정도를 본다.
+
+1. `Flutter SDK + FVM + pub cache`: 약 `4~8GB`
+2. `CocoaPods + iOS build cache`: 약 `2~4GB`
+3. `iOS Simulator runtime 1개`: 약 `8~12GB`
+4. `Android Studio`: 약 `1~2GB`
+5. `Android SDK + Emulator + AVD 1개`: 약 `10~15GB`
+
+즉 1차 개발 가능한 최소 실전 세팅은 대략 `25~35GB` 추가 사용량으로 본다.
+현재 여유 디스크 `61GiB` 기준으로는 설치 가능하다.
+
+## 로컬 성능 운영 원칙
+
+현재 로컬 사양에서는 아래처럼 운영한다.
+
+1. iOS UI 확인은 `Xcode + iOS Simulator`를 우선 사용한다.
+2. Android UI 확인은 필요할 때만 `Android Emulator` 1대를 실행한다.
+3. 가능하면 Android는 실기기 연결 테스트를 우선 검토한다.
+4. `Android Studio + Emulator + Xcode Simulator` 동시 상시 실행은 피한다.
+
+## UI 테스트 환경
+
+현재 로컬에서 준비할 UI 테스트 수단은 아래 네 가지다.
+
+### 1. iOS Simulator
+
+장점:
+
+1. Flutter iOS UI 확인이 가장 빠르다.
+2. macOS에서 기본적으로 가장 안정적인 테스트 경로다.
+
+용도:
+
+1. 화면 레이아웃 확인
+2. 로그인 / 세션 / 탭 이동 확인
+3. 알림함 / 문의 / 계정 수정 같은 기본 흐름 확인
+
+### 2. Android Emulator
+
+장점:
+
+1. Android 렌더링과 알림 권한 흐름을 확인할 수 있다.
+2. 제한 베타 전 사전 회귀 점검에 필요하다.
+
+용도:
+
+1. Android 전용 UI 차이 확인
+2. 권한 요청 / intent / notification 동작 확인
+
+### 3. 실물 Android 기기
+
+장점:
+
+1. `RAM 8GB` 환경에서 가장 가볍다.
+2. 실제 알림, 네트워크, 백그라운드 동작을 더 잘 볼 수 있다.
+
+### 4. 실물 iPhone
+
+장점:
+
+1. TestFlight 전 마지막 검증 경로로 필수에 가깝다.
+2. APNs / 실제 푸시 동작은 최종적으로 실기기 확인이 필요하다.
+
+## 로컬 준비 완료 기준
+
+아래가 모두 되면 로컬 Flutter 개발 준비가 완료된 것으로 본다.
+
+1. `flutter doctor` 주요 항목이 통과한다.
+2. `flutter devices`에 최소 1개 iOS simulator와 1개 Android target이 보인다.
+3. `front-driver-app` 예제 앱이 iOS simulator에서 실행된다.
+4. 같은 앱이 Android emulator 또는 실기기에서 실행된다.
+5. flavor별 base URL 분기가 로컬에서 동작한다.
+
 ## 제한 베타 배포 전략
 
 이번 1차의 배포 목표는 `제한 베타`다.
