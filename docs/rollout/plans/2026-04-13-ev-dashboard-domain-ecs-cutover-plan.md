@@ -111,6 +111,35 @@ GitHub Actions
 -> Route53 alias (ev-dashboard.com)
 ```
 
+## Current Dev Rehearsal Result (2026-04-13, KST)
+
+첫 dev rehearsal은 `EVNSolution/infra-ev-dashboard-platform` workflow run `24340628586` 으로 수행했고 성공했다.
+
+- stack: `EvDashboardPlatformStack`
+- image inputs:
+  - `front-web-console:84a19612ce90593d2b28e89fa233ec6323046626`
+  - `edge-api-gateway:a1c5212eac29e96ce9111a1c8f8f1dc55ee0b88e`
+  - `service-account-access:381867936ab02a87b7622be302a72c50e46aa5cc`
+- domains:
+  - `next.ev-dashboard.com`
+  - `api.next.ev-dashboard.com`
+
+실제 확인 결과:
+
+- `https://next.ev-dashboard.com` -> `200`
+- front target group health -> `healthy`
+- bundle asset `index-CjbseEv-.js` 안에 `https://hub.evnlogistics.com/api` 가 포함됨
+- `Origin: https://next.ev-dashboard.com` 기준, `https://hub.evnlogistics.com/api/org/companies/public/` 와 preflight `OPTIONS` 응답 모두 CORS 허용 헤더를 반환함
+- `https://api.next.ev-dashboard.com` -> `503`
+
+이 `503` 은 이번 시점의 결함이 아니라 현재 의도된 상태다.
+
+- `front-web-console` desired count: `1`
+- `edge-api-gateway` desired count: `0`
+- `service-account-access` desired count: `0`
+
+즉 이번 rehearsal은 **front-only ECS pilot** 이며, same-host `/api` 완전 전환이나 Swagger/Django admin 공개까지는 아직 포함하지 않는다.
+
 ## Execution Boundary
 
 이번 cutover는 아래 경계를 벗어나지 않는다.
@@ -250,12 +279,18 @@ GitHub Actions
 2. 이 stack 안에 `front-web-console`, `edge-api-gateway`, `service-account-access` 첫 migration slice를 연결
 3. ALB DNS name으로 직접 접속 검증
 4. Route53에 임시 검증 레코드 추가
-   - 예: `next.ev-dashboard.com`
+   - 현재 검증 주소: `next.ev-dashboard.com`
 5. `api.ev-dashboard.com` 에서 Swagger/OpenAPI 확인
 6. `api.ev-dashboard.com/admin/account-access/` 접근 제어 확인
 7. HTTPS, health check, 로그, rollback 검증
 
 즉, `ev-dashboard.com` apex를 바로 실험용으로 쓰지 않고, `clever-deploy-control` full-system compose deploy도 이 검증 대체 수단으로 쓰지 않는다.
+
+현재 상태:
+
+- `next.ev-dashboard.com` HTTPS 검증 완료
+- front target healthy 검증 완료
+- `api.next.ev-dashboard.com` 은 아직 desired count `0` 상태라 Swagger/admin 검증 대상이 아니다
 
 ### Phase 2. ACM and Route53 preparation
 
@@ -310,6 +345,13 @@ GitHub Actions
 - 따라서 이 option을 실제로 쓰려면:
   - front image build에 remote API base 주입을 추가하거나
   - 별도 front-only image contract를 정의해야 한다.
+  - remote API host가 새 origin에 대한 CORS 를 허용해야 한다.
+
+현재 이 전제는 아래 evidence로 충족됐다.
+
+- front image build는 `VITE_API_BASE_URL=https://hub.evnlogistics.com/api` 를 받을 수 있다.
+- `hub.evnlogistics.com/api` 는 `Origin: https://next.ev-dashboard.com` 기준 CORS 허용을 반환한다.
+- 따라서 front-only pilot은 실제로 검증된 옵션이다.
 
 ### Option B. Front + Edge pair cutover
 
@@ -376,3 +418,10 @@ ECS/ALB/ACM 검증 없이 apex를 바로 바꾸면 장애 범위가 커진다.
 6. apex alias cutover / rollback runbook 준비 완료
 7. 기존 `test-test-sh` direct-IP runtime의 보존/폐기 기준 확정 완료
 8. `api.ev-dashboard.com` Swagger 와 Django admin 접근 제어 검증 완료
+
+현재 done status:
+
+- 3: 완료 (`front-web-console` dev rehearsal 성공)
+- 4: 완료
+- 5: 완료
+- 8: 미완료 (`edge-api-gateway` / `service-account-access` desired count 0)

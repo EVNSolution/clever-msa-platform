@@ -89,6 +89,23 @@ GitHub repo
 - 첫 stack은 hosted zone이 이미 우리 계정에 있으므로 ACM certificate도 stack 안에서 DNS validation으로 발급한다.
 - 이 slice가 real smoke check를 통과하기 전까지 다른 CLEVER runtime repo를 ECS migration 범위에 넣지 않는다.
 
+## First Dev Rehearsal Evidence
+
+2026-04-13 기준, 첫 dev rehearsal은 아래 evidence로 통과했다.
+
+- infra workflow run: `EVNSolution/infra-ev-dashboard-platform` `24340628586`
+- stack: `EvDashboardPlatformStack`
+- public front URL: `https://next.ev-dashboard.com`
+- result:
+  - `https://next.ev-dashboard.com` -> `200`
+  - JS bundle contains `https://hub.evnlogistics.com/api`
+  - front target group health -> `healthy`
+- intentional non-goal:
+  - `https://api.next.ev-dashboard.com` -> `503`
+  - 이유: first rehearsal은 `edge-api-gateway` desired count `0`, `service-account-access` desired count `0` 인 front-only pilot 이었다.
+
+추가로, `hub.evnlogistics.com/api` 는 `Origin: https://next.ev-dashboard.com` 에 대해 `Access-Control-Allow-Origin` 을 반환하는 것이 확인됐다. 즉 이 pilot은 same-host `/api` 없이도 read-mostly front smoke를 수행할 수 있다.
+
 ## Scope Boundary
 
 이 전환 기준이 적용되는 범위:
@@ -124,9 +141,9 @@ CLEVER 현재 구조에 맞춘 매핑은 아래다.
 
 - image build:
   - `vars.GH_ACTIONS_ECR_BUILD_ROLE_ARN`
-- infra provision:
+- ECS/CDK infra deploy:
   - `secrets.GH_ACTIONS_INFRA_ROLE_ARN`
-- environment deploy:
+- current EC2 deploy:
   - `secrets.GH_ACTIONS_DEV_DEPLOY_ROLE_ARN`
   - `secrets.GH_ACTIONS_STAGE_DEPLOY_ROLE_ARN`
   - `secrets.GH_ACTIONS_PROD_DEPLOY_ROLE_ARN`
@@ -134,7 +151,8 @@ CLEVER 현재 구조에 맞춘 매핑은 아래다.
 원칙:
 
 - build role과 deploy role은 분리한다.
-- deploy role은 환경별로 분리한다.
+- current EC2 deploy role과 new ECS/CDK infra role은 분리한다.
+- ECS/CDK workflow는 GitHub Environment가 `dev/stage/prod` 여도 `GH_ACTIONS_INFRA_ROLE_ARN` 을 사용한다.
 - 같은 repo가 current EC2 deploy와 new ECS deploy를 병행하더라도 role naming과 권한 범위는 purpose-based로 유지한다.
 
 ### 3. 태그/아티팩트 규칙
@@ -160,7 +178,7 @@ CLEVER 현재 구조에 맞춘 매핑은 아래다.
 2. `infra-ev-dashboard-platform` repo에 ECS/Fargate + CDK stack을 만든다.
 3. app repo 안에 image build workflow를 만들고, ECS/CDK deploy workflow는 infra repo가 수행한다.
 4. GitHub OIDC trust와 environment-specific deploy role을 연결한다.
-5. ECR image push -> infra repo `cdk deploy` 경로를 만든다.
+5. ECR image push -> infra repo `cdk deploy` 경로를 만들고, infra workflow는 `GH_ACTIONS_INFRA_ROLE_ARN` 으로 실행한다.
 6. dev 환경에서 deploy/rollback/log/alert/public smoke를 먼저 검증한다.
 7. 이후에만 stage/prod 또는 central control-plane 연계를 검토한다.
 
@@ -218,8 +236,10 @@ pilot 선택 기준:
 ### 3. CDK deploy fails inside GitHub Actions
 
 - `cdk bootstrap` 미실행
-- deploy role에 CloudFormation/IAM/ECS/ECR 권한 부족
+- `GH_ACTIONS_INFRA_ROLE_ARN` 에 CloudFormation/IAM/ECS/ECR/Route53/ACM/Service Discovery 권한 부족
+- CDK bootstrap asset bucket 권한 부족
 - `infra/package.json` 의존성 또는 `ts-node`, `@types/node` 누락
+- ACM DNS validation 대기 시간을 deploy hang 으로 오판
 
 ### 4. ECS task cannot pull image
 
@@ -227,16 +247,22 @@ pilot 선택 기준:
 - ECR repository policy 문제
 - image tag mismatch
 
-### 5. Current EC2 path와의 drift
+### 5. Immutable SHA tags make reruns non-idempotent
+
+- ECR repo가 `IMMUTABLE` 이면 같은 SHA 태그 재푸시는 실패한다.
+- build retry는 새 commit SHA 또는 existing-image detect 로직이 필요하다.
+
+### 6. Current EC2 path와의 drift
 
 - 같은 repo가 current EC2 deploy와 new ECS deploy를 동시에 가질 때 tag 규칙과 branch 정책이 어긋날 수 있다.
 - 병행 기간에는 어떤 branch가 어느 control-plane을 타는지 문서로 고정해야 한다.
 
-### 6. First ECS slice can look healthy while the app still fails
+### 7. First ECS slice can look healthy while the app still fails
 
 - `front-web-console` 기본 API base는 `/api` 다.
 - 따라서 ALB가 `ev-dashboard.com` 의 `/api/*` 를 `edge-api-gateway` 로 보내지 않으면 첫 화면에서도 바로 깨진다.
 - `edge-api-gateway` 는 이미 `web-console:5174`, `account-auth-api:8000` 같은 short upstream 이름을 사용하므로, ECS slice도 Service Connect 또는 동등한 service discovery로 그 이름을 보존해야 한다.
+- front-only pilot에서는 remote API base만 넣으면 끝나는 게 아니다. 새 origin에 대한 CORS 허용도 실제 endpoint로 확인해야 한다.
 
 ## Later-Phase Alternative
 

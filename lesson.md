@@ -21,6 +21,22 @@ An empty remote repo does not behave like the existing linked child repos. `git 
 
 When a gateway already hardcodes internal upstream names, the new runtime must preserve them instead of "cleaning them up" in the infra layer. For the `ev-dashboard` ECS slice, that means `front-web-console` still listens on `5174`, `service-account-access` stays reachable as `account-auth-api:8000`, and the public ingress still sends same-host `/api/*` traffic to the gateway.
 
+## ACM Validation Can Be The Long Pole
+
+The first `next.ev-dashboard.com` ECS rehearsal looked stalled because GitHub Actions stayed in `cdk deploy` while almost all resources were already up. The actual blocker was ACM DNS validation, and the stack only resumed after Route53 validation records propagated and the certificate flipped to `ISSUED`. When CloudFormation is still `CREATE_IN_PROGRESS`, check the certificate resource before assuming the deploy is hung.
+
+## Immutable ECR Tags Change Retry Semantics
+
+This AWS account keeps app ECR repos on `IMMUTABLE` tags. That is good for traceability, but it means rerunning the same SHA build is not idempotent: the second push fails with `tag invalid ... already exists`. Retry logic needs a new commit SHA or a workflow that detects an already-pushed image and skips the push step.
+
+## Front-Only ECS Rehearsals Need CORS, Not Just A Base URL
+
+Injecting `VITE_API_BASE_URL=https://.../api` is only half of a front-first pilot. The browser still needs the remote API host to allow the new origin. For `next.ev-dashboard.com`, `https://hub.evnlogistics.com/api` was verified to return `Access-Control-Allow-Origin: https://next.ev-dashboard.com`, so the pilot can load read-only data without same-host `/api`.
+
+## Desired Count Zero Means A Real 503
+
+`api.next.ev-dashboard.com` can exist in Route53 and ALB listener rules before any API task is running. With `edge-api-gateway` desired count set to `0`, the public result is a real `503` from the load balancer. Treat that as an expected front-only pilot state, not as proof that the ALB or certificate is broken.
+
 ## Let Admin Own Its Prefix
 
 The important lesson from this patch is that Django admin should own the public prefix it serves. Hiding a prefixed route behind a gateway rewrite back to `/admin/` breaks redirects, login flow, and follow-up asset requests.
