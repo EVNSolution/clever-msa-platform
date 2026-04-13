@@ -17,6 +17,10 @@ An empty remote repo does not behave like the existing linked child repos. `git 
 - `ev-dashboard.com` -> `front-web-console`
 - `api.ev-dashboard.com` -> edge/API/docs/admin
 
+## Preserve Runtime Names And Ports
+
+When a gateway already hardcodes internal upstream names, the new runtime must preserve them instead of "cleaning them up" in the infra layer. For the `ev-dashboard` ECS slice, that means `front-web-console` still listens on `5174`, `service-account-access` stays reachable as `account-auth-api:8000`, and the public ingress still sends same-host `/api/*` traffic to the gateway.
+
 ## Let Admin Own Its Prefix
 
 The important lesson from this patch is that Django admin should own the public prefix it serves. Hiding a prefixed route behind a gateway rewrite back to `/admin/` breaks redirects, login flow, and follow-up asset requests.

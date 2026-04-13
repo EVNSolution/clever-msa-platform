@@ -306,6 +306,10 @@ GitHub Actions
 전제:
 
 - `front-web-console` 이 기존 remote API target과 호환돼야 한다.
+- 현재 Docker build contract는 기본 `VITE_API_BASE_URL=/api` 다.
+- 따라서 이 option을 실제로 쓰려면:
+  - front image build에 remote API base 주입을 추가하거나
+  - 별도 front-only image contract를 정의해야 한다.
 
 ### Option B. Front + Edge pair cutover
 
@@ -313,6 +317,8 @@ GitHub Actions
 
 - `infra-ev-dashboard-platform` 에서 `front-web-console` + `edge-api-gateway` 를 같이 ECS로 올린다.
 - `/` 는 front, `/api/*` 는 edge로 ALB rule을 둔다.
+- ACM certificate는 hosted zone에서 stack이 직접 DNS validation으로 발급한다.
+- gateway가 이미 쓰는 short upstream 이름(`web-console`, `account-auth-api`)은 ECS Service Connect로 보존한다.
 - 장점:
   - domain entrypoint를 runtime boundary까지 같이 정리할 수 있다.
 - 단점:
@@ -345,6 +351,18 @@ ECS/ALB/ACM 검증 없이 apex를 바로 바꾸면 장애 범위가 커진다.
 
 기존 `test-test-sh` 는 startup 때 Route53 A record를 직접 갱신한다.
 따라서 cutover 전에 stop/delete 하지 않으면 새 alias를 다시 덮어쓸 수 있다.
+
+### 6. First pair cutover still does not provide the whole backend graph
+
+`edge-api-gateway` 는 `organization-master-api`, `driver-profile-api` 등 여러 내부 backend 이름을 이미 전제로 둔다.
+첫 ECS slice에는 이 서비스들이 아직 없으므로, `front + edge + account-access` 만으로는 로그인 이후 전체 기능이 아직 완전하지 않다.
+
+따라서 첫 rehearsal의 성공 기준은 아래로 둔다.
+
+- ALB / ACM / Route53 alias 정상
+- same-host `/api/*` ingress 정상
+- `web-console` / `account-auth-api` resolution 정상
+- Swagger / Redoc / Django admin 정상
 
 ## Done Criteria
 

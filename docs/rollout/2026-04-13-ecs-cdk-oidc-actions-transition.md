@@ -86,6 +86,7 @@ GitHub repo
 
 - `front-web-console`, `edge-api-gateway`, `service-account-access` 는 application/image owner다.
 - `infra-ev-dashboard-platform` 은 `ev-dashboard.com`, `api.ev-dashboard.com` 용 shared ALB, ECS services, ACM, Route53, deploy workflow를 소유하는 전용 infra repo다.
+- 첫 stack은 hosted zone이 이미 우리 계정에 있으므로 ACM certificate도 stack 안에서 DNS validation으로 발급한다.
 - 이 slice가 real smoke check를 통과하기 전까지 다른 CLEVER runtime repo를 ECS migration 범위에 넣지 않는다.
 
 ## Scope Boundary
@@ -230,6 +231,12 @@ pilot 선택 기준:
 
 - 같은 repo가 current EC2 deploy와 new ECS deploy를 동시에 가질 때 tag 규칙과 branch 정책이 어긋날 수 있다.
 - 병행 기간에는 어떤 branch가 어느 control-plane을 타는지 문서로 고정해야 한다.
+
+### 6. First ECS slice can look healthy while the app still fails
+
+- `front-web-console` 기본 API base는 `/api` 다.
+- 따라서 ALB가 `ev-dashboard.com` 의 `/api/*` 를 `edge-api-gateway` 로 보내지 않으면 첫 화면에서도 바로 깨진다.
+- `edge-api-gateway` 는 이미 `web-console:5174`, `account-auth-api:8000` 같은 short upstream 이름을 사용하므로, ECS slice도 Service Connect 또는 동등한 service discovery로 그 이름을 보존해야 한다.
 
 ## Later-Phase Alternative
 
