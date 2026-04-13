@@ -225,6 +225,11 @@ cutover lesson:
 
 즉, 이번 작업은 **current compose 운영을 유지한 채, `ev-dashboard.com` entry slice만 별도 ECS/CDK runtime으로 교체하는 migration** 이다.
 
+남은 backend graph 의 순차 slice 는 아래 문서에서 계속 관리한다.
+
+- [../../superpowers/specs/2026-04-14-ev-dashboard-backend-slices-design.md](../../superpowers/specs/2026-04-14-ev-dashboard-backend-slices-design.md)
+- [../../superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md](../../superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md)
+
 ## Recommended Runtime Shape
 
 ### Entry and TLS

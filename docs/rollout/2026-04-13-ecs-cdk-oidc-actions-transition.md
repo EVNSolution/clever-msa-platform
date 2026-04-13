@@ -240,6 +240,11 @@ CLEVER 현재 구조에 맞춘 매핑은 아래다.
 6. dev 환경에서 deploy/rollback/log/alert/public smoke를 먼저 검증한다.
 7. 이후에만 stage/prod 또는 central control-plane 연계를 검토한다.
 
+남은 backend slice 의 순서와 근거는 아래 문서를 정본으로 본다.
+
+- [../superpowers/specs/2026-04-14-ev-dashboard-backend-slices-design.md](../superpowers/specs/2026-04-14-ev-dashboard-backend-slices-design.md)
+- [../superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md](../superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md)
+
 pilot 선택 기준:
 
 - sibling repo build context 의존이 약할 것
