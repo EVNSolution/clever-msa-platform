@@ -173,8 +173,45 @@ public smoke 결과:
   - auth/docs/admin slice
 - not yet implied:
   - 전체 backend graph cutover
-  - 기존 `test-test-sh` retire 완료
-  - apex `ev-dashboard.com` 최종 전환
+
+## Current Apex Cutover Result (2026-04-14, KST)
+
+이후 apex/API host cutover 도 같은 stack에서 수행됐다.
+
+- infra workflow run: `24351756178`
+- config change:
+  - `APEX_DOMAIN=ev-dashboard.com`
+  - `API_DOMAIN=api.ev-dashboard.com`
+- stable images reused:
+  - `front-web-console:84a19612ce90593d2b28e89fa233ec6323046626`
+  - `edge-api-gateway:2f6235215cfa8077c53f87f1d0e9728576275463`
+  - `service-account-access:381867936ab02a87b7622be302a72c50e46aa5cc`
+
+Route53 result:
+
+- `ev-dashboard.com` -> ALB alias
+- `api.ev-dashboard.com` -> ALB alias
+- `next.ev-dashboard.com` / `api.next.ev-dashboard.com` records are no longer the active stack output
+
+public verification:
+
+- `https://ev-dashboard.com` -> `200`
+- `https://api.ev-dashboard.com/api/auth/health/` -> `200`
+- `https://api.ev-dashboard.com/openapi.yaml` -> `200`
+- `https://api.ev-dashboard.com/swagger/` -> `200`
+- `https://api.ev-dashboard.com/admin/account-access/` -> `302` to login
+- `https://api.ev-dashboard.com/admin/account-access/login/` -> `200`
+
+old runtime retirement:
+
+- `test-test-sh-ServiceD69D759B-1sgRGfW0Wmov`
+  - `desired=0`
+  - `running=0`
+
+cutover lesson:
+
+- local resolver propagation lagged behind Route53.
+- `dig` against a public resolver and `curl --resolve` against the ALB IPs were needed to verify the real state during the transition window.
 
 ## Execution Boundary
 
@@ -362,6 +399,12 @@ public smoke 결과:
 
 핵심은 **DNS rollback path를 먼저 보존**하는 것이다.
 
+현재 상태:
+
+- Route53 cutover 완료
+- `test-test-sh` scale-down 완료
+- full backend graph cutover 는 아직 아님
+
 ## Service-by-Service Recommendation
 
 ### Option A. Front-first pilot
@@ -430,6 +473,8 @@ ECS/ALB/ACM 검증 없이 apex를 바로 바꾸면 장애 범위가 커진다.
 기존 `test-test-sh` 는 startup 때 Route53 A record를 직접 갱신한다.
 따라서 cutover 전에 stop/delete 하지 않으면 새 alias를 다시 덮어쓸 수 있다.
 
+이번 실제 cutover에서는 apex 응답 확인 직후 `desired=0` 으로 내려 이 리스크를 제거했다.
+
 ### 6. First pair cutover still does not provide the whole backend graph
 
 `edge-api-gateway` 는 `organization-master-api`, `driver-profile-api` 등 여러 내부 backend 이름을 이미 전제로 둔다.
@@ -462,3 +507,5 @@ ECS/ALB/ACM 검증 없이 apex를 바로 바꾸면 장애 범위가 커진다.
 - 4: 완료
 - 5: 완료
 - 8: 완료 (`api.next.ev-dashboard.com` auth/docs/admin smoke 성공)
+- 1: 완료 (`test-test-sh` scale-down)
+- 7: 완료 (`desired=0`, `running=0`)

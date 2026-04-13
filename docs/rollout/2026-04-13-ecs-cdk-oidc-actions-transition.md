@@ -135,6 +135,35 @@ GitHub repo
   - full backend graph migration
   - `organization-master-api`, `driver-profile-api` 등 다른 내부 서비스의 ECS 이전
 
+## Apex Cutover Evidence
+
+2026-04-14 KST 기준, apex/API host cutover도 같은 ECS stack에서 externally verified 되었다.
+
+- infra workflow run:
+  - `24351756178`
+- config change:
+  - `APEX_DOMAIN=ev-dashboard.com`
+  - `API_DOMAIN=api.ev-dashboard.com`
+- image contract:
+  - same stable front/gateway/account-access images reused
+- DNS/runtime result:
+  - `ev-dashboard.com` -> ALB alias
+  - `api.ev-dashboard.com` -> ALB alias
+  - legacy `test-test-sh` service scaled to `desired=0`, `running=0`
+
+verified endpoints:
+
+- `https://ev-dashboard.com` -> `200`
+- `https://api.ev-dashboard.com/api/auth/health/` -> `200`
+- `https://api.ev-dashboard.com/openapi.yaml` -> `200`
+- `https://api.ev-dashboard.com/swagger/` -> `200`
+- `https://api.ev-dashboard.com/admin/account-access/` -> `302` to login
+
+operational note:
+
+- during propagation, local resolver results lagged behind Route53.
+- public `dig` and `curl --resolve` against the ALB IPs were required to validate the cutover honestly.
+
 ## Scope Boundary
 
 이 전환 기준이 적용되는 범위:

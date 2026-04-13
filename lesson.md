@@ -89,3 +89,11 @@ The first successful `api.next.ev-dashboard.com` deploy proves only the auth/doc
 - `/admin/account-access/`
 
 That is enough to validate the first ECS backend slice, but it is not proof that the whole backend graph is already migrated.
+
+## Route53 Can Move Before Your Local Resolver Does
+
+During the apex cutover, Route53 already pointed `ev-dashboard.com` and `api.ev-dashboard.com` at the new ALB while the local machine still failed normal name resolution for a short time. In that window, `dig` against a public resolver and `curl --resolve` against the ALB IPs were the honest way to verify the cutover instead of trusting local DNS cache state.
+
+## Retire The Old Self-Mutating Runtime Immediately
+
+`test-test-sh` owned the old direct-IP runtime and could rewrite the apex record again if it restarted. After the new ALB answered correctly for `ev-dashboard.com`, the safe follow-up was immediate: set the old ECS service to `desired=0` and confirm `running=0`.
