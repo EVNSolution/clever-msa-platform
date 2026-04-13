@@ -27,6 +27,7 @@
 - repo 상태와 active runtime / empty shell 구분: [../../repo-map.md](../../repo-map.md)
 - 중앙 배포 레이어 레퍼런스: [2026-04-07-central-deploy-reference.md](2026-04-07-central-deploy-reference.md)
 - 중앙 배포 OIDC 가이드: [2026-04-07-aws-oidc-actions-setup.md](2026-04-07-aws-oidc-actions-setup.md)
+- ECS/CDK + GitHub Actions OIDC 전환 기준: [2026-04-13-ecs-cdk-oidc-actions-transition.md](2026-04-13-ecs-cdk-oidc-actions-transition.md)
 - 중앙 배포 전환 체크리스트: [2026-04-07-central-deploy-cutover-checklist.md](2026-04-07-central-deploy-cutover-checklist.md)
 - 새 EC2 부트스트랩 가이드: [2026-04-07-ec2-host-bootstrap.md](2026-04-07-ec2-host-bootstrap.md)
 - GitHub 저장소 설정 가이드: [2026-04-07-github-repo-setup.md](2026-04-07-github-repo-setup.md)
@@ -46,6 +47,7 @@
 - 현재 front UI 규칙 감사: [14-front-ui-rule-audit.md](14-front-ui-rule-audit.md)
 - 현재 auth 전환 active plan: [plans/2026-04-04-auth-final-cutover-implementation-plan.md](plans/2026-04-04-auth-final-cutover-implementation-plan.md)
 - 현재 단일 웹 cutover active plan: [plans/2026-04-06-single-web-console-cutover-implementation-plan.md](plans/2026-04-06-single-web-console-cutover-implementation-plan.md)
+- `ev-dashboard.com` ECS cutover active plan: [plans/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md](plans/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md)
 
 예시:
 

@@ -2,6 +2,9 @@
 
 중앙 배포 레이어가 동작하려면 코드만 있는 것으로는 부족하다. GitHub repository 쪽 설정도 같이 완료되어야 한다.
 
+> 이 문서는 **현재 운영 중인 GitHub Actions + OIDC 기반 중앙 배포 경로**의 저장소 설정 기준이다.
+> ECS/CDK + GitHub Actions OIDC 경로는 [2026-04-13-ecs-cdk-oidc-actions-transition.md](2026-04-13-ecs-cdk-oidc-actions-transition.md)를 기준으로 본다.
+
 ## 1) 원격 저장소 연결
 
 현재 로컬 작업트리에서 `git remote -v` 기준 원격이 비어 있으면, 먼저 GitHub repository를 만들고 `origin` 을 연결해야 한다.

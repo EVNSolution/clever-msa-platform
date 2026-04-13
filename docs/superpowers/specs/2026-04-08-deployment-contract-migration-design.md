@@ -1,5 +1,8 @@
 # CLEVER Deployment Contract Migration
 
+> Update note (2026-04-13): 이 문서는 phase-1에서 `source deploy -> image deploy` 전환을 고정한 상위 설계다.
+> 현재 rollout truth에서 **새 ECS/CDK + GitHub Actions OIDC 경로**를 보려면 [../../rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md](../../rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md)를 먼저 본다.
+
 ## Purpose
 
 이 문서는 현재 `host-side git + host-side build` 배포 계약을 `image-based deploy` 계약으로 전환하기 위한 1차 설계를 고정한다.
