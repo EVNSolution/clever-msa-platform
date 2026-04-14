@@ -214,3 +214,33 @@ For read-model slices, empty production data is not a failure if the endpoint se
 - `/api/vehicle-ops/vehicles/<unknown>/` -> `404 not_found`
 
 That is the correct proof for a read-model runtime with no matching prod data. The failure mode to watch for is `500`, not `404`.
+
+## New Service Connect Names Need A Late Gateway Roll
+
+Slice 5 exposed a sharper version of the direct-upstream rule. Adding new settlement backends and updating `edge-api-gateway` in one stack was not enough by itself. The first gateway task came up before the new Service Connect names were actually usable, and nginx kept logging `could not be resolved (3: Host not found)` for:
+
+- `settlement-registry-api`
+- `settlement-payroll-api`
+- `settlement-ops-api`
+
+The honest wait pattern for a new direct-upstream slice is:
+
+1. backend DB resources finish
+2. backend ECS services reach steady state
+3. `edge-api-gateway` rolls again after those services exist
+4. only then do the new public routes settle
+
+If the new services are already `running=1` and public `502` still remains, tail the gateway logs before changing config. In this stack, the fix was not another route rewrite. It was waiting for the late gateway service rollout that happened after the settlement services were created.
+
+## Protected Settlement Smoke Is Honest Enough Without A Prod Write
+
+The settlement slice did not need a production write-path smoke to prove the runtime. The honest external proof was:
+
+- `/api/settlement-registry/health/` -> `200`
+- `/api/settlements/health/` -> `200`
+- `/api/settlement-ops/health/` -> `200`
+- `/api/settlement-registry/settlement-config/metadata/` -> `401` without token
+- `/api/settlements/runs/` -> `401` without token
+- `/api/settlement-ops/runs/` -> `401` without token
+
+That response shape proves gateway routing, JWT middleware, and backend reachability without mutating production settlement data.

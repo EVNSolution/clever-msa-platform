@@ -310,6 +310,21 @@ curl -sk https://api.ev-dashboard.com/api/org/fleets/
 - [ ] Capture lessons about registry/payroll/read-model boundaries.
 - [ ] Commit repo-local and root changes.
 
+**Execution result:**
+- Slice 5 closed at the runtime/API level with deploy run `24382058568`.
+- Final public settlement proof:
+  - `/api/settlement-registry/health/` -> `200`
+  - `/api/settlements/health/` -> `200`
+  - `/api/settlement-ops/health/` -> `200`
+  - `/api/settlement-registry/settlement-config/metadata/` -> `401` without token
+  - `/api/settlements/runs/` -> `401` without token
+  - `/api/settlement-ops/runs/` -> `401` without token
+- The key rollout lesson was gateway timing, not backend correctness:
+  - `service-settlement-registry`, `service-settlement-payroll`, and `service-settlement-operations-view` all reached steady state before the public routes were stable.
+  - `edge-api-gateway` initially returned `502` with `could not be resolved (3: Host not found)` for the new settlement Service Connect names.
+  - The routes only settled after the later `EdgeApiGatewayService UPDATE_IN_PROGRESS` phase rolled a new gateway task after the settlement services already existed.
+- UI smoke is still pending. This task is closed only for runtime/API proof.
+
 ### Task 8: Execute Slice 6 Support Surface
 
 **Files:**
