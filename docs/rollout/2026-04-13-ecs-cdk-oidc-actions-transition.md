@@ -207,6 +207,34 @@ deferred scope:
 
 즉 `api.ev-dashboard.com` 의 external prefix 기준으로는 planned slice graph가 ECS로 넘어갔고, 남은 것은 internal telemetry ingest worker cutover 뿐이다.
 
+## Post-Migration Operational Close-Out
+
+backend slice migration record는 닫혔다. 이제 `ev-dashboard` 에서 남은 운영 작업은 migration plan이 아니라 runbook 기준으로 본다.
+
+- prod 전 temporary lane release gate: [../runbooks/ev-dashboard-preprod-release-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-preprod-release-gate.md)
+- deploy 전 검수 gate: [../runbooks/ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md)
+- deploy 중 operator loop: [../runbooks/ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
+- authenticated UI smoke와 decommission close-out: [../runbooks/ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
+- detailed execution record: [../superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md)
+
+current release default:
+
+- build immutable image once
+- prove same SHA on temporary pre-prod ECS lane
+- release same SHA to prod
+- keep the low-cost mode default by avoiding snapshot clone DB unless the release includes migrations or side-effect-heavy workflows
+
+current open items:
+
+- `service-telemetry-listener` `7b`
+- old EC2/compose path에서 `ev-dashboard` 범위 retire
+- optional: local-only smoke credential을 secret-managed 운영 방식으로 승격할지 결정
+
+already closed:
+
+- dedicated manager-role smoke accounts exist in local gitignored operator notes
+- authenticated read-only browser smoke passed for the required pages
+
 ## Scope Boundary
 
 이 전환 기준이 적용되는 범위:

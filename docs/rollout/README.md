@@ -23,6 +23,10 @@
 ## Start Here
 
 - 현재 runtime/service/prefix inventory: [../mappings/current-runtime-inventory.md](../mappings/current-runtime-inventory.md)
+- runtime/deploy runbook index: [../runbooks/README.md](../runbooks/README.md)
+- `ev-dashboard` deploy gate: [../runbooks/ev-dashboard-ecs-preflight-gate.md](../runbooks/ev-dashboard-ecs-preflight-gate.md)
+- `ev-dashboard` deploy operator loop: [../runbooks/ev-dashboard-ecs-deploy-operator-loop.md](../runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
+- `ev-dashboard` UI smoke와 decommission close-out: [../runbooks/ev-dashboard-ui-smoke-and-decommission.md](../runbooks/ev-dashboard-ui-smoke-and-decommission.md)
 - 플랫폼 전체 구조와 작업 원칙: [../../WORKSPACE.md](../../WORKSPACE.md)
 - repo 상태와 active runtime / empty shell 구분: [../../repo-map.md](../../repo-map.md)
 - 중앙 배포 레이어 레퍼런스: [2026-04-07-central-deploy-reference.md](2026-04-07-central-deploy-reference.md)
@@ -45,9 +49,7 @@
 - UI 레이아웃 current lessons: [17-ui-layout-lessons.md](17-ui-layout-lessons.md)
 - 웹 우선 전체 완성 순서: [16-web-first-platform-delivery-order.md](16-web-first-platform-delivery-order.md)
 - 현재 front UI 규칙 감사: [14-front-ui-rule-audit.md](14-front-ui-rule-audit.md)
-- 현재 auth 전환 active plan: [plans/2026-04-04-auth-final-cutover-implementation-plan.md](plans/2026-04-04-auth-final-cutover-implementation-plan.md)
-- 현재 단일 웹 cutover active plan: [plans/2026-04-06-single-web-console-cutover-implementation-plan.md](plans/2026-04-06-single-web-console-cutover-implementation-plan.md)
-- `ev-dashboard.com` ECS cutover active plan: [plans/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md](plans/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md)
+- `ev-dashboard` backend migration execution record: [../superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md](../superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md)
 
 예시:
 
@@ -58,3 +60,14 @@ python3 scripts/deploy/compute-targets.py \
   --head-sha "$GITHUB_SHA" \
   --output target.json
 ```
+
+## ev-dashboard Current Operator Sequence
+
+`ev-dashboard` current work는 rollout plan보다 아래 순서로 읽는 것이 맞다.
+
+1. [../runbooks/ev-dashboard-ecs-preflight-gate.md](../runbooks/ev-dashboard-ecs-preflight-gate.md)
+2. [../runbooks/ev-dashboard-ecs-deploy-operator-loop.md](../runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
+3. [2026-04-13-ecs-cdk-oidc-actions-transition.md](2026-04-13-ecs-cdk-oidc-actions-transition.md)
+4. [../runbooks/ev-dashboard-ui-smoke-and-decommission.md](../runbooks/ev-dashboard-ui-smoke-and-decommission.md)
+
+backend slice migration 자체는 완료됐고, 남은 것은 operational close-out이다.

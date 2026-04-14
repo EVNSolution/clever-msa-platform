@@ -75,12 +75,34 @@ That was enough to show the routing, auth, and DB wiring were correct without po
 
 ## Keep Close-Out Status In One Runbook
 
-Once a migration stops being “implementation” work and becomes “operator close-out”, the status should move out of scattered slice notes and into one runbook. For `ev-dashboard`, the honest current operator guide is the pair:
+Once a migration stops being “implementation” work and becomes “operator close-out”, the status should move out of scattered slice notes and into one operator packet. For `ev-dashboard`, the honest current operator guide is the trio:
 
 - `docs/runbooks/ev-dashboard-ecs-preflight-gate.md`
+- `docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md`
 - `docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md`
 
-Keep rollout notes as truth and execution record, but keep the live “what is still open?” answer in one runbook only.
+Keep rollout notes as truth and execution record, but keep the live “what do I do before, during, and after deploy?” answer in this runbook set only.
+
+## Deploy Docs Must Fit On One Operator Loop
+
+When deploy guidance is split across `lesson.md`, infra-local lessons, rollout notes, and runbooks, the deploy feels slower than it really is because the operator keeps reinterpreting the same state. The fix is not “more notes”. The fix is one short operator loop with:
+
+- exact command order
+- phase-by-phase time budget
+- wait signals
+- stop versus debug criteria
+
+For `ev-dashboard`, preflight and decommission stay as separate runbooks, but the in-between deploy judgment now belongs in `docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md`.
+
+## Public Smoke Must Be Part Of The Workflow Gate
+
+If public smoke still depends on a human remembering to run `curl` after a green `cdk deploy`, the deploy is not actually closed. For `ev-dashboard`, the minimum external smoke now belongs inside the same workflow:
+
+- front shell `200`
+- auth/docs/admin core paths
+- slice-specific `health` and protected `401` probes when those slices are enabled
+
+Manual browser smoke still matters, but only after the workflow has already proven the public edge did not regress.
 
 ## Stack Success Is Not The Same As Slice Success
 
@@ -235,6 +257,27 @@ For read-model slices, empty production data is not a failure if the endpoint se
 - `/api/driver-ops/drivers/<unknown>/` -> `404 not_found`
 - `/api/vehicle-ops/vehicles/` -> `200 []`
 - `/api/vehicle-ops/vehicles/<unknown>/` -> `404 not_found`
+
+## Pre-Prod Should Be A Temporary Release Lane
+
+If prod 전에 한 단계가 필요하지만 상시 candidate 환경과 cloned DB 비용은 피하고 싶다면, 기본값은 `temporary pre-prod ECS lane` 이다. 핵심 규칙은:
+
+- image는 한 번만 build
+- 짧은 수명 subdomain으로 same SHA candidate proof
+- 검증이 끝나면 lane 제거
+- 같은 SHA를 prod에 release
+
+이 구조의 목적은 prod 전 단계 추가지, 영구 테스트 환경 운영이 아니다.
+
+## Shared-Data Pre-Prod Is Not Honest For Migration Releases
+
+temporary pre-prod가 prod 데이터 계층을 공유하는 low-cost mode라면, 그 검증은 read-only 또는 좁은 reversible write smoke까지만 honest proof다. Django 서비스가 startup migration을 수행하는 계약을 가진 상태에서 migration-bearing release를 shared-data pre-prod로 먼저 띄우면, prod schema가 먼저 바뀔 수 있다. 이런 release는:
+
+- cloned DB lane으로 올리거나
+- pre-prod proof 범위를 read-only로 줄이고
+- 별도 승인 하에 prod release를 다뤄야 한다
+
+즉 low-cost pre-prod는 모든 release의 만능 기본값이 아니라 `schema-compatible release`에 맞는 운영 절충안이다.
 
 That is the correct proof for a read-model runtime with no matching prod data. The failure mode to watch for is `500`, not `404`.
 

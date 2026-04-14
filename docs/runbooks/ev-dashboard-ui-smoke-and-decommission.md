@@ -10,11 +10,11 @@
 - `api.ev-dashboard.com` 의 planned external prefix 는 ECS/ALB 경로에서 production proof를 마쳤다.
 - `service-telemetry-listener` 는 `Slice 7b` 로 남아 있고 `desired=0` 이다.
 
-즉 public web/API surface는 대부분 ECS로 넘어갔고, 남은 것은:
+즉 public web/API surface와 authenticated read-only UI smoke는 ECS 경로에서 proof를 마쳤고, 남은 것은:
 
-1. authenticated UI smoke close-out
-2. internal telemetry listener cutover
-3. old EC2/compose dependency retire
+1. internal telemetry listener cutover
+2. old EC2/compose dependency retire
+3. optional smoke credential 운영 방식을 local-only에서 secret-managed로 승격할지 결정
 
 ## Current Closure Status
 

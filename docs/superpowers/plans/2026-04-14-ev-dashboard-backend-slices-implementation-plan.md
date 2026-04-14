@@ -23,7 +23,7 @@ npx cdk synth
 ```
 
 3. Only after that run the deploy workflow.
-4. During deploy, use the wait pattern in [ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md) instead of constant fast polling.
+4. During deploy, use [ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md) instead of constant fast polling.
 
 ## Current Status
 
@@ -35,6 +35,12 @@ npx cdk synth
 - `Task 6` runtime/API proof for the dispatch read-model slice is complete on production ECS.
 - `Task 7` runtime/API proof for the settlement slice is complete on production ECS.
 - `Task 8` runtime/API proof for the support-surface slice is complete on production ECS.
+- `Task 9` runtime/API proof for the terminal-and-telemetry `7a` slice is complete on production ECS.
+- authenticated read-only browser smoke is complete with dedicated manager-role smoke accounts kept in a local gitignored operator note.
+- day-to-day operator guidance after the migration now lives in:
+  - [../../runbooks/ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md)
+  - [../../runbooks/ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
+  - [../../runbooks/ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
 - Verified public and protected read paths:
   - `https://api.ev-dashboard.com/api/org/companies/public/` -> `200`
   - `https://api.ev-dashboard.com/api/org/companies/` -> `200` with admin JWT
@@ -43,7 +49,10 @@ npx cdk synth
   - `https://api.ev-dashboard.com/openapi.yaml` -> `200`
   - `https://api.ev-dashboard.com/swagger/` -> `200`
   - `https://api.ev-dashboard.com/admin/account-access/login/` -> `200`
-- Residual for `Task 3`: `manager-accounts` and `identity-signup-requests/manage` still need a real production identity session for honest smoke. They were not write-smoked because that would mutate prod state.
+- Residual post-migration close-out:
+  - `service-telemetry-listener` `7b`
+  - old EC2/compose path retire
+  - optional promotion of the local-only smoke credential into a secret-managed 운영 방식
 
 ---
 
@@ -447,6 +456,7 @@ Completion evidence:
 - [x] After slice 7 succeeds, update the root lesson with the final migration rules that actually held true.
 - [x] Update the rollout truth to show which prefixes have fully left the EC2 path.
 - [x] Update `current-runtime-inventory.md` if any gateway naming or route ownership changed.
+- [x] Hand off ongoing operator work to the dedicated runbooks instead of keeping it implicit inside this slice plan.
 - [ ] Verify:
 
 ```bash
@@ -459,3 +469,10 @@ git diff --check
 git add lesson.md docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md docs/mappings/current-runtime-inventory.md
 git commit -m "docs: close ev-dashboard backend ecs migration record"
 ```
+
+**Post-task note:**
+- This plan is now an execution record.
+- Remaining operator guidance is tracked in:
+  - [../../runbooks/ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md)
+  - [../../runbooks/ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
+  - [../../runbooks/ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)

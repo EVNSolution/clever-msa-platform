@@ -9,8 +9,13 @@
 - 현재 runtime repo / compose service / gateway prefix inventory: [mappings/current-runtime-inventory.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md)
 - 현재 코드에서 target repo로 가는 이동표: [mappings/current-to-target-repo-map.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-to-target-repo-map.md)
 - repo별 책임 경계: [mappings/repo-responsibility-matrix.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/repo-responsibility-matrix.md)
+- 디자인 canonical contract: [contracts/21-design-system-and-surface-rules.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/contracts/21-design-system-and-surface-rules.md)
 - rollout living docs와 active plan 규칙: [rollout/README.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/README.md)
-- 현재 로컬 배차/정산 통합 실행 runbook: [runbooks/local-dispatch-settlement-stack.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/local-dispatch-settlement-stack.md)
+- 운영/검증 runbook index: [runbooks/README.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/README.md)
+- `ev-dashboard` prod 전 temporary lane gate: [runbooks/ev-dashboard-preprod-release-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-preprod-release-gate.md)
+- `ev-dashboard` 배포 전 gate: [runbooks/ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md)
+- `ev-dashboard` 배포 중 operator sequence: [runbooks/ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
+- `ev-dashboard` UI smoke와 decommission close-out: [runbooks/ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
 
 - `goals/`: 플랫폼의 목표 상태와 상위 방향
 - `boundaries/`: 서비스 경계와 소유 데이터
@@ -22,4 +27,4 @@
 
 실행 코드, compose, env, seed script는 이 폴더에 두지 않는다.
 
-현재 runtime naming, compose service, gateway prefix 같은 질문은 historical rollout plan이 아니라 `mappings/current-runtime-inventory.md`를 먼저 본다.
+현재 runtime naming, compose service, gateway prefix 같은 질문은 historical rollout plan이 아니라 `mappings/current-runtime-inventory.md`를 먼저 본다. `ev-dashboard` 운영 절차 질문은 `runbooks/README.md`부터 보고, prod 전 단계는 `runbooks/ev-dashboard-preprod-release-gate.md`, deploy 중 판단은 `runbooks/ev-dashboard-ecs-deploy-operator-loop.md`를 기준으로 한다.

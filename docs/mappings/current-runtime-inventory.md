@@ -50,3 +50,8 @@
 2. naming drift나 route 변경이 생기면 historical rollout plan을 소급 수정하는 대신 이 문서와 current living docs를 먼저 갱신한다.
 3. `integration-local-stack`, `seed-runner`, `mqtt-broker`, DB 컨테이너는 local stack support component이며 위 표의 target repo inventory에는 넣지 않는다.
 4. `2026-04-14` 기준 `api.ev-dashboard.com` 의 external prefix 는 planned slices 기준으로 ECS/ALB 경로에서 production proof를 마쳤다. 예외는 internal worker `service-telemetry-listener` 뿐이며, 이 서비스는 broker 확인 전까지 `desired=0` 으로 유지한다.
+5. `ev-dashboard` 운영 절차는 rollout note보다 runbook 기준으로 본다.
+   - prod 전 gate: [../runbooks/ev-dashboard-preprod-release-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-preprod-release-gate.md)
+   - deploy 전: [../runbooks/ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md)
+   - deploy 중: [../runbooks/ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
+   - deploy 후: [../runbooks/ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)

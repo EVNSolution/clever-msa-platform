@@ -1,0 +1,36 @@
+# Runbooks
+
+이 폴더는 실제 운영과 검증 순서를 바로 실행할 수 있게 정리한 runbook 모음이다.
+
+## Start Here
+
+`ev-dashboard` current runtime를 다룰 때는 아래 순서로 본다.
+
+1. prod 전 temporary lane release gate: [ev-dashboard-preprod-release-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-preprod-release-gate.md)
+2. deploy 전 검수 gate: [ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md)
+3. deploy 중 wait signal과 time budget: [ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
+4. cutover 이후 UI smoke와 decommission: [ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
+5. current runtime truth: [../mappings/current-runtime-inventory.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md)
+
+## Runtime And Deploy
+
+- `ev-dashboard` temporary pre-prod release gate: [ev-dashboard-preprod-release-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-preprod-release-gate.md)
+- `ev-dashboard` deploy preflight gate: [ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md)
+- `ev-dashboard` deploy operator loop: [ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
+- `ev-dashboard` UI smoke와 old path decommission: [ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
+
+## Local Development
+
+- 로컬 배차/정산 통합 스택: [local-dispatch-settlement-stack.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/local-dispatch-settlement-stack.md)
+- front driver app 로컬 준비: [front-driver-app-local-setup.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/front-driver-app-local-setup.md)
+
+## Policy Runbooks
+
+- 회사 단위 navigation policy: [company-navigation-policy.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/company-navigation-policy.md)
+- 매니저 단위 navigation policy: [manager-navigation-policy.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/manager-navigation-policy.md)
+
+## Usage Rules
+
+1. runbook은 current operator sequence를 적는다. historical execution record는 `docs/rollout/` 또는 `docs/archive/`에 둔다.
+2. `ev-dashboard` 관련 운영 질문은 slice implementation plan보다 이 폴더의 네 문서를 먼저 본다.
+3. deploy가 끝나면 root [lesson.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md)와 관련 runbook을 같이 갱신한다.
