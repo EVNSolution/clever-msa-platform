@@ -64,14 +64,14 @@
 
 이 단계는 차량, 배송원, 정산 다음 운영 핵심을 웹에서 닫기 위한 우선순위 1위 도메인이다.
 
-### 3. Announcement / support / notification web
+### 3. Announcement / support / notification-hub integration
 
 - [x] `service-announcement-registry` 기준 공지 운영 화면 닫기
 - [x] `service-support-registry` 기준 문의/지원 운영 화면 닫기
-- [x] `service-notification-hub` 기준 알림 운영 화면 닫기
-- [x] 앱 부재를 보완하는 웹 운영 경로를 완성하기
+- [x] `service-notification-hub` 기준 알림 백엔드/런타임 연동 정리
+- [x] 앱 부재를 보완하는 웹 운영 경로와 알림 전달 런타임을 함께 완성하기
 
-앱이 아직 없기 때문에 이 세 영역은 웹 대체 경로로서 우선순위가 높다.
+앱이 아직 없기 때문에 공지와 지원은 웹 대체 경로로서, 알림은 notification-hub 런타임 연동으로 우선순위가 높다.
 
 ### 4. Single web console cutover
 
