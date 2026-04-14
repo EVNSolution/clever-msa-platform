@@ -244,3 +244,25 @@ The settlement slice did not need a production write-path smoke to prove the run
 - `/api/settlement-ops/runs/` -> `401` without token
 
 That response shape proves gateway routing, JWT middleware, and backend reachability without mutating production settlement data.
+
+## Repeated Prod Lessons Must Become A Preflight Gate
+
+If the same rollout surprise happens twice, it is no longer just a lesson. It must become a deploy gate that runs before the next slice. For `ev-dashboard` that means the shared infra repo has to fail fast on:
+
+- missing deploy env
+- mutable image tags like `:latest`
+- wrong domain for the selected environment
+- later slices enabled without their prerequisite slices
+- API slices enabled while `edge-api-gateway` is still set to `0`
+
+The operator flow is now fixed:
+
+1. read root and repo-local lesson
+2. `npm run preflight`
+3. `npm test -- --runInBand`
+4. `npx cdk synth`
+5. deploy
+6. public smoke
+7. lesson update
+
+If a step fails, stop there. Do not "see what prod says" first.

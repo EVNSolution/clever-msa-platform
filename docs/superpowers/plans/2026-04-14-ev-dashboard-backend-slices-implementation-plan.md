@@ -8,6 +8,23 @@
 
 **Tech Stack:** AWS CDK (TypeScript), ECS/Fargate, ALB, Route53, ACM, GitHub Actions, OIDC, Nginx, Django/Gunicorn, CLEVER service repos, root rollout docs.
 
+## Mandatory Deploy Gate
+
+Every remaining slice starts with the same preflight order. Do not skip directly to deploy.
+
+1. Read root [lesson.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md) and the target repo `lesson.md`.
+2. Run the infra repo preflight gate:
+
+```bash
+cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+npm run preflight
+npm test -- --runInBand
+npx cdk synth
+```
+
+3. Only after that run the deploy workflow.
+4. During deploy, use the wait pattern in [ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md) instead of constant fast polling.
+
 ## Current Status
 
 - `Task 1` is complete.
