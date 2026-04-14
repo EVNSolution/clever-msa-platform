@@ -25,7 +25,6 @@
 | `/account` | self-service | `/account` | `/me` | self-service canonical path를 `/me`로 이동, legacy redirect 유지 |
 | `/announcements` | published announcement read | `/announcements` | `/announcements` | shared route 유지, 권한별 read/write 분기 |
 | `/support` | self-service support | `/support` | `/support` | shared route 유지, 권한별 panel 분기 |
-| `/notifications` | own inbox read | `/notifications` | `/notifications` | shared route 유지, 권한별 panel 분기 |
 | `/drivers` | read list | `/drivers` | `/drivers` | shared route 유지, 권한별 row/action 분기 |
 | `/drivers/new` | self-service request-like create | `/drivers/new` | `/drivers/new` | shared route 유지, 권한별 폼/제약 분기 |
 | `/drivers/:driverRef` | driver summary read | `/drivers/:driverRef` | `/drivers/:driverRef` | detail 합치기 필요 |
@@ -95,14 +94,17 @@ Legacy route는 runtime에서 삭제하지 않고 redirect alias로만 유지한
 
 1. `AnnouncementsPage`
 2. `SupportPage`
-3. `NotificationsPage`
-4. `DriversPage`
-5. `VehiclesPage`
-6. `AccountPage`
-7. `ConsentRecoveryPage`
-8. `LoginPage`
+3. `DriversPage`
+4. `VehiclesPage`
+5. `AccountPage`
+6. `ConsentRecoveryPage`
+7. `LoginPage`
 
 이 화면들은 이미 admin 쪽에도 route가 있거나 public/shared 성격이므로, 별도 app split보다 role-based page branching이 더 맞다.
+
+## Removed Surface
+
+`NotificationsPage`는 obsolete이며 web console에서 제거되었다. notification delivery는 backend capability로만 남긴다.
 
 ## Cutover Order
 

@@ -137,7 +137,6 @@
 - `dispatch`
 - `announcements`
 - `support`
-- `notifications`
 
 각 resource는 최소 아래 속성을 가진다.
 

@@ -30,7 +30,6 @@
 - `accounts`
 - `announcements`
 - `support`
-- `notifications`
 - `companies`
 - `regions`
 - `vehicles`

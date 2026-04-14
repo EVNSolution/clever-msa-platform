@@ -160,7 +160,7 @@ def require_nav_access(principal, nav_item_key: str, action: str = "view") -> No
 - `support`
   - 지원 API
 - `notifications`
-  - 알림 API
+  - backend notification API (`/api/notifications/*`)
 
 `dashboard`, `account`는 1차 API authorization 대상에서 제외한다.
 
