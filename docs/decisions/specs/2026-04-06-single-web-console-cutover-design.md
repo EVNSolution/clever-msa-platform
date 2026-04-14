@@ -22,7 +22,7 @@ cutover 시작 시점의 runtime은 아래처럼 분리되어 있었다.
 이 구조는 아래 문제를 가진다.
 
 1. 사용자는 결국 같은 계정 체계와 같은 도메인 데이터를 보는데, 앱만 둘로 갈라져 있다.
-2. `support`, `notifications`, `announcements`, `drivers`, `vehicles`, `settlements`처럼 실제 화면 경로가 같은데 앱만 달라서 정보 구조가 중복된다.
+2. `support`, `announcements`, `drivers`, `vehicles`, `settlements`처럼 실제 화면 경로가 같은데 앱만 달라서 정보 구조가 중복된다.
 3. 앞으로 권한이 늘어날수록 `admin web / operator web` 이분법이 오히려 모델을 흐린다.
 4. 웹 우선 완성을 목표로 할 때, 두 앱을 동시에 유지하는 비용이 커진다.
 
@@ -115,10 +115,11 @@ cutover 시작 시점의 runtime은 아래처럼 분리되어 있었다.
 
 1. `/support`
    - 권한에 따라 관리자 처리 패널 또는 self-service 패널을 노출
-2. `/notifications`
-   - 권한에 따라 운영 inbox read 또는 push 운영 패널을 노출
 3. `/settlements`
    - 권한에 따라 read-only summary 또는 write 패널을 노출
+
+`notifications` 는 별도 브라우저 route가 아니라 notification hub 기반 backend/runtime capability로 다룬다.
+웹에서는 inbox/push 관련 동작이 필요한 문맥에 패널이나 action으로 흡수하고, live route surface로 고정하지 않는다.
 
 ## 권한 해석 원칙
 
@@ -158,10 +159,9 @@ cutover 시작 시점의 runtime은 아래처럼 분리되어 있었다.
 
 1. published announcements read
 2. self-service support
-3. own inbox notifications
-4. driver summary read
-5. vehicle summary read
-6. settlement read summary
+3. driver summary read
+4. vehicle summary read
+5. settlement read summary
 
 이관 후에는 같은 route 집합 안에서 권한에 따라 view mode만 달라진다.
 

@@ -137,11 +137,12 @@ MSA 전환 플랫폼에서 route도 계약이다. URL은 화면 주소인 동시
 - `/settlements/*`
 - `/announcements`
 - `/support`
-- `/notifications`
 
 이유:
 - 이들은 주체보다 도메인 리소스가 더 중요한 화면이다.
 - 이미 각 service 경계와도 비교적 잘 맞는다.
+- `notifications` 는 브라우저 route가 아니라 web console이 사용하는 backend/runtime capability로 취급한다.
+- 알림 관련 동작은 기존 communication 또는 inbox 문맥 안에서 처리하고, 독립적인 live browser surface로 두지 않는다.
 
 ## Sidebar Information Architecture After Rename
 
