@@ -155,3 +155,42 @@ During the apex cutover, Route53 already pointed `ev-dashboard.com` and `api.ev-
 ## Retire The Old Self-Mutating Runtime Immediately
 
 `test-test-sh` owned the old direct-IP runtime and could rewrite the apex record again if it restarted. After the new ALB answered correctly for `ev-dashboard.com`, the safe follow-up was immediate: set the old ECS service to `desired=0` and confirm `running=0`.
+
+## Public GitHub Actions Billing Can Still Block Public Repo Builds
+
+This account hit a GitHub billing limit where public service repos stopped before any job step started. The exact annotation was `The job was not started because recent account payments have failed or your spending limit needs to be increased.` When that happens, do not keep retrying the workflow. Build locally, push to ECR yourself, then continue the infra deploy with explicit image URIs.
+
+## Local Docker Workarounds Must Match ECS Platform
+
+Local Mac builds are not safe by default for ECS in this stack. The first workaround push produced an image that Fargate could not pull because the manifest did not match `linux/amd64`. The safe fallback build is:
+
+- `docker buildx build --platform linux/amd64 --provenance=false --push ...`
+
+If you skip the explicit platform, you can lose time on a fake infra failure that is really just an image architecture mismatch.
+
+## Django Container Defaults Must Not Override The Production Entrypoint
+
+For `service-delivery-record` and `service-attendance-registry`, the Dockerfile still had `CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]`. In ECS that meant `entrypoint.sh` received arguments, skipped its default branch, and never ran `migrate + gunicorn`. The public symptom was subtle:
+
+- `/health/` still returned `200`
+- real data endpoints returned `500`
+- logs showed unapplied migrations and Django dev server startup
+
+The safe contract for these Django services is: keep `ENTRYPOINT ["./entrypoint.sh"]`, remove the Dockerfile `CMD runserver`, and let local development invoke `manage.py runserver` explicitly outside the production container contract.
+
+## Smoke The Real Endpoint, Not Just The Prefix Root
+
+`/api/dispatch/`, `/api/delivery-record/`, and `/api/attendance/` returning `404` did not mean Slice 3 failed. It meant the gateway rewrite was correct and the service root path simply was not an API route. For this slice, the honest production smoke was:
+
+- `/api/dispatch/health/` -> `200`
+- `/api/dispatch/plans/` -> `200 []` with admin JWT
+- `/api/delivery-record/health/` -> `200`
+- `/api/delivery-record/records/` -> `200 []` with admin JWT
+- `/api/attendance/health/` -> `200`
+- `/api/attendance/days/` -> `200 []` with admin JWT
+
+Use the prefix root only to distinguish routing failure from application routing success. Do not use it as the final slice gate unless the service really defines `/`.
+
+## Service Dependencies Delay Later Rollouts On Purpose
+
+In Slice 3, `service-delivery-record` did not update immediately after its new task definition was created. That was not a stuck deploy. The stack intentionally waits for `service-attendance-registry` to finish before updating `delivery-record`, because the delivery service depends on `attendance-registry` at runtime. When you see only one service moving first, check the dependency chain before assuming CloudFormation ignored the image change.

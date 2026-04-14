@@ -157,6 +157,9 @@ curl -sk https://api.ev-dashboard.com/api/org/fleets/
 - The rollout produced two different `502` wait windows that should not be confused:
   - early `502` while new RDS instances were still creating and the new ECS services did not exist yet
   - later short `502` while `edge-api-gateway` was still rolling and Service Connect names were settling for the new task
+- Front page smoke also passed locally:
+  - `DriversPage`, `DriverDetailPage`, `VehiclesPage`, `VehicleAssignmentsPage`, `PersonnelDocumentsPage`
+  - vitest result: `5 files passed, 13 tests passed`
 
 ### Task 5: Execute Slice 3 Dispatch Inputs
 
@@ -171,17 +174,49 @@ curl -sk https://api.ev-dashboard.com/api/org/fleets/
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/config.ts`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
 
+**Execution notes locked before implementation:**
+- `service-attendance-registry` should be treated as the independent seed inside this slice.
+- `service-dispatch-registry` must receive:
+  - `VEHICLE_REGISTRY_BASE_URL=http://vehicle-asset-api:8000`
+  - `DRIVER_PROFILE_BASE_URL=http://driver-profile-api:8000`
+  - `DELIVERY_RECORD_BASE_URL=http://delivery-record-api:8000`
+  - `ATTENDANCE_REGISTRY_BASE_URL=http://attendance-registry-api:8000`
+- `service-delivery-record` must receive:
+  - `ORGANIZATION_MASTER_BASE_URL=http://organization-master-api:8000`
+  - `DRIVER_PROFILE_BASE_URL=http://driver-profile-api:8000`
+  - `DISPATCH_REGISTRY_BASE_URL=http://dispatch-registry-api:8000`
+  - `ATTENDANCE_REGISTRY_BASE_URL=http://attendance-registry-api:8000`
+- Infra rollout order should be `attendance-registry -> dispatch-registry + delivery-record -> edge-api-gateway`.
+- Gateway routes for this slice should follow the Slice 1 and Slice 2 lesson: prefer direct upstreams for `dispatch-registry-api`, `delivery-record-api`, and `attendance-registry-api`.
+
 - [ ] Add failing tests and runtime slots for `dispatch-registry-api`, `delivery-record-api`, and `attendance-registry-api`.
 - [ ] Deploy the slice with explicit image URIs.
 - [ ] Smoke-check:
-  - `/api/dispatch/`
-  - `/api/delivery-record/`
-  - `/api/attendance/`
+  - `/api/dispatch/health/`
+  - `/api/dispatch/plans/`
+  - `/api/delivery-record/health/`
+  - `/api/delivery-record/records/`
+  - `/api/attendance/health/`
+  - `/api/attendance/days/`
 - [ ] Run UI smoke for:
   - `DispatchUploadsPage`
   - `DispatchPlanFormPage`
   - `DispatchBoardsPage`
 - [ ] Record lessons and commit repo-local plus root changes.
+
+**Execution result:**
+- Completed in production with infra deploy run `24378352437`.
+- Public route proof after rollout:
+  - `/api/dispatch/health/` -> `200`
+  - `/api/dispatch/plans/` -> `200 []` with admin JWT
+  - `/api/delivery-record/health/` -> `200`
+  - `/api/delivery-record/records/` -> `200 []` with admin JWT
+  - `/api/attendance/health/` -> `200`
+  - `/api/attendance/days/` -> `200 []` with admin JWT
+- The prefix roots `/api/dispatch/`, `/api/delivery-record/`, and `/api/attendance/` were not the final proof endpoints. After routing stabilized they returned `404`, which confirmed the rewrite path was correct but the service root itself was not an API route.
+- `service-delivery-record` and `service-attendance-registry` both required a container-contract fix before the slice could close:
+  - GitHub Actions billing blocked the public repo image builds, so the replacement images were built locally and pushed to ECR with `docker buildx --platform linux/amd64`.
+  - Their Dockerfiles had a `CMD runserver` override that bypassed `entrypoint.sh`, skipped migrations, and surfaced as `500` only on real data endpoints.
 
 ### Task 6: Execute Slice 4 Dispatch Read Models
 

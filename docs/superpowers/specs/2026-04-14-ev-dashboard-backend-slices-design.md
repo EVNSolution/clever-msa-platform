@@ -238,6 +238,16 @@ front-web-console
 - 배차 입력, 일별 snapshot, attendance truth 는 write-side 묶음이다.
 - dispatch read model 과 settlement 는 이 세 서비스 위에서만 의미가 생긴다.
 
+#### Runtime dependency order inside the slice
+
+- `service-attendance-registry` 는 slice 안에서 가장 독립적인 정본이다.
+- `service-dispatch-registry` 는 `VEHICLE_REGISTRY_BASE_URL=http://vehicle-asset-api:8000`, `DRIVER_PROFILE_BASE_URL=http://driver-profile-api:8000`, `DELIVERY_RECORD_BASE_URL=http://delivery-record-api:8000`, `ATTENDANCE_REGISTRY_BASE_URL=http://attendance-registry-api:8000` 를 기대한다.
+- `service-delivery-record` 는 `ORGANIZATION_MASTER_BASE_URL=http://organization-master-api:8000`, `DRIVER_PROFILE_BASE_URL=http://driver-profile-api:8000`, `DISPATCH_REGISTRY_BASE_URL=http://dispatch-registry-api:8000`, `ATTENDANCE_REGISTRY_BASE_URL=http://attendance-registry-api:8000` 를 기대한다.
+- `dispatch-registry` 와 `delivery-record` 는 request-time 의존으로 서로를 참조하므로, 안전한 rollout 순서는 `attendance-registry -> dispatch-registry + delivery-record -> edge-api-gateway` 다.
+- gateway 경로도 Slice 1, Slice 2 lesson과 같은 이유로 direct upstream을 우선한다. 이 slice의 core upstream은 `dispatch-registry-api`, `delivery-record-api`, `attendance-registry-api` 다.
+- 이 slice의 honest smoke path 는 prefix root 가 아니라 실제 write-side/read-side endpoint 여야 한다. 운영 기준 경로는 `/api/dispatch/plans/`, `/api/delivery-record/records/`, `/api/attendance/days/` 이다.
+- `service-delivery-record` 와 `service-attendance-registry` 는 production Dockerfile 에 `CMD runserver` 를 두면 안 된다. ECS 에서는 그 한 줄 때문에 `entrypoint.sh` 기본 분기가 깨지고 `migrate + gunicorn` 이 실행되지 않는다.
+
 #### Success criteria
 
 - Dispatch upload / dispatch plan / delivery snapshot / attendance endpoints smoke 성공
