@@ -324,3 +324,14 @@ What production did **not** prove was a live MQTT ingest cutover. `service-telem
 - `/api/telemetry-dead-letters/` -> `401`
 
 If telemetry health is `200` but the chosen read path is wrong, you can create noise by chasing a fake routing bug. Smoke the real endpoints that the service actually defines.
+
+## UI Close-Out Needs A Real Smoke Account, Not A Local Fixture Credential
+
+By `2026-04-14`, the live anonymous shell smoke for `https://ev-dashboard.com` was good:
+
+- title `CLEVER 통합 웹 콘솔`
+- login form visible
+- protected routes like `/companies` and `/dispatch/boards` redirected back to the login shell
+- no browser console errors during that shell smoke
+
+That is enough to prove the public front door is alive, but it is **not** enough to close authenticated UI smoke. The repo default fixture credential `seed-admin@example.com / ChangeMe123!` returned `403 Invalid email or password.` against live `api.ev-dashboard.com`. Do not pretend that local fixture credentials are valid production smoke accounts. Authenticated UI close-out now requires a dedicated read-only smoke account or an equivalent secret-managed credential.
