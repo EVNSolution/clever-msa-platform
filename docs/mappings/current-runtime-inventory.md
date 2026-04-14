@@ -55,3 +55,4 @@
    - deploy 전: [../runbooks/ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md)
    - deploy 중: [../runbooks/ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
    - deploy 후: [../runbooks/ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
+6. `ev-dashboard` canonical prod truth는 `infra-ev-dashboard-platform -> CDK/ECS -> ev-dashboard.com` 이다. `clever-deploy-control` 은 bridge lane이나 legacy reference일 뿐, 이 surface의 정본이 아니다.

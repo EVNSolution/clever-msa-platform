@@ -6,13 +6,33 @@
 
 이 문서의 목적은 아래다.
 
-1. 현재 CLEVER 배포 truth와 새 ECS/CDK 전환 방향을 분리해서 기록한다.
+1. `ev-dashboard` canonical prod truth와 legacy bridge lane을 분리해서 기록한다.
 2. 새 ECS/Fargate 워크로드는 `GitHub Actions + OIDC + CDK`를 우선 경로로 본다.
 3. 기존 EC2 중앙 배포 경로를 깨지 않고, 어디까지가 migration scope인지 명확히 한다.
 
-## Current CLEVER Deploy Truth
+## Canonical Approved Runtime Truth
 
-현재 검증되어 운영 중인 경로는 아래다.
+현재 승인된 canonical surface는 `ev-dashboard` 다.
+
+```text
+GitHub main
+-> immutable ECR image
+-> infra-ev-dashboard-platform
+-> CDK deploy
+-> ECS/Fargate + ALB
+-> ev-dashboard.com / api.ev-dashboard.com
+```
+
+이 기준에서 중요한 점은 아래다.
+
+- 코드 정본은 GitHub `main` 이다.
+- release artifact 정본은 immutable ECR SHA tag 이다.
+- runtime 정본은 `infra-ev-dashboard-platform` 이 소유하는 ECS/CDK stack 이다.
+- `ev-dashboard.com`, `api.ev-dashboard.com` 의 prod truth는 `clever-deploy-control` 이 아니라 위 infra repo다.
+
+## Legacy Bridge-Lane Deploy Truth
+
+현재도 일부 surface나 bridge lane에서 사용되는 경로는 아래다.
 
 ```text
 service repo push
@@ -24,15 +44,15 @@ service repo push
 -> docker compose
 ```
 
-현재 truth를 구성하는 축은 아래다.
+이 bridge lane을 구성하는 축은 아래다.
 
 - 서비스 repo별 image build는 GitHub Actions가 수행한다.
 - image build는 org variable `GH_ACTIONS_ECR_BUILD_ROLE_ARN` 기준으로 동작한다.
 - 환경 배포는 `clever-deploy-control`이 `GH_ACTIONS_DEV_DEPLOY_ROLE_ARN`, `GH_ACTIONS_STAGE_DEPLOY_ROLE_ARN`, `GH_ACTIONS_PROD_DEPLOY_ROLE_ARN`를 사용해 실행한다.
-- runtime deploy target은 현재 EC2 app-host + SSM + compose다.
+- runtime deploy target은 bridge lane에서만 EC2 app-host + SSM + compose다.
 - root `clever-msa-platform`은 docs truth와 API docs freshness gate를 유지한다.
 
-즉, **현재 운영 경로는 GitHub-hosted control plane + AWS OIDC** 이다.
+즉, `clever-deploy-control` 은 여전히 존재하지만, `ev-dashboard` canonical prod truth 자체를 정의하지는 않는다.
 
 ## New Preferred Direction
 
@@ -65,13 +85,13 @@ GitHub repo
 - infra deploy: `CDK`
 - runtime target: `ECS/Fargate`
 
-단, 아래는 그대로 유지한다.
+단, 아래는 bridge lane이나 non-ECS surface에서 그대로 유지할 수 있다.
 
 - 기존 EC2 중앙 배포 레이어
 - 현재 서비스 repo의 GitHub Actions image build
 - 현재 환경별 deploy role secret 구조
 
-즉, 이번 결정은 **제어면과 인증면은 유지하고 런타임만 ECS/CDK로 확장하는 결정**이다.
+즉, 이번 결정은 **`ev-dashboard` canonical surface에서는 infra repo가 정본이 되고, 중앙 배포는 필요한 곳에서만 bridge lane으로 남는 결정**이다.
 
 ## Locked First Migration Slice
 
@@ -234,6 +254,16 @@ already closed:
 
 - dedicated manager-role smoke accounts exist in local gitignored operator notes
 - authenticated read-only browser smoke passed for the required pages
+
+## Operator Reading Rule
+
+`ev-dashboard` 관련 판단에서는 아래 순서를 우선한다.
+
+1. `infra-ev-dashboard-platform`
+2. `ev-dashboard` runbooks
+3. 이 전환 기준 문서
+
+`clever-deploy-control` 문서는 bridge lane이나 legacy reference를 확인할 때만 본다.
 
 ## Scope Boundary
 

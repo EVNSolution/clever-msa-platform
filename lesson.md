@@ -83,6 +83,10 @@ Once a migration stops being “implementation” work and becomes “operator c
 
 Keep rollout notes as truth and execution record, but keep the live “what do I do before, during, and after deploy?” answer in this runbook set only.
 
+## Do Not Promote The Bridge Lane Into Source Of Truth
+
+Once a surface reaches `infra -> CDK/ECS -> prod`, stop talking about the legacy central deploy bridge lane as if it still defines runtime truth. For `ev-dashboard`, the canonical operator path is the infra repo and its ECS runbooks. `clever-deploy-control` may still exist for other surfaces or exceptions, but that does not make it the source of truth for the migrated surface.
+
 ## Deploy Docs Must Fit On One Operator Loop
 
 When deploy guidance is split across `lesson.md`, infra-local lessons, rollout notes, and runbooks, the deploy feels slower than it really is because the operator keeps reinterpreting the same state. The fix is not “more notes”. The fix is one short operator loop with:

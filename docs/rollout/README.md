@@ -27,6 +27,7 @@
 - `ev-dashboard` deploy gate: [../runbooks/ev-dashboard-ecs-preflight-gate.md](../runbooks/ev-dashboard-ecs-preflight-gate.md)
 - `ev-dashboard` deploy operator loop: [../runbooks/ev-dashboard-ecs-deploy-operator-loop.md](../runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
 - `ev-dashboard` UI smoke와 decommission close-out: [../runbooks/ev-dashboard-ui-smoke-and-decommission.md](../runbooks/ev-dashboard-ui-smoke-and-decommission.md)
+- `ev-dashboard` canonical runtime truth: [2026-04-13-ecs-cdk-oidc-actions-transition.md](2026-04-13-ecs-cdk-oidc-actions-transition.md)
 - 플랫폼 전체 구조와 작업 원칙: [../../WORKSPACE.md](../../WORKSPACE.md)
 - repo 상태와 active runtime / empty shell 구분: [../../repo-map.md](../../repo-map.md)
 - 중앙 배포 레이어 레퍼런스: [2026-04-07-central-deploy-reference.md](2026-04-07-central-deploy-reference.md)
@@ -71,3 +72,5 @@ python3 scripts/deploy/compute-targets.py \
 4. [../runbooks/ev-dashboard-ui-smoke-and-decommission.md](../runbooks/ev-dashboard-ui-smoke-and-decommission.md)
 
 backend slice migration 자체는 완료됐고, 남은 것은 operational close-out이다.
+
+`clever-deploy-control` 관련 문서는 `ev-dashboard` canonical prod truth를 정의하는 문서가 아니다. bridge lane이나 legacy reference가 필요할 때만 읽는다.
