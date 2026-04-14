@@ -44,6 +44,8 @@
 - If a user configures `front-web-console` `5174` to proxy to a remote API target, explicitly send this warning:
   - `현재 로컬 프론트 테스트의 CRUD는 실제 DB에 영향을 줍니다. 변경을 원하면, PROXY TARGET을 변경하십시오.`
 - Prefer `.env.local-test` for dev/staging remote targets and reserve `.env.local` for intentional real-data checks.
+- Current dev/local-test remote target is `https://clever-hub-dev-public-alb-709320164.ap-northeast-2.elb.amazonaws.com`.
+- Default frontend testing should use `.env.local-test`; reserve `.env.local` for explicit prod verification only.
 
 ## Local Verification Questions
 
@@ -66,6 +68,7 @@
     - switch to `front-web-console/.env.local-test` or ask for another safe target
   - Frontend-only + remote local-test(dev/staging) target
     - use `front-web-console/.env.local-test`
+    - current dev target is `https://clever-hub-dev-public-alb-709320164.ap-northeast-2.elb.amazonaws.com`
     - run `npm run dev:local-test`
   - Backend development + local runtime
     - use low-CPU hybrid or full Docker depending on the requested scope
