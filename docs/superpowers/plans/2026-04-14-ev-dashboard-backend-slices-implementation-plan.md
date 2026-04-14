@@ -8,6 +8,21 @@
 
 **Tech Stack:** AWS CDK (TypeScript), ECS/Fargate, ALB, Route53, ACM, GitHub Actions, OIDC, Nginx, Django/Gunicorn, CLEVER service repos, root rollout docs.
 
+## Current Status
+
+- `Task 1` is complete.
+- `Task 2` is complete.
+- `Task 3` runtime cutover for the organization slice is complete on production ECS.
+- Verified public and protected read paths:
+  - `https://api.ev-dashboard.com/api/org/companies/public/` -> `200`
+  - `https://api.ev-dashboard.com/api/org/companies/` -> `200` with admin JWT
+  - `https://api.ev-dashboard.com/api/org/fleets/` -> `200` with admin JWT
+  - `https://api.ev-dashboard.com/api/auth/health/` -> `200`
+  - `https://api.ev-dashboard.com/openapi.yaml` -> `200`
+  - `https://api.ev-dashboard.com/swagger/` -> `200`
+  - `https://api.ev-dashboard.com/admin/account-access/login/` -> `200`
+- Residual for `Task 3`: `manager-accounts` and `identity-signup-requests/manage` still need a real production identity session for honest smoke. They were not write-smoked because that would mutate prod state.
+
 ---
 
 ### Task 1: Lock The Slice Roadmap In Docs

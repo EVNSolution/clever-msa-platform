@@ -45,14 +45,37 @@ The first auth-slice infra deploy failed before any app code ran because the sta
 
 `edge-api-gateway` came from a Docker Compose world where `resolver 127.0.0.11` worked. On ECS/Fargate, that resolver is wrong. For this stack, the safe rule is: do not carry Docker DNS assumptions into ECS unchanged.
 
+## Variable Proxy Pass Is Not A Safe Service Connect Pattern
+
+The next failure after the Docker resolver fix was subtler: `nginx` request-time DNS through `proxy_pass http://$variable` still could not resolve the new organization slice on ECS. The direct Service Connect upstream worked for stable core routes, but the variable form kept returning `502` even after the backend task was healthy. For this stack, treat `variable proxy_pass` as incompatible with Service Connect rollout paths unless you have proven the resolver path inside the task.
+
 ## Direct Upstreams Beat Variable DNS For Core Routes
 
 The first ECS gateway fix replaced the Docker resolver, but `proxy_pass` through variables still caused `account-auth-api` to resolve the wrong way at request time. For the core `ev-dashboard` routes, the stable pattern is direct upstreams:
 
 - `proxy_pass http://account-auth-api:8000;`
 - `proxy_pass http://web-console:5174;`
+- `proxy_pass http://organization-master-api:8000;`
 
 Use request-time variable resolution only where the upstream really needs to stay dynamic.
+
+## Gateway Order Matters When A New Slice Adds Direct Upstreams
+
+Changing the gateway image and adding a new backend service in the same deploy is not enough by itself. If the gateway task starts before the new backend service is registered in Service Connect, `nginx` can fail or serve stale `502`s even though CloudFormation later reports success. For new slices behind direct upstreams, make the infra stack update order explicit so the new backend service is created before the gateway rolls.
+
+## Prod Smoke Should Stay Read-Only By Default
+
+For the `Company Governance` slice, it was safe to prove the runtime with read-only checks in production:
+
+- `/api/org/companies/public/`
+- `/api/org/companies/`
+- `/api/org/fleets/`
+
+That was enough to show the routing, auth, and DB wiring were correct without polluting real production data. Do not use write-path smoke in prod unless the user explicitly wants a data-mutating check.
+
+## Stack Success Is Not The Same As Slice Success
+
+`24372474821` and `EvDashboardPlatformStack UPDATE_COMPLETE` still left `/api/org/*` broken. The fix only closed after the second deploy `24373001123`, where the gateway ordering and upstream style were corrected. Record both the infra result and the public endpoint result before calling a slice done.
 
 ## Let Admin Own Its Prefix
 
