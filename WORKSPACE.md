@@ -118,6 +118,19 @@ clever-msa-platform/
 
 - `infra-ev-dashboard-platform`
 
+## Planned Platform Infra Repo Names
+
+다음 canonical public surface ECS transition 을 위해 아래 infra repo 이름을 planned target 으로 고정한다.
+
+- `infra-clever-hub-platform`
+
+의미는 아래와 같다.
+
+- `hub.evnlogistics.com` canonical public surface 전용 shared runtime infra owner
+- `candidate.hub.evnlogistics.com` pre-prod gate lane owner
+- `front-web-console`, `edge-api-gateway`, `service-account-access` 를 시작점으로 하는 next ECS/CDK cutover 전용 infra repo
+- active repo 생성 전에도 docs truth 와 naming 은 먼저 이 이름으로 고정한다
+
 이 이름의 의미는 아래와 같다.
 
 - `ev-dashboard.com` / `api.ev-dashboard.com` shared ALB, ECS services, ACM, Route53, deploy workflow owner
