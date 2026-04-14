@@ -19,6 +19,8 @@
   - target repo 디렉토리와 README만 생성됐고 runtime 구현은 아직 없음
 - `planned-target`
   - target repo 경계와 문서 위치만 먼저 고정됐고 shell/runtime은 아직 생성되지 않음
+- `scaffolded-target`
+  - linked child repo와 reusable scaffold는 생성됐고 local 검증도 통과했지만 real runtime cutover는 아직 시작 전임
 
 ## Representation Note
 
@@ -32,7 +34,7 @@
 | --- | --- | --- | --- | --- | --- |
 | `integration-local-stack` | integration | 현재 compose, env, seed, smoke 자산을 한곳에서 관리 | 분리된 repo들을 로컬에서 묶는 통합 실행 셸 | `development/integration-local-stack/` | `migrated-target` |
 | `infra-ev-dashboard-platform` | infra | `ev-dashboard.com` ECS/CDK cutover용 shared runtime infra owner | `front-web-console`, `edge-api-gateway`, `service-account-access` slice의 ALB, ECS, ACM, Route53, deploy workflow 전용 infra repo | `development/infra-ev-dashboard-platform/` | `migrated-target` |
-| `infra-clever-hub-platform` | infra | 다음 canonical public surface `hub.evnlogistics.com` ECS/CDK cutover용 planned infra owner | `hub.evnlogistics.com` / `candidate.hub.evnlogistics.com` shared ALB, ECS, ACM, Route53, deploy workflow 전용 infra repo | not created yet | `planned-target` |
+| `infra-clever-hub-platform` | infra | 다음 canonical public surface `hub.evnlogistics.com` ECS/CDK cutover용 scaffolded infra owner | `hub.evnlogistics.com` / `candidate.hub.evnlogistics.com` shared ALB, ECS, ACM, Route53, deploy workflow 전용 infra repo | `development/infra-clever-hub-platform/` | `scaffolded-target` |
 | `edge-api-gateway` | edge | gateway routing과 reverse proxy | 다중 서비스의 단일 진입 edge | `development/edge-api-gateway/` | `migrated-target` |
 | `front-web-console` | front | surviving 단일 웹 콘솔 | 권한 기반 통합 웹 UI 정본 | `development/front-web-console/` | `migrated-target` |
 | `service-organization-registry` | service | 회사/플릿 정본 | 조직 기준 마스터 registry | `development/service-organization-registry/` | `migrated-target` |

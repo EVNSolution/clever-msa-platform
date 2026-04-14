@@ -241,6 +241,10 @@ next canonical public surface:
 - `hub.evnlogistics.com`
 - dedicated infra repo name: `infra-clever-hub-platform`
 - design truth: [../superpowers/specs/2026-04-15-hub-ecs-transition-design.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-15-hub-ecs-transition-design.md)
+- current scaffold state:
+  - linked child repo created
+  - local `npm test -- --runInBand` passed
+  - candidate-config `npx cdk synth` passed
 
 already closed:
 

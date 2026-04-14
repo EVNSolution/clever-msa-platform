@@ -63,6 +63,12 @@ GitHub repo
 
 이 repo는 app code repo가 아니다.
 
+현재 상태:
+
+- linked child repo 생성 완료
+- reusable scaffold 와 local validation 완료
+- real AWS deploy evidence 는 아직 없음
+
 ## App-Code Ownership
 
 `hub` surface 전환에서도 app repo ownership은 그대로 유지한다.
@@ -160,7 +166,7 @@ GitHub repo
 이번 문서의 범위 밖은 아래다.
 
 - `hub` surface 전체 구현 완료
-- `infra-clever-hub-platform` 실제 repo 생성 완료
+- `infra-clever-hub-platform` 의 actual cutover 완료
 - central deploy ECS adapter 구현
 - old EC2 bridge retirement 실행
 

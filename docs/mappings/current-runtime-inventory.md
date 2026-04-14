@@ -58,4 +58,5 @@
 6. `hub.evnlogistics.com` canonical public surface 는 아직 bridge lane 에 있다.
    - current bridge: `clever-deploy-control -> SSM -> EC2 app-host -> docker compose`
    - next ECS target: `infra-clever-hub-platform`
+   - current repo state: linked child repo scaffold exists and passes local `npm test` plus candidate-config `cdk synth`
    - current operator choice: deferred `stage` bridge release 보다 `hub` structure transition 을 먼저 진행한다.

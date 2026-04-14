@@ -118,9 +118,9 @@ clever-msa-platform/
 
 - `infra-ev-dashboard-platform`
 
-## Planned Platform Infra Repo Names
+## Scaffolded Platform Infra Repo Names
 
-다음 canonical public surface ECS transition 을 위해 아래 infra repo 이름을 planned target 으로 고정한다.
+다음 canonical public surface ECS transition 을 위해 아래 infra repo 이름을 scaffolded target 으로 유지한다.
 
 - `infra-clever-hub-platform`
 
@@ -129,7 +129,7 @@ clever-msa-platform/
 - `hub.evnlogistics.com` canonical public surface 전용 shared runtime infra owner
 - `candidate.hub.evnlogistics.com` pre-prod gate lane owner
 - `front-web-console`, `edge-api-gateway`, `service-account-access` 를 시작점으로 하는 next ECS/CDK cutover 전용 infra repo
-- active repo 생성 전에도 docs truth 와 naming 은 먼저 이 이름으로 고정한다
+- linked child repo 생성과 local scaffold 검증이 끝난 상태이며, actual cutover proof 는 아직 남아 있다
 
 이 이름의 의미는 아래와 같다.
 
