@@ -30,6 +30,11 @@ npx cdk synth
 - `Task 1` is complete.
 - `Task 2` is complete.
 - `Task 3` runtime cutover for the organization slice is complete on production ECS.
+- `Task 4` runtime/API proof for the people-and-assets slice is complete on production ECS.
+- `Task 5` runtime/API proof for the dispatch-inputs slice is complete on production ECS.
+- `Task 6` runtime/API proof for the dispatch read-model slice is complete on production ECS.
+- `Task 7` runtime/API proof for the settlement slice is complete on production ECS.
+- `Task 8` runtime/API proof for the support-surface slice is complete on production ECS.
 - Verified public and protected read paths:
   - `https://api.ev-dashboard.com/api/org/companies/public/` -> `200`
   - `https://api.ev-dashboard.com/api/org/companies/` -> `200` with admin JWT
@@ -372,6 +377,25 @@ curl -sk https://api.ev-dashboard.com/api/org/fleets/
   - `SupportPage`
   - `NotificationsPage`
 - [ ] Record lessons and commit touched repos plus root pointers.
+
+**Execution result:**
+- Slice 6 closed at the runtime/API level with deploy run `24384039348`.
+- Final public support proof:
+  - `/api/regions/health/` -> `200`
+  - `/api/region-analytics/health/` -> `200`
+  - `/api/announcements/health/` -> `200`
+  - `/api/ticket/health/` -> `200`
+  - `/api/notifications/health/` -> `200`
+  - `/api/regions/` -> `401` without token
+  - `/api/region-analytics/daily-statistics/` -> `401` without token
+  - `/api/announcements/` -> `401` without token
+  - `/api/ticket/tickets/` -> `401` without token
+  - `/api/notifications/general/` -> `401` without token
+- The notable rollout lesson was another mixed gateway window, not a backend defect:
+  - some new support routes returned `200` while others still returned `502`
+  - all five support services were already `running=1`
+  - the routes only settled after the late `edge-api-gateway` replacement finished
+- UI smoke is still pending. This task is closed only for runtime/API proof.
 
 ### Task 9: Execute Slice 7 Terminal And Telemetry
 

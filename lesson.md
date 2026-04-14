@@ -266,3 +266,32 @@ The operator flow is now fixed:
 7. lesson update
 
 If a step fails, stop there. Do not "see what prod says" first.
+
+## Mixed Gateway Rollouts Can Split A Slice Into 200 And 502
+
+Slice 6 repeated the same gateway timing lesson in a clearer way. While the new support services were already coming up, the public health routes briefly split like this:
+
+- `/api/regions/health/` -> `200`
+- `/api/region-analytics/health/` -> `200`
+- `/api/announcements/health/` -> `502`
+- `/api/ticket/health/` -> `200`
+- `/api/notifications/health/` -> `502`
+
+That pattern did not mean only some routes were configured correctly. It meant the old and new `edge-api-gateway` tasks were both in play during the rollout. Once the new gateway task settled, all five health routes flipped to `200`. When a brand-new slice shows mixed `200/502` during gateway replacement, check rollout state before editing routes again.
+
+## Support Slice Can Close On Health 200 Plus Protected 401
+
+The support surface slice did not need a production write-path smoke either. The honest external proof was:
+
+- `/api/regions/health/` -> `200`
+- `/api/region-analytics/health/` -> `200`
+- `/api/announcements/health/` -> `200`
+- `/api/ticket/health/` -> `200`
+- `/api/notifications/health/` -> `200`
+- `/api/regions/` -> `401`
+- `/api/region-analytics/daily-statistics/` -> `401`
+- `/api/announcements/` -> `401`
+- `/api/ticket/tickets/` -> `401`
+- `/api/notifications/general/` -> `401`
+
+That response shape is enough to prove routing, auth middleware, and backend reachability for a support slice without mutating production data.
