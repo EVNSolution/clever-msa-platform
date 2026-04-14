@@ -120,6 +120,12 @@ curl -sk https://api.ev-dashboard.com/api/org/fleets/
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/config.ts`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
 
+**Execution notes locked before implementation:**
+- `service-personnel-document-registry` must receive `DRIVER_PROFILE_BASE_URL=http://driver-profile-api:8000`.
+- `service-vehicle-assignment` must receive both `DRIVER_PROFILE_BASE_URL=http://driver-profile-api:8000` and `VEHICLE_ASSET_BASE_URL=http://vehicle-asset-api:8000`.
+- Infra rollout order should be `driver-profile + vehicle-registry -> personnel-document-registry + vehicle-assignment -> edge-api-gateway`.
+- Gateway routes for this slice should follow the Slice 1 lesson: prefer direct upstreams for the four stable service-connect names instead of variable `proxy_pass` resolution.
+
 - [ ] Add failing infra tests for `driver-profile-api`, `vehicle-asset-api`, `driver-vehicle-assignment-api`, and `personnel-document-registry-api`.
 - [ ] Extend infra and gateway for the four service-connect names without touching later slices.
 - [ ] Build and deploy the four service images.
@@ -135,6 +141,22 @@ curl -sk https://api.ev-dashboard.com/api/org/fleets/
   - `VehicleAssignmentsPage`
   - `PersonnelDocumentsPage`
 - [ ] Capture lessons and commit each touched repo plus the root submodule updates.
+
+**Execution result:**
+- Completed in production with infra deploy run `24374679916`.
+- Public route proof after rollout:
+  - `/api/drivers/` -> `401` unauthenticated, `200 []` with admin JWT
+  - `/api/vehicles/vehicle-masters/` -> `401` unauthenticated, `200 []` with admin JWT
+  - `/api/personnel-documents/documents/` -> `401` unauthenticated, `200 []` with admin JWT
+  - `/api/driver-vehicle-assignments/assignments/` -> `401` unauthenticated, `200 []` with admin JWT
+- Shared auth/docs/admin proof remained healthy during the slice:
+  - `/api/auth/health/` -> `200`
+  - `/openapi.yaml` -> `200`
+  - `/swagger/` -> `200`
+  - `/admin/account-access/login/` -> `200`
+- The rollout produced two different `502` wait windows that should not be confused:
+  - early `502` while new RDS instances were still creating and the new ECS services did not exist yet
+  - later short `502` while `edge-api-gateway` was still rolling and Service Connect names were settling for the new task
 
 ### Task 5: Execute Slice 3 Dispatch Inputs
 

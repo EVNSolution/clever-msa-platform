@@ -77,6 +77,41 @@ That was enough to show the routing, auth, and DB wiring were correct without po
 
 `24372474821` and `EvDashboardPlatformStack UPDATE_COMPLETE` still left `/api/org/*` broken. The fix only closed after the second deploy `24373001123`, where the gateway ordering and upstream style were corrected. Record both the infra result and the public endpoint result before calling a slice done.
 
+## Use Deployment Wait Patterns Instead Of Constant Polling
+
+ECS/CDK rollout proof is not one signal. It is a sequence. Watching the wrong signal too early creates noise and leads to unnecessary retries.
+
+Use this order:
+
+1. GitHub Actions job phase
+   Wait for `Checkout -> Install dependencies -> Run unit tests -> Synthesize stack` to clear. This usually finishes within about `30-60s` for the current `infra-ev-dashboard-platform` workflow.
+2. CloudFormation phase
+   Once the workflow enters `Deploy stack`, wait for `EvDashboardPlatformStack` to flip from `UPDATE_COMPLETE` to `UPDATE_IN_PROGRESS`. That is the first honest sign that AWS has started changing runtime resources.
+3. Stateful resource phase
+   When the slice adds new databases, expect a long quiet period while `AWS::RDS::DBInstance` resources are being created. In this period, public routes often return `502` because the gateway is already on the new config while the new backend services do not exist yet. This is expected. Do not treat early `502` as a routing bug until the new ECS services appear.
+4. ECS service registration phase
+   After the new DB resources settle, watch `aws ecs list-services` and `aws ecs describe-services` for the new service names to appear with non-zero `desiredCount`. This is the signal that gateway dependencies can actually resolve.
+5. Public smoke phase
+   Only after the new services exist in ECS should public smoke matter. Then check the slice endpoints as a group, not one by one over and over.
+   If the new backend services exist but `edge-api-gateway` is still rolling, a short second `502` window can still happen while Service Connect names settle for the new task and the old task is draining. That is different from the earlier "backend service not created yet" `502`.
+6. Completion phase
+   The slice is only done when all three agree:
+   - GitHub run `completed/success`
+   - CloudFormation stack `UPDATE_COMPLETE`
+   - public smoke returns the expected `200/302` results
+
+Use a calmer polling cadence:
+
+- `10-20s` only while waiting for the GitHub job to move from `synth` into `deploy`
+- `60-90s` while CloudFormation is creating RDS or other stateful resources
+- public smoke only when a new phase boundary is reached, not on every short poll
+
+Use the error shape to decide whether to wait or debug:
+
+- `502` while the new ECS services do not exist yet usually means "keep waiting for DB and service creation"
+- `502` after the new ECS services are already running usually means "check edge rollout state and edge logs before touching config"
+- `401` on a protected endpoint is often the first honest proof that the route, auth middleware, and database wiring are alive
+
 ## Let Admin Own Its Prefix
 
 The important lesson from this patch is that Django admin should own the public prefix it serves. Hiding a prefixed route behind a gateway rewrite back to `/admin/` breaks redirects, login flow, and follow-up asset requests.

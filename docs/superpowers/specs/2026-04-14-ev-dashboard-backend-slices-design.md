@@ -204,6 +204,14 @@ front-web-console
 - 이후 dispatch 와 settlement 가 모두 이 정본들을 전제로 한다.
 - `front-web-console` 의 다음 사용 압력도 `drivers`, `vehicles`, `assignments` 에 있다.
 
+#### Runtime dependency order inside the slice
+
+- `service-driver-profile` 와 `service-vehicle-registry` 는 slice의 정본 기반이다.
+- `service-personnel-document-registry` 는 `DRIVER_PROFILE_BASE_URL=http://driver-profile-api:8000` 를 기대한다.
+- `service-vehicle-assignment` 는 `DRIVER_PROFILE_BASE_URL=http://driver-profile-api:8000` 와 `VEHICLE_ASSET_BASE_URL=http://vehicle-asset-api:8000` 를 함께 기대한다.
+- 따라서 infra rollout 순서는 `driver-profile + vehicle-registry -> personnel-document-registry + vehicle-assignment -> edge-api-gateway` 로 고정하는 편이 안전하다.
+- gateway 경로도 `organization` slice lesson과 같은 이유로 direct upstream을 우선한다. 이 slice의 core upstream은 `driver-profile-api`, `vehicle-asset-api`, `personnel-document-registry-api`, `driver-vehicle-assignment-api` 다.
+
 #### Success criteria
 
 - Drivers / Vehicles / Vehicle Assignments / Personnel Documents 화면 CRUD smoke 성공
