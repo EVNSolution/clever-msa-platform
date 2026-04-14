@@ -229,12 +229,6 @@ current open items:
 - `service-telemetry-listener` `7b`
 - old EC2/compose path에서 `ev-dashboard` 범위 retire
 - optional: local-only smoke credential을 secret-managed 운영 방식으로 승격할지 결정
-- next public-surface continuation plan:
-  - [../superpowers/plans/2026-04-15-central-deploy-ecs-transition-continuation-plan.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-15-central-deploy-ecs-transition-continuation-plan.md)
-
-current operator choice:
-
-- finish the next ECS structure transition before returning to the deferred EC2 bridge-lane `stage` release
 
 already closed:
 
