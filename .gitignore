@@ -2,6 +2,7 @@
 **/.DS_Store
 .worktrees/
 .codex/
+.local/
 
 node_modules/
 **/node_modules/

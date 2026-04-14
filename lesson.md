@@ -73,6 +73,15 @@ For the `Company Governance` slice, it was safe to prove the runtime with read-o
 
 That was enough to show the routing, auth, and DB wiring were correct without polluting real production data. Do not use write-path smoke in prod unless the user explicitly wants a data-mutating check.
 
+## Keep Close-Out Status In One Runbook
+
+Once a migration stops being “implementation” work and becomes “operator close-out”, the status should move out of scattered slice notes and into one runbook. For `ev-dashboard`, the honest current operator guide is the pair:
+
+- `docs/runbooks/ev-dashboard-ecs-preflight-gate.md`
+- `docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md`
+
+Keep rollout notes as truth and execution record, but keep the live “what is still open?” answer in one runbook only.
+
 ## Stack Success Is Not The Same As Slice Success
 
 `24372474821` and `EvDashboardPlatformStack UPDATE_COMPLETE` still left `/api/org/*` broken. The fix only closed after the second deploy `24373001123`, where the gateway ordering and upstream style were corrected. Record both the infra result and the public endpoint result before calling a slice done.
@@ -167,6 +176,20 @@ Local Mac builds are not safe by default for ECS in this stack. The first workar
 - `docker buildx build --platform linux/amd64 --provenance=false --push ...`
 
 If you skip the explicit platform, you can lose time on a fake infra failure that is really just an image architecture mismatch.
+
+## Blank Front API Base URLs Break Login At The Edge
+
+The `front-web-console` hotfix after authenticated smoke exposed a quieter contract bug. The bundle defaulted `VITE_API_BASE_URL` with a nullish fallback, but the production image pipeline could still inject a blank string. That produced edge behavior like:
+
+- login POST to `https://ev-dashboard.com/auth/identity-login/`
+- `405 Method Not Allowed`
+- anonymous shell looks healthy while authenticated smoke fails immediately
+
+The safe rule is:
+
+- treat blank and whitespace API base values the same as missing values
+- normalize them back to same-host `/api`
+- prove the behavior with a small unit test before rebuilding the image
 
 ## Django Container Defaults Must Not Override The Production Entrypoint
 
