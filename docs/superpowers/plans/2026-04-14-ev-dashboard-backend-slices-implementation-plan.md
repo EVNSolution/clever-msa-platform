@@ -230,18 +230,58 @@ curl -sk https://api.ev-dashboard.com/api/org/fleets/
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/nginx.conf`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/config.ts`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/config.test.ts`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/.github/workflows/deploy-ecs.yml`
 
+- [ ] Write failing tests first for:
+  - three new stateless runtime slots
+  - direct gateway upstreams for `/api/dispatch-ops/*`, `/api/driver-ops/*`, `/api/vehicle-ops/*`
+  - temporary bridge override envs `SETTLEMENT_OPS_BASE_URL`, `TELEMETRY_HUB_BASE_URL`, `TERMINAL_REGISTRY_BASE_URL`
 - [ ] Add runtime slots for `dispatch-ops-api`, `driver-ops-api`, and `vehicle-ops-api`.
-- [ ] Deploy and smoke-check:
-  - `/api/dispatch-ops/`
-  - `/api/driver-ops/`
-  - `/api/vehicle-ops/`
+- [ ] Keep this slice stateless. Do not add new `RDS` or `Redis` resources for these three services.
+- [ ] Wire envs as follows:
+  - `dispatch-ops` -> internal ECS only
+  - `driver-ops` -> internal ECS + `SETTLEMENT_OPS_BASE_URL=https://hub.evnlogistics.com/api/settlement-ops`
+  - `vehicle-ops` -> internal ECS + `TELEMETRY_HUB_BASE_URL=https://hub.evnlogistics.com/api/telemetry` + `TERMINAL_REGISTRY_BASE_URL=https://hub.evnlogistics.com/api/terminals`
+- [ ] Change gateway routes for this slice to direct upstreams. Do not keep variable `proxy_pass` for the three read-model routes.
+- [ ] Build the three images from repo workflows if Actions start normally. If public-repo billing blocks the runs again, use the Slice 3 fallback immediately:
+  - local `docker buildx build --platform linux/amd64 --provenance=false --push`
+- [ ] Deploy and smoke-check the honest endpoints:
+  - `/api/dispatch-ops/health/`
+  - `/api/dispatch-ops/board/?dispatch_date=<date>&fleet_id=<fleet_id>`
+  - `/api/dispatch-ops/summary/?dispatch_date=<date>&fleet_id=<fleet_id>`
+  - `/api/driver-ops/health/`
+  - `/api/driver-ops/drivers/<driver_ref>/`
+  - `/api/vehicle-ops/health/`
+  - `/api/vehicle-ops/vehicles/`
+  - `/api/vehicle-ops/vehicles/<vehicle_ref>/`
+- [ ] If a protected read endpoint cannot be driven with a real prod session immediately, use `health 200` plus protected-route `401/403` only as route proof, not as final slice proof.
 - [ ] Run UI smoke for:
   - `DispatchBoardDetailPage`
   - `DriverDetailPage`
   - `VehicleDetailPage`
-- [ ] Confirm read-model-only boundaries in docs and lessons.
+- [ ] Confirm read-model-only boundaries and temporary bridge scope in docs and lessons.
 - [ ] Commit each touched repo and update root pointers.
+
+**Execution result:**
+- Slice 4 closed at the runtime/API level with deploy run `24381237200` after the gateway-specific hotfix run `24380819103`.
+- Final public route proof:
+  - `/api/dispatch-ops/health/` -> `200`
+  - `/api/dispatch-ops/board/?dispatch_date=2026-04-14&fleet_id=00000000-0000-0000-0000-000000000001` -> `200 []`
+  - `/api/dispatch-ops/summary/?dispatch_date=2026-04-14&fleet_id=00000000-0000-0000-0000-000000000001` -> `200` zeroed summary
+  - `/api/driver-ops/health/` -> `200`
+  - `/api/driver-ops/drivers/00000000-0000-0000-0000-000000000001/` -> `404 not_found`
+  - `/api/vehicle-ops/health/` -> `200`
+  - `/api/vehicle-ops/vehicles/` -> `200 []`
+  - `/api/vehicle-ops/vehicles/00000000-0000-0000-0000-000000000001/` -> `404 not_found`
+- The production issues were service-level, not infra-level:
+  - `service-driver-operations-view` turned upstream not-found into `500` because `SourceNotFoundError` was referenced without an import.
+  - `service-vehicle-operations-view` treated temporary bridge failures from telemetry and terminal lookups as fatal, even though the old public hub rejected the new platform JWT with `401 Invalid token`.
+- Slice 4 reinforced the deploy wait pattern:
+  - public smoke recovered before GitHub Actions and CloudFormation finished
+  - the remaining delay came from ALB target draining with `deregistration_delay.timeout_seconds=300`
+- UI smoke is still pending. This task is closed only for runtime/API proof.
 
 ### Task 7: Execute Slice 5 Settlement
 

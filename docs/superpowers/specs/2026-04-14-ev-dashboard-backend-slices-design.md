@@ -274,9 +274,50 @@ front-web-console
 - read model은 정본 write-side가 먼저 올라와야 운영적으로 의미가 있다.
 - dispatch 상세/상황판, 기사/차량 운영 summary 는 입력 정본 없이는 false positive smoke 가 된다.
 
+#### Runtime dependency order inside the slice
+
+- `service-dispatch-operations-view` 는 현재까지 ECS 로 이미 옮긴 정본만 바라본다.
+  - `DISPATCH_REGISTRY_BASE_URL=http://dispatch-registry-api:8000`
+  - `DRIVER_VEHICLE_ASSIGNMENT_BASE_URL=http://driver-vehicle-assignment-api:8000`
+  - `VEHICLE_ASSET_BASE_URL=http://vehicle-asset-api:8000`
+  - `DRIVER_PROFILE_BASE_URL=http://driver-profile-api:8000`
+- `service-driver-operations-view` 는 core 정본은 ECS 내부 이름을 유지하고, 아직 Slice 5 로 옮기지 않은 settlement read-model 은 old public hub 를 임시 브리지로 사용한다.
+  - internal:
+    - `ACCOUNT_AUTH_BASE_URL=http://account-auth-api:8000`
+    - `DRIVER_PROFILE_BASE_URL=http://driver-profile-api:8000`
+    - `ORGANIZATION_MASTER_BASE_URL=http://organization-master-api:8000`
+    - `PERSONNEL_DOCUMENT_BASE_URL=http://personnel-document-registry-api:8000`
+  - temporary bridge:
+    - `SETTLEMENT_OPS_BASE_URL=https://hub.evnlogistics.com/api/settlement-ops`
+- `service-vehicle-operations-view` 도 core 정본은 ECS 내부 이름을 유지하고, 아직 Slice 7 로 옮기지 않은 terminal/telemetry 는 old public hub 를 임시 브리지로 사용한다.
+  - internal:
+    - `VEHICLE_ASSET_BASE_URL=http://vehicle-asset-api:8000`
+    - `DRIVER_VEHICLE_ASSIGNMENT_BASE_URL=http://driver-vehicle-assignment-api:8000`
+    - `ORGANIZATION_MASTER_BASE_URL=http://organization-master-api:8000`
+  - temporary bridge:
+    - `TELEMETRY_HUB_BASE_URL=https://hub.evnlogistics.com/api/telemetry`
+    - `TERMINAL_REGISTRY_BASE_URL=https://hub.evnlogistics.com/api/terminals`
+- anonymous probe 기준으로 `https://hub.evnlogistics.com/api/telemetry/vehicles/<id>/latest-location/` 와 `https://hub.evnlogistics.com/api/terminals/` 는 `401` 을 반환했다. 즉 old public hub 에서 해당 prefix 는 아직 살아 있다. 다만 Slice 4 production 검증에서는 old public hub 가 새 platform JWT 를 `401 Invalid token` 으로 거부했다. 따라서 `driver-ops`, `vehicle-ops` 의 bridge 호출은 later slice 가 옮겨지기 전까지 optional enrichment 로 취급하고, bridge 실패가 전체 read endpoint 를 `500` 으로 만들지 않게 해야 한다.
+- 이 slice의 세 read-model 서비스는 모두 sqlite 기반 stateless runtime 이다. 따라서 Slice 1~3 과 달리 새 `RDS` 나 `Redis` 를 만들지 않는다.
+- gateway 는 Slice 1~3 lesson을 그대로 따른다. `/api/dispatch-ops/*`, `/api/driver-ops/*`, `/api/vehicle-ops/*` 는 variable `proxy_pass` 가 아니라 direct upstream 으로 붙인다.
+- honest smoke path 는 prefix root 가 아니라 실제 read-model endpoint 여야 한다.
+  - `/api/dispatch-ops/health/`
+  - `/api/dispatch-ops/board/?dispatch_date=<date>&fleet_id=<fleet_id>`
+  - `/api/dispatch-ops/summary/?dispatch_date=<date>&fleet_id=<fleet_id>`
+  - `/api/driver-ops/health/`
+  - `/api/driver-ops/drivers/<driver_ref>/`
+  - `/api/vehicle-ops/health/`
+  - `/api/vehicle-ops/vehicles/`
+  - `/api/vehicle-ops/vehicles/<vehicle_ref>/`
+
 #### Success criteria
 
 - Dispatch board detail / driver detail / vehicle detail 조회 화면 smoke 성공
+- `dispatch-ops` 는 ECS 내부 정본만으로 `200` 을 증명
+- `driver-ops`, `vehicle-ops` 는 temporary bridge 가 붙은 상태에서 `200` 또는 expected read-only payload 를 증명
+- empty data 기준의 honest result 도 성공으로 본다.
+  - list endpoint 는 `200 []`
+  - unknown detail lookup 은 `404 not_found`
 - read model 서비스는 여전히 write owner가 아니라는 boundary 유지
 
 ### Slice 5. Settlement

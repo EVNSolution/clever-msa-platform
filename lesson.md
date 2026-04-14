@@ -194,3 +194,23 @@ Use the prefix root only to distinguish routing failure from application routing
 ## Service Dependencies Delay Later Rollouts On Purpose
 
 In Slice 3, `service-delivery-record` did not update immediately after its new task definition was created. That was not a stuck deploy. The stack intentionally waits for `service-attendance-registry` to finish before updating `delivery-record`, because the delivery service depends on `attendance-registry` at runtime. When you see only one service moving first, check the dependency chain before assuming CloudFormation ignored the image change.
+
+## ALB Target Draining Can Outlast Healthy Public Smoke
+
+Slice 4 proved that public smoke can already be correct while GitHub Actions and CloudFormation still look "busy". The key delay was not app startup. It was ALB target draining. This stack keeps the target group `deregistration_delay.timeout_seconds` at `300`, so the old `edge-api-gateway` target can hold the deploy open for several more minutes after the new task is already serving `200/404` responses. When public smoke has recovered but the run is still `in_progress`, check target draining before assuming the rollout is stuck.
+
+## Temporary Bridges Must Degrade When JWT Trust Is Missing
+
+Slice 4 also proved that "old public hub bridge still answers" is not the same as "old public hub trusts the new platform token". The temporary bridge prefixes on `https://hub.evnlogistics.com` returned `401 Invalid token` when `driver-ops` and `vehicle-ops` forwarded the new platform JWT. That means optional enrichments such as settlement, telemetry, and terminal lookups must degrade to warnings or null fields instead of failing the whole response with `500`.
+
+## Read Models Need Honest Empty-State Smoke
+
+For read-model slices, empty production data is not a failure if the endpoint semantics stay honest. Slice 4 closed with:
+
+- `/api/dispatch-ops/board/` -> `200 []`
+- `/api/dispatch-ops/summary/` -> `200` zeroed summary
+- `/api/driver-ops/drivers/<unknown>/` -> `404 not_found`
+- `/api/vehicle-ops/vehicles/` -> `200 []`
+- `/api/vehicle-ops/vehicles/<unknown>/` -> `404 not_found`
+
+That is the correct proof for a read-model runtime with no matching prod data. The failure mode to watch for is `500`, not `404`.
