@@ -82,6 +82,3 @@
 [submodule "development/infra-ev-dashboard-platform"]
 	path = development/infra-ev-dashboard-platform
 	url = https://github.com/EVNSolution/infra-ev-dashboard-platform
-[submodule "development/infra-clever-hub-platform"]
-	path = development/infra-clever-hub-platform
-	url = https://github.com/EVNSolution/infra-clever-hub-platform.git

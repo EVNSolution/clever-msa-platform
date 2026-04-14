@@ -137,7 +137,7 @@ Expected:
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md`
 
-- [x] **Step 1: Write the next-surface design spec**
+- [ ] **Step 1: Write the next-surface design spec**
 
 The spec must lock:
 - the next canonical public surface, expected to be `hub.evnlogistics.com`
@@ -149,7 +149,7 @@ Expected:
 - the next ECS migration target is explicit
 - no ambiguity remains about whether central deploy has already moved
 
-- [x] **Step 2: Update the rollout truth document**
+- [ ] **Step 2: Update the rollout truth document**
 
 Add a section that says:
 - `ev-dashboard` path is complete enough to reuse as a pattern
@@ -165,7 +165,7 @@ git diff --check
 Expected:
 - clean docs diff
 
-- [x] **Step 3: Update workspace naming if a new infra repo is adopted**
+- [ ] **Step 3: Update workspace naming if a new infra repo is adopted**
 
 If the spec fixes a name such as `infra-clever-hub-platform`, update `WORKSPACE.md` and `repo-map.md` immediately.
 
@@ -182,13 +182,13 @@ Expected:
 - Reference: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/postDeploySmoke.ts`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/.gitmodules`
 
-- [x] **Step 1: Create the new infra repo as a linked child repo**
+- [ ] **Step 1: Create the new infra repo as a linked child repo**
 
 Expected:
 - a dedicated infra repo exists for the next public surface
 - the root exposes it as a linked child repo immediately
 
-- [x] **Step 2: Copy only the reusable ECS control pattern**
+- [ ] **Step 2: Copy only the reusable ECS control pattern**
 
 Reuse:
 - preflight gate
@@ -201,7 +201,7 @@ Do not copy:
 - service-specific route assumptions
 - old experimental shortcuts
 
-- [x] **Step 3: Synthesize and test the scaffold before real service wiring**
+- [ ] **Step 3: Synthesize and test the scaffold before real service wiring**
 
 Run in the new infra repo:
 
