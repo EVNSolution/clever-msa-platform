@@ -62,7 +62,7 @@
 관리자 응답 등록 시 동작은 아래처럼 고정한다.
 
 1. 지원 응답 정본은 `service-support-registry`가 저장한다.
-2. 응답 저장이 성공하면 `service-notification-hub`가 backend-generated notification delivery를 수행해 관련 사용자에게 알림을 전달한다.
+2. 응답 저장이 성공하면 `service-notification-hub`가 general inbox notification을 전달해 관련 사용자에게 알림을 전달한다.
 3. 이 전달은 웹의 독립 inbox page를 전제로 하지 않으며 push send는 자동화하지 않는다.
 
 목록 row는 최소 아래 정도를 보여주면 충분하다.
@@ -107,7 +107,7 @@ lower manager의 지원은 self-service 티켓 화면이다.
 
 lower manager는 자기 티켓만 본다.
 티켓 상태/우선순위 수정 같은 관리자 액션은 가지지 않는다.
-관리자 답변이 등록되면 관련 사용자에게 backend-generated notification delivery가 생성된다.
+관리자 답변이 등록되면 관련 사용자에게 general inbox notification이 전달된다.
 
 ## 권한 해석
 

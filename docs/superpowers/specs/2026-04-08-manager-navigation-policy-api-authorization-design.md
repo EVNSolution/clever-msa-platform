@@ -159,8 +159,6 @@ def require_nav_access(principal, nav_item_key: str, action: str = "view") -> No
   - 공지 API
 - `support`
   - 지원 API
-- `notifications`
-  - backend notification API (`/api/notifications/*`)
 
 `dashboard`, `account`는 1차 API authorization 대상에서 제외한다.
 
@@ -179,6 +177,7 @@ def require_nav_access(principal, nav_item_key: str, action: str = "view") -> No
 
 - `service-vehicle-registry`는 자기 API가 `vehicles`인지 `vehicle_assignments`인지 자기 repo 안에서 선언한다.
 - `service-region-registry`는 자기 API가 `regions`인지 자기 repo 안에서 선언한다.
+- backend notification API (`/api/notifications/*`)는 nav_item_key mapping이 아니라 backend/runtime capability로만 다룬다.
 
 ## Rollout Strategy
 
