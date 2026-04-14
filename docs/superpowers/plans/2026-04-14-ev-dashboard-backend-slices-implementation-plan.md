@@ -400,25 +400,42 @@ curl -sk https://api.ev-dashboard.com/api/org/fleets/
 ### Task 9: Execute Slice 7 Terminal And Telemetry
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-terminal-registry/README.md`
 - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-terminal-registry/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-hub/README.md`
 - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-hub/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-dead-letter/README.md`
 - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-dead-letter/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-listener/README.md`
 - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-listener/lesson.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/nginx.conf`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/config.ts`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/preflight.ts`
 
-- [ ] Add terminal and telemetry runtime slots, keeping `service-telemetry-listener` internal-only.
-- [ ] Deploy and smoke-check:
+- [x] Add terminal and telemetry runtime slots, keeping `service-telemetry-listener` internal-only.
+- [x] Split execution into:
+  - `7a` terminal + telemetry hub + dead-letter
+  - `7b` telemetry listener only after a real MQTT broker endpoint is confirmed
+- [x] Keep `TELEMETRY_LISTENER_DESIRED_COUNT=0` until broker discovery is complete.
+- [x] Preflight must reject Slice 7 when `TERMINAL_REGISTRY_BASE_URL` or `TELEMETRY_HUB_BASE_URL` still point at `https://hub.evnlogistics.com/...`.
+- [x] Deploy and smoke-check:
+  - `/api/terminals/health/`
   - `/api/terminals/`
-  - `/api/telemetry/`
+  - `/api/telemetry/health/`
   - `/api/telemetry-dead-letters/health/`
-- [ ] Validate listener/runtime health from ECS and CloudWatch, not just public HTTP.
-- [ ] Record final telemetry-specific lessons and commit touched repos plus root pointers.
+  - `/api/telemetry-dead-letters/`
+- [x] Validate runtime state from ECS and keep listener broker validation deferred until `7b`.
+- [x] Record final telemetry-specific lessons and commit touched repos plus root pointers.
+
+Completion evidence:
+
+- infra workflow run `24387589004` -> `completed/success`
+- `EvDashboardPlatformStack` -> `UPDATE_COMPLETE`
+- external proof:
+  - `/api/terminals/health/` -> `200`
+  - `/api/terminals/` -> `401`
+  - `/api/telemetry/health/` -> `200`
+  - `/api/telemetry/terminals/00000000-0000-0000-0000-000000000001/latest-location/` -> `401`
+  - `/api/telemetry-dead-letters/health/` -> `200`
+  - `/api/telemetry-dead-letters/` -> `401`
+- `service-telemetry-listener` service exists in ECS but remains `desired=0` until real broker discovery is complete.
 
 ### Task 10: Close The Migration Record
 
@@ -427,9 +444,9 @@ curl -sk https://api.ev-dashboard.com/api/org/fleets/
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md`
 
-- [ ] After slice 7 succeeds, update the root lesson with the final migration rules that actually held true.
-- [ ] Update the rollout truth to show which prefixes have fully left the EC2 path.
-- [ ] Update `current-runtime-inventory.md` if any gateway naming or route ownership changed.
+- [x] After slice 7 succeeds, update the root lesson with the final migration rules that actually held true.
+- [x] Update the rollout truth to show which prefixes have fully left the EC2 path.
+- [x] Update `current-runtime-inventory.md` if any gateway naming or route ownership changed.
 - [ ] Verify:
 
 ```bash

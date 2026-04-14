@@ -402,8 +402,16 @@ front-web-console
 #### Success criteria
 
 - terminal CRUD smoke 성공
-- telemetry ingest/health/admin read smoke 성공
+- telemetry 는 prefix root 가 아니라 real endpoint 기준으로 smoke 성공
+  - `/api/telemetry/health/`
+  - `/api/telemetry-dead-letters/health/`
+  - protected read path `401` 또는 authenticated read success
 - dead-letter path 와 internal listener contract 확인
+- rollout subphase는 둘로 나눈다.
+  - 7a: `service-terminal-registry + service-telemetry-hub + service-telemetry-dead-letter`
+  - 7b: `service-telemetry-listener`
+- `7b` 는 실제 MQTT broker endpoint가 확인되기 전까지 `desired=0` 으로 유지한다.
+- preflight 는 Slice 7 활성화 시 `TERMINAL_REGISTRY_BASE_URL` 과 `TELEMETRY_HUB_BASE_URL` 이 old public hub 가 아니라 ECS internal Service Connect 주소를 가리키는지 강제해야 한다.
 
 ## Migration Rules
 

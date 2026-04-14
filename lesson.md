@@ -295,3 +295,32 @@ The support surface slice did not need a production write-path smoke either. The
 - `/api/notifications/general/` -> `401`
 
 That response shape is enough to prove routing, auth middleware, and backend reachability for a support slice without mutating production data.
+
+## Preflight Must Verify That Image Tags Really Exist In ECR
+
+Tag format checks were not enough for later slices. This stack keeps image URIs in repo vars because `workflow_dispatch` cannot carry unlimited properties, and those vars can drift away from the images that actually exist in ECR. Slice 7 only became trustworthy after preflight started querying ECR directly and failed fast on missing tags before `cdk deploy`.
+
+For this migration, a deploy is not ready just because the image URI "looks like a SHA". It is only ready when preflight proves the referenced image tag exists in ECR.
+
+## Terminal And Telemetry Closed As 7a, Not As A Full Listener Cutover
+
+The honest Slice 7 closure is narrower than "all telemetry is done". What production proved on `2026-04-14` was:
+
+- terminal registry public/admin surface on ECS
+- telemetry hub health plus protected read paths on ECS
+- telemetry dead-letter health plus protected admin list on ECS
+
+What production did **not** prove was a live MQTT ingest cutover. `service-telemetry-listener` stays as `desired=0` until a real broker endpoint and credentials are confirmed. Do not turn the listener on just because the rest of Slice 7 is green.
+
+## Telemetry Smoke Must Use Real Endpoints, Not The Prefix Root
+
+`/api/telemetry/` is not the honest closure gate for this service because the app does not define a list root there. The final production proof for Slice 7a was:
+
+- `/api/terminals/health/` -> `200`
+- `/api/terminals/` -> `401`
+- `/api/telemetry/health/` -> `200`
+- `/api/telemetry/terminals/<uuid>/latest-location/` -> `401`
+- `/api/telemetry-dead-letters/health/` -> `200`
+- `/api/telemetry-dead-letters/` -> `401`
+
+If telemetry health is `200` but the chosen read path is wrong, you can create noise by chasing a fake routing bug. Smoke the real endpoints that the service actually defines.

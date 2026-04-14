@@ -164,6 +164,49 @@ operational note:
 - during propagation, local resolver results lagged behind Route53.
 - public `dig` and `curl --resolve` against the ALB IPs were required to validate the cutover honestly.
 
+## Backend Slice Completion Evidence
+
+2026-04-14 KST 기준, `ev-dashboard` external API surface는 planned slices 기준으로 ECS/ALB 경로에서 production proof를 마쳤다.
+
+- Company Governance + People And Assets
+  - `/api/org/*`
+  - `/api/auth/company-manager-roles/*`
+  - `/api/auth/manager-accounts/*`
+  - `/api/auth/identity-signup-requests/manage/*`
+  - `/api/drivers/*`
+  - `/api/personnel-documents/*`
+  - `/api/vehicles/*`
+  - `/api/driver-vehicle-assignments/*`
+- Dispatch Inputs + Read Models
+  - `/api/dispatch/*`
+  - `/api/delivery-record/*`
+  - `/api/attendance/*`
+  - `/api/dispatch-ops/*`
+  - `/api/driver-ops/*`
+  - `/api/vehicle-ops/*`
+- Settlement
+  - `/api/settlement-registry/*`
+  - `/api/settlements/*`
+  - `/api/settlement-ops/*`
+- Support Surface
+  - `/api/regions/*`
+  - `/api/region-analytics/*`
+  - `/api/announcements/*`
+  - `/api/ticket/*`
+  - `/api/notifications/*`
+- Terminal And Telemetry `7a`
+  - `/api/terminals/*`
+  - `/api/telemetry/*`
+  - `/api/telemetry-dead-letters/*`
+
+deferred scope:
+
+- `service-telemetry-listener`
+- reason: real MQTT broker endpoint and credentials are still not locked
+- runtime policy: ECS service exists, but `desired=0` until `7b` starts
+
+즉 `api.ev-dashboard.com` 의 external prefix 기준으로는 planned slice graph가 ECS로 넘어갔고, 남은 것은 internal telemetry ingest worker cutover 뿐이다.
+
 ## Scope Boundary
 
 이 전환 기준이 적용되는 범위:

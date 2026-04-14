@@ -38,7 +38,7 @@
 | `service-terminal-registry` | `terminal-registry-api` | `/api/terminals/` | `active runtime` | 단말 자산과 설치 관계 정본 |
 | `service-telemetry-hub` | `telemetry-hub-api` | `/api/telemetry/` | `active runtime` | raw ingest, latest snapshot, diagnostics |
 | `service-telemetry-dead-letter` | `telemetry-dead-letter-api` | `/api/telemetry-dead-letters/` | `active runtime` | 실패 텔레메트리 append-only 저장과 admin read |
-| `service-telemetry-listener` | `telemetry-listener` | internal-only | `active runtime` | MQTT subscribe와 hub forward만 담당하는 worker |
+| `service-telemetry-listener` | `telemetry-listener` | internal-only | `runtime-ready, desired=0` | MQTT subscribe와 hub forward만 담당하는 worker. broker 확정 전까지 prod 비활성 |
 
 ## Current Empty Shell Repos
 
@@ -49,3 +49,4 @@
 1. runtime naming truth는 repo 이름이 아니라 현재 compose service와 gateway prefix까지 같이 본다.
 2. naming drift나 route 변경이 생기면 historical rollout plan을 소급 수정하는 대신 이 문서와 current living docs를 먼저 갱신한다.
 3. `integration-local-stack`, `seed-runner`, `mqtt-broker`, DB 컨테이너는 local stack support component이며 위 표의 target repo inventory에는 넣지 않는다.
+4. `2026-04-14` 기준 `api.ev-dashboard.com` 의 external prefix 는 planned slices 기준으로 ECS/ALB 경로에서 production proof를 마쳤다. 예외는 internal worker `service-telemetry-listener` 뿐이며, 이 서비스는 broker 확인 전까지 `desired=0` 으로 유지한다.
