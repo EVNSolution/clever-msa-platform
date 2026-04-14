@@ -55,7 +55,3 @@
    - deploy 전: [../runbooks/ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md)
    - deploy 중: [../runbooks/ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
    - deploy 후: [../runbooks/ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
-6. `hub.evnlogistics.com` canonical public surface 는 아직 bridge lane 에 있다.
-   - current bridge: `clever-deploy-control -> SSM -> EC2 app-host -> docker compose`
-   - next ECS target: `infra-clever-hub-platform`
-   - current operator choice: deferred `stage` bridge release 보다 `hub` structure transition 을 먼저 진행한다.

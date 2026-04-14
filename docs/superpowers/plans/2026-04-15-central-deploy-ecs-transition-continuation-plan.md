@@ -167,7 +167,7 @@ Expected:
 
 - [ ] **Step 3: Update workspace naming if a new infra repo is adopted**
 
-If the spec fixes a name such as `infra-clever-hub-platform`, update `WORKSPACE.md` and `repo-map.md` immediately.
+If the spec fixes a name such as `infra-hub-platform`, update `WORKSPACE.md` and `repo-map.md` immediately.
 
 Expected:
 - root docs stay ahead of repo creation
@@ -175,7 +175,7 @@ Expected:
 ### Task 3: Scaffold the next dedicated infra repo from the proven pattern
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-clever-hub-platform/`
+- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-hub-platform/`
 - Reference: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/README.md`
 - Reference: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/.github/workflows/deploy-ecs.yml`
 - Reference: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/preflight.ts`

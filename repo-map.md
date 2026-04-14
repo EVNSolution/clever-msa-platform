@@ -32,7 +32,6 @@
 | --- | --- | --- | --- | --- | --- |
 | `integration-local-stack` | integration | 현재 compose, env, seed, smoke 자산을 한곳에서 관리 | 분리된 repo들을 로컬에서 묶는 통합 실행 셸 | `development/integration-local-stack/` | `migrated-target` |
 | `infra-ev-dashboard-platform` | infra | `ev-dashboard.com` ECS/CDK cutover용 shared runtime infra owner | `front-web-console`, `edge-api-gateway`, `service-account-access` slice의 ALB, ECS, ACM, Route53, deploy workflow 전용 infra repo | `development/infra-ev-dashboard-platform/` | `migrated-target` |
-| `infra-clever-hub-platform` | infra | 다음 canonical public surface `hub.evnlogistics.com` ECS/CDK cutover용 planned infra owner | `hub.evnlogistics.com` / `candidate.hub.evnlogistics.com` shared ALB, ECS, ACM, Route53, deploy workflow 전용 infra repo | not created yet | `planned-target` |
 | `edge-api-gateway` | edge | gateway routing과 reverse proxy | 다중 서비스의 단일 진입 edge | `development/edge-api-gateway/` | `migrated-target` |
 | `front-web-console` | front | surviving 단일 웹 콘솔 | 권한 기반 통합 웹 UI 정본 | `development/front-web-console/` | `migrated-target` |
 | `service-organization-registry` | service | 회사/플릿 정본 | 조직 기준 마스터 registry | `development/service-organization-registry/` | `migrated-target` |
@@ -87,12 +86,6 @@
 - shared ALB, ECS services, ACM, Route53 alias, deploy workflow를 소유한다.
 - app code, shared library, full-platform catch-all infra repo로 확장하지 않는다.
 - 생성 시점부터 linked child repo로 등록해야 한다.
-
-### `infra-clever-hub-platform`
-- `hub.evnlogistics.com` canonical public surface 전용 planned infra repo다.
-- `candidate.hub.evnlogistics.com` pre-prod gate lane도 이 repo가 소유한다.
-- `front-web-console`, `edge-api-gateway`, `service-account-access` shell/auth first slice를 starting point 로 한다.
-- `ev-dashboard` 와 같은 pattern 을 재사용하지만, 중앙 배포 전체를 대체하는 catch-all infra repo로 키우지 않는다.
 
 ### `service-settlement-payroll`
 - 정산 결과 write owner다.

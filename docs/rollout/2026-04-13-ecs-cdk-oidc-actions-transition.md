@@ -236,12 +236,6 @@ current operator choice:
 
 - finish the next ECS structure transition before returning to the deferred EC2 bridge-lane `stage` release
 
-next canonical public surface:
-
-- `hub.evnlogistics.com`
-- dedicated infra repo name: `infra-clever-hub-platform`
-- design truth: [../superpowers/specs/2026-04-15-hub-ecs-transition-design.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-15-hub-ecs-transition-design.md)
-
 already closed:
 
 - dedicated manager-role smoke accounts exist in local gitignored operator notes
