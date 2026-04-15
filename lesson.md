@@ -527,6 +527,16 @@ For future runtime migrations:
 
 On EC2, an immutable ECR SHA is only a deploy truth if something on the running host actually re-pulls and restarts that container.
 
+## Data-Host Bootstrap Drift Can Masquerade As An App Wiring Failure
+
+The first cockpit-ready EC2 proof showed a sharper version of the same rule. `service-organization-registry` was wired into the app host and gateway correctly, but `/api/org/*` still returned `502` because the existing data host never re-ran its bootstrap after the `organization_master` DB/role contract was added. The container error was `password authentication failed for user "organization_master"`, which looked like an app-side secret mismatch even though the real problem was stale host bootstrap state.
+
+For future EC2 service additions:
+
+- if a new slice changes the data-host database/bootstrap contract, force data-host replacement
+- do not treat first-run Postgres auth failures as pure app env bugs until replacement policy is checked
+- keep `userDataCausesReplacement` true on the data host so DB/role additions are actually applied
+
 ## EC2 Bootstrap Must Treat User-Data As A Thin Launcher
 
 The first real dev stack create for the EC2 runtime rolled back before the host even booted because the data-host user-data exceeded EC2's 16 KB raw user-data limit. The root cause was simple: the Python bootstrap package had been inlined into user-data with heredocs. That is not sustainable for any service family.
