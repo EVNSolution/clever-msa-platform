@@ -537,6 +537,8 @@ For future EC2 service additions:
 - do not treat first-run Postgres auth failures as pure app env bugs until replacement policy is checked
 - keep `userDataCausesReplacement` true on the data host so DB/role additions are actually applied
 
+That fix still needs the right storage lifecycle. The next dev proof showed that `userDataCausesReplacement` plus a separate `AWS::EC2::VolumeAttachment` can fail with `AlreadyExists` because CloudFormation tries to move the existing volume before the old attachment is gone. For the current no-migration proof lane, the honest compromise is launch-time EBS block-device mapping on the data host instead of detachable reattachment semantics.
+
 ## EC2 Bootstrap Must Treat User-Data As A Thin Launcher
 
 The first real dev stack create for the EC2 runtime rolled back before the host even booted because the data-host user-data exceeded EC2's 16 KB raw user-data limit. The root cause was simple: the Python bootstrap package had been inlined into user-data with heredocs. That is not sustainable for any service family.
