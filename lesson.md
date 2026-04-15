@@ -167,6 +167,8 @@ Once EC2 host bootstrap moved into a Python package, bootstrap mistakes stopped 
 
 Use full deploys for topology proof, ALB wiring, and public smoke. Use `bootstrap:precheck` for quoting, device, package staging, and SQL bootstrap mistakes.
 
+Another bootstrap-precheck lesson: a report-only wrapper is worse than no gate because it creates a false green path. The command must execute real SSM sync/verify steps and carry the same host env contract that runtime bootstrap uses. If the EC2 lane stack or host does not exist yet, fail with an explicit stack/host resolution error instead of silently printing the plan.
+
 ## Stack Success Is Not The Same As Slice Success
 
 `24372474821` and `EvDashboardPlatformStack UPDATE_COMPLETE` still left `/api/org/*` broken. The fix only closed after the second deploy `24373001123`, where the gateway ordering and upstream style were corrected. Record both the infra result and the public endpoint result before calling a slice done.
