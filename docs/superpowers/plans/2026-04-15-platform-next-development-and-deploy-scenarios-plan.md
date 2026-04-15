@@ -85,7 +85,7 @@ Current progress:
 - [x] baseline spec written
 - [x] rollout plan written
 - [x] audit matrix created with first batch
-- [ ] first batch repo normalization patches
+- [x] first batch repo normalization patches
 
 ### Recommended Execution Order
 

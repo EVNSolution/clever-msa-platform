@@ -16,10 +16,10 @@
 
 | Repo | Archetype | `.gitignore` | `README.md` baseline | `lesson.md` | `Dockerfile` | Build workflow | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `front-web-console` | frontend | `yes` | `partial` | `yes` | `yes` | `yes` | remote proxy defaults는 `ev-dashboard`로 정렬 완료. README section ordering은 별도 다듬기 가능 |
-| `edge-api-gateway` | gateway | `yes` | `partial` | `yes` | `yes` | `yes` | gateway route tests와 lesson은 있으나 README section baseline은 template pass에서 다시 맞출 수 있음 |
-| `service-account-access` | django service | `yes` | `partial` | `yes` | `yes` | `yes` | Django runtime baseline은 대체로 충족. README section ordering은 template 기준으로 재정리 여지 있음 |
-| `integration-local-stack` | orchestration | `yes` | `partial` | `yes` | `n/a` | `n/a` | `lesson.md` baseline 추가 완료. README section ordering은 template pass에서 다시 맞출 수 있음 |
+| `front-web-console` | frontend | `yes` | `yes` | `yes` | `yes` | `yes` | README에 runtime, remote proxy safety, build workflow, verification command surface를 명시함 |
+| `edge-api-gateway` | gateway | `yes` | `yes` | `yes` | `yes` | `yes` | README에 route ownership, ECS image contract, unittest entrypoints를 명시함 |
+| `service-account-access` | django service | `yes` | `yes` | `yes` | `yes` | `yes` | README에 auth/docs/admin runtime contract, env note, verification commands를 명시함 |
+| `integration-local-stack` | orchestration | `yes` | `yes` | `yes` | `n/a` | `n/a` | README 상단에 orchestration baseline sections를 추가하고 local/deploy boundary를 명시함 |
 
 ## Rollout Rule
 
