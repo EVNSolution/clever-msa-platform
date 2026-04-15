@@ -16,6 +16,7 @@
 - required repo vars / secrets 확인
 - desired count 정책 확인
 - deploy environment 와 domain 조합 일치 확인
+- company cockpit host / certificate / alias 준비 여부 확인
 
 이 문서는 architecture note가 아니다. 체크 실패 시 무엇을 바꿔야 하는지 길게 설명하지 않고, 다음 실행 문서로 가기 전에 무엇이 맞아야 하는지만 고정한다.
 
@@ -68,6 +69,7 @@
 - immutable SHA image URI 가 각 서비스에 대해 지정되어 있다.
 - deploy environment 와 domain 조합이 일치한다.
 - desired count 정책이 현재 작업 유형과 맞는다.
+- company cockpit rollout 이면 `COCKPIT_HOSTS`와 tenant host 계획이 문서와 일치한다.
 
 여기서 확인할 핵심은 두 가지다.
 
@@ -75,6 +77,19 @@
 2. `dev`, `stage`, `prod` 같은 deploy environment 와 실제 domain 이 서로 어긋나지 않는가
 
 desired count 정책도 여기서 함께 본다. 예를 들어 destroy 또는 cold rebuild 중이라면 어떤 service 는 `0` 이 맞고, routine deploy 또는 post-deploy validation 중이라면 기대 desired count 가 달라진다.
+
+## Company Cockpit Check
+
+회사 전용 cockpit rollout 이 포함된 작업이면 아래를 추가로 본다.
+
+1. hosted zone 이 cockpit host 를 수용한다.
+2. `COCKPIT_HOSTS`가 대상 host 를 포함한다.
+3. certificate SAN 과 Route53 alias 가 같은 host 를 기준으로 합성된다.
+4. tenant metadata 와 `workspace-bootstrap` 계약이 이미 준비되어 있다.
+
+자세한 실행 순서는 아래 runbook 을 따른다.
+
+- [company-cockpit-onboarding.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/company-cockpit-onboarding.md)
 
 ## Runtime policy check
 
@@ -122,7 +137,7 @@ desired count 정책도 여기서 함께 본다. 예를 들어 destroy 또는 co
 관련 문서:
 
 - [2026-04-15-ev-dashboard-full-runtime-shutdown-design.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-15-ev-dashboard-full-runtime-shutdown-design.md)
+- [company-cockpit-onboarding.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/company-cockpit-onboarding.md)
 - [ev-dashboard-cold-start-rebuild.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-cold-start-rebuild.md)
 - [ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md)
 - [ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
-
