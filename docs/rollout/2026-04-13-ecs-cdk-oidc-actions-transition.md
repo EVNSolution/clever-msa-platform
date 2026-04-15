@@ -29,7 +29,7 @@ GitHub main
 - release artifact 정본은 immutable ECR SHA tag 이다.
 - runtime 정본은 `infra-ev-dashboard-platform` 이 소유하는 CDK stack 이다.
 - `ev-dashboard.com`, `api.ev-dashboard.com` 의 prod truth는 `clever-deploy-control` 이 아니라 위 infra repo다.
-- host bootstrap 변경은 `run_profile=bootstrap-proof` 같은 fast path로 먼저 검증하고, release-grade proof는 `run_profile=full`로 닫는다.
+- host bootstrap 변경은 `run_profile=bootstrap-proof` 같은 핵심 진입면 검증 fast path로 먼저 검증하고, release-grade proof는 `run_profile=full` 같은 전체 서비스 검증으로 닫는다.
 
 ## Legacy Bridge-Lane Deploy Truth
 

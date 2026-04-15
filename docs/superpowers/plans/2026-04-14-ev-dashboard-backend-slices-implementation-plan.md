@@ -158,7 +158,7 @@ curl -sk https://api.ev-dashboard.com/api/org/fleets/
 - Gateway routes for this slice should follow the Slice 1 lesson: prefer direct upstreams for the four stable service-connect names instead of variable `proxy_pass` resolution.
 
 - [ ] Add failing infra tests for `driver-profile-api`, `vehicle-asset-api`, `driver-vehicle-assignment-api`, and `personnel-document-registry-api`.
-- [ ] Extend infra and gateway for the four service-connect names without touching later slices.
+- [ ] Extend infra and gateway for the four service-connect names without touching the remaining business services.
 - [ ] Build and deploy the four service images.
 - [ ] Smoke-check:
   - `/api/drivers/`

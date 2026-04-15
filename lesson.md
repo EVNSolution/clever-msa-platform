@@ -2,6 +2,18 @@ Source: https://lessons.md
 
 # CLEVER Lessons.md
 
+## Use Plain Deploy Terms
+
+Keep deploy/runtime wording short and operator-friendly:
+
+- `bootstrap-proof` = core-entry verification
+- `full` = full-service verification
+- `smoke-only` = live-lane status recheck
+- `core-entry services` = `front-web-console + edge-api-gateway + service-account-access + service-organization-registry`
+- `remaining business services` = every business/runtime service outside the core-entry set
+
+Avoid old slice/proof shorthand in live docs and operator talk. Use the plain terms above instead.
+
 ## Start With One Boundary
 
 Cross-repo runtime patches go wrong when several repos move at once and no one remembers which layer really changed behavior. The safer pattern is small and repeatable: one repo at a time, one focused test, one minimal change, one verification pass, one recorded lesson. If the rule matters beyond a single repo, copy it back to this root file.
@@ -170,12 +182,12 @@ If a debug path is routinely skipped in successful runs, remove it and keep the 
 
 ## Cockpit Proof Needs Organization, Not Just Auth
 
-`cheonha.ev-dashboard.com` exposed a gap in the first EC2 proof lane. A shell/auth-only app host can pass apex auth smoke and still fail every real cockpit path because cockpit boot needs both:
+`cheonha.ev-dashboard.com` exposed a gap in the first EC2 verification lane. An auth-only core-entry host can pass apex auth smoke and still fail every real cockpit path because cockpit boot needs both:
 
 - `service-organization-registry` public tenant resolve
 - `service-account-access` workspace bootstrap against `organization-master-api`
 
-For `ev-dashboard`, the first cockpit-ready EC2 proof is therefore `shell/auth/company-governance`, not pure shell/auth. The proof lane has to include organization DB bootstrap, `organization-master-api` on the app host, `/api/org/*` on the proof gateway, and cockpit hosts inside CSRF trusted origins before deploy proof means anything.
+For `ev-dashboard`, the first cockpit-ready EC2 verification scope is therefore `front/gateway/auth/organization`, not pure shell/auth. The verification lane has to include organization DB bootstrap, `organization-master-api` on the app host, `/api/org/*` on the verification gateway, and cockpit hosts inside CSRF trusted origins before deploy proof means anything.
 
 ## Cockpit 404 Usually Means Seed Or Image Drift First
 
@@ -416,7 +428,7 @@ If the same rollout surprise happens twice, it is no longer just a lesson. It mu
 - missing deploy env
 - mutable image tags like `:latest`
 - wrong domain for the selected environment
-- later slices enabled without their prerequisite slices
+- remaining business services enabled without their prerequisite service groups
 - API slices enabled while `edge-api-gateway` is still set to `0`
 
 The operator flow is now fixed:
@@ -462,7 +474,7 @@ That response shape is enough to prove routing, auth middleware, and backend rea
 
 ## Preflight Must Verify That Image Tags Really Exist In ECR
 
-Tag format checks were not enough for later slices. This stack keeps image URIs in repo vars because `workflow_dispatch` cannot carry unlimited properties, and those vars can drift away from the images that actually exist in ECR. Slice 7 only became trustworthy after preflight started querying ECR directly and failed fast on missing tags before `cdk deploy`.
+Tag format checks were not enough for remaining business services. This stack keeps image URIs in repo vars because `workflow_dispatch` cannot carry unlimited properties, and those vars can drift away from the images that actually exist in ECR. Slice 7 only became trustworthy after preflight started querying ECR directly and failed fast on missing tags before `cdk deploy`.
 
 For this migration, a deploy is not ready just because the image URI "looks like a SHA". It is only ready when preflight proves the referenced image tag exists in ECR.
 
@@ -536,7 +548,7 @@ The first EC2 app/data host cutover attempt proved a second boundary problem aft
 For future runtime migrations:
 
 - freeze the candidate proof to the slice the host can really run
-- make preflight reject later slices until their host-level contract exists
+- make preflight reject remaining business services until their host-level contract exists
 - add a host reconcile loop whenever image SHAs live outside the host itself
 
 On EC2, an immutable ECR SHA is only a deploy truth if something on the running host actually re-pulls and restarts that container.
@@ -551,7 +563,7 @@ For future EC2 service additions:
 - do not treat first-run Postgres auth failures as pure app env bugs until replacement policy is checked
 - keep `userDataCausesReplacement` true on the data host so DB/role additions are actually applied
 
-That fix still needs the right storage lifecycle. The next dev proof showed that `userDataCausesReplacement` plus a separate `AWS::EC2::VolumeAttachment` can fail with `AlreadyExists` because CloudFormation tries to move the existing volume before the old attachment is gone. For the current no-migration proof lane, the honest compromise is launch-time EBS block-device mapping on the data host instead of detachable reattachment semantics.
+That fix still needs the right storage lifecycle. The next dev proof showed that `userDataCausesReplacement` plus a separate `AWS::EC2::VolumeAttachment` can fail with `AlreadyExists` because CloudFormation tries to move the existing volume before the old attachment is gone. For the current no-migration verification lane, the honest compromise is launch-time EBS block-device mapping on the data host instead of detachable reattachment semantics.
 
 ## EC2 Bootstrap Must Treat User-Data As A Thin Launcher
 
@@ -591,12 +603,12 @@ If runtime ownership says a repo is active, treat it as live infrastructure unti
 
 When CDK values are needed at runtime on an EC2 host, do not serialize tokenized objects into static assets and assume they will resolve later. The `ev-dashboard` EC2 proof showed that `JSON.stringify(...)` on a manifest containing `instancePrivateIp` simply froze `${Token[...]}` into the file, and the app containers then failed on fake DB hostnames. For future host-runtime work, token-bearing runtime manifests must go through deploy-time-resolved storage such as Secrets Manager or SSM, while static assets should be limited to token-free metadata or code.
 
-Do not let `bootstrap-proof` smoke depend on the entire later slice fleet coming up first. In the EC2 `ev-dashboard` runtime, the app host reconciles services in manifest order. If `edge-api-gateway` starts after attendance/dispatch/settlement/support images, a single slow pull or later-slice failure makes `/api/*` smoke look like a gateway bug when the real issue is startup sequencing. Keep the proof-critical order explicit: `front -> auth -> organization -> gateway -> later slices`.
+Do not let `bootstrap-proof` smoke depend on the entire remaining business-service fleet coming up first. In the EC2 `ev-dashboard` runtime, the app host reconciles services in manifest order. If `edge-api-gateway` starts after attendance/dispatch/settlement/support images, a single slow pull or remaining-business-service failure makes `/api/*` smoke look like a gateway bug when the real issue is startup sequencing. Keep the core-entry order explicit: `front -> auth -> organization -> gateway -> remaining business services`.
 
 Proof-only deploy profiles need config-level scope, not just fewer workflow steps. In the `ev-dashboard` EC2 lane, a \"fast\" profile is still noisy and expensive if the effective desired counts keep the full later-slice fleet enabled. For future runtime work, make the proof profile narrow the actual runtime contract that CDK synthesizes and that smoke validates, and reserve `full` for real full-fleet bring-up.
 Per-request timeout belongs in public smoke, not just an overall workflow timeout. The EC2 `bootstrap-proof` lane showed that one hanging HTTP probe can keep GitHub Actions `in_progress` even after the new host is healthy and manual external curls are green. Future deploy gates should make hung probes fail as `request timed out` under a short request-level abort, while the longer retry window stays reserved for normal EC2 warm-up.
-Validation smokes also need to call the real endpoint contract. The `company tenant resolve` proof failed after the host was already healthy because the smoke hit `/api/org/companies/public/resolve/` without the required `tenant_code` query string and got `400`. For future proof lanes, keep smoke URLs aligned with the runtime contract first, then assert the semantic outcome such as `404`.
+Validation smokes also need to call the real endpoint contract. The `company tenant resolve` proof failed after the host was already healthy because the smoke hit `/api/org/companies/public/resolve/` without the required `tenant_code` query string and got `400`. For future verification lanes, keep smoke URLs aligned with the runtime contract first, then assert the semantic outcome such as `404`.
 
-Bootstrap-proof sizing is not a safe proxy for full-fleet EC2 proof. The first later-slice bring-up on the default `t3.small` app host turned both ALB target groups unhealthy and reduced the entire smoke result to `timeout/502` noise. For future runtime work, keep the cheap `t3.small` default only for `bootstrap-proof`, require an explicit non-burstable x86 app host for `RUN_PROFILE=full` with later slices, and move the lane back down after the full proof closes.
+Bootstrap-proof sizing is not a safe proxy for full-service EC2 verification. The first remaining-business-service bring-up on the default `t3.small` app host turned both ALB target groups unhealthy and reduced the entire smoke result to `timeout/502` noise. For future runtime work, keep the cheap `t3.small` default only for `bootstrap-proof`, require an explicit non-burstable x86 app host for `RUN_PROFILE=full` with remaining business services, and move the lane back down after the full proof closes.
 
-Periodic full reconcile is not an acceptable steady state for the EC2 app host. The first larger-host full proof showed that the later slices themselves could boot, but the app-host timer kept re-running the full reconcile loop, deleting and recreating every container on a live lane. That made `edge-api-gateway` restart against half-present upstream names and reintroduced `502` after a green workflow. For future runtime work, keep app reconcile boot/deploy scoped and rely on host replacement via `runtimeFingerprint` instead of a timer that churns the live fleet.
+Periodic full reconcile is not an acceptable steady state for the EC2 app host. The first larger-host full proof showed that the remaining business services themselves could boot, but the app-host timer kept re-running the full reconcile loop, deleting and recreating every container on a live lane. That made `edge-api-gateway` restart against half-present upstream names and reintroduced `502` after a green workflow. For future runtime work, keep app reconcile boot/deploy scoped and rely on host replacement via `runtimeFingerprint` instead of a timer that churns the live fleet.

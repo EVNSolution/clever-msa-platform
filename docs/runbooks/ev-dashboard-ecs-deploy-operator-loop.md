@@ -46,6 +46,9 @@ npx cdk synth
 ```
 
 4. deploy 목적에 맞는 `run_profile` 을 고른다.
+   - `bootstrap-proof` = 핵심 진입면 검증
+   - `full` = 전체 서비스 검증
+   - `smoke-only` = 상태 재확인
 5. 그 다음에만 `Deploy ev-dashboard runtime platform` workflow를 실행한다.
 6. workflow는 `cdk deploy` 뒤에 `npm run smoke:postdeploy` 를 자동 실행한다.
 7. deploy 중에는 아래 phase table로만 판단한다.

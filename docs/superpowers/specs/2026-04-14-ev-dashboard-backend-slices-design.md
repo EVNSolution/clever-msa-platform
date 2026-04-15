@@ -117,7 +117,7 @@ front-web-console
 - front-web-console 사용 압력이 높은 영역부터 닫는다.
 - gateway prefix 묶음과 repo owner를 그대로 보존한다.
 - 각 slice가 외부 smoke로 독립적으로 증명될 수 있다.
-- later slice가 earlier slice의 정본을 재사용하게 만든다.
+- 나머지 업무 서비스가 앞선 서비스 그룹의 정본을 재사용하게 만든다.
 
 ## Slice Catalog
 
@@ -297,7 +297,7 @@ front-web-console
   - temporary bridge:
     - `TELEMETRY_HUB_BASE_URL=https://hub.evnlogistics.com/api/telemetry`
     - `TERMINAL_REGISTRY_BASE_URL=https://hub.evnlogistics.com/api/terminals`
-- anonymous probe 기준으로 `https://hub.evnlogistics.com/api/telemetry/vehicles/<id>/latest-location/` 와 `https://hub.evnlogistics.com/api/terminals/` 는 `401` 을 반환했다. 즉 old public hub 에서 해당 prefix 는 아직 살아 있다. 다만 Slice 4 production 검증에서는 old public hub 가 새 platform JWT 를 `401 Invalid token` 으로 거부했다. 따라서 `driver-ops`, `vehicle-ops` 의 bridge 호출은 later slice 가 옮겨지기 전까지 optional enrichment 로 취급하고, bridge 실패가 전체 read endpoint 를 `500` 으로 만들지 않게 해야 한다.
+- anonymous probe 기준으로 `https://hub.evnlogistics.com/api/telemetry/vehicles/<id>/latest-location/` 와 `https://hub.evnlogistics.com/api/terminals/` 는 `401` 을 반환했다. 즉 old public hub 에서 해당 prefix 는 아직 살아 있다. 다만 Slice 4 production 검증에서는 old public hub 가 새 platform JWT 를 `401 Invalid token` 으로 거부했다. 따라서 `driver-ops`, `vehicle-ops` 의 bridge 호출은 나머지 업무 서비스가 옮겨지기 전까지 optional enrichment 로 취급하고, bridge 실패가 전체 read endpoint 를 `500` 으로 만들지 않게 해야 한다.
 - 이 slice의 세 read-model 서비스는 모두 sqlite 기반 stateless runtime 이다. 따라서 Slice 1~3 과 달리 새 `RDS` 나 `Redis` 를 만들지 않는다.
 - gateway 는 Slice 1~3 lesson을 그대로 따른다. `/api/dispatch-ops/*`, `/api/driver-ops/*`, `/api/vehicle-ops/*` 는 variable `proxy_pass` 가 아니라 direct upstream 으로 붙인다.
 - honest smoke path 는 prefix root 가 아니라 실제 read-model endpoint 여야 한다.
