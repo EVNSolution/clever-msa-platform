@@ -17,6 +17,7 @@
 - `ev-dashboard` 배포 중 operator sequence: [runbooks/ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
 - `ev-dashboard` UI smoke와 decommission close-out: [runbooks/ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
 - 문서 정본 정렬 계획: [superpowers/plans/2026-04-15-platform-docs-canonical-truth-alignment-implementation-plan.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-15-platform-docs-canonical-truth-alignment-implementation-plan.md)
+- 다음 개발/배포 시나리오 계획: [superpowers/plans/2026-04-15-platform-next-development-and-deploy-scenarios-plan.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-15-platform-next-development-and-deploy-scenarios-plan.md)
 
 - `goals/`: 플랫폼의 목표 상태와 상위 방향
 - `boundaries/`: 서비스 경계와 소유 데이터

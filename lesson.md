@@ -91,6 +91,16 @@ Once a surface reaches `infra -> CDK/ECS -> prod`, stop talking about the legacy
 
 When `ev-dashboard.com` becomes the canonical prod surface, live operator runbooks and frontend proxy defaults must move with it. `hub.evnlogistics.com` can stay in historical rollout evidence or explicit bridge notes, but it should not remain in current runbooks as the default real-data target. Leaving that wording behind causes future sessions to route verification through the wrong surface even after the canonical runtime moved.
 
+## Keep Future Work In Three Separate Lanes
+
+After the canonical `ev-dashboard` runtime is stable, the next work should not collapse into one vague “platform cleanup” bucket. Keep three distinct lanes:
+
+- canonical `ev-dashboard` development and release work
+- `archive/develop` cleanup and reclassification
+- cross-service template standardization for deploy structure, directory layout, and hygiene files
+
+That separation keeps cleanup and templating from hijacking the live release lane, and it prevents release urgency from turning archive/template work into undocumented side patches.
+
 ## Deploy Docs Must Fit On One Operator Loop
 
 When deploy guidance is split across `lesson.md`, infra-local lessons, rollout notes, and runbooks, the deploy feels slower than it really is because the operator keeps reinterpreting the same state. The fix is not “more notes”. The fix is one short operator loop with:
