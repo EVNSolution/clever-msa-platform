@@ -4,6 +4,8 @@
 
 이 문서는 우리가 만들고 싶은 목표 MSA 구조를 먼저 고정하는 문서다.
 
+이 문서는 north-star target map이다. 현재 active runtime repo, compose service, gateway prefix, deploy truth를 알려주는 문서가 아니다. 그런 현재 상태는 `../mappings/current-runtime-inventory.md`와 `../runbooks/README.md`에서 본다.
+
 이 문서에서는 현재 코드 경로나 레거시 API 이름보다, 앞으로 어떤 서비스 경계로 나눌지와 각 서비스가 무엇을 담당해야 하는지를 우선 정의한다.
 
 ## 이 문서가 답해야 하는 질문
@@ -119,6 +121,7 @@
 2. 현재 코드 경로와 API 이름 근거는 reference 폴더 문서에 적는다.
 3. 목표 문서에서 레거시 용어를 쓸 때는 반드시 교체 대상이라는 뜻으로만 쓴다.
 4. 서비스별 상세 설계는 이 문서를 기준으로 내려간다.
+5. 현재 active repo 이름과 운영 절차가 충돌하면 이 문서보다 `docs/mappings/`, `docs/runbooks/`, `docs/rollout/`의 living truth를 우선한다.
 
 ## 다음 문서
 

@@ -4,6 +4,8 @@
 
 이 문서는 CLEVER MSA 플랫폼의 API 문서가 최종적으로 어떤 상태여야 하는지를 고정하는 상위 목표 문서다.
 
+이 문서는 API 문서 delivery의 north-star다. 현재 어떤 URL이 live인지, 어떤 workflow가 official gate인지 같은 current operator truth는 `../runbooks/`와 `../rollout/`에서 본다.
+
 이 문서에서는 build script, 임시 viewer, 개별 exporter 구현 같은 세부 수단보다 아래를 먼저 정의한다.
 
 1. 무엇을 공식 API 문서로 볼 것인가
@@ -109,6 +111,7 @@
 2. build script, exporter, local preview 같은 구현 세부는 decision 문서와 integration 문서에 둔다.
 3. 현재 어떤 서비스가 schema-backed 인지 같은 시점 의존 정보는 mapping/decision 문서에서 관리한다.
 4. 공식 문서 delivery 방식이 바뀌더라도, service-owned OpenAPI + unified OpenAPI + root repo automation 원칙은 유지한다.
+5. current live API docs entry나 deploy gate가 필요하면 이 문서가 아니라 current runbook과 rollout note를 먼저 본다.
 
 ## 연결 문서
 

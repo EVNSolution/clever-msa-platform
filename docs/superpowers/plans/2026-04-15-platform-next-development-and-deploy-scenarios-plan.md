@@ -93,6 +93,21 @@ Current progress:
 - [x] Batch 4 special runtime repo normalization patches
 - [x] current active repo baseline rollout complete
 
+### Scenario D: Goals Cleanup Lane
+
+**Intent:** Keep `docs/goals/` small and credible by preserving only still-valid north-star documents and preventing operators from treating goal docs as current runtime truth.
+
+**Working interpretation:**
+- goal cleanup is not necessarily archive-heavy
+- sometimes the right result is to keep a goal document and clarify its role
+- current runtime/deploy questions must still flow to mappings, runbooks, and rollout notes
+
+Current progress:
+
+- [x] dedicated goals cleanup plan written
+- [x] current goals audited
+- [x] surviving goal docs clarified as north-star only
+
 ### Recommended Execution Order
 
 1. `ev-dashboard` canonical development/deploy lane remains the default release path.
@@ -117,5 +132,6 @@ Current progress:
   - canonical `ev-dashboard` release lane
   - archive/develop cleanup lane
   - service templating lane
+- [x] Goals cleanup is explicitly treated as a separate classification lane, not left to drift under archive cleanup.
 - [ ] No one treats cleanup or templating as a replacement for the canonical deploy path.
 - [x] The next concrete plans for cleanup and templating are written before any broad refactor starts.

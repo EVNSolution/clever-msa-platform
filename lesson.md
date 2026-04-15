@@ -132,6 +132,10 @@ For `ev-dashboard`, preflight and decommission stay as separate runbooks, but th
 
 Residual cleanup gets dangerous when stale rollout plans stay in active folders just because their old checklist was never fully marked complete. Active placement should reflect current operator value, not historical intent. If the runtime, repo names, or rollout lane have already moved on, archive the plan as superseded execution history and keep only genuinely open plans in `docs/rollout/plans/`.
 
+## Goal Cleanup Is Often Clarification, Not Movement
+
+`docs/goals/` should stay small, but cleanup there does not always mean archiving files. If a goal doc still expresses a valid north-star, keep it and tighten the reading rule instead: current runtime and deploy truth belong in mappings, runbooks, and living rollout docs, not in goal documents.
+
 ## Public Smoke Must Be Part Of The Workflow Gate
 
 If public smoke still depends on a human remembering to run `curl` after a green `cdk deploy`, the deploy is not actually closed. For `ev-dashboard`, the minimum external smoke now belongs inside the same workflow:
