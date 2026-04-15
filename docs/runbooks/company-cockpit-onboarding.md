@@ -80,13 +80,16 @@ merge 순서는 아래로 고정한다.
 
 실행 순서는 아래다.
 
-1. organization 배포 후 public resolve endpoint 를 호출해 `tenant_code`가 맞게 해석되는지 확인한다.
-2. auth 배포 후 `workspace-bootstrap`이 `workflow_profile`, `enabled_features`, preset을 돌려주는지 확인한다.
-3. front 배포 후 메인 허브에는 영향 없이 cockpit shell 코드가 포함됐는지 확인한다.
-4. infra 배포 전 `COCKPIT_HOSTS`에 새 host를 추가한다.
-5. infra deploy 후 certificate, listener rule, Route53 alias가 반영됐는지 확인한다.
-6. 외부 smoke를 수행한다.
-7. deploy workflow env export 와 post-deploy smoke 대상에도 새 cockpit host가 포함됐는지 확인한다.
+1. organization, auth, front image build 가 각 repo `main` SHA 기준으로 ECR 에 성공했는지 먼저 확인한다.
+2. infra deploy env 의 `ORGANIZATION_IMAGE_URI`, `ACCOUNT_ACCESS_IMAGE_URI`, `FRONT_IMAGE_URI`가 새 SHA를 가리키는지 확인한다.
+3. organization 배포 후 app host 컨테이너 image SHA 까지 실제로 새 값을 물었는지 확인한다.
+4. 그 다음 public resolve endpoint 를 호출해 `tenant_code`가 맞게 해석되는지 확인한다.
+5. auth 배포 후 `workspace-bootstrap`이 `workflow_profile`, `enabled_features`, preset을 돌려주는지 확인한다.
+6. front 배포 후 메인 허브에는 영향 없이 cockpit shell 코드가 포함됐는지 확인한다.
+7. infra 배포 전 `COCKPIT_HOSTS`에 새 host를 추가한다.
+8. infra deploy 후 certificate, listener rule, Route53 alias가 반영됐는지 확인한다.
+9. 외부 smoke를 수행한다.
+10. deploy workflow env export 와 post-deploy smoke 대상에도 새 cockpit host가 포함됐는지 확인한다.
 
 ## Smoke Checklist
 
@@ -101,9 +104,11 @@ merge 순서는 아래로 고정한다.
    - `운영 현황`
    - `정산 처리`
    - `팀 관리`
-5. cockpit host 에서 `/api/*` 요청이 404가 아니라 기존 backend 응답을 돌려준다.
-6. 기존 `ev-dashboard.com` 메인 허브가 회귀 없이 유지된다.
-7. workflow post-deploy smoke 가 apex shell 뿐 아니라 `https://<cockpit_host>/`도 직접 통과한다.
+5. `GET https://api.<candidate-or-prod-domain>/api/org/companies/public/resolve/?tenant_code=<tenant_code>` 가 `200`을 돌려준다.
+6. cockpit host 에서 same-host `/api/*` 요청이 `404`가 아니라 기존 backend 응답을 돌려준다.
+7. `workspace-bootstrap` 이 로그인된 회사 계정 또는 system admin 으로 `200`을 돌려준다.
+8. 기존 `ev-dashboard.com` 메인 허브가 회귀 없이 유지된다.
+9. workflow post-deploy smoke 가 apex shell 뿐 아니라 `https://<cockpit_host>/`도 직접 통과한다.
 
 ## Rollback
 

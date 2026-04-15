@@ -177,6 +177,20 @@ If a debug path is routinely skipped in successful runs, remove it and keep the 
 
 For `ev-dashboard`, the first cockpit-ready EC2 proof is therefore `shell/auth/company-governance`, not pure shell/auth. The proof lane has to include organization DB bootstrap, `organization-master-api` on the app host, `/api/org/*` on the proof gateway, and cockpit hosts inside CSRF trusted origins before deploy proof means anything.
 
+## Cockpit 404 Usually Means Seed Or Image Drift First
+
+The first live `cheonha` proof on the dev EC2 lane returned `404` on `GET /api/org/companies/public/resolve/?tenant_code=cheonha`, but the cause was not routing. Two separate preconditions were missing:
+
+- `service-organization-registry`, `service-account-access`, and `front-web-console` images on the app host were still old SHAs even after the code had merged to `main`
+- the dev organization database had no `Company` row for `tenant_code=cheonha`
+
+For future cockpit rollouts, verify these in order before debugging DNS or nginx:
+
+- ECR contains the expected service `main` SHA images
+- infra deploy env image URI vars point at those SHAs
+- app host containers actually reconciled to those SHAs
+- only then check cockpit tenant seed data and `public/resolve`
+
 ## Stack Success Is Not The Same As Slice Success
 
 `24372474821` and `EvDashboardPlatformStack UPDATE_COMPLETE` still left `/api/org/*` broken. The fix only closed after the second deploy `24373001123`, where the gateway ordering and upstream style were corrected. Record both the infra result and the public endpoint result before calling a slice done.
