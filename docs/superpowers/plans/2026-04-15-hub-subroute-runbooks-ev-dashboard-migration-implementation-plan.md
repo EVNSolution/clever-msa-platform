@@ -17,7 +17,7 @@
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/README.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md`
 
-- [ ] **Step 1: Confirm which live runbooks still surface `hub` as a current target**
+- [x] **Step 1: Confirm which live runbooks still surface `hub` as a current target**
 
 Run:
 
@@ -28,20 +28,20 @@ rg -n "hub\\.evnlogistics\\.com|hub\\b" docs/runbooks docs/mappings lesson.md AG
 
 Expected: current-operator references are limited and can be migrated without touching historical archive docs.
 
-- [ ] **Step 2: Record the operator-facing migration scope**
+- [x] **Step 2: Record the operator-facing migration scope**
 
 Write this plan so future work distinguishes:
 - runbook/operator truth
 - frontend proxy defaults
 - historical evidence that may still mention `hub`
 
-- [ ] **Step 3: Tighten the docs index wording**
+- [x] **Step 3: Tighten the docs index wording**
 
 Update the runbook index and runtime inventory so they explicitly say:
 - `ev-dashboard` is the current canonical operator target
 - `hub` references outside legacy/historical context are not default operator guidance
 
-- [ ] **Step 4: Verify the docs index changes**
+- [x] **Step 4: Verify the docs index changes**
 
 Run:
 
@@ -58,21 +58,21 @@ Expected: no whitespace or patch-format errors.
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/AGENTS.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/README.md`
 
-- [ ] **Step 1: Update the local dispatch/settlement runbook**
+- [x] **Step 1: Update the local dispatch/settlement runbook**
 
 Change the remote real-data proxy default from `https://hub.evnlogistics.com` to `https://ev-dashboard.com`, and add one explicit sentence that `hub.evnlogistics.com` is legacy/bridge reference only.
 
-- [ ] **Step 2: Update root operator guidance**
+- [x] **Step 2: Update root operator guidance**
 
 In `AGENTS.md`, change the frontend real proxy default to `https://ev-dashboard.com` and keep `.env.local-test` as the safer default. Preserve the existing CRUD warning text.
 
-- [ ] **Step 3: Update the frontend README**
+- [x] **Step 3: Update the frontend README**
 
 Align the frontend README with the same rule:
 - default real-data proxy target = `https://ev-dashboard.com`
 - `hub.evnlogistics.com` is not the default current operator target
 
-- [ ] **Step 4: Verify the proxy-default changes**
+- [x] **Step 4: Verify the proxy-default changes**
 
 Run:
 
@@ -90,15 +90,15 @@ Expected: no formatting problems.
 **Files:**
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
 
-- [ ] **Step 1: Add a global lesson about legacy hub references**
+- [x] **Step 1: Add a global lesson about legacy hub references**
 
 Record the rule that live operator runbooks must not use `hub.evnlogistics.com` as the default target once a surface has moved to `infra -> CDK/ECS -> ev-dashboard`.
 
-- [ ] **Step 2: Preserve historical evidence without promoting it**
+- [x] **Step 2: Preserve historical evidence without promoting it**
 
 If an older lesson mentions `hub`, rewrite the wording so it is clearly historical bridge evidence, not current default guidance.
 
-- [ ] **Step 3: Run the final consistency search**
+- [x] **Step 3: Run the final consistency search**
 
 Run:
 
@@ -110,7 +110,7 @@ rg -n "hub\\.evnlogistics\\.com|current real proxy target is `https://hub\\.evnl
 
 Expected: any remaining matches are clearly labeled as legacy or historical bridge context, not current operator defaults.
 
-- [ ] **Step 4: Run whole-change verification**
+- [x] **Step 4: Run whole-change verification**
 
 Run:
 
@@ -121,7 +121,7 @@ git diff --check
 
 Expected: clean output.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add \
