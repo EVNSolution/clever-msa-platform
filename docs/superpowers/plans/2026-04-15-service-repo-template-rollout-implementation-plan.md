@@ -80,13 +80,42 @@ Do not leave the matrix as a blank inventory. Mark which baseline items are comp
 - Modify: additional child repos in batches
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/service-repo-template-audit-matrix.md`
 
-- [ ] **Step 1: Group remaining repos by archetype**
+- [x] **Step 1: Group remaining repos by archetype**
 
 Suggested grouping:
 
 - Django service repos
 - read-model service repos
 - gateway-like special cases
+
+Current grouping:
+
+- Batch 2: write/registry Django services
+  - `service-organization-registry`
+  - `service-driver-profile`
+  - `service-personnel-document-registry`
+  - `service-attendance-registry`
+  - `service-delivery-record`
+  - `service-settlement-payroll`
+  - `service-settlement-registry`
+  - `service-vehicle-registry`
+  - `service-vehicle-assignment`
+  - `service-dispatch-registry`
+  - `service-region-registry`
+  - `service-announcement-registry`
+  - `service-support-registry`
+  - `service-terminal-registry`
+- Batch 3: read-model services
+  - `service-settlement-operations-view`
+  - `service-driver-operations-view`
+  - `service-vehicle-operations-view`
+  - `service-dispatch-operations-view`
+  - `service-region-analytics`
+- Batch 4: special runtime services
+  - `service-notification-hub`
+  - `service-telemetry-hub`
+  - `service-telemetry-dead-letter`
+  - `service-telemetry-listener`
 
 - [ ] **Step 2: Apply the baseline in repo batches**
 

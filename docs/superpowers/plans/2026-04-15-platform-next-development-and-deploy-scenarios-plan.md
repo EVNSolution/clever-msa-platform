@@ -87,6 +87,7 @@ Current progress:
 - [x] rollout plan written
 - [x] audit matrix created with first batch
 - [x] first batch repo normalization patches
+- [x] remaining active repos grouped into Batch 2-4 archetype lanes
 
 ### Recommended Execution Order
 
