@@ -507,3 +507,15 @@ For future runtime migrations:
 - add a host reconcile loop whenever image SHAs live outside the host itself
 
 On EC2, an immutable ECR SHA is only a deploy truth if something on the running host actually re-pulls and restarts that container.
+
+## EC2 Bootstrap Must Treat User-Data As A Thin Launcher
+
+The first real dev stack create for the EC2 runtime rolled back before the host even booted because the data-host user-data exceeded EC2's 16 KB raw user-data limit. The root cause was simple: the Python bootstrap package had been inlined into user-data with heredocs. That is not sustainable for any service family.
+
+For future EC2 conversions:
+
+- use user-data only for package install, asset download, and systemd registration
+- stage reusable bootstrap code as a CDK-managed asset, then download it on the host
+- keep an explicit user-data size check in tests so growth fails locally instead of in CloudFormation
+
+If a service transition needs to paste real source files into user-data, stop and move that logic into the packaged bootstrap/runtime layer instead.
