@@ -42,17 +42,10 @@ npm test -- --runInBand
 npx cdk synth
 ```
 
-4. EC2 host bootstrap을 바꿨고 dev/candidate lane host가 이미 있다면, full deploy 전에 아래 precheck를 먼저 통과한다.
-
-```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
-BOOTSTRAP_LANE=dev \
-BOOTSTRAP_PRECHECK_MODE=proof \
-BOOTSTRAP_APP_HOST_INSTANCE_ID=i-xxxxxxxxxxxxxxxxx \
-BOOTSTRAP_DATA_HOST_INSTANCE_ID=i-yyyyyyyyyyyyyyyyy \
-npm run bootstrap:precheck
-```
-
+4. deploy 의도를 먼저 고른다.
+   - `full`: `preflight -> unit tests -> synth -> deploy -> smoke`
+   - `bootstrap-proof`: `synth -> deploy -> smoke`
+   - `smoke-only`: `smoke`
 5. 여기까지 모두 통과했을 때만 `Deploy ev-dashboard runtime platform` workflow를 실행한다.
 6. deploy 중에는 [ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)의 phase table과 decision table만 본다. 조급한 재시도는 하지 않는다.
 7. workflow 안의 automatic post-deploy public smoke까지 통과하면 lesson을 바로 갱신한다.
@@ -71,14 +64,13 @@ npm run bootstrap:precheck
 - 선행 slice 없이 뒤 slice만 켜는 desired count 조합
 - API slice가 켜져 있는데 `edge-api-gateway` desired count가 `0`인 조합
 
-## What `npm run bootstrap:precheck` Must Prove
+## What `run_profile=bootstrap-proof` Must Prove
 
-- existing app/data host target이 둘 다 있는지
-- current Python bootstrap package가 두 host에 sync되는지
-- app host에서 `verify-app`가 통과하는지
-- data host에서 `verify-data`가 통과하는지
+- current stack template가 synth 가능한지
+- app/data host replacement or update가 실제로 성공하는지
+- public shell/auth surface가 expected `200/302`를 주는지
 
-이 단계는 bootstrap correctness gate다. topology proof는 그 다음 `cdk deploy`가 맡는다.
+이 profile은 bootstrap correctness를 별도 더미 gate로 증명하지 않는다. bootstrap correctness는 실제 stack update와 targeted smoke 안에서 증명한다.
 
 ## During Deploy
 

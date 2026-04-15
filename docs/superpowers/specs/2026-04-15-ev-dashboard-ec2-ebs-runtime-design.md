@@ -215,7 +215,7 @@ service repo
 1. build once
 2. same SHA promote
 3. infra repo가 release target truth를 소유
-4. host bootstrap changes must pass `bootstrap:precheck` before the next full deploy
+4. host bootstrap debugging must use the smallest honest workflow profile before the next full deploy
 
 즉 “이미지별로 올리는 전략”은 계속 유지하고, “이미지를 어디서 실행하느냐”만 바뀐다.
 

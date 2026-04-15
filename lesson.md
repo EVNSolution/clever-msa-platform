@@ -156,18 +156,15 @@ Do not carry the old runtime's operator vocabulary into a new topology. When `ev
 
 Leaving RDS or Service Connect wait hints in place after the runtime changes makes the operator loop slower and more error-prone, even if the code itself is correct.
 
-## Stop Repeating Full Runs For Bootstrap Bugs
+## Use Workflow Profiles To Avoid Wasteful Full Runs
 
-Once EC2 host bootstrap moved into a Python package, bootstrap mistakes stopped being a `cdk deploy` problem first. The faster loop is:
+Once EC2 host bootstrap moved into a Python package, a separate precheck layer became slower than the deploy it was supposed to save. The right fix is to split the workflow by intent:
 
-1. change the bootstrap package
-2. sync it to the existing dev/candidate app/data hosts
-3. run `verify-app` and `verify-data`
-4. only then run the next full deploy
+1. `full` for release-grade proof
+2. `bootstrap-proof` for `synth -> deploy -> smoke`
+3. `smoke-only` for rerunning edge verification without another stack update
 
-Use full deploys for topology proof, ALB wiring, and public smoke. Use `bootstrap:precheck` for quoting, device, package staging, and SQL bootstrap mistakes.
-
-Another bootstrap-precheck lesson: a report-only wrapper is worse than no gate because it creates a false green path. The command must execute real SSM sync/verify steps and carry the same host env contract that runtime bootstrap uses. If the EC2 lane stack or host does not exist yet, fail with an explicit stack/host resolution error instead of silently printing the plan.
+If a debug path is routinely skipped in successful runs, remove it and keep the smallest honest workflow profile instead.
 
 ## Stack Success Is Not The Same As Slice Success
 
