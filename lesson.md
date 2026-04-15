@@ -518,3 +518,15 @@ For future EC2 conversions:
 - keep an explicit user-data size check in tests so growth fails locally instead of in CloudFormation
 
 If a service transition needs to paste real source files into user-data, stop and move that logic into the packaged bootstrap/runtime layer instead.
+
+## Deleted Paths Must Disappear From Generated Output Too
+
+The bootstrap-precheck cleanup left one more class of dummy behind: ignored build output. The source files and active docs were already clean, but `development/infra-ev-dashboard-platform/dist/` still contained compiled `bootstrapPrecheck` JS files because the repo build did not clear `dist/` first. That makes audits noisy and can trick operators into thinking a dead path still exists.
+
+For future cleanup work:
+
+- treat ignored generated output as part of the cleanup surface
+- make the repo build delete its output directory before recompiling
+- verify the removed symbol/path no longer appears in regenerated output before calling the cleanup done
+
+If a deleted path still exists only in compiled debris, remove the debris and harden the build so it cannot come back unnoticed.
