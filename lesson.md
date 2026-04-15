@@ -218,6 +218,17 @@ The important lesson from this patch is that Django admin should own the public 
 
 Admin is not only a login URL. It is templates, redirects, CSS, JS, and static asset delivery as one surface. If admin is public behind gunicorn, the service must keep template settings, define `STATIC_ROOT`, run `collectstatic`, and make `/static/admin/` reachable through the gateway.
 
+## Domain Support Must Reach The Workflow And Smoke Layers
+
+Adding a new public host is not finished when only the app code and stack code know about it. The honest closure rule is:
+
+- frontend resolver accepts the host
+- infra config and stack synthesize the host
+- deploy workflow exports the host input
+- post-deploy smoke probes the host directly
+
+If the workflow still omits the host variable, or smoke still checks only the apex host, the domain change is only partially integrated.
+
 ## Verify From Outside
 
 Local targeted tests are the minimum gate, but edge-facing routes still need a public smoke after deploy. For this class of patch, the shortest honest proof is:

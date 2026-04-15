@@ -86,6 +86,7 @@ merge 순서는 아래로 고정한다.
 4. infra 배포 전 `COCKPIT_HOSTS`에 새 host를 추가한다.
 5. infra deploy 후 certificate, listener rule, Route53 alias가 반영됐는지 확인한다.
 6. 외부 smoke를 수행한다.
+7. deploy workflow env export 와 post-deploy smoke 대상에도 새 cockpit host가 포함됐는지 확인한다.
 
 ## Smoke Checklist
 
@@ -102,6 +103,7 @@ merge 순서는 아래로 고정한다.
    - `팀 관리`
 5. cockpit host 에서 `/api/*` 요청이 404가 아니라 기존 backend 응답을 돌려준다.
 6. 기존 `ev-dashboard.com` 메인 허브가 회귀 없이 유지된다.
+7. workflow post-deploy smoke 가 apex shell 뿐 아니라 `https://<cockpit_host>/`도 직접 통과한다.
 
 ## Rollback
 
