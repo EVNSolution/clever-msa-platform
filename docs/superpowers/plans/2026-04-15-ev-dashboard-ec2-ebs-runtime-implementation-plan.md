@@ -68,7 +68,7 @@
 - Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/config.test.ts`
 - Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/preflight.test.ts`
 
-- [ ] **Step 1: Write the failing config tests**
+- [x] **Step 1: Write the failing config tests**
 
 Add tests that express the new required inputs, for example:
 
@@ -85,7 +85,7 @@ it('requires app and data host subnet/instance config for ec2 runtime mode', () 
 });
 ```
 
-- [ ] **Step 2: Run the tests and confirm failure**
+- [x] **Step 2: Run the tests and confirm failure**
 
 Run:
 
@@ -96,11 +96,11 @@ npm test -- --runInBand --runTestsByPath test/config.test.ts test/preflight.test
 
 Expected: failures that prove the EC2 runtime config is not implemented yet.
 
-- [ ] **Step 3: Implement the minimal config surface**
+- [x] **Step 3: Implement the minimal config surface**
 
 Add `RUNTIME_MODE=ec2` and the smallest required host/data inputs to `lib/config.ts`. Keep image URIs immutable and keep app/data host config separate.
 
-- [ ] **Step 4: Re-run the targeted tests**
+- [x] **Step 4: Re-run the targeted tests**
 
 Run:
 
@@ -111,7 +111,7 @@ npm test -- --runInBand --runTestsByPath test/config.test.ts test/preflight.test
 
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add lib/config.ts test/config.test.ts test/preflight.test.ts
@@ -126,7 +126,7 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ec2-bootstrap.ts`
 - Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ec2-host-bootstrap.test.ts`
 
-- [ ] **Step 1: Write failing bootstrap tests**
+- [x] **Step 1: Write failing bootstrap tests**
 
 Add tests for rendered user-data / bootstrap fragments, for example:
 
@@ -141,7 +141,7 @@ it('renders app host bootstrap with ECR image map inputs', () => {
 });
 ```
 
-- [ ] **Step 2: Run the bootstrap tests and confirm failure**
+- [x] **Step 2: Run the bootstrap tests and confirm failure**
 
 Run:
 
@@ -152,14 +152,14 @@ npm test -- --runInBand --runTestsByPath test/ec2-host-bootstrap.test.ts
 
 Expected: FAIL because the helper/construct files do not exist yet.
 
-- [ ] **Step 3: Implement focused host helper files**
+- [x] **Step 3: Implement focused host helper files**
 
 Create the helper files so that:
 - `ec2-app-host.ts` owns the app EC2 instance, IAM/profile attachment, SGs, and bootstrap call
 - `ec2-data-host.ts` owns the data EC2 instance, EBS volume, SGs, and bootstrap call
 - `ec2-bootstrap.ts` renders the bootstrap/user-data text only
 
-- [ ] **Step 4: Re-run the bootstrap tests**
+- [x] **Step 4: Re-run the bootstrap tests**
 
 Run:
 
@@ -170,7 +170,7 @@ npm test -- --runInBand --runTestsByPath test/ec2-host-bootstrap.test.ts
 
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add lib/ec2-app-host.ts lib/ec2-data-host.ts lib/ec2-bootstrap.ts test/ec2-host-bootstrap.test.ts
@@ -184,7 +184,7 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/bin/ev-dashboard-platform.ts`
 - Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
 
-- [ ] **Step 1: Write the failing stack assertions**
+- [x] **Step 1: Write the failing stack assertions**
 
 Change the stack tests so they assert the target topology instead of the current ECS/RDS one, for example:
 
@@ -195,7 +195,7 @@ template.resourceCountIs('AWS::RDS::DBInstance', 0);
 template.resourceCountIs('AWS::EC2::Volume', 1);
 ```
 
-- [ ] **Step 2: Run the stack tests and confirm failure**
+- [x] **Step 2: Run the stack tests and confirm failure**
 
 Run:
 
@@ -206,7 +206,7 @@ npm test -- --runInBand --runTestsByPath test/ev-dashboard-platform-stack.test.t
 
 Expected: FAIL because the current stack still synthesizes ECS/RDS resources.
 
-- [ ] **Step 3: Implement the new topology**
+- [x] **Step 3: Implement the new topology**
 
 Refactor `lib/ev-dashboard-platform-stack.ts` so it:
 - keeps ALB/ACM/Route53
@@ -214,7 +214,7 @@ Refactor `lib/ev-dashboard-platform-stack.ts` so it:
 - provisions EBS for the data host
 - removes ECS, RDS, ElastiCache, and Service Connect runtime resources from canonical mode
 
-- [ ] **Step 4: Run the stack tests again**
+- [x] **Step 4: Run the stack tests again**
 
 Run:
 
@@ -225,7 +225,7 @@ npm test -- --runInBand --runTestsByPath test/ev-dashboard-platform-stack.test.t
 
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add lib/ev-dashboard-platform-stack.ts bin/ev-dashboard-platform.ts test/ev-dashboard-platform-stack.test.ts
@@ -240,13 +240,13 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/preflight.test.ts`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/postDeploySmoke.test.ts`
 
-- [ ] **Step 1: Add failing gate/smoke cases**
+- [x] **Step 1: Add failing gate/smoke cases**
 
 Add tests for the new rules, for example:
 - missing EC2 host bootstrap inputs fails preflight
 - post-deploy smoke still expects public `200/302/401` but no ECS-specific assumptions remain
 
-- [ ] **Step 2: Run the targeted tests and confirm failure**
+- [x] **Step 2: Run the targeted tests and confirm failure**
 
 Run:
 
@@ -257,11 +257,11 @@ npm test -- --runInBand --runTestsByPath test/preflight.test.ts test/postDeployS
 
 Expected: FAIL
 
-- [ ] **Step 3: Implement the EC2-aware preflight and smoke rules**
+- [x] **Step 3: Implement the EC2-aware preflight and smoke rules**
 
 Make the gate validate host/runtime inputs and keep the public edge smoke as the release truth.
 
-- [ ] **Step 4: Re-run the targeted tests**
+- [x] **Step 4: Re-run the targeted tests**
 
 Run:
 
@@ -272,7 +272,7 @@ npm test -- --runInBand --runTestsByPath test/preflight.test.ts test/postDeployS
 
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add lib/preflight.ts lib/postDeploySmoke.ts test/preflight.test.ts test/postDeploySmoke.test.ts

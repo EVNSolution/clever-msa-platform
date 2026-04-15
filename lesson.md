@@ -146,6 +146,16 @@ If public smoke still depends on a human remembering to run `curl` after a green
 
 Manual browser smoke still matters, but only after the workflow has already proven the public edge did not regress.
 
+## Runtime Changes Must Change The Gate Language Too
+
+Do not carry the old runtime's operator vocabulary into a new topology. When `ev-dashboard` started its EC2 app/data host path, the useful preflight and operator hints changed with it:
+
+- config must fail fast on host subnet inputs
+- imported EC2 subnets need availability zones
+- wait signals must talk about instance launch, user-data/bootstrap, EBS attach, and service startup
+
+Leaving RDS or Service Connect wait hints in place after the runtime changes makes the operator loop slower and more error-prone, even if the code itself is correct.
+
 ## Stack Success Is Not The Same As Slice Success
 
 `24372474821` and `EvDashboardPlatformStack UPDATE_COMPLETE` still left `/api/org/*` broken. The fix only closed after the second deploy `24373001123`, where the gateway ordering and upstream style were corrected. Record both the infra result and the public endpoint result before calling a slice done.
