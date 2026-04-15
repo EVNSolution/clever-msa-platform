@@ -165,7 +165,7 @@ Record that archive cleanup is a classification pass, not a stealth delete pass.
 
 Update the higher-level plan so the archive/develop lane reflects real progress instead of staying as a vague future item.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add docs/README.md docs/rollout/README.md docs/runbooks/README.md WORKSPACE.md repo-map.md lesson.md docs/archive/historical/rollout docs/rollout/plans docs/superpowers/plans/2026-04-15-archive-develop-cleanup-implementation-plan.md docs/superpowers/plans/2026-04-15-platform-next-development-and-deploy-scenarios-plan.md
