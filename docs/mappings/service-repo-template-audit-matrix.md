@@ -25,20 +25,20 @@
 
 | Repo | Archetype | `.gitignore` | `README.md` baseline | `lesson.md` | `Dockerfile` | Build workflow | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `service-organization-registry` | django service | `yes` | `partial` | `yes` | `yes` | `yes` | Batch 2 write/registry group 시작점으로 적합 |
-| `service-driver-profile` | django service | `yes` | `partial` | `no` | `yes` | `yes` | `lesson.md` baseline 미추가 |
-| `service-personnel-document-registry` | django service | `yes` | `partial` | `no` | `yes` | `yes` | `lesson.md` baseline 미추가 |
-| `service-attendance-registry` | django service | `yes` | `partial` | `yes` | `yes` | `yes` | README section baseline 재정렬 필요 |
-| `service-delivery-record` | django service | `yes` | `partial` | `yes` | `yes` | `yes` | README section baseline 재정렬 필요 |
-| `service-settlement-payroll` | django service | `yes` | `partial` | `yes` | `yes` | `yes` | settlement write owner archetype |
-| `service-settlement-registry` | django service | `yes` | `partial` | `yes` | `yes` | `yes` | registry archetype |
-| `service-vehicle-registry` | django service | `yes` | `partial` | `no` | `yes` | `yes` | `lesson.md` baseline 미추가 |
-| `service-vehicle-assignment` | django service | `yes` | `partial` | `no` | `yes` | `yes` | `lesson.md` baseline 미추가 |
-| `service-dispatch-registry` | django service | `yes` | `partial` | `no` | `yes` | `yes` | `lesson.md` baseline 미추가 |
-| `service-region-registry` | django service | `yes` | `partial` | `no` | `yes` | `yes` | `lesson.md` baseline 미추가 |
-| `service-announcement-registry` | django service | `yes` | `partial` | `no` | `yes` | `yes` | `lesson.md` baseline 미추가 |
-| `service-support-registry` | django service | `yes` | `partial` | `no` | `yes` | `yes` | `lesson.md` baseline 미추가 |
-| `service-terminal-registry` | django service | `yes` | `partial` | `yes` | `yes` | `yes` | terminal/asset registry special notes 가능성 있음 |
+| `service-organization-registry` | django service | `yes` | `yes` | `yes` | `yes` | `yes` | README를 boundary/runtime/proof 기준으로 재정렬 |
+| `service-driver-profile` | django service | `yes` | `yes` | `yes` | `yes` | `yes` | README 정렬과 `lesson.md` baseline 추가 |
+| `service-personnel-document-registry` | django service | `yes` | `yes` | `yes` | `yes` | `yes` | README 정렬과 `lesson.md` baseline 추가 |
+| `service-attendance-registry` | django service | `yes` | `yes` | `yes` | `yes` | `yes` | dispatch-input slice proof 경로까지 README에 반영 |
+| `service-delivery-record` | django service | `yes` | `yes` | `yes` | `yes` | `yes` | delivery snapshot truth와 honest smoke 경로를 README에 반영 |
+| `service-settlement-payroll` | django service | `yes` | `yes` | `yes` | `yes` | `yes` | write-owner proof 규칙과 upstream contract를 baseline에 정렬 |
+| `service-settlement-registry` | django service | `yes` | `yes` | `yes` | `yes` | `yes` | registry-only proof rule을 README에 반영 |
+| `service-vehicle-registry` | django service | `yes` | `yes` | `yes` | `yes` | `yes` | README 정렬과 `lesson.md` baseline 추가 |
+| `service-vehicle-assignment` | django service | `yes` | `yes` | `yes` | `yes` | `yes` | README 정렬과 `lesson.md` baseline 추가 |
+| `service-dispatch-registry` | django service | `yes` | `yes` | `yes` | `yes` | `yes` | README 정렬과 `lesson.md` baseline 추가 |
+| `service-region-registry` | django service | `yes` | `yes` | `yes` | `yes` | `yes` | README 정렬과 `lesson.md` baseline 추가 |
+| `service-announcement-registry` | django service | `yes` | `yes` | `yes` | `yes` | `yes` | README 정렬과 `lesson.md` baseline 추가 |
+| `service-support-registry` | django service | `yes` | `yes` | `yes` | `yes` | `yes` | README 정렬과 `lesson.md` baseline 추가 |
+| `service-terminal-registry` | django service | `yes` | `yes` | `yes` | `yes` | `yes` | terminal registry proof를 telemetry proof와 분리해 명시 |
 
 ## Batch 3 Candidates
 

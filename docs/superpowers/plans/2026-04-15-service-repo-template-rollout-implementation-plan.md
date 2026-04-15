@@ -117,13 +117,19 @@ Current grouping:
   - `service-telemetry-dead-letter`
   - `service-telemetry-listener`
 
-- [ ] **Step 2: Apply the baseline in repo batches**
+- [x] **Step 2: Apply the baseline in repo batches**
 
 Prefer same-archetype batches so the changes stay consistent and reviewable.
 
-- [ ] **Step 3: Leave business-internal layout alone**
+- [x] **Step 3: Leave business-internal layout alone**
 
 If a repo already has a good domain layout, do not rewrite package trees just to make the matrix look neat.
+
+Current progress:
+
+- [x] Batch 2 write/registry Django services normalized
+- [x] missing `lesson.md` baselines added for Batch 2 repos
+- [x] business-internal folder trees intentionally left untouched
 
 ### Task 4: Publish The Standard As Ongoing Platform Policy
 
