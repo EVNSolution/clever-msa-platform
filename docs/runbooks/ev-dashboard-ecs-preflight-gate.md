@@ -68,7 +68,7 @@ npx cdk synth
 
 - current stack template가 synth 가능한지
 - app/data host replacement or update가 실제로 성공하는지
-- public shell/auth surface가 expected `200/302`를 주는지
+- public shell/auth/company-governance surface가 expected `200/302/400`를 주는지
 
 이 profile은 bootstrap correctness를 별도 더미 gate로 증명하지 않는다. bootstrap correctness는 실제 stack update와 targeted smoke 안에서 증명한다.
 

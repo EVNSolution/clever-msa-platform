@@ -168,6 +168,15 @@ If a debug path is routinely skipped in successful runs, remove it and keep the 
 
 `24446648973` closed the argument in practice. The `bootstrap-proof` profile (`synth -> deploy -> smoke`) finished successfully in under a minute on the dev lane, so future host-bootstrap debugging should start there instead of paying for a full release-grade run.
 
+## Cockpit Proof Needs Organization, Not Just Auth
+
+`cheonha.ev-dashboard.com` exposed a gap in the first EC2 proof lane. A shell/auth-only app host can pass apex auth smoke and still fail every real cockpit path because cockpit boot needs both:
+
+- `service-organization-registry` public tenant resolve
+- `service-account-access` workspace bootstrap against `organization-master-api`
+
+For `ev-dashboard`, the first cockpit-ready EC2 proof is therefore `shell/auth/company-governance`, not pure shell/auth. The proof lane has to include organization DB bootstrap, `organization-master-api` on the app host, `/api/org/*` on the proof gateway, and cockpit hosts inside CSRF trusted origins before deploy proof means anything.
+
 ## Stack Success Is Not The Same As Slice Success
 
 `24372474821` and `EvDashboardPlatformStack UPDATE_COMPLETE` still left `/api/org/*` broken. The fix only closed after the second deploy `24373001123`, where the gateway ordering and upstream style were corrected. Record both the infra result and the public endpoint result before calling a slice done.
