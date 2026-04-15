@@ -15,7 +15,7 @@
 The implementation should use this file ownership model.
 
 - Root docs:
-  - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/plans/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
+  - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
   - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
   - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md`
   - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md`
@@ -47,7 +47,7 @@ The implementation should use this file ownership model.
 ## Task 1: Lock The Migration Boundary In Docs
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/plans/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md`
@@ -75,14 +75,14 @@ Add `development/infra-ev-dashboard-platform` to the workspace docs and repo map
 
 - [ ] **Step 4: Verify the docs are internally consistent**
 
-Run: `git diff --check -- docs/rollout/plans/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md WORKSPACE.md repo-map.md`
+Run: `git diff --check -- docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md WORKSPACE.md repo-map.md`
 
 Expected: no diff formatting errors
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add docs/rollout/plans/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md WORKSPACE.md repo-map.md
+git add docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md WORKSPACE.md repo-map.md
 git commit -m "docs: lock ev-dashboard ECS migration boundary"
 ```
 
@@ -295,7 +295,7 @@ git commit -m "feat: add ev-dashboard ECS deploy workflow"
 ## Task 6: Execute The First Dev Cutover Rehearsal
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/plans/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lesson.md`
 
@@ -335,14 +335,14 @@ Capture:
 - [ ] **Step 6: Commit**
 
 ```bash
-git add docs/rollout/plans/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md lesson.md development/infra-ev-dashboard-platform/lesson.md
+git add docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md lesson.md development/infra-ev-dashboard-platform/lesson.md
 git commit -m "docs: record ev-dashboard ECS rehearsal lessons"
 ```
 
 ## Task 7: Promote To Production Cutover
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/plans/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lesson.md`
 
@@ -399,7 +399,7 @@ Record:
 - [ ] **Step 7: Commit**
 
 ```bash
-git add docs/rollout/plans/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md lesson.md development/infra-ev-dashboard-platform/lesson.md
+git add docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md lesson.md development/infra-ev-dashboard-platform/lesson.md
 git commit -m "docs: record ev-dashboard production ECS cutover"
 ```
 

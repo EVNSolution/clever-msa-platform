@@ -53,7 +53,7 @@ The first archive batch should be reviewed around these files:
 - `docs/rollout/plans/2026-03-27-region-analytics-phase-1-activation-implementation-plan.md`
 - `docs/rollout/plans/2026-03-29-notification-hub-phase-1-activation-implementation-plan.md`
 - `docs/rollout/plans/2026-04-06-single-web-console-cutover-implementation-plan.md`
-- `docs/rollout/plans/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
+- `docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
 
 These are not deleted. They are candidates to move into `docs/archive/historical/rollout/` if the audit confirms they are execution history rather than active operator truth.
 
@@ -150,6 +150,53 @@ rg -n "docs/rollout/plans/.*implementation-plan" docs --glob '!docs/archive/**'
 ```
 
 Expected: active docs no longer point to moved implementation plans as current truth.
+
+### Task 5: Remove Remaining Stale Active Rollout Plans And Runtime Names
+
+**Files:**
+- Move: stale active plans from `docs/rollout/plans/` to `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/archive/historical/rollout/`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/13-account-driver-settlement-compose-simulation.md`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/15-ui-first-working-mode.md`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/16-web-first-platform-delivery-order.md`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/2026-04-07-central-deploy-reference.md`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/AGENTS.md`
+
+- [x] **Step 1: Move completed or superseded active rollout plans**
+
+Current third batch completed:
+
+- moved completed or superseded active plans into `docs/archive/historical/rollout/`:
+  - `2026-04-01-settlement-upload-first-shell-ui-plan.md`
+  - `2026-04-04-auth-transition-phase-1-implementation-plan.md`
+  - `2026-04-06-dispatch-settlement-handoff-implementation-plan.md`
+  - `2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
+- active `docs/rollout/plans/` now keeps only the still-open deferred plan:
+  - `2026-03-23-document-ownership-transition-plan.md`
+
+- [x] **Step 2: Rewrite active operator docs to current web runtime naming**
+
+Current operator docs now use:
+
+- `front-web-console` as the current surviving web runtime
+- `front-operator-console` only as legacy historical reference
+- `web-console` as the current compose service label in live rollout/operator text
+
+- [x] **Step 3: Verify residual cleanup actually reduced active noise**
+
+Run:
+
+```bash
+cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
+ls -1 docs/rollout/plans
+rg -n "front-admin-console|front-operator-console|admin-front" docs development/edge-api-gateway/AGENTS.md --glob '!docs/archive/**' --glob '!docs/superpowers/**'
+git diff --check
+```
+
+Expected:
+
+- active rollout plan folder is reduced to genuinely active items
+- current operator docs no longer present removed runtime names as live truth
+- remaining old names live only in historical/archive or design-history contexts
 
 ### Task 4: Record The Cleanup Outcome
 

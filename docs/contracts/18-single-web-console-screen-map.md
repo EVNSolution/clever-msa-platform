@@ -12,7 +12,7 @@
 1. 최종 단일 웹은 `front-web-console` 하나다.
 2. 경로는 `admin/operator`로 다시 나누지 않는다.
 3. 같은 경로에서 `role + scope + self-service`로 화면을 분기한다.
-4. `front-operator-console` 기능은 아래 세 분류로 나눈다.
+4. historical `front-operator-console` 기능은 아래 세 분류로 나눈다.
    - shared route로 흡수
    - 기존 admin route 안의 role-specific panel로 흡수
    - obsolete and removable
@@ -109,7 +109,7 @@ Legacy route는 runtime에서 삭제하지 않고 redirect alias로만 유지한
 ## Cutover Order
 
 1. `front-web-console`에 `/` dashboard 도입 완료
-2. `front-operator-console` only pages 기능 admin repo 이관 완료
+2. `front-operator-console` only pages 기능 `front-web-console`로 이관 완료
 3. shared route role-based panel 분기 완료
 4. settlement shared read를 admin route tree 안으로 재구성 완료
 5. phase 1 MVP에서 `배차 계획`과 `배차표 업로드`를 분리하고, upload-only settlement start를 먼저 연다

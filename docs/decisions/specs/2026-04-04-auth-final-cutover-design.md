@@ -150,7 +150,7 @@ legacy `account` 요약 payload는 최종 current truth에서 제거한다.
 
 ### 공통
 
-1. 웹 런타임은 `front-admin-console` 하나만 남긴다.
+1. 웹 런타임은 `front-web-console` 하나만 남긴다.
 2. 웹은 `identity-login`, `identity-refresh`, `identity-me`, `identity-logout`만 사용한다.
 3. 웹 세션 정본은 legacy `AccountSummary`가 아니라 `identity + active_account`다.
 4. 웹은 `system_admin_account` 또는 `manager_account`만 사용한다.

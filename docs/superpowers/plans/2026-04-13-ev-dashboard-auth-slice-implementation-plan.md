@@ -15,14 +15,14 @@
 ### Task 1: Lock The Auth Slice Boundary In Docs
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/plans/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
 
 - [x] Write the auth-slice scope update before code changes.
 - [x] State that this phase adds dedicated `service-account-access` Postgres and Redis, not the full backend graph.
 - [x] Record that `api.next.ev-dashboard.com` success in this phase means auth/docs/admin only.
-- [x] Verify with `git diff --check -- docs/rollout/plans/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md lesson.md`.
+- [x] Verify with `git diff --check -- docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md lesson.md`.
 
 ### Task 2: Add Failing Infra Tests For Data Resources
 

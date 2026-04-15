@@ -62,18 +62,18 @@ npx cdk synth
 - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-14-ev-dashboard-backend-slices-design.md`
 - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/plans/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
 
 - [ ] Write the sequencing design and record the evidence for why `Company Governance` comes next.
 - [ ] Add a short pointer in the rollout docs that the remaining backend order is now fixed by the new spec/plan pair.
-- [ ] Run `git diff --check -- docs/superpowers/specs/2026-04-14-ev-dashboard-backend-slices-design.md docs/superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md docs/rollout/plans/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`.
+- [ ] Run `git diff --check -- docs/superpowers/specs/2026-04-14-ev-dashboard-backend-slices-design.md docs/superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`.
 - [ ] Commit:
 
 ```bash
 git add docs/superpowers/specs/2026-04-14-ev-dashboard-backend-slices-design.md \
         docs/superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md \
         docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md \
-        docs/rollout/plans/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md
+        docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md
 git commit -m "docs: define ev-dashboard backend slice roadmap"
 ```
 

@@ -2,11 +2,11 @@
 
 ## 목적
 
-이 문서는 `front-admin-console`과 `front-operator-console`로 나뉜 현재 웹 구조를, 권한 기반 단일 웹 콘솔로 다시 고정하는 current target truth를 정리한다.
+이 문서는 historical `front-admin-console`/`front-operator-console` split을 정리하고, 현재 `front-web-console` 권한 기반 단일 웹 콘솔을 current target truth로 고정한다.
 
 이번 설계의 목표는 아래 다섯 가지다.
 
-1. 웹 런타임을 `front-admin-console` 하나로 통합한다.
+1. 웹 런타임을 `front-web-console` 하나로 통합한다.
 2. `admin / operator`를 앱 구분이 아니라 `권한 기반 뷰 분기`로 재해석한다.
 3. 최종 웹 진입 경로를 `/` 하나로 고정한다.
 4. 기존 `front-operator-console` 기능을 통합 웹으로 이관한다.
@@ -72,7 +72,7 @@ cutover 시작 시점의 runtime은 아래처럼 분리되어 있었다.
 
 한 줄로 줄이면 이렇다.
 
-`웹은 front-admin-console 하나로 통합하고, 모든 화면은 권한 기반 단일 콘솔로 다시 정의한다.`
+`웹은 front-web-console 하나로 통합하고, 모든 화면은 권한 기반 단일 콘솔로 다시 정의한다.`
 
 ## 최종 웹 current truth
 
@@ -80,16 +80,16 @@ cutover 시작 시점의 runtime은 아래처럼 분리되어 있었다.
 
 1. 사용자-facing 이름은 `통합 웹 콘솔`로 고정한다.
 2. `관리자 콘솔`, `운영 콘솔` 같은 split-web 표현은 current truth에서 제거한다.
-3. `front-admin-console`, `admin-front` 같은 이름은 repo path와 compose service를 가리키는 기술 식별자로만 남긴다.
-4. 즉 이번 cutover는 사용자-facing naming 통합이지, repo/service/container 식별자 rename까지 포함하지 않는다.
+3. current repo/runtime 식별자는 `front-web-console`, compose service는 `web-console`이다.
+4. historical `front-admin-console`, `admin-front` 표기는 당시 cutover 문맥을 설명할 때만 남긴다.
 
 ### 살아남는 웹
 
-1. 최종 단일 웹 runtime은 `front-admin-console`이다.
+1. 최종 단일 웹 runtime은 `front-web-console`이다.
 2. `front-operator-console`는 이관 완료 후 제거 대상이다.
 3. 웹의 최종 base URL은 `/`이다.
 4. 기존 `/admin/*` 호환 리다이렉트는 두지 않는다.
-5. active runtime inventory에서는 `front-operator-console`를 제거하고 `front-admin-console`만 남긴다.
+5. active runtime inventory에서는 `front-operator-console`를 제거하고 `front-web-console`만 남긴다.
 
 ### 로그인과 public entry
 
@@ -144,7 +144,7 @@ cutover 시작 시점의 runtime은 아래처럼 분리되어 있었다.
 
 ### 그대로 유지되는 화면
 
-이미 `front-admin-console` 기준으로 current truth가 잡힌 화면은 그대로 유지한다.
+이미 `front-web-console` 기준으로 current truth가 잡힌 화면은 그대로 유지한다.
 
 1. auth / accounts
 2. companies / fleets
@@ -182,7 +182,7 @@ cutover 시작 시점의 runtime은 아래처럼 분리되어 있었다.
 
 ## 구현 원칙
 
-1. 먼저 `front-admin-console`에 operator 기능을 이관한다.
+1. 먼저 `front-web-console`에 operator 기능을 이관한다.
 2. 같은 route를 공유하도록 UI와 permission guard를 재구성한다.
 3. 충분한 테스트와 build 검증 후에만 `front-operator-console` 제거를 진행한다.
 4. gateway와 compose는 최종 cutover 시점에 맞춰 정리한다.
@@ -191,7 +191,7 @@ cutover 시작 시점의 runtime은 아래처럼 분리되어 있었다.
 
 아래가 모두 성립하면 cutover 완료다.
 
-1. `front-admin-console` 하나로 웹 운영이 닫힌다.
+1. `front-web-console` 하나로 웹 운영이 닫힌다.
 2. `front-operator-console` 기능이 모두 이관된다.
 3. 최종 웹 진입 경로는 `/` 하나다.
 4. `/admin/*` 호환 경로는 남기지 않는다.

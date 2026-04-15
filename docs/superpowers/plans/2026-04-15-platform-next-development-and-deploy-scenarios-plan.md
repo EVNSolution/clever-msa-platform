@@ -58,7 +58,7 @@ Current progress:
 - [x] dedicated cleanup plan written
 - [x] first duplicate historical rollout batch removed from active `docs/rollout/plans/`
 - [x] second historical move batch applied for completed activation/cutover records
-- [ ] broader archive/develop audit and remaining move batch
+- [x] broader archive/develop audit and remaining move batch
 
 ### Scenario C: Cross-Service Template Baseline
 

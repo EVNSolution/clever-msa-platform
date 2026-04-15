@@ -71,7 +71,7 @@
 
 이번 결정으로 아래가 바뀐다.
 
-1. `front-admin-console`의 standalone terminal page는 target UI에서 빠진다.
+1. `front-web-console`의 standalone terminal page는 target UI에서 빠진다.
 2. `Vehicle Ops`와 admin vehicle detail contract는 terminal/live block을 핵심으로 가진다.
 3. `terminal page를 어떻게 분리할지`보다 `vehicle detail에서 무엇을 어떻게 실시간으로 보여줄지`가 우선 과제가 된다.
 

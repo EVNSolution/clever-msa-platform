@@ -14,7 +14,7 @@
 ## 현재 원칙
 
 1. 현재 1차 목표는 `앱 없이도 웹만으로 운영이 닫히는 상태`다.
-2. 최종 웹 1차는 `front-admin-console` 하나로 통합하는 것을 목표로 한다.
+2. 최종 웹 1차는 `front-web-console` 하나로 통합하는 것을 목표로 한다.
 3. 앱 repo 구현과 Kakao SDK/콘솔 연동은 필요하지만, 현재 라운드의 blocker가 아니다.
 4. 앱/Kakao는 `auth 2차`가 아니라 `플랫폼 전체 2차`다.
 
@@ -22,8 +22,8 @@
 
 아래가 모두 충족되면 `웹 1차 완성`으로 본다.
 
-1. 관리자 운영과 read/self-service 운영 업무는 `front-admin-console` 하나로 가능하다.
-2. 별도 `front-operator-console` 없이 권한 기반 뷰 분기로 운영이 닫힌다.
+1. 관리자 운영과 read/self-service 운영 업무는 `front-web-console` 하나로 가능하다.
+2. 별도 `front-operator-console` active runtime 없이 권한 기반 뷰 분기로 운영이 닫힌다.
 3. 신규 사용자 진입, 승인, 계정 관리, 회사 변경이 웹에서 닫힌다.
 4. 핵심 업무 도메인의 목록, 상세, 생성/수정, 운영 액션이 웹에서 닫힌다.
 5. 앱이 없어도 실제 운영 업무가 막히지 않는다.
@@ -56,7 +56,7 @@
 
 ### 2. Dispatch web
 
-- [ ] `front-admin-console` 기준 `company + fleet + dispatch_date` 배차 보드 흐름을 닫기
+- [ ] `front-web-console` 기준 `company + fleet + dispatch_date` 배차 보드 흐름을 닫기
 - [ ] `dispatch_plan`의 예상 물량 입력/수정 화면을 닫기
 - [ ] 날짜별 `dispatch unit board`와 배차 CRUD를 웹에서 운영 가능하게 만들기
 - [ ] 용차 기사와 날짜 예외(`휴무`, `특근`) 입력을 배차 보드에 붙이기
@@ -75,8 +75,8 @@
 
 ### 4. Single web console cutover
 
-- [x] `front-admin-console`를 최종 단일 웹 runtime으로 고정하기
-- [x] `front-operator-console`의 read/self-service 기능을 `front-admin-console`로 이관하기
+- [x] `front-web-console`를 최종 단일 웹 runtime으로 고정하기
+- [x] `front-operator-console`의 read/self-service 기능을 `front-web-console`로 이관하기
 - [x] `/admin/*` 호환 경로 없이 최종 base URL을 `/`로 통일하기
 - [x] 같은 route에서 권한 기반 UI 노출/액션으로 화면을 분기하기
 - [x] `front-operator-console` 제거 전 검증/정리 순서를 plan으로 고정하기

@@ -2,7 +2,7 @@
 
 ## 목적
 
-이 문서는 권역 웹 1차를 `front-admin-console` 기준으로 정의하고, 권역 정본과 권역 분석을 어떤 UX 흐름으로 묶을지 current truth로 고정한다.
+이 문서는 권역 웹 1차를 `front-web-console` 기준으로 정의하고, 권역 정본과 권역 분석을 어떤 UX 흐름으로 묶을지 current truth로 고정한다.
 
 이번 결정의 목적은 아래와 같다.
 
@@ -163,7 +163,7 @@ polygon 입력은 1차에서 `raw GeoJSON textarea` 방식으로 유지한다.
 2. polygon
 3. 권역 lifecycle
 
-## front-admin-console 1차 목표
+## front-web-console 1차 목표
 
 권역 웹 1차는 아래 세 가지를 만족하면 닫힌다.
 

@@ -23,7 +23,7 @@
 ## 현재 기본 순서
 
 1. `docs/contracts`에 화면 계약을 먼저 쓴다.
-2. `front-admin-console` 단일 웹에 shell UI를 만든다.
+2. `front-web-console` 단일 웹에 shell UI를 만든다.
 3. UI 기준으로 필요한 API gap을 문서화한다.
 4. 그 gap만 해당 `service-*` repo에서 구현한다.
 5. 다시 UI를 붙여 검증하고, 필요하면 계약 문서를 갱신한다.

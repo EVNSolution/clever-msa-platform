@@ -2,7 +2,7 @@
 
 ## 목적
 
-이 문서는 배차 1차를 `front-admin-console` 기준으로 다시 정의하고, 계획 정본과 실제 운영 보드를 어떻게 나눌지 current truth로 고정한다.
+이 문서는 배차 1차를 `front-web-console` 기준으로 다시 정의하고, 계획 정본과 실제 운영 보드를 어떻게 나눌지 current truth로 고정한다.
 
 이번 결정의 목적은 아래와 같다.
 

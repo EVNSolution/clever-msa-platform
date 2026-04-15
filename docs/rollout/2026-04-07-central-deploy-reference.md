@@ -12,7 +12,7 @@
 아래 컴포넌트가 중앙 배포 레이어의 직접 대상이다.
 
 - `edge-api-gateway`
-- `front-admin-console`, `front-operator-console`
+- `front-web-console`
 - `service-*` 계열 런타임 서비스
 
 최종 런타임 정보(실제 배포 파이프라인, compose service, gateway prefix)는
@@ -42,7 +42,7 @@
 권장 실행 순서는 기본 카탈로그의 `wave` 순을 따른다.
 
 1. core
-   - `edge-api-gateway`, `front-*`
+   - `edge-api-gateway`, `front-web-console`
 2. domain security / identity
    - `service-account-access` 등
 3. 운영/조회 경로

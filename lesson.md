@@ -128,6 +128,10 @@ When deploy guidance is split across `lesson.md`, infra-local lessons, rollout n
 
 For `ev-dashboard`, preflight and decommission stay as separate runbooks, but the in-between deploy judgment now belongs in `docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md`.
 
+## Archive Superseded Plans Even If They Were Never Fully Checked Off
+
+Residual cleanup gets dangerous when stale rollout plans stay in active folders just because their old checklist was never fully marked complete. Active placement should reflect current operator value, not historical intent. If the runtime, repo names, or rollout lane have already moved on, archive the plan as superseded execution history and keep only genuinely open plans in `docs/rollout/plans/`.
+
 ## Public Smoke Must Be Part Of The Workflow Gate
 
 If public smoke still depends on a human remembering to run `curl` after a green `cdk deploy`, the deploy is not actually closed. For `ev-dashboard`, the minimum external smoke now belongs inside the same workflow:
