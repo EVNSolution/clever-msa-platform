@@ -463,3 +463,13 @@ For future service migrations:
 - audit repo-scope vars and environment-scope vars separately
 - decide which new keys are global and which are lane-specific before changing the workflow
 - add the scope expectation to repo-local lesson and README when a runtime contract changes
+
+## Pre-Prod Is Not Real If Stack Identity Is Still Shared
+
+The EC2 cutover work also proved that a `dev` or `candidate` lane is fake if the CDK stack id and fixed resource names still point to the same account/region objects as prod. Different domains and different GitHub env vars are not enough. If the stack name stays `EvDashboardPlatformStack`, a rehearsal run still mutates the prod stack.
+
+For future runtime migrations:
+
+- separate stack identity before claiming there is a candidate lane
+- scope fixed resource names like SSM parameters to the lane
+- verify the lane by synth output and stack name, not by domain variables alone
