@@ -128,7 +128,9 @@ If a repo already has a good domain layout, do not rewrite package trees just to
 Current progress:
 
 - [x] Batch 2 write/registry Django services normalized
+- [x] Batch 3 read-model services normalized
 - [x] missing `lesson.md` baselines added for Batch 2 repos
+- [x] missing `lesson.md` baseline added for `service-region-analytics`
 - [x] business-internal folder trees intentionally left untouched
 
 ### Task 4: Publish The Standard As Ongoing Platform Policy

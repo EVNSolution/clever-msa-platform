@@ -89,6 +89,7 @@ Current progress:
 - [x] first batch repo normalization patches
 - [x] remaining active repos grouped into Batch 2-4 archetype lanes
 - [x] Batch 2 Django service repo normalization patches
+- [x] Batch 3 read-model service repo normalization patches
 
 ### Recommended Execution Order
 

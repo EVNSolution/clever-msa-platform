@@ -44,11 +44,11 @@
 
 | Repo | Archetype | `.gitignore` | `README.md` baseline | `lesson.md` | `Dockerfile` | Build workflow | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `service-settlement-operations-view` | read-model service | `yes` | `partial` | `yes` | `yes` | `yes` | read-model baseline에 맞춘 section 정렬 필요 |
-| `service-driver-operations-view` | read-model service | `yes` | `partial` | `yes` | `yes` | `yes` | read-model baseline에 맞춘 section 정렬 필요 |
-| `service-vehicle-operations-view` | read-model service | `yes` | `partial` | `yes` | `yes` | `yes` | read-model baseline에 맞춘 section 정렬 필요 |
-| `service-dispatch-operations-view` | read-model service | `yes` | `partial` | `yes` | `yes` | `yes` | read-model baseline에 맞춘 section 정렬 필요 |
-| `service-region-analytics` | read-model service | `yes` | `partial` | `no` | `yes` | `yes` | analytics read service, `lesson.md` baseline 미추가 |
+| `service-settlement-operations-view` | read-model service | `yes` | `yes` | `yes` | `yes` | `yes` | read-only fan-out boundary와 honest proof를 README에 반영 |
+| `service-driver-operations-view` | read-model service | `yes` | `yes` | `yes` | `yes` | `yes` | upstream 404 preservation rule과 read-only contract를 README에 반영 |
+| `service-vehicle-operations-view` | read-model service | `yes` | `yes` | `yes` | `yes` | `yes` | optional telemetry/terminal bridge rule을 README에 반영 |
+| `service-dispatch-operations-view` | read-model service | `yes` | `yes` | `yes` | `yes` | `yes` | empty board/summary success semantics를 README에 반영 |
+| `service-region-analytics` | read-model service | `yes` | `yes` | `yes` | `yes` | `yes` | README 정렬과 `lesson.md` baseline 추가 |
 
 ## Batch 4 Candidates
 
