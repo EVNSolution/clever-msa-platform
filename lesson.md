@@ -166,6 +166,8 @@ Once EC2 host bootstrap moved into a Python package, a separate precheck layer b
 
 If a debug path is routinely skipped in successful runs, remove it and keep the smallest honest workflow profile instead.
 
+`24446648973` closed the argument in practice. The `bootstrap-proof` profile (`synth -> deploy -> smoke`) finished successfully in under a minute on the dev lane, so future host-bootstrap debugging should start there instead of paying for a full release-grade run.
+
 ## Stack Success Is Not The Same As Slice Success
 
 `24372474821` and `EvDashboardPlatformStack UPDATE_COMPLETE` still left `/api/org/*` broken. The fix only closed after the second deploy `24373001123`, where the gateway ordering and upstream style were corrected. Record both the infra result and the public endpoint result before calling a slice done.
