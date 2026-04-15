@@ -84,7 +84,7 @@ rg -n "archive/|develop" docs WORKSPACE.md repo-map.md --glob '!docs/archive/**'
 
 Expected: only rule-setting references remain, not operator directions that send people into stale develop/archive content.
 
-- [ ] **Step 2: Rewrite entrypoints so archive is clearly historical**
+- [x] **Step 2: Rewrite entrypoints so archive is clearly historical**
 
 Active indexes should say:
 
@@ -92,9 +92,14 @@ Active indexes should say:
 - completed rollout artifacts belong there
 - current operator questions should start from runbooks, inventory, and active rollout notes
 
-- [ ] **Step 3: Keep develop-era examples only when they still explain a live pattern**
+- [x] **Step 3: Keep develop-era examples only when they still explain a live pattern**
 
 If a doc mentions `develop` or similar staging language without helping a current operator decision, move or remove that wording.
+
+Current result:
+
+- `docs/README.md`, `docs/rollout/README.md`, `docs/runbooks/README.md`, `WORKSPACE.md`, and `repo-map.md` already state that `docs/archive/` is historical/document-only storage
+- audit search only found rule-setting references, not live operator directions into stale develop/archive paths
 
 ### Task 3: Execute The First Cleanup Batch Safely
 
@@ -115,8 +120,18 @@ Current first batch completed:
   - `2026-03-27-region-analytics-phase-1-activation-implementation-plan.md`
   - `2026-03-29-notification-hub-phase-1-activation-implementation-plan.md`
 - the same files already existed under `docs/archive/historical/rollout/`, so the active copies were stale duplicates rather than unique truth
+- second move batch:
+  - moved completed activation plans into archive:
+    - `2026-03-24-delivery-record-phase-1-activation-implementation-plan.md`
+    - `2026-03-24-personnel-document-registry-phase-1-activation-implementation-plan.md`
+    - `2026-03-26-region-registry-phase-1-activation-implementation-plan.md`
+  - removed duplicate active copies already preserved in archive:
+    - `2026-04-04-auth-final-cutover-implementation-plan.md`
+    - `2026-04-06-personnel-document-web-first-slice-implementation-plan.md`
+    - `2026-04-06-region-web-first-slice-implementation-plan.md`
+    - `2026-04-06-single-web-console-cutover-implementation-plan.md`
 
-- [ ] **Step 2: Re-point any index or runbook references**
+- [x] **Step 2: Re-point any index or runbook references**
 
 After moving files, fix any links in:
 
@@ -124,7 +139,7 @@ After moving files, fix any links in:
 - `docs/rollout/README.md`
 - any active doc that still links to the old path
 
-- [ ] **Step 3: Verify no broken links or stale references remain**
+- [x] **Step 3: Verify no broken links or stale references remain**
 
 Run:
 
@@ -142,11 +157,11 @@ Expected: active docs no longer point to moved implementation plans as current t
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-15-platform-next-development-and-deploy-scenarios-plan.md`
 
-- [ ] **Step 1: Add the lesson**
+- [x] **Step 1: Add the lesson**
 
 Record that archive cleanup is a classification pass, not a stealth delete pass.
 
-- [ ] **Step 2: Mark the scenarios plan once this cleanup plan exists and the first batch is done**
+- [x] **Step 2: Mark the scenarios plan once this cleanup plan exists and the first batch is done**
 
 Update the higher-level plan so the archive/develop lane reflects real progress instead of staying as a vague future item.
 

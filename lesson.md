@@ -101,6 +101,10 @@ After the canonical `ev-dashboard` runtime is stable, the next work should not c
 
 That separation keeps cleanup and templating from hijacking the live release lane, and it prevents release urgency from turning archive/template work into undocumented side patches.
 
+## Archive Cleanup Is A Classification Pass
+
+When cleaning `archive/develop` leftovers, the safe rule is classification before deletion. If a rollout plan is useful only as execution history, move it to `docs/archive/historical/rollout/`. If the same file already exists there, remove only the stale active copy. Do not treat archive cleanup as a hidden repo-pruning pass or a shortcut for deleting old operator evidence.
+
 ## Template Rollout Should Standardize The Repo Surface, Not The Domain Code
 
 When standardizing many service repos, the baseline should cover deploy-facing structure and hygiene only:
