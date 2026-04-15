@@ -473,3 +473,24 @@ For future runtime migrations:
 - separate stack identity before claiming there is a candidate lane
 - scope fixed resource names like SSM parameters to the lane
 - verify the lane by synth output and stack name, not by domain variables alone
+
+## EC2 Host Placement Needs Explicit Subnet-AZ Pairs
+
+The first EC2 dev rehearsal made it past preflight, full tests, and synth, then rolled back in CloudFormation because the host subnets were paired with the wrong availability zones. Shared `PRIVATE_SUBNET_IDS` and `AVAILABILITY_ZONES` lists were not a safe source for host placement inference. For EC2 runtime work, host subnet placement must be carried as explicit pairs:
+
+- `APP_HOST_SUBNET_ID` + `APP_HOST_SUBNET_AVAILABILITY_ZONE`
+- `DATA_HOST_SUBNET_ID` + `DATA_HOST_SUBNET_AVAILABILITY_ZONE`
+
+If the lane depends on EC2 instance placement, do not infer AZ from list order.
+
+## EC2 Runtime Proof Must Freeze Scope To What The Host Can Actually Run
+
+The first EC2 app/data host cutover attempt proved a second boundary problem after stack identity and subnet placement were fixed: the host bootstrap still did not have a real runtime contract for the later backend slices. The app host could fetch image metadata, but until it had a reconcile loop and concrete startup rules, it could only honestly run `front-web-console`, `edge-api-gateway`, and `service-account-access`.
+
+For future runtime migrations:
+
+- freeze the candidate proof to the slice the host can really run
+- make preflight reject later slices until their host-level contract exists
+- add a host reconcile loop whenever image SHAs live outside the host itself
+
+On EC2, an immutable ECR SHA is only a deploy truth if something on the running host actually re-pulls and restarts that container.
