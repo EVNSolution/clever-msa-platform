@@ -34,6 +34,6 @@
 
 실행 코드, compose, env, seed script는 이 폴더에 두지 않는다.
 
-현재 runtime naming, compose service, gateway prefix 같은 질문은 historical rollout plan이 아니라 `mappings/current-runtime-inventory.md`를 먼저 본다. `ev-dashboard` 운영 절차 질문은 `runbooks/README.md`부터 보고, prod 정본은 `infra-ev-dashboard-platform -> CDK/ECS -> ev-dashboard.com` 기준으로 읽는다. `clever-deploy-control` 관련 문서는 bridge lane이나 legacy reference가 필요할 때만 본다.
+현재 runtime naming, compose service, gateway prefix 같은 질문은 historical rollout plan이 아니라 `mappings/current-runtime-inventory.md`를 먼저 본다. `ev-dashboard` 운영 절차 질문은 `runbooks/README.md`부터 보고, prod 정본은 `infra-ev-dashboard-platform -> CDK -> EC2 app host + EC2 data host(EBS) -> ev-dashboard.com` 기준으로 읽는다. `clever-deploy-control` 관련 문서는 bridge lane이나 legacy reference가 필요할 때만 본다.
 
 `goals/`는 상위 목표와 north-star를 보관하는 폴더다. current runtime truth나 operator 절차를 찾을 때는 `goals/`부터 읽지 않는다.

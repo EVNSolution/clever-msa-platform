@@ -530,3 +530,15 @@ For future cleanup work:
 - verify the removed symbol/path no longer appears in regenerated output before calling the cleanup done
 
 If a deleted path still exists only in compiled debris, remove the debris and harden the build so it cannot come back unnoticed.
+
+## Repo Deletion Needs Runtime Inventory Truth, Not A Partial List
+
+The workspace docs had a misleading state where `WORKSPACE.md` listed only part of the active `development/*` repos while later sections described newer repos as "planned targets" even though they were already active. That is enough to create a false cleanup candidate.
+
+For future repo cleanup:
+
+- decide repo retention from both `repo-map.md` and `docs/mappings/current-runtime-inventory.md`
+- keep `WORKSPACE.md` active naming set fully aligned with the current runtime inventory
+- do not delete a linked child repo just because one summary list forgot to include it
+
+If runtime ownership says a repo is active, treat it as live infrastructure until the inventory and repo map both demote it.

@@ -99,6 +99,16 @@ clever-msa-platform/
 - `service-organization-registry`
 - `service-account-access`
 - `service-driver-profile`
+- `service-personnel-document-registry`
+- `service-attendance-registry`
+- `service-delivery-record`
+- `service-dispatch-registry`
+- `service-dispatch-operations-view`
+- `service-region-registry`
+- `service-region-analytics`
+- `service-announcement-registry`
+- `service-support-registry`
+- `service-notification-hub`
 - `service-vehicle-registry`
 - `service-vehicle-assignment`
 - `service-vehicle-operations-view`
@@ -108,7 +118,6 @@ clever-msa-platform/
 - `service-telemetry-listener`
 - `service-telemetry-dead-letter`
 - `service-settlement-registry`
-- `service-delivery-record`
 - `service-settlement-payroll`
 - `service-settlement-operations-view`
 
@@ -124,33 +133,14 @@ clever-msa-platform/
 - shared app-code repo가 아니라 `ev-dashboard` slice 전용 infra repo
 - plain 폴더가 아니라 linked child repo로 등록된 대상
 
-## Additional Planned Domain Units
+## Repo Retention Rule
 
-현재 active naming set 바깥에서 추가 계획 대상으로 고정한 큰 업무 단위는 아래와 같다.
+`development/*` repo 삭제는 아래 두 문서에서 모두 active set 바깥으로 내려간 뒤에만 한다.
 
-- `배차`
-- `인사문서`
-- `권역분석`
-- `알림`
-- `공지 / 지원`
+- `repo-map.md`
+- `docs/mappings/current-runtime-inventory.md`
 
-이 다섯 개는 아직 repo 이름이나 세부 service decomposition을 고정하지 않았다.
-현재 단계에서는 큰 단위와 역할만 문서로 고정하고, skeleton 생성 직전에 naming과 분해를 다시 자른다.
-
-## Planned Target Repo Names
-
-추가 계획 대상 큰 단위를 위해 아래 target repo 이름을 먼저 고정했다.
-
-- `service-dispatch-registry`
-- `service-dispatch-operations-view`
-- `service-personnel-document-registry`
-- `service-region-registry`
-- `service-region-analytics`
-- `service-notification-hub`
-- `service-announcement-registry`
-- `service-support-registry`
-
-이 이름들은 현재 모두 active runtime repo로 승격됐다. `service-dispatch-registry`, `service-dispatch-operations-view`, `service-personnel-document-registry`, `service-region-registry`, `service-region-analytics`, `service-notification-hub`, `service-announcement-registry`, `service-support-registry`는 target repo가 active source다.
+`WORKSPACE.md`의 부분 목록만 보고 repo를 지우지 않는다. active runtime repo, operator support repo, infra repo는 모두 linked child repo로 유지한다.
 
 ## Working Rules
 
