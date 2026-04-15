@@ -129,9 +129,12 @@ Current progress:
 
 - [x] Batch 2 write/registry Django services normalized
 - [x] Batch 3 read-model services normalized
+- [x] Batch 4 special runtime services normalized
 - [x] missing `lesson.md` baselines added for Batch 2 repos
 - [x] missing `lesson.md` baseline added for `service-region-analytics`
+- [x] missing `lesson.md` baseline added for `service-notification-hub`
 - [x] business-internal folder trees intentionally left untouched
+- [x] all currently active repo batches normalized against the baseline
 
 ### Task 4: Publish The Standard As Ongoing Platform Policy
 

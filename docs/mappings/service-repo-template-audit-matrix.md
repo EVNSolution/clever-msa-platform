@@ -54,10 +54,10 @@
 
 | Repo | Archetype | `.gitignore` | `README.md` baseline | `lesson.md` | `Dockerfile` | Build workflow | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `service-notification-hub` | special runtime | `yes` | `partial` | `no` | `yes` | `yes` | channel/logging 특성 때문에 별도 guidance 필요 가능 |
-| `service-telemetry-hub` | special runtime | `yes` | `partial` | `yes` | `yes` | `yes` | ingest/snapshot runtime |
-| `service-telemetry-dead-letter` | special runtime | `yes` | `partial` | `yes` | `yes` | `yes` | dead-letter runtime |
-| `service-telemetry-listener` | special runtime | `yes` | `partial` | `yes` | `yes` | `yes` | internal worker, public route 없음 |
+| `service-notification-hub` | special runtime | `yes` | `yes` | `yes` | `yes` | `yes` | inbox/log boundary와 honest proof를 README/lesson에 반영 |
+| `service-telemetry-hub` | special runtime | `yes` | `yes` | `yes` | `yes` | `yes` | ingest hub proof와 listener boundary를 README에 반영 |
+| `service-telemetry-dead-letter` | special runtime | `yes` | `yes` | `yes` | `yes` | `yes` | `7a` admin surface라는 점과 honest proof를 README에 반영 |
+| `service-telemetry-listener` | special runtime | `yes` | `yes` | `yes` | `yes` | `yes` | worker-only runtime, no public route, `desired=0` default를 README에 반영 |
 
 ## Rollout Rule
 
