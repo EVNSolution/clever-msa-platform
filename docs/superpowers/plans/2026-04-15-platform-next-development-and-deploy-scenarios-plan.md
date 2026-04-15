@@ -53,6 +53,12 @@ GitHub main
 
 **Guardrail:** This track is cleanup and reclassification work, not mass deletion of runtime repos or history. Anything with current operator value stays out of `archive/`.
 
+Current progress:
+
+- [x] dedicated cleanup plan written
+- [x] first duplicate historical rollout batch removed from active `docs/rollout/plans/`
+- [ ] broader archive/develop audit and remaining move batch
+
 ### Scenario C: Cross-Service Template Baseline
 
 **Intent:** Standardize service repo scaffolding where it improves maintainability and deploy consistency, without forcing every service into an identical code layout.
@@ -74,6 +80,13 @@ GitHub main
 
 **Why this is separate from runtime migration:** Templating reduces repeated mistakes and onboarding friction, but it is a platform hygiene track. It must not block actual `ev-dashboard` release work unless a repo’s deploy contract is broken.
 
+Current progress:
+
+- [x] baseline spec written
+- [x] rollout plan written
+- [x] audit matrix created with first batch
+- [ ] first batch repo normalization patches
+
 ### Recommended Execution Order
 
 1. `ev-dashboard` canonical development/deploy lane remains the default release path.
@@ -86,11 +99,11 @@ GitHub main
    - `integration-local-stack`
 5. Expand template cleanup to the remaining `service-*` repos once the baseline survives real usage.
 
-### Deliverables To Add Next
+### Deliverables Added
 
-- [ ] A dedicated `archive/develop` cleanup plan with an explicit move/delete list.
-- [ ] A service-template baseline spec describing which files and sections are mandatory and which remain repo-specific.
-- [ ] A service-template rollout plan that applies the baseline to repos in batches.
+- [x] A dedicated `archive/develop` cleanup plan with an explicit move/delete list.
+- [x] A service-template baseline spec describing which files and sections are mandatory and which remain repo-specific.
+- [x] A service-template rollout plan that applies the baseline to repos in batches.
 
 ### Definition Of Done For This Plan
 
@@ -99,4 +112,4 @@ GitHub main
   - archive/develop cleanup lane
   - service templating lane
 - [ ] No one treats cleanup or templating as a replacement for the canonical deploy path.
-- [ ] The next concrete plans for cleanup and templating are written before any broad refactor starts.
+- [x] The next concrete plans for cleanup and templating are written before any broad refactor starts.

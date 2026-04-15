@@ -18,6 +18,10 @@
 - `ev-dashboard` UI smoke와 decommission close-out: [runbooks/ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
 - 문서 정본 정렬 계획: [superpowers/plans/2026-04-15-platform-docs-canonical-truth-alignment-implementation-plan.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-15-platform-docs-canonical-truth-alignment-implementation-plan.md)
 - 다음 개발/배포 시나리오 계획: [superpowers/plans/2026-04-15-platform-next-development-and-deploy-scenarios-plan.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-15-platform-next-development-and-deploy-scenarios-plan.md)
+- `archive/develop` cleanup 계획: [superpowers/plans/2026-04-15-archive-develop-cleanup-implementation-plan.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-15-archive-develop-cleanup-implementation-plan.md)
+- 서비스 repo template baseline: [superpowers/specs/2026-04-15-service-repo-template-baseline-design.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-15-service-repo-template-baseline-design.md)
+- 서비스 repo template rollout 계획: [superpowers/plans/2026-04-15-service-repo-template-rollout-implementation-plan.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-15-service-repo-template-rollout-implementation-plan.md)
+- 서비스 repo template audit matrix: [mappings/service-repo-template-audit-matrix.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/service-repo-template-audit-matrix.md)
 
 - `goals/`: 플랫폼의 목표 상태와 상위 방향
 - `boundaries/`: 서비스 경계와 소유 데이터

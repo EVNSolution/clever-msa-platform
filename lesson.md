@@ -101,6 +101,18 @@ After the canonical `ev-dashboard` runtime is stable, the next work should not c
 
 That separation keeps cleanup and templating from hijacking the live release lane, and it prevents release urgency from turning archive/template work into undocumented side patches.
 
+## Template Rollout Should Standardize The Repo Surface, Not The Domain Code
+
+When standardizing many service repos, the baseline should cover deploy-facing structure and hygiene only:
+
+- `.gitignore`
+- README sections
+- build workflow baseline
+- Dockerfile and entrypoint conventions
+- lesson file placement
+
+Do not turn that into a hidden requirement that every repo share the same internal business-code tree. Standardize the repo surface first, then leave justified domain structure alone.
+
 ## Deploy Docs Must Fit On One Operator Loop
 
 When deploy guidance is split across `lesson.md`, infra-local lessons, rollout notes, and runbooks, the deploy feels slower than it really is because the operator keeps reinterpreting the same state. The fix is not “more notes”. The fix is one short operator loop with:
