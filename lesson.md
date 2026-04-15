@@ -453,3 +453,13 @@ By `2026-04-14`, the live anonymous shell smoke for `https://ev-dashboard.com` w
 - no browser console errors during that shell smoke
 
 That is enough to prove the public front door is alive, but it is **not** enough to close authenticated UI smoke. The repo default fixture credential `seed-admin@example.com / ChangeMe123!` returned `403 Invalid email or password.` against live `api.ev-dashboard.com`. Do not pretend that local fixture credentials are valid production smoke accounts. Authenticated UI close-out now requires a dedicated read-only smoke account or an equivalent secret-managed credential.
+
+## Runtime Cutovers Must Audit GitHub Variable Scope, Not Just Variable Names
+
+The EC2 app/data host cutover exposed a new deploy blocker before any AWS resource change began: the required keys existed conceptually, but not in the GitHub variable scope that the workflow actually reads. Repo-scope network values were present, while the new host-placement keys (`APP_HOST_SUBNET_ID`, `DATA_HOST_SUBNET_ID`) were absent from both `dev` and `prod` environment scopes. That means a runtime switch can fail in preflight even when the CDK stack and code are otherwise ready.
+
+For future service migrations:
+
+- audit repo-scope vars and environment-scope vars separately
+- decide which new keys are global and which are lane-specific before changing the workflow
+- add the scope expectation to repo-local lesson and README when a runtime contract changes

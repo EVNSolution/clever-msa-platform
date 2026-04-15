@@ -1,6 +1,6 @@
-# ev-dashboard ECS Preflight Gate
+# ev-dashboard Runtime Preflight Gate
 
-`ev-dashboard.com` ECS/CDK deploy는 lesson을 읽는 것만으로 끝내지 않는다. deploy 전에 아래 gate를 실제로 통과한 뒤에만 `workflow_dispatch`로 넘어간다.
+`ev-dashboard.com` canonical runtime deploy는 lesson을 읽는 것만으로 끝내지 않는다. deploy 전에 아래 gate를 실제로 통과한 뒤에만 `workflow_dispatch`로 넘어간다.
 
 prod deploy 자체로 바로 들어가지 않는다. 기본 release 흐름은 아래다.
 
@@ -42,7 +42,7 @@ npm test -- --runInBand
 npx cdk synth
 ```
 
-4. 여기까지 모두 통과했을 때만 `Deploy ev-dashboard ECS platform` workflow를 실행한다.
+4. 여기까지 모두 통과했을 때만 `Deploy ev-dashboard runtime platform` workflow를 실행한다.
 5. deploy 중에는 [ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)의 phase table과 decision table만 본다. 조급한 재시도는 하지 않는다.
 6. workflow 안의 automatic post-deploy public smoke까지 통과하면 lesson을 바로 갱신한다.
 

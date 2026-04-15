@@ -5,7 +5,7 @@
 ## Purpose
 
 - prod 전에 same artifact를 한 번 더 검증한다.
-- 상시 candidate 환경 없이 temporary ECS lane으로 운영한다.
+- 상시 candidate 환경 없이 temporary runtime lane으로 운영한다.
 - 기본 비용을 낮추기 위해 snapshot clone DB는 기본값으로 두지 않는다.
 
 ## Current Default
@@ -14,7 +14,7 @@
 
 - same AWS account
 - same region `ap-northeast-2`
-- temporary ECS/Fargate lane
+- temporary EC2 app/data host lane
 - short-lived subdomain
   - `candidate.ev-dashboard.com`
   - `api.candidate.ev-dashboard.com`
@@ -78,7 +78,7 @@ release를 아래 둘 중 하나로 먼저 분류한다.
 2. pre-prod용 env를 준비한다.
    - `APEX_DOMAIN=candidate.ev-dashboard.com`
    - `API_DOMAIN=api.candidate.ev-dashboard.com`
-3. ECS/CDK lane을 띄운다.
+3. temporary runtime lane을 띄운다.
 
 기본 원칙:
 
@@ -127,7 +127,7 @@ pre-prod gate가 통과했다고 부를 수 있으려면 아래가 필요하다.
 이 방식의 추가 비용은 주로 아래다.
 
 - temporary ALB
-- temporary Fargate tasks
+- temporary EC2 app/data host runtime
 - short-lived logs
 
 기본값에서는 아래를 추가하지 않는다.

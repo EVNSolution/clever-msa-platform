@@ -1,13 +1,13 @@
-# ECS/CDK + GitHub Actions OIDC 전환 기준
+# Runtime/CDK + GitHub Actions OIDC 전환 기준
 
-이 문서는 CLEVER 플랫폼이 **새 ECS/CDK 배포 경로**를 설계할 때 어떤 방향을 기본값으로 볼지 고정한다.
+이 문서는 CLEVER 플랫폼이 `ev-dashboard` canonical runtime을 어떤 방향으로 운영하는지 고정한다. 초기 증명은 ECS/CDK 경로에서 시작됐지만, 현재 canonical prod runtime은 EC2 app/data host 구조로 이동 중이다.
 
 ## 목적
 
 이 문서의 목적은 아래다.
 
 1. `ev-dashboard` canonical prod truth와 legacy bridge lane을 분리해서 기록한다.
-2. 새 ECS/Fargate 워크로드는 `GitHub Actions + OIDC + CDK`를 우선 경로로 본다.
+2. 새 runtime도 `GitHub Actions + OIDC + CDK` control plane을 우선 경로로 본다.
 3. 기존 EC2 중앙 배포 경로를 깨지 않고, 어디까지가 migration scope인지 명확히 한다.
 
 ## Canonical Approved Runtime Truth
@@ -19,7 +19,7 @@ GitHub main
 -> immutable ECR image
 -> infra-ev-dashboard-platform
 -> CDK deploy
--> ECS/Fargate + ALB
+-> EC2 app host + EC2 data host(EBS) + ALB
 -> ev-dashboard.com / api.ev-dashboard.com
 ```
 
@@ -27,7 +27,7 @@ GitHub main
 
 - 코드 정본은 GitHub `main` 이다.
 - release artifact 정본은 immutable ECR SHA tag 이다.
-- runtime 정본은 `infra-ev-dashboard-platform` 이 소유하는 ECS/CDK stack 이다.
+- runtime 정본은 `infra-ev-dashboard-platform` 이 소유하는 CDK stack 이다.
 - `ev-dashboard.com`, `api.ev-dashboard.com` 의 prod truth는 `clever-deploy-control` 이 아니라 위 infra repo다.
 
 ## Legacy Bridge-Lane Deploy Truth
@@ -54,9 +54,9 @@ service repo push
 
 즉, `clever-deploy-control` 은 여전히 존재하지만, `ev-dashboard` canonical prod truth 자체를 정의하지는 않는다.
 
-## New Preferred Direction
+## Control Plane Direction
 
-새 ECS/CDK 경로는 아래를 기본값으로 본다.
+새 runtime 경로도 아래 control plane을 기본값으로 본다.
 
 ```text
 GitHub repo
@@ -64,7 +64,7 @@ GitHub repo
 -> OIDC role assume
 -> ECR image push
 -> CDK deploy
--> ECS/Fargate
+-> canonical runtime target
 ```
 
 여기서 핵심은 아래다.
@@ -72,20 +72,21 @@ GitHub repo
 - GitHub-hosted control plane을 유지한다.
 - AWS OIDC role assumption 모델을 재사용한다.
 - build artifact는 ECR image로 고정한다.
-- runtime target만 EC2/compose에서 ECS/Fargate로 옮긴다.
+- artifact build와 infra deploy는 분리한다.
+- runtime target은 canonical surface 기준으로 교체할 수 있다.
 - infra deploy는 CDK로 수행한다.
 
 ## Primary Decision
 
-앞으로 **새 ECS/CDK 배포 문서와 예시**는 아래 기준을 따른다.
+앞으로 `ev-dashboard` canonical 배포 문서와 예시는 아래 기준을 따른다.
 
 - pipeline owner: `GitHub Actions`
 - auth model: `GitHub OIDC`
 - artifact registry: `Amazon ECR`
 - infra deploy: `CDK`
-- runtime target: `ECS/Fargate`
+- runtime target: `EC2 app host + EC2 data host(EBS)`
 
-단, 아래는 bridge lane이나 non-ECS surface에서 그대로 유지할 수 있다.
+단, 아래는 bridge lane이나 non-canonical surface에서 그대로 유지할 수 있다.
 
 - 기존 EC2 중앙 배포 레이어
 - 현재 서비스 repo의 GitHub Actions image build
@@ -105,9 +106,13 @@ GitHub repo
 의미는 아래와 같다.
 
 - `front-web-console`, `edge-api-gateway`, `service-account-access` 는 application/image owner다.
-- `infra-ev-dashboard-platform` 은 `ev-dashboard.com`, `api.ev-dashboard.com` 용 shared ALB, ECS services, ACM, Route53, deploy workflow를 소유하는 전용 infra repo다.
+- `infra-ev-dashboard-platform` 은 `ev-dashboard.com`, `api.ev-dashboard.com` 용 shared ALB, EC2 app/data host, EBS, ACM, Route53, deploy workflow를 소유하는 전용 infra repo다.
 - 첫 stack은 hosted zone이 이미 우리 계정에 있으므로 ACM certificate도 stack 안에서 DNS validation으로 발급한다.
 - 이 slice가 real smoke check를 통과하기 전까지 다른 CLEVER runtime repo를 ECS migration 범위에 넣지 않는다.
+
+## Historical ECS Evidence
+
+아래 evidence는 현재 runtime truth가 아니라, initial ECS/CDK path가 실제로 증명됐던 historical execution record다.
 
 ## First Dev Rehearsal Evidence
 
@@ -226,6 +231,16 @@ deferred scope:
 - runtime policy: ECS service exists, but `desired=0` until `7b` starts
 
 즉 `api.ev-dashboard.com` 의 external prefix 기준으로는 planned slice graph가 ECS로 넘어갔고, 남은 것은 internal telemetry ingest worker cutover 뿐이다.
+
+## Current Canonical Runtime Direction
+
+현재 canonical prod truth는 ECS/Fargate가 아니라 아래 방향이다.
+
+- `infra-ev-dashboard-platform -> CDK -> EC2 app host + EC2 data host(EBS) -> ev-dashboard.com`
+- immutable ECR SHA artifact 전략은 유지
+- `clever-deploy-control` 은 bridge lane / legacy reference
+
+ECS 기반 증명 기록은 historical evidence로 남기되, 새 operator/current-truth 판단은 EC2 runtime 작업 기준으로 본다.
 
 ## Post-Migration Operational Close-Out
 
