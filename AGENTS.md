@@ -60,7 +60,7 @@
 - Map the answers like this:
   - Frontend-only + real proxy + CRUD allowed
     - use `front-web-console/.env.local`
-    - current real proxy target is `https://hub.evnlogistics.com`
+    - current real proxy target is `https://ev-dashboard.com`
     - run `npm run dev`
     - do not bring up `8080` unless the user explicitly asks for full integration
   - Frontend-only + real proxy + CRUD not allowed
@@ -79,3 +79,4 @@
 
 - `../MSA-Server/` is a legacy/reference workspace, not the active implementation root.
 - Use it only for historical context, old notes, or migration cross-checks.
+- `hub.evnlogistics.com` is legacy bridge context, not the default current operator target for `front-web-console` remote proxy checks.

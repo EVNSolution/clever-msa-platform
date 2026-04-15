@@ -31,7 +31,7 @@ This AWS account keeps app ECR repos on `IMMUTABLE` tags. That is good for trace
 
 ## Front-Only ECS Rehearsals Need CORS, Not Just A Base URL
 
-Injecting `VITE_API_BASE_URL=https://.../api` is only half of a front-first pilot. The browser still needs the remote API host to allow the new origin. For `next.ev-dashboard.com`, `https://hub.evnlogistics.com/api` was verified to return `Access-Control-Allow-Origin: https://next.ev-dashboard.com`, so the pilot can load read-only data without same-host `/api`.
+Injecting `VITE_API_BASE_URL=https://.../api` is only half of a front-first pilot. The browser still needs the remote API host to allow the new origin. During the initial bridge-backed rehearsal for `next.ev-dashboard.com`, `https://hub.evnlogistics.com/api` returned `Access-Control-Allow-Origin: https://next.ev-dashboard.com`, which proved the pilot could load read-only data without same-host `/api`. Keep that as historical bridge evidence only, not as current operator target guidance.
 
 ## Desired Count Zero Means A Real 503
 
@@ -86,6 +86,10 @@ Keep rollout notes as truth and execution record, but keep the live “what do I
 ## Do Not Promote The Bridge Lane Into Source Of Truth
 
 Once a surface reaches `infra -> CDK/ECS -> prod`, stop talking about the legacy central deploy bridge lane as if it still defines runtime truth. For `ev-dashboard`, the canonical operator path is the infra repo and its ECS runbooks. `clever-deploy-control` may still exist for other surfaces or exceptions, but that does not make it the source of truth for the migrated surface.
+
+## Do Not Leave Legacy Hub Subroutes In Live Runbooks
+
+When `ev-dashboard.com` becomes the canonical prod surface, live operator runbooks and frontend proxy defaults must move with it. `hub.evnlogistics.com` can stay in historical rollout evidence or explicit bridge notes, but it should not remain in current runbooks as the default real-data target. Leaving that wording behind causes future sessions to route verification through the wrong surface even after the canonical runtime moved.
 
 ## Deploy Docs Must Fit On One Operator Loop
 

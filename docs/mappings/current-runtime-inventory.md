@@ -56,3 +56,4 @@
    - deploy 중: [../runbooks/ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
    - deploy 후: [../runbooks/ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
 6. `ev-dashboard` canonical prod truth는 `infra-ev-dashboard-platform -> CDK/ECS -> ev-dashboard.com` 이다. `clever-deploy-control` 은 bridge lane이나 legacy reference일 뿐, 이 surface의 정본이 아니다.
+7. live operator runbook이나 frontend proxy 기본값에서 `hub.evnlogistics.com` subroute를 current target처럼 쓰지 않는다. `hub` references are legacy bridge or historical evidence only.

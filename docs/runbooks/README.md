@@ -34,3 +34,4 @@
 1. runbook은 current operator sequence를 적는다. historical execution record는 `docs/rollout/` 또는 `docs/archive/`에 둔다.
 2. `ev-dashboard` 관련 운영 질문은 slice implementation plan보다 이 폴더의 네 문서를 먼저 본다.
 3. deploy가 끝나면 root [lesson.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md)와 관련 runbook을 같이 갱신한다.
+4. current operator runbook에서 `hub.evnlogistics.com` subroute를 기본 target처럼 쓰지 않는다. `hub`는 legacy bridge 또는 historical evidence일 때만 언급한다.

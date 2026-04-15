@@ -57,7 +57,7 @@
 - 프론트만 빠르게 확인 + 실데이터 사용
   - `5174`
   - `.env.local`
-  - current real proxy target: `https://hub.evnlogistics.com`
+  - current real proxy target: `https://ev-dashboard.com`
   - `8080`은 굳이 올리지 않는다
 - 프론트만 빠르게 확인 + 더 안전한 테스트 타깃
   - `5174`
@@ -87,7 +87,7 @@ npm run dev
 `.env.local` 예시:
 
 ```env
-VITE_DEV_PROXY_TARGET=https://hub.evnlogistics.com
+VITE_DEV_PROXY_TARGET=https://ev-dashboard.com
 ```
 
 더 안전한 test target:
@@ -111,6 +111,7 @@ VITE_DEV_PROXY_TARGET=https://<dev-or-staging-gateway-domain>
 운영 규칙:
 - `.env.local`은 실제 CRUD 영향을 감수하는 확인 모드다
 - `.env.local-test`는 dev/staging 같은 더 안전한 target에 우선 사용한다
+- `hub.evnlogistics.com`은 legacy bridge/historical reference일 뿐, current operator 기본 target이 아니다
 - 마지막 통합 확인은 여전히 `8080` 또는 배포 환경에서 다시 한다
 
 ## Choose A Mode
