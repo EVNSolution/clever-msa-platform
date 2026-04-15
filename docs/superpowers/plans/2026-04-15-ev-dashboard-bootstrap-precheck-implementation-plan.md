@@ -49,14 +49,14 @@
 - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/bootstrap-precheck.test.ts`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/package.json`
 
-- [ ] **Step 1: Write failing tests for the precheck command contract**
+- [x] **Step 1: Write failing tests for the precheck command contract**
 
 Add tests that assert:
 - a `bootstrap:precheck` script exists
 - it rejects missing lane host targets
 - it requires both app and data host verification in proof mode
 
-- [ ] **Step 2: Run the targeted tests to confirm failure**
+- [x] **Step 2: Run the targeted tests to confirm failure**
 
 Run:
 
@@ -67,11 +67,11 @@ npm test -- --runInBand test/bootstrap-precheck.test.ts
 
 Expected: FAIL because no precheck command exists yet.
 
-- [ ] **Step 3: Add the minimal command wiring**
+- [x] **Step 3: Add the minimal command wiring**
 
 Add a placeholder `bootstrap:precheck` script and minimal TypeScript entrypoint contract in `package.json` / `bin/bootstrapPrecheck.ts`.
 
-- [ ] **Step 4: Re-run the targeted tests**
+- [x] **Step 4: Re-run the targeted tests**
 
 Run:
 
@@ -99,13 +99,13 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/bootstrap/ev_dashboard_runtime/cli.py`
 - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/bootstrap-python-package.test.ts`
 
-- [ ] **Step 1: Write failing tests for package presence and entrypoints**
+- [x] **Step 1: Write failing tests for package presence and entrypoints**
 
 Assert that:
 - `cli.py` exposes `verify-app`, `verify-data`, `reconcile-app`, `bootstrap-data`
 - package files can be staged by infra code
 
-- [ ] **Step 2: Run the targeted tests to confirm failure**
+- [x] **Step 2: Run the targeted tests to confirm failure**
 
 Run:
 
@@ -116,7 +116,7 @@ npm test -- --runInBand test/bootstrap-python-package.test.ts
 
 Expected: FAIL
 
-- [ ] **Step 3: Implement the minimal Python package**
+- [x] **Step 3: Implement the minimal Python package**
 
 Keep the package focused:
 - `common.py`: shell helpers, aws/secret/docker wrappers
@@ -124,7 +124,7 @@ Keep the package focused:
 - `data_host.py`: mount/postgres/redis/db bootstrap logic
 - `cli.py`: parse args and dispatch
 
-- [ ] **Step 4: Re-run the targeted tests**
+- [x] **Step 4: Re-run the targeted tests**
 
 Run:
 
@@ -148,7 +148,7 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ec2-bootstrap.ts`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ec2-host-bootstrap.test.ts`
 
-- [ ] **Step 1: Write failing tests for thin user-data**
+- [x] **Step 1: Write failing tests for thin user-data**
 
 Update tests to assert:
 - user-data installs Python and Docker
@@ -156,7 +156,7 @@ Update tests to assert:
 - systemd calls `python3 ... cli.py`
 - large inline SQL/bootstrap logic is gone from user-data
 
-- [ ] **Step 2: Run the targeted tests to confirm failure**
+- [x] **Step 2: Run the targeted tests to confirm failure**
 
 Run:
 
@@ -167,7 +167,7 @@ npm test -- --runInBand test/ec2-host-bootstrap.test.ts
 
 Expected: FAIL
 
-- [ ] **Step 3: Replace inline bootstrap logic with thin launcher scripts**
+- [x] **Step 3: Replace inline bootstrap logic with thin launcher scripts**
 
 Make user-data:
 - install prerequisites
@@ -175,7 +175,7 @@ Make user-data:
 - write only thin systemd/service wrappers
 - call Python entrypoints
 
-- [ ] **Step 4: Re-run the targeted tests**
+- [x] **Step 4: Re-run the targeted tests**
 
 Run:
 
@@ -200,7 +200,7 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/package.json`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/bootstrap-precheck.test.ts`
 
-- [ ] **Step 1: Add failing tests for host sync and verify sequencing**
+- [x] **Step 1: Add failing tests for host sync and verify sequencing**
 
 Assert that the precheck runner:
 - locates both app/data hosts
@@ -208,7 +208,7 @@ Assert that the precheck runner:
 - runs `verify` modes on both
 - fails fast on any verify failure
 
-- [ ] **Step 2: Run the targeted tests and confirm failure**
+- [x] **Step 2: Run the targeted tests and confirm failure**
 
 Run:
 
@@ -219,7 +219,7 @@ npm test -- --runInBand test/bootstrap-precheck.test.ts
 
 Expected: FAIL
 
-- [ ] **Step 3: Implement the minimal SSM precheck runner**
+- [x] **Step 3: Implement the minimal SSM precheck runner**
 
 It should:
 - resolve the lane stack/app/data instances
@@ -227,7 +227,7 @@ It should:
 - execute `python3 ... cli.py verify-app`
 - execute `python3 ... cli.py verify-data`
 
-- [ ] **Step 4: Re-run the targeted tests**
+- [x] **Step 4: Re-run the targeted tests**
 
 Run:
 
@@ -252,7 +252,7 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/README.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lesson.md`
 
-- [ ] **Step 1: Write failing workflow/docs expectations**
+- [x] **Step 1: Write failing workflow/docs expectations**
 
 Add tests or assertions that workflow order is:
 
@@ -265,15 +265,15 @@ preflight
 -> post-deploy smoke
 ```
 
-- [ ] **Step 2: Run the targeted tests and confirm failure**
+- [x] **Step 2: Run the targeted tests and confirm failure**
 
 Use the existing workflow/readme validation path or create a narrow test if needed.
 
-- [ ] **Step 3: Add the workflow step and operator guidance**
+- [x] **Step 3: Add the workflow step and operator guidance**
 
 Make bootstrap precheck mandatory in dev/candidate proof flows before deploy.
 
-- [ ] **Step 4: Re-run verification**
+- [x] **Step 4: Re-run verification**
 
 Run:
 
@@ -301,11 +301,11 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
 
-- [ ] **Step 1: Record the new operator rule**
+- [x] **Step 1: Record the new operator rule**
 
 Document that bootstrap changes are never debugged by repeated full deploys; they must pass instance-level precheck first.
 
-- [ ] **Step 2: Record the specific lessons from this failure batch**
+- [x] **Step 2: Record the specific lessons from this failure batch**
 
 Include:
 - proof-only gateway requirement
@@ -314,7 +314,7 @@ Include:
 - shell quoting/psql heredoc failure modes
 - persistent dev host sandbox for bootstrap work
 
-- [ ] **Step 3: Run root verification**
+- [x] **Step 3: Run root verification**
 
 Run:
 

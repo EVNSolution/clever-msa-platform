@@ -156,6 +156,17 @@ Do not carry the old runtime's operator vocabulary into a new topology. When `ev
 
 Leaving RDS or Service Connect wait hints in place after the runtime changes makes the operator loop slower and more error-prone, even if the code itself is correct.
 
+## Stop Repeating Full Runs For Bootstrap Bugs
+
+Once EC2 host bootstrap moved into a Python package, bootstrap mistakes stopped being a `cdk deploy` problem first. The faster loop is:
+
+1. change the bootstrap package
+2. sync it to the existing dev/candidate app/data hosts
+3. run `verify-app` and `verify-data`
+4. only then run the next full deploy
+
+Use full deploys for topology proof, ALB wiring, and public smoke. Use `bootstrap:precheck` for quoting, device, package staging, and SQL bootstrap mistakes.
+
 ## Stack Success Is Not The Same As Slice Success
 
 `24372474821` and `EvDashboardPlatformStack UPDATE_COMPLETE` still left `/api/org/*` broken. The fix only closed after the second deploy `24373001123`, where the gateway ordering and upstream style were corrected. Record both the infra result and the public endpoint result before calling a slice done.

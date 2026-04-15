@@ -45,10 +45,11 @@ npm test -- --runInBand
 npx cdk synth
 ```
 
-4. 그 다음에만 `Deploy ev-dashboard runtime platform` workflow를 실행한다.
-5. workflow는 `cdk deploy` 뒤에 `npm run smoke:postdeploy` 를 자동 실행한다.
-6. deploy 중에는 아래 phase table로만 판단한다.
-7. automatic public smoke가 통과하면 [ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)로 넘어간다.
+4. bootstrap을 바꾼 경우에는 existing lane host에서 `npm run bootstrap:precheck` 를 먼저 통과한다.
+5. 그 다음에만 `Deploy ev-dashboard runtime platform` workflow를 실행한다.
+6. workflow는 `cdk deploy` 뒤에 `npm run smoke:postdeploy` 를 자동 실행한다.
+7. deploy 중에는 아래 phase table로만 판단한다.
+8. automatic public smoke가 통과하면 [ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)로 넘어간다.
 
 ## Operator Phase Table
 
