@@ -588,3 +588,5 @@ For future repo cleanup:
 - do not delete a linked child repo just because one summary list forgot to include it
 
 If runtime ownership says a repo is active, treat it as live infrastructure until the inventory and repo map both demote it.
+
+When CDK values are needed at runtime on an EC2 host, do not serialize tokenized objects into static assets and assume they will resolve later. The `ev-dashboard` EC2 proof showed that `JSON.stringify(...)` on a manifest containing `instancePrivateIp` simply froze `${Token[...]}` into the file, and the app containers then failed on fake DB hostnames. For future host-runtime work, token-bearing runtime manifests must go through deploy-time-resolved storage such as Secrets Manager or SSM, while static assets should be limited to token-free metadata or code.
