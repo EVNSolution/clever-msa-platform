@@ -10,6 +10,18 @@
 
 ---
 
+## Review-Driven Order Change
+
+- `P0`: The manifest validated in preflight must be the same manifest the app host executes. Do not keep `RELEASE_MANIFEST_PATH` as a workflow-only input while the host still reads only the full runtime manifest secret.
+- `P0`: Host-side partial deploy must stop touching the full enabled set. Replace all-services stop/start with targeted `deploy/remove` actions that only affect manifest-listed services.
+- `P0`: `manifest omission` and `service removal` must be separate rules. Omission means `unchanged`; explicit `remove` is required to stop and clean up a service.
+- `P1`: `warm-host-partial` must stop acting like a hidden full stack churn path. The lane should keep the base stack alive, avoid app-host replacement for image-map changes, and drive service reconciliation explicitly.
+- `P1`: Wave order only matters if the host actually consumes it. Add host-side execution order, readiness checks, and post-wave verification instead of leaving wave definitions at preflight-only level.
+- `Boundary`: `warm-host-partial` is a warm-host update lane, not a new-service enable lane. Bringing up a service that is absent from the base stack remains a separate bootstrap/baseline action.
+- `Current priority`: rollback must restore the last known runtime spec, not just the previous image URI.
+- `Current priority`: detect runtime drift and block the next partial release before trying broader self-heal.
+- `Gateway/front rule`: use conservative defaults until there is a real impact engine. Backend-only internal logic changes keep gateway/front untouched; route-group changes include gateway; public contract or shell changes include gateway and front; ambiguous cases include gateway by default.
+
 ## File Structure
 
 ### Infra repo runtime and workflow files
@@ -77,7 +89,8 @@ npm test -- --runInBand --runTestsByPath test/releaseManifest.test.ts
 
 - [ ] **Step 3: Implement `releaseManifest.ts`.**
   - Read manifest from a repo-relative path.
-  - Enforce exact `image_uri` presence per changed service.
+  - Require explicit `action: deploy | remove` per changed service.
+  - Enforce exact `image_uri` presence for `deploy` and reject it for `remove`.
   - Reject unknown services and mutable tags.
   - Return a normalized list ordered only by service name at this layer.
 
@@ -215,9 +228,10 @@ npm test -- --runInBand --runTestsByPath test/reconcileWave.test.ts
 ```
 
 - [ ] **Step 3: Refactor `app_host.py`.**
-  - Merge manifest overrides into the current runtime image map.
-  - Pull/restart only changed services for the current wave.
-  - Preserve current containers for untouched services.
+  - Treat manifest omission as `unchanged` and explicit `remove` as the only cleanup trigger.
+  - Merge manifest overrides into the current runtime image map only for `deploy` actions.
+  - Pull images before stopping target containers so a failed pull does not create avoidable downtime.
+  - Pull/restart only changed services for the current wave and preserve untouched containers.
   - Keep gateway/front churn out of backend-only waves.
 
 - [ ] **Step 4: Implement `reconcileWave.ts`.**

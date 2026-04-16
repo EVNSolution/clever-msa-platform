@@ -8,6 +8,8 @@ node_modules/
 **/node_modules/
 dist/
 **/dist/
+cdk.out/
+**/cdk.out/
 
 __pycache__/
 **/__pycache__/
@@ -62,5 +64,9 @@ htmlcov/
 **/htmlcov/
 *.log
 **/*.log
+*.orig
+*.swp
+*.tmp
+*~
 .vscode/
 .idea/

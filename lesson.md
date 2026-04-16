@@ -612,3 +612,67 @@ Validation smokes also need to call the real endpoint contract. The `company ten
 Bootstrap-proof sizing is not a safe proxy for full-service EC2 verification. The first remaining-business-service bring-up on the default `t3.small` app host turned both ALB target groups unhealthy and reduced the entire smoke result to `timeout/502` noise. For future runtime work, keep the cheap `t3.small` default only for `bootstrap-proof`, require an explicit non-burstable x86 app host for `RUN_PROFILE=full` with remaining business services, and move the lane back down after the full proof closes.
 
 Periodic full reconcile is not an acceptable steady state for the EC2 app host. The first larger-host full proof showed that the remaining business services themselves could boot, but the app-host timer kept re-running the full reconcile loop, deleting and recreating every container on a live lane. That made `edge-api-gateway` restart against half-present upstream names and reintroduced `502` after a green workflow. For future runtime work, keep app reconcile boot/deploy scoped and rely on host replacement via `runtimeFingerprint` instead of a timer that churns the live fleet.
+
+## EC2 Sizing Must Track CPU Credit As Well As RAM
+
+For the `ev-dashboard` EC2 lane, burstable host decisions are not safe if they look only at memory. The latest verification showed three distinct sizing truths:
+
+- `t3.small` remains a `bootstrap-proof` host, not a remaining-business-service bring-up host
+- forcing backend services down to `GUNICORN_WORKERS=1` materially reduced per-service memory, but it did not remove the CPU-credit wall on `t3.small`
+- a fresh 17-service prod-like create succeeded on `t3.large`, and a later `full-minus-listener` proof also succeeded on the same class
+- for the wider `full-minus-listener` proof, the post-smoke app-host snapshot was roughly `2188 MiB used / 5334 MiB available`, while CloudWatch still showed burst behavior with CPU average about `49.2%`, busiest 5-minute bucket average about `91.2%`, and `CPUCreditBalance=0`
+- `t3.medium` has now also passed a clean prod `full-minus-listener` create on run `24508999204`
+- for that `t3.medium` proof, the post-smoke app-host snapshot settled around `2096 MiB used / 1458 MiB available`, while the create-and-smoke window still showed burst behavior with CPU average about `66.5%`, peak bucket maximum about `87.8%`, `CPUCreditBalance=0`, and `CPUSurplusCreditBalance≈1.85`
+- after bootstrap settled on the same `t3.medium` host, CPU dropped back to near-idle (`mpstat` about `98.51%` idle), so the important lesson is to record both bootstrap and steady-state numbers instead of only one
+
+Future sizing notes should always record both:
+
+- host memory snapshot after smoke
+- CPU / CPU-credit behavior during bootstrap and smoke
+
+If either side is missing, the sizing conclusion is incomplete.
+
+## Strict Full Depends On Broker Reachability, Not A Generic Subnet Rewrite
+
+The current default-VPC public-subnet EC2 lane is already enough for:
+
+- core-entry
+- remaining business services
+- support surface
+- terminal registry
+- telemetry hub
+- telemetry dead-letter
+
+What production did **not** prove is the final `service-telemetry-listener` cutover. That boundary still depends on:
+
+- a real `TELEMETRY_LISTENER_MQTT_HOST`
+- confirmed MQTT credentials
+- confirmed broker reachability from the current lane
+
+Do not write "strict full needs new subnets" as a rule. The honest rule is narrower: only redesign the network if the real broker cannot be reached from the current lane.
+
+## Managed EC2 Resources Break Differently After Manual Termination
+
+CloudFormation can recover from many bad runtime states, but not from every out-of-band deletion pattern. The latest prod-like rerun failed not because the gateway or app host was too small, but because the stack's data-host instance had already been manually terminated. The next update then wedged at `UPDATE_ROLLBACK_FAILED` when CloudFormation tried to stop a resource that no longer existed in a valid state.
+
+For future EC2 lanes:
+
+- do not assume a later deploy can always repair a manually terminated managed instance
+- if an app/data host resource is manually terminated, be ready to delete and recreate the whole stack
+- keep "protect the data" focused on the attached storage lifecycle, not on preserving a dead EC2 logical resource
+
+## Warm-Host Partial Deploy Needs Its Own Operational Proof
+
+The `ev-dashboard` repo has now proven a real production `warm-host-partial` update, not just a design. Workflow run `24508317262` updated `service-announcement-registry` in place on the running prod app host, with no EC2 replacement and no stack recreate. That proof matters because the first two rehearsal runs failed for reasons outside the obvious deploy contract:
+
+- the shared infra GitHub role could not send SSM commands to the app host
+- direct runtime CLI calls from SSM did not inherit the systemd unit's `PYTHONPATH`
+- host drift detection flagged every internal backend as broken because it compared unpublished container ports too aggressively
+
+Lesson: a warm partial lane is not closed just because preview, preflight, and rollback logic exist in code. The lane is only real after all three of these are true in the live account:
+
+- the GitHub role can issue the exact SSM commands the wave runner needs
+- host-side CLI entrypoints work under both systemd and direct SSM invocation
+- drift detection distinguishes public host-port services from internal-only services
+
+Once that proof passed, the host kept the same launch time, updated `current-state.json`, and recorded a succeeded release journal. That is the threshold for saying "partial deploy is operational", not earlier.
