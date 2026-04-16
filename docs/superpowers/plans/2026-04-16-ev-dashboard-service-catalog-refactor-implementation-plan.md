@@ -445,13 +445,13 @@ Phase 2.5 is a boundary-preparation slice for the later stack migration. It is n
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/edge-gateway-profile.test.ts`
 
-- [ ] **Step 1: Write failing tests for stack consumption of catalog metadata**
+- [x] **Step 1: Write failing tests for stack consumption of catalog metadata**
 
 Add coverage that proves:
 - gateway env injection still includes `GATEWAY_PROFILE` and `GATEWAY_ROUTE_GROUPS`
 - at least one backend service manifest is assembled from catalog metadata rather than duplicated service-local constants
 
-- [ ] **Step 2: Run the targeted stack tests and verify RED**
+- [x] **Step 2: Run the targeted stack tests and verify RED**
 
 Run:
 
@@ -460,14 +460,14 @@ cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-p
 npm test -- --runInBand --runTestsByPath test/ev-dashboard-platform-stack.test.ts test/edge-gateway-profile.test.ts
 ```
 
-- [ ] **Step 3: Introduce stack-facing catalog helpers**
+- [x] **Step 3: Introduce stack-facing catalog helpers**
 
 Requirements:
 - expose only metadata the stack can safely consume in this step
 - do not move full runtime container spec into the catalog yet
 - keep `orderAppHostRuntimeServices` integration intact
 
-- [ ] **Step 4: Migrate one small repeated metadata slice in `stack.ts`**
+- [x] **Step 4: Migrate one small repeated metadata slice in `stack.ts`**
 
 Good first target:
 - image/env/health metadata for a bounded set of backend services
@@ -478,7 +478,7 @@ Do not change:
 - deploy workflow contract
 - host bootstrap logic
 
-- [ ] **Step 5: Run stack tests and verify GREEN**
+- [x] **Step 5: Run stack tests and verify GREEN**
 
 Run:
 
