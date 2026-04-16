@@ -323,14 +323,14 @@ This phase keeps two constraints from the design:
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/config.test.ts`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
 
-- [ ] **Step 1: Write failing tests for catalog-driven config parsing helpers**
+- [x] **Step 1: Write failing tests for catalog-driven config parsing helpers**
 
 Add tests that prove:
 - a catalog entry can provide the env keys needed for desired count parsing
 - optional services like telemetry listener still keep optional fields optional
 - `bootstrap-proof` zeroing behavior is unchanged after catalog consumption begins
 
-- [ ] **Step 2: Run the targeted config tests and verify RED**
+- [x] **Step 2: Run the targeted config tests and verify RED**
 
 Run:
 
@@ -339,14 +339,14 @@ cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-p
 npm test -- --runInBand --runTestsByPath test/config.test.ts
 ```
 
-- [ ] **Step 3: Add catalog helpers for config consumers**
+- [x] **Step 3: Add catalog helpers for config consumers**
 
 Requirements:
 - add helper(s) that expose service entries with config keys suitable for env parsing
 - do not move all `PlatformConfigInput` fields into generated types in this step
 - keep the public `PlatformConfig` shape stable
 
-- [ ] **Step 4: Replace the most repetitive service-env parsing branches in `config.ts`**
+- [x] **Step 4: Replace the most repetitive service-env parsing branches in `config.ts`**
 
 Target only the duplicated service metadata reads:
 - desired count keys
@@ -359,7 +359,7 @@ Do not change:
 - `bootstrap-proof` zeroing semantics
 - `warm-host-partial` gate
 
-- [ ] **Step 5: Run the config tests and verify GREEN**
+- [x] **Step 5: Run the config tests and verify GREEN**
 
 Run:
 
@@ -385,14 +385,14 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/preflight.test.ts`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
 
-- [ ] **Step 1: Write failing tests for catalog-driven preflight metadata**
+- [x] **Step 1: Write failing tests for catalog-driven preflight metadata**
 
 Add tests that prove:
 - image env keys come from the catalog instead of a duplicated `IMAGE_ENV_KEYS` list
 - enabled service groups can be formatted from catalog-backed group membership
 - route-group and impact checks still fail on the same conditions
 
-- [ ] **Step 2: Run the targeted preflight tests and verify RED**
+- [x] **Step 2: Run the targeted preflight tests and verify RED**
 
 Run:
 
@@ -401,21 +401,21 @@ cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-p
 npm test -- --runInBand --runTestsByPath test/preflight.test.ts
 ```
 
-- [ ] **Step 3: Replace duplicated image-key lookup with catalog helpers**
+- [x] **Step 3: Replace duplicated image-key lookup with catalog helpers**
 
 Requirements:
 - remove or shrink the hardcoded `IMAGE_ENV_KEYS` list
 - keep manifest-scoped image validation behavior unchanged
 - keep ECR lookup skip flags and runtime-mode guards unchanged
 
-- [ ] **Step 4: Replace service-group formatting with catalog-backed grouping**
+- [x] **Step 4: Replace service-group formatting with catalog-backed grouping**
 
 Requirements:
 - keep user-facing labels unchanged for this step
 - do not migrate dependency truth to catalog-backed `slice` metadata yet
 - keep existing dependency guards as-is until separately approved
 
-- [ ] **Step 5: Run the preflight tests and verify GREEN**
+- [x] **Step 5: Run the preflight tests and verify GREEN**
 
 Run:
 
@@ -433,6 +433,10 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
   test/preflight.test.ts
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "refactor: source preflight metadata from service catalog"
 ```
+
+## Phase 2.5 Boundary Preparation
+
+Phase 2.5 is a boundary-preparation slice for the later stack migration. It is not the main `config.ts` / `preflight.ts` migration itself, and it should not start until Phase 2 is accepted.
 
 ### Task 8: Prepare the `stack.ts` migration boundary without changing deploy behavior
 
@@ -500,3 +504,14 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
   test/edge-gateway-profile.test.ts
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "refactor: prepare stack metadata consumption from service catalog"
 ```
+
+## Phase 3 Stack Migration
+
+Phase 3 begins only after the boundary-preparation slice is accepted. The goal is to expand real catalog consumption inside `ev-dashboard-platform-stack.ts` without changing deploy identity, host bootstrap behavior, or workflow contract.
+
+Expected Phase 3 scope:
+
+- move more duplicated backend service metadata out of `ev-dashboard-platform-stack.ts`
+- keep stack/resource names stable
+- preserve `orderAppHostRuntimeServices`, gateway env injection, and runtime manifest behavior
+- avoid pulling full runtime container spec into the catalog until the metadata-only migration is proven stable
