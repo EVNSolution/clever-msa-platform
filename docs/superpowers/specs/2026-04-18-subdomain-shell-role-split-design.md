@@ -10,6 +10,7 @@
 2. `천하운수` 브랜드 영역을 홈 카드와 상위 메뉴 확장 트리거로 분리한다.
 3. `정산` 진입 시에만 별도 정산 전용 사이드바가 생기는 구조를 고정한다.
 4. 카드 영역, 상위 메뉴, 정산 전용 사이드바를 서로 다른 책임으로 분리한다.
+5. 기존 parent spec의 서브도메인 dashboard 정의 중 이번 shell 개편에서 바뀌는 부분을 명시적으로 덮어쓴다.
 
 ## Scope
 
@@ -99,6 +100,12 @@
 
 그리고 `CockpitShell`은 현재 surface가 `대시보드`인지 `정산`인지에 따라 이 레이어들을 조합한다.
 
+이 문서는 parent spec의 서브도메인 dashboard 본문 정의를 일부 대체한다.
+
+- parent spec에서는 dashboard에 summary section들이 존재했다
+- 이번 spec에서는 그 summary section들을 제거하고, dashboard를 **빈 본문을 가진 shell landing**으로 다시 고정한다
+- 즉 이번 문서가 dashboard body contract에 대해서는 더 최신 정본이다
+
 ## Canonical Layout Contract
 
 ### 1. Dashboard
@@ -114,6 +121,8 @@
 - 본문은 비움
 
 즉 `대시보드`는 정보 카드와 요약 위젯을 임시로 남기는 화면이 아니라, 이후 확장을 위한 **빈 진입 surface**다.
+
+이는 parent spec의 기존 dashboard summary section(`최근 6개월 수입/지출`, `금월 배차표 기반 근태`, `금일 배차`)을 이번 phase에서 제거하는 결정이다.
 
 ### 2. Settlement
 
@@ -156,6 +165,15 @@
 
 이 메뉴는 이후 다른 상위 surface가 생기면 확장될 수 있다. 따라서 지금부터 정산 내부 메뉴와 같은 계층으로 다루지 않는다.
 
+상위 메뉴의 확장 상태는 **route-derived가 아니라 local UI state**로 본다.
+
+원칙:
+
+- 첫 렌더 기본값은 접힘
+- 사용자가 직접 열면 그 상태를 유지
+- `대시보드 <-> 정산` route 전환만으로 자동 초기화하지 않는다
+- 사용자가 다시 버튼을 눌러 접기 전까지는 열린 상태를 유지한다
+
 ### 2. Workspace-Level Navigation
 
 정산 전용 사이드바는 workspace-level navigation이다.
@@ -164,12 +182,18 @@
 
 canonical deep-link:
 
+- `/settlement`
 - `/settlement/home`
 - `/settlement/dispatch`
 - `/settlement/crew`
 - `/settlement/operations`
 - `/settlement/process`
 - `/settlement/team`
+
+route rule:
+
+- `/settlement`
+  - 즉시 `/settlement/home`으로 redirect
 
 ## Route and State Transition Rules
 
@@ -189,7 +213,8 @@ canonical deep-link:
 ### 3. Enter Settlement
 
 - 상위 메뉴의 `정산` 클릭
-  - `/settlement/home`으로 이동
+  - `/settlement` 또는 `/settlement/home`으로 진입
+  - canonical render는 `/settlement/home`
   - 동시에 정산 전용 사이드바 생성
 
 ### 4. Return to Dashboard
@@ -239,6 +264,11 @@ canonical deep-link:
 - 빈 본문만 렌더
 - 카드/사이드바/상위 메뉴를 소유하지 않음
 
+주의:
+
+- parent spec의 예전 summary section은 더 이상 이 컴포넌트의 책임이 아니다
+- 이번 phase에서 `CheonhaDashboardPage`는 shell landing body만 담당한다
+
 ### 5. CheonhaSettlementWorkspace
 
 책임:
@@ -262,9 +292,10 @@ canonical deep-link:
 1. `대시보드`에서는 좌측 카드만 보이고 정산 전용 사이드바는 없다
 2. 카드 본체 클릭은 항상 `/`
 3. 카드 우측 버튼은 상위 메뉴만 열고 닫는다
-4. `정산` 진입 시 `/settlement/home`으로 이동하고 정산 전용 사이드바가 생긴다
-5. `정산`에서 `대시보드`로 돌아오면 정산 전용 사이드바가 사라진다
-6. 정산 전용 사이드바 메뉴는 항상 펼침 상태다
+4. 상위 메뉴 확장 상태는 local UI state이며 route 전환만으로 자동 초기화되지 않는다
+5. `정산` 진입 시 `/settlement`는 `/settlement/home`으로 redirect되고 정산 전용 사이드바가 생긴다
+6. `정산`에서 `대시보드`로 돌아오면 정산 전용 사이드바가 사라진다
+7. 정산 전용 사이드바 메뉴는 항상 펼침 상태다
 
 ## Out of Scope
 
