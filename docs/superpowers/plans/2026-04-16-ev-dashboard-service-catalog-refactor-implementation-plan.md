@@ -135,14 +135,17 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/releaseWavePolicy.ts`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/releaseWavePolicy.test.ts`
 
-- [ ] **Step 1: Extend the wave-policy tests to prove catalog ownership**
+Phase 1 normalization note:
+- Tasks 2-4 were accepted as one bundled slice in Phase 1. Standalone RED/task-commit boxes are normalized here to match the accepted execution record reflected by Task 5 verification and the Phase 1 slice commit.
+
+- [x] **Step 1: Extend the wave-policy tests to prove catalog ownership**
 
 Add coverage that:
 - backend services still map to waves 1 or 2
 - `edge-api-gateway` stays wave 3
 - `front-web-console` stays wave 4
 
-- [ ] **Step 2: Run the targeted test and verify RED**
+- [x] **Step 2: Run the targeted test and verify RED**
 
 Run:
 
@@ -182,9 +185,9 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/releaseImpact.ts`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/releaseImpact.test.ts`
 
-- [ ] **Step 1: Add a failing test that proves touched route groups come from catalog metadata**
+- [x] **Step 1: Add a failing test that proves touched route groups come from catalog metadata**
 
-- [ ] **Step 2: Run the targeted test and verify RED**
+- [x] **Step 2: Run the targeted test and verify RED**
 
 Run:
 
@@ -208,7 +211,7 @@ cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-p
 npm test -- --runInBand --runTestsByPath test/releaseImpact.test.ts test/releaseWavePolicy.test.ts test/serviceCatalog.test.ts
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
@@ -223,9 +226,9 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/gatewayRouteProfile.ts`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/gateway-route-profile.test.ts`
 
-- [ ] **Step 1: Write a failing test for route-group membership derived from catalog entries**
+- [x] **Step 1: Write a failing test for route-group membership derived from catalog entries**
 
-- [ ] **Step 2: Run the targeted test and verify RED**
+- [x] **Step 2: Run the targeted test and verify RED**
 
 Run:
 
@@ -250,7 +253,7 @@ cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-p
 npm test -- --runInBand --runTestsByPath test/gateway-route-profile.test.ts test/releaseImpact.test.ts test/releaseWavePolicy.test.ts test/serviceCatalog.test.ts
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
