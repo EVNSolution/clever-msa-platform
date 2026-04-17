@@ -120,7 +120,7 @@ npm test -- --runInBand --runTestsByPath test/serviceCatalog.test.ts
 Expected:
 - PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
@@ -655,13 +655,13 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
 
-- [ ] **Step 1: Write failing tests for the final Phase 3 metadata slice**
+- [x] **Step 1: Write failing tests for the final Phase 3 metadata slice**
 
 Add coverage that proves:
 - one more repeated metadata slice in `ev-dashboard-platform-stack.ts` moved behind a catalog helper
 - stack outputs, runtime manifest secret shape, and gateway profile env payload remain unchanged
 
-- [ ] **Step 2: Run the targeted tests and verify RED**
+- [x] **Step 2: Run the targeted tests and verify RED**
 
 Run:
 
@@ -670,7 +670,7 @@ cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-p
 npm test -- --runInBand --runTestsByPath test/ev-dashboard-platform-stack.test.ts test/edge-gateway-profile.test.ts
 ```
 
-- [ ] **Step 3: Apply the smallest remaining metadata extraction that pays down duplication**
+- [x] **Step 3: Apply the smallest remaining metadata extraction that pays down duplication**
 
 Good candidates:
 - repeated browser/internal allowed-host service base fields
@@ -686,7 +686,7 @@ Do not change:
 Execution guard:
 - move only one remaining metadata slice per patch in this task; do not combine multiple metadata slices into one patch
 
-- [ ] **Step 4: Run the full Phase 1-3 regression suite and verify GREEN**
+- [x] **Step 4: Run the full Phase 1-3 regression suite and verify GREEN**
 
 Run:
 
