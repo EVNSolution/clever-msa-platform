@@ -27,6 +27,39 @@ This plan does **not** include:
 3. real settlement rule persistence
 4. main-domain IA redesign beyond keeping current system-admin surface intact
 
+## Canonical Runtime Contract To Preserve
+
+### Host Resolution
+
+- `ev-dashboard.com`
+  - main-domain system-admin surface
+- `cheonha.ev-dashboard.com`
+  - valid company subdomain
+- unknown `*.ev-dashboard.com`
+  - must fail closed as tenant-not-found before cockpit render
+
+### Subdomain Routes
+
+| Surface | Route | Required behavior |
+| --- | --- | --- |
+| Dashboard | `/` | canonical subdomain entry |
+| Settlement root | `/settlement` | redirect to `/settlement/home` |
+| Settlement home | `/settlement/home` | real settlement workspace home |
+| Dispatch data | `/settlement/dispatch` | real dispatch-upload workflow surface |
+| Crew | `/settlement/crew` | real crew management surface |
+| Operations | `/settlement/operations` | real operations status surface |
+| Process | `/settlement/process` | real auto-calculation/snapshot surface |
+| Team | `/settlement/team` | team management surface, may start minimal |
+
+### Workflow Mapping
+
+- `배차 데이터`
+  - must expose the real dispatch-upload workflow
+- `정산 처리`
+  - must expose the real read/snapshot workflow
+- `근태`
+  - remains embedded inside dashboard/settlement data context, not a separate route
+
 ## File Structure
 
 The implementation should use the following file responsibilities.
@@ -57,6 +90,14 @@ The implementation should use the following file responsibilities.
   - settlement home content scaffold
 - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementHomePage.test.tsx`
   - settlement home expectations
+- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaDispatchDataPage.tsx`
+  - adapter surface for existing dispatch-upload workflow
+- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaDispatchDataPage.test.tsx`
+  - dispatch data route expectations
+- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementProcessPage.tsx`
+  - adapter surface for existing settlement read/snapshot workflow
+- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementProcessPage.test.tsx`
+  - settlement process route expectations
 - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaRuleShellPanel.tsx`
   - disabled rule-shell UI for company/fleet/driver scopes
 - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaRuleShellPanel.test.tsx`
@@ -83,6 +124,7 @@ Add failing tests in `resolveTenantEntry.test.ts` covering:
 - `ev-dashboard.com` resolves as non-tenant
 - reserved subdomains like `api.ev-dashboard.com` are rejected
 - unknown foreign apex domains are rejected
+- unknown `*.ev-dashboard.com` hosts fail closed and never resolve to a company cockpit entry
 
 Expected: current tests either do not cover all cases or fail on the tightened contract.
 
@@ -92,6 +134,7 @@ Add a failing assertion in `App.cockpit.test.tsx` covering:
 - subdomain root `/` lands on subdomain dashboard
 - top-level settlement route remains `/settlement`
 - no top-level `/dispatch` route exists for the subdomain shell
+- unknown company subdomain renders tenant-not-found behavior instead of cockpit entry
 
 Expected: fail because current cockpit assumptions still reflect older structure.
 
@@ -204,6 +247,7 @@ Add failing assertions in `App.cockpit.test.tsx` covering:
   - 최근 6개월 수입/지출
   - 금월 배차표 기반 근태
   - 금일 배차
+- dashboard exposes a today-first frame with a visible month-switch control
 
 Expected: fail because current dashboard content does not match spec.
 
@@ -251,6 +295,10 @@ git commit -m "feat: make subdomain dashboard the default entry"
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx`
 - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementHomePage.tsx`
 - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementHomePage.test.tsx`
+- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaDispatchDataPage.tsx`
+- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaDispatchDataPage.test.tsx`
+- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementProcessPage.tsx`
+- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementProcessPage.test.tsx`
 - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaRuleShellPanel.tsx`
 - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaRuleShellPanel.test.tsx`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
@@ -267,6 +315,13 @@ Extend `CheonhaSettlementWorkspace.test.tsx` to cover:
   - 정산 처리
   - 팀 관리
 - there is no top-level dispatch tab in the shell
+- exact route slugs are:
+  - `/settlement/home`
+  - `/settlement/dispatch`
+  - `/settlement/crew`
+  - `/settlement/operations`
+  - `/settlement/process`
+  - `/settlement/team`
 
 Expected: fail against the current `dispatch-data`-first workspace.
 
@@ -283,13 +338,16 @@ Expected: fail because the component does not exist yet.
 
 Implement:
 - `CheonhaSettlementHomePage.tsx`
+- `CheonhaDispatchDataPage.tsx`
+- `CheonhaSettlementProcessPage.tsx`
 - `CheonhaRuleShellPanel.tsx`
 - updated `CheonhaSettlementWorkspace.tsx`
 
 Rules:
 - settlement is a real routeable workspace
 - rules are disabled shell only
-- `배차 데이터` is still the first real workflow surface
+- `배차 데이터` must render the existing dispatch-upload workflow surface instead of a placeholder-only panel
+- `정산 처리` must render the existing read/snapshot workflow surface instead of a placeholder-only panel
 - `근태` remains embedded inside dashboard/settlement data context, not a separate route
 
 - [ ] **Step 4: Run focused settlement tests**
@@ -298,7 +356,7 @@ Run:
 
 ```bash
 cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
-npm run test -- src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx src/cockpit/cheonha/CheonhaSettlementHomePage.test.tsx src/cockpit/cheonha/CheonhaRuleShellPanel.test.tsx
+npm run test -- src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx src/cockpit/cheonha/CheonhaSettlementHomePage.test.tsx src/cockpit/cheonha/CheonhaDispatchDataPage.test.tsx src/cockpit/cheonha/CheonhaSettlementProcessPage.test.tsx src/cockpit/cheonha/CheonhaRuleShellPanel.test.tsx
 ```
 
 Expected:
@@ -308,7 +366,7 @@ Expected:
 
 ```bash
 cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
-git add src/cockpit/cheonha/CheonhaSettlementWorkspace.tsx src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx src/cockpit/cheonha/CheonhaSettlementHomePage.tsx src/cockpit/cheonha/CheonhaSettlementHomePage.test.tsx src/cockpit/cheonha/CheonhaRuleShellPanel.tsx src/cockpit/cheonha/CheonhaRuleShellPanel.test.tsx src/styles.css
+git add src/cockpit/cheonha/CheonhaSettlementWorkspace.tsx src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx src/cockpit/cheonha/CheonhaSettlementHomePage.tsx src/cockpit/cheonha/CheonhaSettlementHomePage.test.tsx src/cockpit/cheonha/CheonhaDispatchDataPage.tsx src/cockpit/cheonha/CheonhaDispatchDataPage.test.tsx src/cockpit/cheonha/CheonhaSettlementProcessPage.tsx src/cockpit/cheonha/CheonhaSettlementProcessPage.test.tsx src/cockpit/cheonha/CheonhaRuleShellPanel.tsx src/cockpit/cheonha/CheonhaRuleShellPanel.test.tsx src/styles.css
 git commit -m "feat: rebuild cheonha settlement workspace"
 ```
 
