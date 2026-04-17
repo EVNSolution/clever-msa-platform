@@ -515,3 +515,201 @@ Expected Phase 3 scope:
 - keep stack/resource names stable
 - preserve `orderAppHostRuntimeServices`, gateway env injection, and runtime manifest behavior
 - avoid pulling full runtime container spec into the catalog until the metadata-only migration is proven stable
+- keep `gatewayRouteGroups` order and `bootstrap-proof / partial / full` semantics unchanged
+
+### Task 9: Expand catalog-backed app-host runtime metadata for backend HTTP services
+
+**Files:**
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
+
+- [x] **Step 1: Write failing stack tests for broader catalog-backed app-host runtime assembly**
+
+Add coverage that proves:
+- at least one additional wave-1 backend service and one wave-2 read-model service are assembled via stack helper(s) that consume catalog runtime metadata
+- existing gateway env injection assertions still pass unchanged
+- `front-web-console` and `edge-api-gateway` remain outside the new backend helper scope in this task
+
+- [x] **Step 2: Run the targeted stack tests and verify RED**
+
+Run:
+
+```bash
+cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+npm test -- --runInBand --runTestsByPath test/ev-dashboard-platform-stack.test.ts test/edge-gateway-profile.test.ts
+```
+
+- [x] **Step 3: Extend catalog app-host runtime metadata for bounded backend services**
+
+Requirements:
+- add `appHostRuntime` metadata only for this bounded backend subset in this task:
+  - `service-driver-profile`
+  - `service-personnel-document-registry`
+  - `service-vehicle-registry`
+  - `service-vehicle-assignment`
+  - `service-dispatch-operations-view`
+  - `service-driver-operations-view`
+  - `service-vehicle-operations-view`
+- keep telemetry listener, gateway, and front outside this expansion step
+- do not move per-service environment payloads or secret maps into the catalog yet
+
+- [x] **Step 4: Expand the stack helper to consume the new metadata without changing runtime behavior**
+
+Requirements:
+- keep `orderAppHostRuntimeServices(...)` call intact
+- keep service IDs, container names, ports, and enable predicates identical
+- migrate only the repeated base fields (`id`, `imageMapKey`, `containerName`, `containerPort`, optional `hostPort`) for the bounded backend set
+
+- [x] **Step 5: Run the focused stack regression suite and verify GREEN**
+
+Run:
+
+```bash
+cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+npm test -- --runInBand --runTestsByPath \
+  test/ev-dashboard-platform-stack.test.ts \
+  test/edge-gateway-profile.test.ts \
+  test/serviceCatalog.test.ts \
+  test/releaseWavePolicy.test.ts \
+  test/releaseImpact.test.ts \
+  test/gateway-route-profile.test.ts
+npm run build
+```
+
+- [ ] **Step 6: Commit**
+
+```bash
+git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+  lib/serviceCatalog.ts \
+  lib/ev-dashboard-platform-stack.ts \
+  test/ev-dashboard-platform-stack.test.ts
+git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "refactor: expand stack catalog runtime metadata"
+```
+
+### Task 10: Migrate runtime image-map assembly to catalog-backed lookup
+
+**Files:**
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
+
+- [ ] **Step 1: Write failing tests for catalog-backed runtime image-map generation**
+
+Add coverage that proves:
+- `buildRuntimeImageMap` no longer depends on a hand-written full service list for the catalog-backed subset
+- optional telemetry/terminal images still remain omitted when their image URIs are undefined
+- image-map keys emitted for currently proven services stay identical
+
+- [ ] **Step 2: Run the targeted stack tests and verify RED**
+
+Run:
+
+```bash
+cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+npm test -- --runInBand --runTestsByPath test/ev-dashboard-platform-stack.test.ts
+```
+
+- [ ] **Step 3: Add catalog helpers for stack-facing image-map consumption**
+
+Requirements:
+- expose only image-map lookup metadata needed by `buildRuntimeImageMap`
+- keep config field names and optional-image rules unchanged
+- do not move non-image stack concerns into these helpers
+
+- [ ] **Step 4: Replace the repeated runtime image-map assembly with catalog-backed iteration**
+
+Requirements:
+- preserve output key names exactly
+- preserve optional terminal/telemetry omission behavior exactly
+- avoid changing release manifest, app-host bootstrap, or SSM parameter contract
+
+- [ ] **Step 5: Run stack and catalog regressions and verify GREEN**
+
+Run:
+
+```bash
+cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+npm test -- --runInBand --runTestsByPath \
+  test/ev-dashboard-platform-stack.test.ts \
+  test/serviceCatalog.test.ts \
+  test/config.test.ts \
+  test/preflight.test.ts
+npm run build
+```
+
+- [ ] **Step 6: Commit**
+
+```bash
+git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+  lib/serviceCatalog.ts \
+  lib/ev-dashboard-platform-stack.ts \
+  test/ev-dashboard-platform-stack.test.ts
+git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "refactor: source stack runtime image map from catalog"
+```
+
+### Task 11: Shrink remaining stack-local service metadata without changing deploy identity
+
+**Files:**
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
+
+- [ ] **Step 1: Write failing tests for the final Phase 3 metadata slice**
+
+Add coverage that proves:
+- one more repeated metadata slice in `ev-dashboard-platform-stack.ts` moved behind a catalog helper
+- stack outputs, runtime manifest secret shape, and gateway profile env payload remain unchanged
+
+- [ ] **Step 2: Run the targeted tests and verify RED**
+
+Run:
+
+```bash
+cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+npm test -- --runInBand --runTestsByPath test/ev-dashboard-platform-stack.test.ts test/edge-gateway-profile.test.ts
+```
+
+- [ ] **Step 3: Apply the smallest remaining metadata extraction that pays down duplication**
+
+Good candidates:
+- repeated browser/internal allowed-host service base fields
+- repeated base app-host runtime construction for non-worker backend services
+
+Do not change:
+- stack names
+- resource logical identity
+- bootstrap units
+- release workflow contract
+- gateway/front/runtime-contract behavior
+
+Execution guard:
+- move only one remaining metadata slice per patch in this task; do not combine multiple metadata slices into one patch
+
+- [ ] **Step 4: Run the full Phase 1-3 regression suite and verify GREEN**
+
+Run:
+
+```bash
+cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+npm test -- --runInBand --runTestsByPath \
+  test/config.test.ts \
+  test/preflight.test.ts \
+  test/serviceCatalog.test.ts \
+  test/releaseWavePolicy.test.ts \
+  test/releaseImpact.test.ts \
+  test/gateway-route-profile.test.ts \
+  test/edge-gateway-profile.test.ts \
+  test/ev-dashboard-platform-stack.test.ts
+npm run build
+```
+
+- [ ] **Step 5: Commit**
+
+```bash
+git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+  lib/serviceCatalog.ts \
+  lib/ev-dashboard-platform-stack.ts \
+  test/ev-dashboard-platform-stack.test.ts
+git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "refactor: reduce remaining stack service metadata duplication"
+```
