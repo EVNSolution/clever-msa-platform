@@ -17,8 +17,10 @@ This plan covers only:
 1. subdomain host interpretation and shell routing in `front-web-console`
 2. subdomain accordion navigation and dashboard-first entry
 3. `cheonha`-style settlement workspace routing and menu hierarchy
-4. subdomain login/header treatment
-5. frontend test coverage for the new IA contract
+4. subdomain bootstrap-stage tenant existence checks and fail-closed behavior
+5. wrong-domain/session rejection for main-domain vs company-domain accounts
+6. subdomain login/header treatment
+7. frontend test coverage for the new IA contract
 
 This plan does **not** include:
 
@@ -36,7 +38,27 @@ This plan does **not** include:
 - `cheonha.ev-dashboard.com`
   - valid company subdomain
 - unknown `*.ev-dashboard.com`
-  - must fail closed as tenant-not-found before cockpit render
+  - host parser may still classify as company-shaped
+  - actual tenant existence must fail closed during public tenant resolve / workspace bootstrap before cockpit render
+
+### Domain and Session Boundary
+
+- system-admin session on `ev-dashboard.com`
+  - allowed
+- company manager session on `ev-dashboard.com`
+  - rejected from the main-domain shell
+- system-admin session on `<tenant-slug>.ev-dashboard.com`
+  - rejected from the subdomain shell
+- company manager session on the wrong company subdomain
+  - rejected before cockpit render
+
+### Main-Domain IA
+
+- main domain top-level IA must stay:
+  - `대시보드`
+  - `회사`
+  - `정산`
+- this phase may preserve the current main-domain implementation, but tests must explicitly verify those anchors remain intact
 
 ### Subdomain Routes
 
@@ -68,10 +90,18 @@ The implementation should use the following file responsibilities.
   - canonical route composition for main domain vs subdomain
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.cockpit.test.tsx`
   - end-to-end shell routing contract tests for subdomain behavior
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.test.tsx`
+  - main-domain IA and domain/session rejection coverage
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/tenant/resolveTenantEntry.ts`
   - tenant slug/host parsing rules
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/tenant/resolveTenantEntry.test.ts`
   - host parsing edge cases
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/api/companyTenant.ts`
+  - public tenant resolve helpers only if explicit tenant-not-found mapping is needed
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/api/workspaceBootstrap.ts`
+  - bootstrap typing only if shell gating needs explicit tenant/domain mismatch state
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/navigation.ts`
+  - explicit verification target for main-domain `대시보드 / 회사 / 정산`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/types.ts`
   - workspace/bootstrap typing only if new explicit shell/menu presets are needed
 - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainAccordionNav.tsx`
@@ -109,13 +139,15 @@ The implementation should use the following file responsibilities.
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
   - accordion shell, left rail, and subdomain workspace styling
 
-## Task 1: Lock Tenant Host and Subdomain Shell Contract
+## Task 1: Lock Tenant Host Parsing and Bootstrap Gate
 
 **Files:**
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/tenant/resolveTenantEntry.ts`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/tenant/resolveTenantEntry.test.ts`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.cockpit.test.tsx`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.tsx`
+- Optional Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/api/companyTenant.ts`
+- Optional Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/api/workspaceBootstrap.ts`
 
 - [ ] **Step 1: Write the failing host-resolution tests**
 
@@ -124,29 +156,29 @@ Add failing tests in `resolveTenantEntry.test.ts` covering:
 - `ev-dashboard.com` resolves as non-tenant
 - reserved subdomains like `api.ev-dashboard.com` are rejected
 - unknown foreign apex domains are rejected
-- unknown `*.ev-dashboard.com` hosts fail closed and never resolve to a company cockpit entry
 
 Expected: current tests either do not cover all cases or fail on the tightened contract.
 
-- [ ] **Step 2: Write the failing shell-routing test**
+- [ ] **Step 2: Write the failing bootstrap-gate and shell-routing test**
 
 Add a failing assertion in `App.cockpit.test.tsx` covering:
 - subdomain root `/` lands on subdomain dashboard
 - top-level settlement route remains `/settlement`
 - no top-level `/dispatch` route exists for the subdomain shell
-- unknown company subdomain renders tenant-not-found behavior instead of cockpit entry
+- unknown company subdomain reaches tenant-not-found behavior after public tenant resolve/bootstrap, not pure host parsing
 
 Expected: fail because current cockpit assumptions still reflect older structure.
 
-- [ ] **Step 3: Implement the minimal host and route contract**
+- [ ] **Step 3: Implement the minimal parsing and bootstrap gate**
 
 Modify:
 - `resolveTenantEntry.ts`
 - `App.tsx`
 
 Implementation rules:
-- keep tenant slug parsing explicit and small
-- do not add new backend calls
+- keep host parsing explicit and small
+- use existing public tenant resolve/bootstrap path for tenant-not-found gating
+- do not add new backend APIs
 - route the subdomain shell to `/` and `/settlement/*` only
 
 - [ ] **Step 4: Run focused shell tests**
@@ -419,7 +451,59 @@ git add src/pages/LoginPage.tsx src/pages/LoginPage.test.tsx src/App.tsx src/sty
 git commit -m "feat: add company-specific subdomain login shell"
 ```
 
-## Task 6: Full Frontend Regression and Docs Sync
+## Task 6: Enforce Domain/Session Boundaries and Main-Domain IA
+
+**Files:**
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.tsx`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.cockpit.test.tsx`
+- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.test.tsx`
+- Verify or Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/navigation.ts`
+
+- [ ] **Step 1: Write the failing domain/session rejection tests**
+
+Add failing assertions covering:
+- company manager session on `ev-dashboard.com` cannot enter the main-domain shell
+- system-admin session on `<tenant-slug>.ev-dashboard.com` cannot enter the subdomain shell
+- company manager session on the wrong company subdomain cannot enter the cockpit
+
+Expected: fail because current session gating is not yet pinned to the approved domain boundaries.
+
+- [ ] **Step 2: Write the failing main-domain IA verification**
+
+Add assertions in `App.test.tsx` covering:
+- main-domain navigation still exposes `대시보드 / 회사 / 정산`
+- this phase does not accidentally collapse or rename those anchors while implementing the subdomain-first shell
+
+Expected: fail if the test does not exist or the current main-domain anchors drift.
+
+- [ ] **Step 3: Implement the minimal domain/session boundary logic**
+
+Modify `App.tsx` and only touch `navigation.ts` if needed so that:
+- main-domain and subdomain sessions are explicitly separated
+- wrong-domain access fails closed before rendering the wrong shell
+- main-domain IA stays intact
+
+- [ ] **Step 4: Run focused shell and main-domain tests**
+
+Run:
+
+```bash
+cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+npm run test -- src/App.cockpit.test.tsx src/App.test.tsx
+```
+
+Expected:
+- both files pass
+
+- [ ] **Step 5: Commit**
+
+```bash
+cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+git add src/App.tsx src/App.cockpit.test.tsx src/App.test.tsx src/navigation.ts
+git commit -m "feat: enforce domain-aware web shell boundaries"
+```
+
+## Task 7: Full Frontend Regression and Docs Sync
 
 **Files:**
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/README.md`
@@ -430,6 +514,8 @@ git commit -m "feat: add company-specific subdomain login shell"
 
 Record the expected manual checks:
 - main domain still shows system-admin surface
+- company manager session is rejected from main-domain shell
+- system-admin session is rejected from subdomain shell
 - subdomain `/` opens dashboard
 - subdomain settlement menu order matches spec
 - subdomain login shows company header
