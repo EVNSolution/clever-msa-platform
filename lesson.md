@@ -619,9 +619,9 @@ For the `ev-dashboard` EC2 lane, burstable host decisions are not safe if they l
 
 - `t3.small` remains a `bootstrap-proof` host, not a remaining-business-service bring-up host
 - forcing backend services down to `GUNICORN_WORKERS=1` materially reduced per-service memory, but it did not remove the CPU-credit wall on `t3.small`
-- a fresh 17-service prod-like create succeeded on `t3.large`, and a later `full-minus-listener` proof also succeeded on the same class
-- for the wider `full-minus-listener` proof, the post-smoke app-host snapshot was roughly `2188 MiB used / 5334 MiB available`, while CloudWatch still showed burst behavior with CPU average about `49.2%`, busiest 5-minute bucket average about `91.2%`, and `CPUCreditBalance=0`
-- `t3.medium` has now also passed a clean prod `full-minus-listener` create on run `24508999204`
+- a fresh 17-service prod-like create succeeded on `t3.large`, and a later current-`full` proof also succeeded on the same class
+- for the wider current-`full` proof, the post-smoke app-host snapshot was roughly `2188 MiB used / 5334 MiB available`, while CloudWatch still showed burst behavior with CPU average about `49.2%`, busiest 5-minute bucket average about `91.2%`, and `CPUCreditBalance=0`
+- `t3.medium` has now also passed a clean prod current-`full` create on run `24508999204`
 - for that `t3.medium` proof, the post-smoke app-host snapshot settled around `2096 MiB used / 1458 MiB available`, while the create-and-smoke window still showed burst behavior with CPU average about `66.5%`, peak bucket maximum about `87.8%`, `CPUCreditBalance=0`, and `CPUSurplusCreditBalance≈1.85`
 - after bootstrap settled on the same `t3.medium` host, CPU dropped back to near-idle (`mpstat` about `98.51%` idle), so the important lesson is to record both bootstrap and steady-state numbers instead of only one
 
