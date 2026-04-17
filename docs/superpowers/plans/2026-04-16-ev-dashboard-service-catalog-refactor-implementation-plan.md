@@ -290,7 +290,7 @@ Record:
 - remaining `preflight.ts` duplication
 - deferred `stack.ts` migration boundary
 
-- [ ] **Step 3: Commit the completed first slice**
+- [x] **Step 3: Commit the completed first slice**
 
 ```bash
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
@@ -368,7 +368,7 @@ cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-p
 npm test -- --runInBand --runTestsByPath test/config.test.ts test/serviceCatalog.test.ts
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
@@ -424,7 +424,7 @@ cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-p
 npm test -- --runInBand --runTestsByPath test/preflight.test.ts test/config.test.ts test/serviceCatalog.test.ts
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
@@ -494,7 +494,7 @@ npm test -- --runInBand --runTestsByPath \
 npm run build
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
@@ -577,7 +577,7 @@ npm test -- --runInBand --runTestsByPath \
 npm run build
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
@@ -594,14 +594,14 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
 
-- [ ] **Step 1: Write failing tests for catalog-backed runtime image-map generation**
+- [x] **Step 1: Write failing tests for catalog-backed runtime image-map generation**
 
 Add coverage that proves:
 - `buildRuntimeImageMap` no longer depends on a hand-written full service list for the catalog-backed subset
 - optional telemetry/terminal images still remain omitted when their image URIs are undefined
 - image-map keys emitted for currently proven services stay identical
 
-- [ ] **Step 2: Run the targeted stack tests and verify RED**
+- [x] **Step 2: Run the targeted stack tests and verify RED**
 
 Run:
 
@@ -610,21 +610,21 @@ cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-p
 npm test -- --runInBand --runTestsByPath test/ev-dashboard-platform-stack.test.ts
 ```
 
-- [ ] **Step 3: Add catalog helpers for stack-facing image-map consumption**
+- [x] **Step 3: Add catalog helpers for stack-facing image-map consumption**
 
 Requirements:
 - expose only image-map lookup metadata needed by `buildRuntimeImageMap`
 - keep config field names and optional-image rules unchanged
 - do not move non-image stack concerns into these helpers
 
-- [ ] **Step 4: Replace the repeated runtime image-map assembly with catalog-backed iteration**
+- [x] **Step 4: Replace the repeated runtime image-map assembly with catalog-backed iteration**
 
 Requirements:
 - preserve output key names exactly
 - preserve optional terminal/telemetry omission behavior exactly
 - avoid changing release manifest, app-host bootstrap, or SSM parameter contract
 
-- [ ] **Step 5: Run stack and catalog regressions and verify GREEN**
+- [x] **Step 5: Run stack and catalog regressions and verify GREEN**
 
 Run:
 
@@ -638,7 +638,7 @@ npm test -- --runInBand --runTestsByPath \
 npm run build
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
