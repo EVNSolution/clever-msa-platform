@@ -218,6 +218,14 @@ repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **
 
 서브도메인의 첫 진입 페이지는 회사별 대시보드다.
 
+이 대시보드는 기존 `cheonha` cockpit 문서의 4-card cockpit home을 **대체하는 새 canonical entrypoint**다.
+
+즉 1차 구현 계획에서는:
+
+- 서브도메인 첫 진입을 별도 cockpit home으로 두지 않는다
+- `대시보드 / 배차 / 정산` top-level shell이 유일한 canonical subdomain shell이다
+- 기존 `cheonha` cockpit 문서는 `정산` 내부 reference policy의 근거로만 남긴다
+
 핵심 섹션:
 
 1. 최근 6개월 수입/지출
@@ -277,6 +285,8 @@ repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **
 - `회사 / 플릿 / 배송원` 3단 구조의 자리와 섹션만 제공한다
 - 실제 규칙 값은 채우지 않는다
 - 1차에서는 rule persistence contract를 열지 않는다
+- 저장 버튼, 제출 액션, write API 호출은 없다
+- 입력 필드는 실제 편집기가 아니라 placeholder shell 또는 disabled form으로만 표현한다
 - 즉 사용자는 “향후 이 단위로 규칙이 들어간다”는 구조만 본다
 - 1차 구현 계획에서 이 화면을 실제 저장 가능한 규칙 편집기로 해석하면 안 된다
 
@@ -413,6 +423,7 @@ repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **
 - 기존 문서는 `천하운수 cockpit`의 전용 진입과 정산 workspace reference parity를 먼저 닫은 문서다
 - 이번 문서는 그 결정을 확장해, **서브도메인 전체 제품 정의를 먼저 정본으로 고정**한다
 - 구현 계획은 이번 문서를 우선 기준으로 삼고, `cheonha` 문서는 정산 내부 reference policy의 근거 문서로 남긴다
+- 기존 문서의 cockpit home은 이번 문서에서 더 이상 canonical entrypoint가 아니다
 
 ## Done Criteria
 
