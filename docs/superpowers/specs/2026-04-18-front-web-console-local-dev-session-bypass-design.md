@@ -105,7 +105,7 @@
 로컬 웹 테스트 우회환경은 아래 조합으로 고정한다.
 
 1. `hosts` 파일로 메인/서브도메인 host를 `127.0.0.1`에 연결한다.
-2. `front-web-console`에 **`local-test` 전용** 세션 주입 route를 둔다.
+2. `front-web-console`에 **`local-sandbox` 전용** 세션 주입 route를 둔다.
 3. 같은 환경에서만 동작하는 **mock API 계층**을 둔다.
 4. production build와 실서비스에서는 이 기능이 절대 노출되지 않도록 차단한다.
 
@@ -115,14 +115,15 @@
 
 - `npm run dev`
   - 이 기능 비활성
-- `npm run dev:local-test`
+- `npm run dev:local-sandbox`
   - 이 기능 활성
 
-즉 `dev`와 `local-test`를 섞어서 해석하지 않는다.
+즉 기존 `local-test`와 새 `local-sandbox`를 섞어서 해석하지 않는다.
 
 1차 canonical mode:
 
-- `local-test` = **완전한 프론트 테스트 모드**
+- `local-test` = **safer remote dev/staging proxy 모드**
+- `local-sandbox` = **완전한 프론트 mock-only 수동 테스트 모드**
 
 이 모드에서는 아래가 동시에 켜진다.
 
@@ -174,7 +175,7 @@
 
 - 앱 일반 메뉴에서는 이 route를 노출하지 않는다.
 - 사용자는 주소 직접 입력으로만 접근한다.
-- route는 `local-test`에서만 활성화된다.
+- route는 `local-sandbox`에서만 활성화된다.
 - production build에서는 route 자체가 막혀야 한다.
 
 ## Preset Session Model
@@ -202,7 +203,7 @@ host별 허용 preset:
   - 저장 세션
   - dev preset 상태
   - mock API 메모리 상태
-- 초기화 후에는 로그인되지 않은 깨끗한 local-test 상태로 돌아간다.
+- 초기화 후에는 로그인되지 않은 깨끗한 `local-sandbox` 상태로 돌아간다.
 
 ## Dev Session Page UX
 
@@ -230,8 +231,9 @@ host별 허용 preset:
 
 원칙:
 
-- `local-test`에서만 활성화
+- `local-sandbox`에서만 활성화
 - `/api` 요청은 예외 없이 전부 mock으로 처리
+- 브라우저 mock interception이 `fetch` 단계에서 먼저 잡고, Vite dev proxy까지 요청이 내려가면 안 된다
 - 실제 `/api` 프록시 사용은 금지
 - 메모리 기반 데이터로 폼 제출, 목록 갱신, 상태 전이를 흉내 낸다
 - 브라우저 새로고침 전까지는 상태가 유지될 수 있어도 된다
@@ -243,7 +245,8 @@ host별 허용 preset:
 - 목록 조회 요청
 - 생성/수정/삭제 요청
 
-즉 `local-test`에서는 네트워크 성공 여부에 따라 일부만 mock하는 모드가 아니라, **프론트가 보는 `/api` surface 전체를 mock layer가 책임지는 모드**다.
+즉 `local-sandbox`는 네트워크 성공 여부에 따라 일부만 mock하는 모드가 아니라, **프론트가 보는 `/api` surface 전체를 mock layer가 책임지는 모드**다.
+기존 `dev:local-test`의 safer remote proxy 의미는 그대로 유지하고, 이 mock layer는 그 계약을 대체하지 않는다.
 
 1차 fidelity 범위:
 
@@ -272,11 +275,11 @@ host별 허용 preset:
 이 기능은 아래 규칙을 반드시 따른다.
 
 1. production build에서는 접근 불가
-2. `local-test` 이외 환경에서는 route 비활성
+2. `local-sandbox` 이외 환경에서는 route 비활성
 3. host별 preset 고정
 4. 메인 도메인과 서브도메인의 기존 권한 경계는 유지
 5. 일반 사용자 메뉴에서 dev route를 노출하지 않음
-6. `local-test`에서는 `/api` 실호출 금지
+6. `local-sandbox`에서는 `/api` 실호출 금지
 
 ## Hosts Safety Rules
 
@@ -284,10 +287,10 @@ host별 허용 preset:
 
 1. 테스트 종료 후 `hosts` 항목을 제거할 수 있어야 한다.
 2. 팀 문서에 브라우저 프로필 분리를 권장한다.
-3. local-test는 mock-only이므로, `hosts`가 남아 있어도 실제 DB 호출로 이어지지 않아야 한다.
+3. `local-sandbox`는 mock-only이므로, `hosts`가 남아 있어도 실제 DB 호출로 이어지지 않아야 한다.
 4. service worker, real cookie, production session reuse에 의존하지 않는다.
 
-즉 이 설계는 `hosts`의 운영 리스크를 **mock-only local-test**로 줄이는 방식이다.
+즉 이 설계는 `hosts`의 운영 리스크를 **mock-only `local-sandbox`**로 줄이는 방식이다.
 
 ## Disable and Rollback
 
@@ -295,7 +298,7 @@ host별 허용 preset:
 
 1. `npm run dev`로 실행하면 이 기능은 보이지 않는다.
 2. `npm run build` 결과물에는 `/__dev__/session`이 포함되지 않는다.
-3. 필요 시 `local-test` gate 하나를 끄면 session route와 mock layer가 함께 사라진다.
+3. 필요 시 `local-sandbox` gate 하나를 끄면 session route와 mock layer가 함께 사라진다.
 
 즉 이것은 **팀 공용 개발 보조 기능**이지, 제품 기능이 아니다.
 
@@ -314,12 +317,12 @@ host별 허용 preset:
 구현 후 최소 검증 항목:
 
 1. `npm run dev`에서는 `/__dev__/session` 접근 불가
-2. `npm run dev:local-test`에서는 `/__dev__/session` 접근 가능
+2. `npm run dev:local-sandbox`에서는 `/__dev__/session` 접근 가능
 3. `ev-dashboard.com:5174/__dev__/session`에서는 `system_admin`만 노출
 4. `cheonha.ev-dashboard.com:5174/__dev__/session`에서는 `cheonha_manager`만 노출
-5. `local-test` 실행 중 `/api`가 실제 네트워크로 나가지 않음
+5. `local-sandbox` 실행 중 `/api`가 실제 네트워크로 나가지 않음
 6. `세션 초기화` 후 세션/preset/mock state가 모두 초기화됨
-7. production build 결과물에서 dev route와 local-test mock entry가 노출되지 않음
+7. production build 결과물에서 dev route와 `local-sandbox` mock entry가 노출되지 않음
 
 ## Out of Scope Follow-Ups
 
