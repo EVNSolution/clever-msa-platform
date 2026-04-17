@@ -145,6 +145,36 @@ repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **
 - 메인 도메인: 시스템 관리자용
 - 현재 서브도메인: `CHEONHA`
 
+### 3. Host Resolution Contract
+
+서브도메인 host는 회사 display name으로 즉석 계산하지 않는다. 시스템이 관리하는 **고정 tenant slug**를 기준으로 해석한다.
+
+1차 host 규칙:
+
+- 메인 도메인
+  - `ev-dashboard.com`
+- 회사 서브도메인
+  - `<tenant-slug>.ev-dashboard.com`
+- 현재 예시
+  - `cheonha.ev-dashboard.com`
+
+원칙:
+
+- `tenant-slug`는 시스템 레벨에서 별도로 관리되는 고정 식별자다
+- 회사 생성이 곧 slug 생성 또는 서브도메인 생성은 아니다
+- 회사 display name과 slug는 같은 값일 필요가 없다
+- 프론트 bootstrap은 현재 host에서 `main-domain`인지 `company-subdomain`인지 먼저 해석한 뒤 shell을 결정한다
+
+1차 failure 동작:
+
+- 알 수 없는 subdomain host
+  - 회사 cockpit shell로 진입시키지 않는다
+  - tenant not found 상태로 처리한다
+- 유효한 host지만 세션의 회사 문맥이 맞지 않는 경우
+  - 로그인 또는 workspace bootstrap 단계에서 차단한다
+- 메인 도메인에서 회사 계정 실무 진입 시도
+  - 메인 허브 실무 surface로 fallback 하지 않고 명시적으로 거부한다
+
 ## Session and Identity Rules
 
 ### 1. Account Boundary
@@ -242,6 +272,14 @@ repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **
 - 자동 계산 결과 조회
 - 스냅샷 잠금
 
+1차의 `규칙 설계 화면`은 **rule-shell only**로 고정한다.
+
+- `회사 / 플릿 / 배송원` 3단 구조의 자리와 섹션만 제공한다
+- 실제 규칙 값은 채우지 않는다
+- 1차에서는 rule persistence contract를 열지 않는다
+- 즉 사용자는 “향후 이 단위로 규칙이 들어간다”는 구조만 본다
+- 1차 구현 계획에서 이 화면을 실제 저장 가능한 규칙 편집기로 해석하면 안 된다
+
 `확정`의 의미:
 
 - 계산 시작 버튼이 아님
@@ -251,7 +289,7 @@ repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **
 
 - `회사 / 플릿 / 배송원`
 - 1차에서는 각 단위의 **틀만 제공**
-- 실제 상세 규칙 값은 후속 단계에서 채운다
+- 실제 상세 규칙 값과 저장 기능은 후속 단계에서 채운다
 
 ## Cheonha Reference Policy
 
