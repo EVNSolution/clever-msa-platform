@@ -53,11 +53,20 @@
 - Before starting `5174`, `8080`, low-CPU hybrid, or full Docker, explicitly send the mode-selection questions below and wait for the user's answer.
 - Do not choose a mode on the user's behalf when the request is only "open it", "bring it up", or "run local verification". Ask first.
 - If you already started the wrong mode, stop, report the current state briefly, and ask which mode to keep.
-- Use this branching flow in order:
-  1. `백엔드까지 같이 수정/검증할 건가요, 아니면 프론트만 빠르게 볼 건가요?`
-  2. `데이터는 로컬 localhost를 볼 건가요, 원격 실제 프록시를 볼 건가요, 아니면 원격 local-test(dev/staging) 타깃을 볼 건가요?`
-  3. `2번에서 실제 프록시를 골랐다면, 실제 DB에 영향을 주는 CRUD를 허용하나요?`
+- Use this mode-selection question by default:
+  - `어떤 모드로 열까요: local-sandbox(mock, 무영향), local-test(dev/staging), real-proxy?`
+- Ask one more question only when the user selects `local-test(dev/staging)`:
+  - `local-test는 실제 dev/staging DB에 영향을 줄 수 있습니다. 쓰기/CRUD도 허용할까요?`
 - Map the answers like this:
+  - `local-sandbox`
+    - use `front-web-console` `npm run dev:local-sandbox`
+    - treat it as a mock-only, no-network, manual frontend verification mode
+    - require host entries before opening the browser:
+      - `127.0.0.1 ev-dashboard.com`
+      - `127.0.0.1 cheonha.ev-dashboard.com`
+    - if the host entries are missing, explain that the browser will resolve public DNS and the local sandbox will not open correctly
+    - if host entries are correct but the page still will not open in a browser, suspect HSTS or forced HTTPS upgrade next
+    - `local-sandbox` is plain HTTP on `5174`; use a fresh browser profile or clear HSTS state before debugging the app
   - Frontend-only + real proxy + CRUD allowed
     - use `front-web-console/.env.local`
     - current real proxy target is `https://ev-dashboard.com`

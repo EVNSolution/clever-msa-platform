@@ -151,6 +151,8 @@
 127.0.0.1 cheonha.ev-dashboard.com
 ```
 
+이 매핑이 없으면 브라우저는 public DNS를 사용하므로, local-sandbox shell은 local `5174`로 열리지 않는다.
+
 개발 서버는 그대로 `5174`를 사용한다.
 
 접속 예시:
@@ -159,6 +161,12 @@
 - `http://cheonha.ev-dashboard.com:5174`
 
 즉 `localhost`가 아니라 **실제 host 기반 문맥**으로 테스트한다.
+
+Browser note:
+
+- `local-sandbox`는 `http://...:5174` plain HTTP다.
+- `ev-dashboard.com` 계열 host를 브라우저가 HSTS로 기억하고 있으면 HTTPS 강제 승격 때문에 local-sandbox가 열리지 않을 수 있다.
+- 이 경우 fresh browser profile을 쓰거나 도메인의 HSTS state를 지우는 쪽이 우선이다.
 
 ## Dev Session Route
 
@@ -198,6 +206,7 @@ host별 허용 preset:
 
 - 기존 [sessionPersistence.ts](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/sessionPersistence.ts) 저장 구조를 그대로 사용한다.
 - `세션 주입` 버튼을 누르면 preset `SessionPayload`를 local storage에 기록한다.
+- Safari나 stricter site-data policy가 local storage write를 거부하면, sandbox session은 in-memory fallback으로 유지되어야 한다.
 - 완료 후 `/`로 이동한다.
 - `세션 초기화` 버튼은 아래를 전부 지운다.
   - 저장 세션
