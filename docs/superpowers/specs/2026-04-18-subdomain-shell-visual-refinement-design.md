@@ -111,6 +111,14 @@
 
 즉 `정산` 진입은 새 레이아웃을 다시 조립하는 것이 아니라, 고정된 상단 카드/트리거 아래에 settlement block을 추가하는 방식이다.
 
+### 3. Width Contract
+
+브랜드 카드와 detached workspace sidebar는 같은 surface width를 공유해야 한다.
+
+- 브랜드 카드 폭과 detached settlement sidebar 폭은 항상 같다.
+- 같은 규칙은 detached vehicle sidebar에도 적용한다.
+- 이후 shell refinement에서는 radius, color, active tone은 바뀔 수 있어도 이 width contract는 깨지지 않아야 한다.
+
 ## Implementation Direction
 
 이번 시각 변경은 역할 분리 구조를 유지한 채 구현한다.
