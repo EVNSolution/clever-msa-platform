@@ -321,7 +321,7 @@ The same field name is retained across workload classes, but the hashing inputs 
 - Create: `development/runtime-prod-release/release/schema/release-evidence.schema.json`
 - Create: `development/runtime-prod-release/release/tests/test_release_resolution.py`
 
-- [ ] **Step 1: Write the failing schema and resolution tests**
+- [x] **Step 1: Write the failing schema and resolution tests**
 
 Create tests that assert:
 - release unit is `workload_id`, not repo
@@ -330,12 +330,12 @@ Create tests that assert:
 - `target_host_group` is resolved from inventory, not passed ad hoc
 - `deploy_method` is derived from workload class, not selected in release input
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `pytest development/runtime-prod-release/release/tests/test_release_resolution.py -v`
 Expected: FAIL because repo and resolver do not exist yet.
 
-- [ ] **Step 3: Add minimal repo structure and schemas**
+- [x] **Step 3: Add minimal repo structure and schemas**
 
 Create minimal README and schema files with required fields:
 - release intent:
@@ -350,19 +350,19 @@ Create minimal README and schema files with required fields:
   - `healthcheck`
   - `rollback_target`
 
-- [ ] **Step 4: Re-run tests and keep them red for missing resolver logic**
+- [x] **Step 4: Re-run tests and keep them red for missing resolver logic**
 
 Run: `pytest development/runtime-prod-release/release/tests/test_release_resolution.py -v`
 Expected: FAIL at resolver behavior, not at missing files.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add development/runtime-prod-release
 git commit -m "feat: scaffold runtime prod release repo"
 ```
 
-- [ ] **Verification additions**
+- [x] **Verification additions**
 
 Verify:
 - `runtime-prod-release` introduces no long-lived AWS credential secret usage
@@ -379,19 +379,19 @@ Verify:
 - Create or modify: `development/runtime-prod-platform/release/prod-runtime-inventory.json`
 - Create or modify: `development/runtime-prod-platform/scripts/export-runtime-inventory.*`
 
-- [ ] **Step 1: Write failing inventory resolution tests**
+- [x] **Step 1: Write failing inventory resolution tests**
 
 Test cases:
 - valid `workload_id` resolves to canonical `target_host_group`
 - `deploy_method` comes from workload class
 - unknown `workload_id` hard fails
 
-- [ ] **Step 2: Run inventory tests to verify failure**
+- [x] **Step 2: Run inventory tests to verify failure**
 
 Run: `pytest development/runtime-prod-release/release/tests/test_inventory_resolution.py -v`
 Expected: FAIL due to missing inventory resolver.
 
-- [ ] **Step 3: Implement minimal inventory resolver**
+- [x] **Step 3: Implement minimal inventory resolver**
 
 Implement resolver that reads only the infra-owned exported inventory artifact and returns:
 - workload class
@@ -399,7 +399,7 @@ Implement resolver that reads only the infra-owned exported inventory artifact a
 - deploy method
 - healthcheck contract
 
-- [ ] **Step 4: Add infra-side inventory artifact and ownership doc**
+- [x] **Step 4: Add infra-side inventory artifact and ownership doc**
 
 Document that `runtime-prod-platform` owns canonical host group mapping and runtime classes.
 Document the initial minimal runtime shape:
@@ -408,21 +408,21 @@ Document the initial minimal runtime shape:
 - one attached EBS mount `/data`
 - host-local PostgreSQL and Redis
 
-- [ ] **Step 5: Re-run tests**
+- [x] **Step 5: Re-run tests**
 
 Run:
 - `pytest development/runtime-prod-release/release/tests/test_inventory_resolution.py -v`
 
 Expected: PASS
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add development/runtime-prod-release development/runtime-prod-platform
 git commit -m "feat: add canonical prod runtime inventory resolution"
 ```
 
-- [ ] **Verification additions**
+- [x] **Verification additions**
 
 Verify:
 - SSM dispatch and release resolution consume tag-based or inventory-derived targets
@@ -442,19 +442,19 @@ Verify:
   - `development/service-settlement-payroll/release/workload-metadata.json`
   - `development/service-settlement-operations-view/release/workload-metadata.json`
 
-- [ ] **Step 1: Write failing expansion tests**
+- [x] **Step 1: Write failing expansion tests**
 
 Cover:
 - entry impact expands to `front-web-console + edge-api-gateway + service-account-access`
 - read-model impact expands to matching `*-operations-view`
 - async/event impact expands to declared dependent workloads
 
-- [ ] **Step 2: Run tests to verify failure**
+- [x] **Step 2: Run tests to verify failure**
 
 Run: `pytest development/runtime-prod-release/release/tests/test_release_resolution.py -v`
 Expected: FAIL because metadata expansion is not implemented.
 
-- [ ] **Step 3: Implement metadata loading and expansion logic**
+- [x] **Step 3: Implement metadata loading and expansion logic**
 
 Minimal implementation:
 - load per-repo workload metadata
@@ -462,12 +462,12 @@ Minimal implementation:
 - reject missing dependency declarations
 - emit a resolved release plan artifact that is separate from the release intent input
 
-- [ ] **Step 4: Re-run tests**
+- [x] **Step 4: Re-run tests**
 
 Run: `pytest development/runtime-prod-release/release/tests/test_release_resolution.py -v`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add development/runtime-prod-release development/front-web-console development/edge-api-gateway development/service-account-access development/service-dispatch-registry development/service-dispatch-operations-view development/service-settlement-payroll development/service-settlement-operations-view
@@ -481,7 +481,7 @@ git commit -m "feat: add workload metadata expansion rules"
 - Create: `development/runtime-prod-release/release/tests/test_resolve_only_workflow.py`
 - Modify: `development/runtime-prod-release/release/resolve_release.py`
 
-- [ ] **Step 1: Write failing resolve-only workflow tests**
+- [x] **Step 1: Write failing resolve-only workflow tests**
 
 Cover:
 - release intent parsing
@@ -490,12 +490,12 @@ Cover:
 - rollout wave or group ordering
 - rendered SSM command preview without execution
 
-- [ ] **Step 2: Run tests to verify failure**
+- [x] **Step 2: Run tests to verify failure**
 
 Run: `pytest development/runtime-prod-release/release/tests/test_resolve_only_workflow.py -v`
 Expected: FAIL because resolve-only workflow and render path do not exist.
 
-- [ ] **Step 3: Implement resolve-only workflow**
+- [x] **Step 3: Implement resolve-only workflow**
 
 The workflow must:
 - never execute SSM
@@ -503,12 +503,12 @@ The workflow must:
 - emit rollout order
 - emit expected SSM command rendering preview
 
-- [ ] **Step 4: Re-run tests**
+- [x] **Step 4: Re-run tests**
 
 Run: `pytest development/runtime-prod-release/release/tests/test_resolve_only_workflow.py -v`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add development/runtime-prod-release
@@ -523,19 +523,19 @@ git commit -m "feat: add resolve-only prod release workflow"
 - Create: `development/runtime-prod-release/release/schema/release-evidence.schema.json`
 - Modify: `development/runtime-prod-release/release/resolve_release.py`
 
-- [ ] **Step 1: Write failing rollback target tests**
+- [x] **Step 1: Write failing rollback target tests**
 
 Test cases:
 - rollback target is last successful release item for same workload
 - evidence requires `image_digest + applied_config_revision + smoke pass`
 - incomplete evidence is rejected
 
-- [ ] **Step 2: Run tests to verify failure**
+- [x] **Step 2: Run tests to verify failure**
 
 Run: `pytest development/runtime-prod-release/release/tests/test_rollback_target_resolution.py -v`
 Expected: FAIL due to missing evidence logic.
 
-- [ ] **Step 3: Implement minimal evidence resolver**
+- [x] **Step 3: Implement minimal evidence resolver**
 
 Store and resolve:
 - workload id
@@ -548,12 +548,12 @@ Store and resolve:
 - smoke result
 - timestamp
 
-- [ ] **Step 4: Re-run tests**
+- [x] **Step 4: Re-run tests**
 
 Run: `pytest development/runtime-prod-release/release/tests/test_rollback_target_resolution.py -v`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add development/runtime-prod-release
@@ -568,7 +568,7 @@ git commit -m "feat: add rollback evidence resolution"
 - Create: `development/runtime-prod-release/.github/workflows/prod-smoke.yml`
 - Create: `development/runtime-prod-release/.github/workflows/prod-rollback.yml`
 
-- [ ] **Step 1: Write failing rollout orchestration tests**
+- [x] **Step 1: Write failing rollout orchestration tests**
 
 Check for:
 - `environment=prod`
@@ -579,11 +579,11 @@ Check for:
 - stop-on-failure semantics
 - reverse-order rollback semantics
 
-- [ ] **Step 2: Run the contract test to verify failure**
+- [x] **Step 2: Run the contract test to verify failure**
 
 Run the chosen local validation command for workflow lint or script assertions.
 
-- [ ] **Step 3: Implement the release workflow minimally**
+- [x] **Step 3: Implement the release workflow minimally**
 
 Required flow:
 - checkout
@@ -604,18 +604,18 @@ Required flow:
 
 Rollback must resolve last successful item and dispatch rollback through SSM.
 
-- [ ] **Step 5: Re-run validation**
+- [x] **Step 5: Re-run validation**
 
 Run all local workflow or script validations required by the repo.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add development/runtime-prod-release
 git commit -m "feat: add prod runtime release workflows"
 ```
 
-- [ ] **Verification additions**
+- [x] **Verification additions**
 
 Verify:
 - GitHub org and repo secrets used by either the production release path or app-repo build/publish path contain no long-lived AWS credentials
@@ -627,26 +627,26 @@ Verify:
 **Files:**
 - Validate only the seven representative repos plus `runtime-prod-release` and `runtime-prod-platform`
 
-- [ ] **Step 1: Run Phase A resolve-only validation**
+- [x] **Step 1: Run Phase A resolve-only validation**
 
 Expected: representative release intent resolves correctly without real SSM dispatch.
 
-- [ ] **Step 2: Run representative metadata validation**
+- [x] **Step 2: Run representative metadata validation**
 
 Expected: all seven representative repos declare workload metadata correctly.
 
-- [ ] **Step 3: Run representative GitHub build-path validation**
+- [x] **Step 3: Run representative GitHub build-path validation**
 
 Expected:
 - the seven representative repos use `ECR_BUILD_AWS_ROLE_ARN`
 - the seven representative repos use shared `AWS_REGION`
 - none of the seven representative repos use `PROD_AWS_ROLE_ARN`
 
-- [ ] **Step 4: Run representative rollback/evidence validation**
+- [x] **Step 4: Run representative rollback/evidence validation**
 
 Expected: PASS
 
-- [ ] **Step 5: Commit Phase A checkpoint**
+- [x] **Step 5: Commit Phase A checkpoint**
 
 ```bash
 git add -A
@@ -658,26 +658,26 @@ git commit -m "test: validate phase a representative prod release flow"
 **Files:**
 - Modify all active deployable app repos
 
-- [ ] **Step 1: Add workload metadata to every active deployable app repo**
+- [x] **Step 1: Add workload metadata to every active deployable app repo**
 
 Expected output: every active app repo has `release/workload-metadata.json`.
 
-- [ ] **Step 2: Standardize build/publish variable naming in every active app repo**
+- [x] **Step 2: Standardize build/publish variable naming in every active app repo**
 
 Expected output:
 - every active app repo uses `ECR_BUILD_AWS_ROLE_ARN`
 - every active app repo consumes shared `AWS_REGION`
 - no active app repo uses `PROD_AWS_ROLE_ARN`
 
-- [ ] **Step 3: Update README build-only prod contract in every active app repo**
+- [x] **Step 3: Update README build-only prod contract in every active app repo**
 
 Expected output: every active app repo points prod rollout ownership to `runtime-prod-release`.
 
-- [ ] **Step 4: Run metadata fan-out verification**
+- [x] **Step 4: Run metadata fan-out verification**
 
 Expected: PASS for all active repos.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add development/*/release/workload-metadata.json development/*/README.md
@@ -753,7 +753,7 @@ Verify:
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-19-prod-runtime-release-reset-design.md`
 - Add docs in `development/runtime-prod-release/README.md`
 
-- [ ] **Step 1: Document the final operating rule**
+- [x] **Step 1: Document the final operating rule**
 
 Capture:
 - app repos are build-only
@@ -761,7 +761,7 @@ Capture:
 - infra shape split
 - workload-based manifest release
 
-- [ ] **Step 2: Add acceptance checklist**
+- [x] **Step 2: Add acceptance checklist**
 
 Checklist must explicitly verify:
 - no prod rollout credentials in app repos
@@ -769,21 +769,21 @@ Checklist must explicitly verify:
 - SSM/evidence persistence
 - no operator SSH required for routine release
 
-- [ ] **Step 3: Run docs consistency review**
+- [x] **Step 3: Run docs consistency review**
 
 Search for stale references to:
 - app-repo prod deploy
 - central deploy as prod runtime owner
 - mutable tag rollout
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-19-prod-runtime-release-reset-design.md development/runtime-prod-release/README.md
 git commit -m "docs: record prod runtime release operating model"
 ```
 
-- [ ] **Verification additions**
+- [x] **Verification additions**
 
 Verify:
 - docs explicitly state the organization variable standard is only `PROD_AWS_ROLE_ARN` and `AWS_REGION`
@@ -797,7 +797,7 @@ Verify:
 **Files:**
 - Verify all touched files and repos
 
-- [ ] **Step 1: Run runtime-prod-release test suite**
+- [x] **Step 1: Run runtime-prod-release test suite**
 
 Run:
 - `pytest development/runtime-prod-release/release/tests -v`
@@ -809,11 +809,11 @@ Expected: PASS
 Run the verification script from Task 9.
 Expected: PASS
 
-- [ ] **Step 3: Run any workflow lint or schema validation**
+- [x] **Step 3: Run any workflow lint or schema validation**
 
 Expected: PASS
 
-- [ ] **Step 4: Manual contract review**
+- [x] **Step 4: Manual contract review**
 
 Confirm by inspection:
 - release unit is workload
