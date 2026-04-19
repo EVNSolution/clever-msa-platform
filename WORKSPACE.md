@@ -71,6 +71,8 @@ clever-msa-platform/
   - 로컬 통합 실행 셸
 - `infra-*`
   - 특정 runtime slice의 ALB, ECS, Route53, CDK deploy를 소유하는 전용 infra repo
+- `runtime-*`
+  - production runtime release control plane 또는 runtime shape owner
 - `edge-*`
   - gateway, edge routing
 - `front-*`
@@ -93,7 +95,8 @@ clever-msa-platform/
 현재 기준 target repo는 아래와 같다.
 
 - `integration-local-stack`
-- `infra-ev-dashboard-platform`
+- `runtime-prod-release`
+- `runtime-prod-platform`
 - `edge-api-gateway`
 - `front-web-console`
 - `service-organization-registry`
@@ -121,16 +124,20 @@ clever-msa-platform/
 - `service-settlement-payroll`
 - `service-settlement-operations-view`
 
-## Active Platform Infra Repo Names
+## Active Platform Runtime Repo Names
 
-현재 application repo와 별도로, platform-specific runtime cutover를 위해 아래 infra repo 이름을 active target으로 유지한다.
+현재 application repo와 별도로, production runtime cutover를 위해 아래 runtime repo 이름을 active target으로 유지한다.
 
-- `infra-ev-dashboard-platform`
+- `runtime-prod-release`
+- `runtime-prod-platform`
 
-이 이름의 의미는 아래와 같다.
+이 이름들의 의미는 아래와 같다.
 
-- `ev-dashboard.com` / `api.ev-dashboard.com` shared ALB, ECS services, ACM, Route53, deploy workflow owner
-- shared app-code repo가 아니라 `ev-dashboard` slice 전용 infra repo
+- `runtime-prod-release`
+  - production rollout control plane
+  - release intent, rollout plan, SSM dispatch, smoke, rollback evidence owner
+- `runtime-prod-platform`
+  - production EC2 runtime shape and canonical inventory owner
 - plain 폴더가 아니라 linked child repo로 등록된 대상
 
 ## Repo Retention Rule
