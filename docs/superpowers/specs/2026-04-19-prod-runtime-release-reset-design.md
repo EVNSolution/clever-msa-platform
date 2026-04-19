@@ -412,7 +412,10 @@ SSM Run Command supports target-based resolution, including tag-based targets, a
 
 ### Sensitive Data Handling
 
-Long-lived AWS credential secrets are forbidden in GitHub for the production runtime release system.
+Long-lived AWS credential secrets are forbidden in GitHub for both:
+
+- the production runtime release path
+- the app-repo build and publish path
 
 Only OIDC-based short-lived AWS authentication is allowed.
 

@@ -86,7 +86,7 @@ Interpretation rules:
 - `AWS_REGION` is the shared workflow region and remains explicit because `aws-actions/configure-aws-credentials` requires an `aws-region` input
 - app repos use `ECR_BUILD_AWS_ROLE_ARN` for build and publish only, together with shared `AWS_REGION`
 - `PROD_AWS_ROLE_ARN` is reserved for `runtime-prod-release` and must not appear as an app-repo build or publish role
-- `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `AWS_SESSION_TOKEN` are forbidden in GitHub organization and repository secrets for this production release path
+- `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `AWS_SESSION_TOKEN` are forbidden in GitHub organization and repository secrets for both the production runtime release path and the app-repo build/publish path
 - `AWS_ACCOUNT_ID` and `ECR_REGISTRY_URI` are runtime-derived values, not standard GitHub variables
 - `INSTANCE_ID` is replaced by SSM tag targeting or inventory-derived targeting
 - `SUBNET_ID` and `SECURITY_GROUP_ID` remain infra-owned inventory, not release-time GitHub inputs
