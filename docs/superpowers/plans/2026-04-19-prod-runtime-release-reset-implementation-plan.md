@@ -80,11 +80,20 @@ Current execution status in this workspace:
   - the host is not using `/opt/clever/runtime/bin/rollout-*`
   - the real runtime root is `/opt/ev-dashboard`
   - the host exposes `runtime-images.json`, `service-env/`, and `state/`
-  - the current remaining minimal blocker is dispatch-command adaptation to the real `/opt/ev-dashboard` runtime layout
+  - dispatch is now adapted to the real `/opt/ev-dashboard` runtime layout
+- first minimal prod dispatch is complete
+  - workload: `service-announcement-registry`
+  - target: `prod-shared`
+  - image digest: `902837199612.dkr.ecr.ap-northeast-2.amazonaws.com/service-announcement-registry@sha256:a2979492e2eeca445112dc089f6bb36f20e8aa449c86bc91f4f0c0d88b19302b`
+  - path: `runtime-prod-release` resolve -> SSM -> `/opt/ev-dashboard/release-manifest.json` -> `ev-dashboard-app-reconcile.service`
+  - result: reconcile succeeded on the prod host and the runtime release journal recorded the applied wave
+  - evidence:
+    - successful reconcile journal start/apply window on host: `2026-04-19T12:23:33Z` -> `2026-04-19T12:23:40Z`
+    - successful runtime command id before the non-minimal curl failure: `f5a5e1b0-6ed6-415d-b1f3-27f894c66f0f`
 
 Not done yet:
 
-- first real workload rollout command against the actual `/opt/ev-dashboard` runtime contract
+- unique release id generation per dispatch so repeated rollouts of the same workload do not collide with a closed wave
 - `prod-smoke` real execution
 - `prod-rollback` real execution
 - persistent release evidence flow
@@ -94,23 +103,17 @@ Not done yet:
 
 The next execution scope stays intentionally narrow.
 
-1. Adapt dispatch to the real shared prod host runtime contract
-   - use `/opt/ev-dashboard`
-   - do not assume `/opt/clever/runtime/bin/rollout-*`
-   - keep the command surface minimal and workload-scoped
-2. Prepare one minimal release intent
-   - start with `front-web-console`
-   - pin one immutable image digest
-3. Run resolve-only and confirm the resolved rollout plan
+1. Make release ids unique per dispatch
+   - do not reuse a fixed `runtime-prod-release-{workload}` identifier
+   - avoid rerun failure from `wave 1 ... is already closed`
+2. Re-run the same single-workload minimal dispatch
+   - verify repeated dispatch succeeds with a fresh release id
+3. Preserve the same narrow scope
    - one workload
    - one shared host group
    - no smoke / rollback / evidence automation yet
-4. Perform the first real minimal prod dispatch
-   - only after the dispatch adapter matches the live `/opt/ev-dashboard` runtime layout
-   - only through `runtime-prod-release`
-5. Record the result back into docs
+4. Record the repeated-dispatch result back into docs
    - success or failure
-   - missing runtime contract
    - next required delta
 
 Current minimum success criterion:
@@ -120,6 +123,11 @@ Current minimum success criterion:
 - prod role assumed
 - SSM command dispatched to the canonical shared prod host
 - the dispatched command matches the live `/opt/ev-dashboard` runtime contract for the selected workload
+
+Current status against the minimum success criterion:
+
+- achieved once for a real workload
+- not yet hardened for repeated dispatch of the same workload because release ids are still fixed per workload
 
 ## Rollout Policy To Implement
 
