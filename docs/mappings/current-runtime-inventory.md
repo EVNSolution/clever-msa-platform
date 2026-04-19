@@ -40,12 +40,22 @@
 | `service-telemetry-dead-letter` | `telemetry-dead-letter-api` | `/api/telemetry-dead-letters/` | `active runtime` | 실패 텔레메트리 append-only 저장과 admin read |
 | `service-telemetry-listener` | `telemetry-listener` | internal-only | `runtime-ready, desired=0` | MQTT subscribe와 hub forward만 담당하는 worker. broker 확정 전까지 prod 비활성 |
 
-## Current Empty Shell Repos
+## Active Runtime Control Plane Repos
 
 - `runtime-prod-release`
-  - prod runtime rollout control plane target
+  - active prod runtime rollout control plane
+  - current minimal path:
+    - release intent resolution
+    - resolved rollout plan
+    - GitHub OIDC auth
+    - SSM dispatch to `tag:CleverHostGroup=evdash-msa`
 - `runtime-prod-platform`
-  - prod runtime shape and canonical inventory owner target
+  - active prod runtime shape and canonical inventory owner
+  - current canonical shape:
+    - one EC2 host `EVDash-msa`
+    - one host group `evdash-msa`
+    - one attached EBS mounted at `/data`
+    - host-local PostgreSQL and Redis
 
 ## Notes
 
@@ -58,5 +68,5 @@
    - deploy 전: [../runbooks/ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md)
    - deploy 중: [../runbooks/ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
    - deploy 후: [../runbooks/ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
-6. `ev-dashboard` prod runtime reset target은 `runtime-prod-platform -> fixed EC2 runtime -> runtime-prod-release -> ev-dashboard.com` 이다. 기존 `infra-ev-dashboard-platform` 과 `clever-deploy-control` 은 이 reset의 canonical source가 아니다.
+6. `ev-dashboard` prod runtime reset target은 `runtime-prod-platform -> EVDash-msa(/data) -> runtime-prod-release -> ev-dashboard.com` 이다. 기존 `infra-ev-dashboard-platform` 과 `clever-deploy-control` 은 이 reset의 canonical source가 아니다.
 7. live operator runbook이나 frontend proxy 기본값에서 `hub.evnlogistics.com` subroute를 current target처럼 쓰지 않는다. `hub` references are legacy bridge or historical evidence only.

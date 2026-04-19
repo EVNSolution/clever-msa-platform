@@ -31,8 +31,8 @@
 | Target repo | Category | Current role | Future role | Current source | Status |
 | --- | --- | --- | --- | --- | --- |
 | `integration-local-stack` | integration | 현재 compose, env, seed, smoke 자산을 한곳에서 관리 | 분리된 repo들을 로컬에서 묶는 통합 실행 셸 | `development/integration-local-stack/` | `migrated-target` |
-| `runtime-prod-release` | runtime | prod runtime release control plane 신규 target | workload-based prod rollout, OIDC auth, SSM dispatch, smoke, rollback, evidence owner | `development/runtime-prod-release/` | `empty-shell` |
-| `runtime-prod-platform` | runtime | prod runtime shape owner 신규 target | canonical runtime inventory, host group mapping, deploy-method class, runtime health contract owner | `development/runtime-prod-platform/` | `empty-shell` |
+| `runtime-prod-release` | runtime | active prod runtime release control plane | workload-based prod rollout, OIDC auth, resolved rollout plan, SSM dispatch owner. current minimal path validated on `EVDash-msa` | `development/runtime-prod-release/` | `migrated-target` |
+| `runtime-prod-platform` | runtime | active prod runtime shape owner | canonical runtime inventory, host group mapping, deploy-method class, runtime health contract owner for the single-host `EVDash-msa + /data` layout | `development/runtime-prod-platform/` | `migrated-target` |
 | `edge-api-gateway` | edge | gateway routing과 reverse proxy | 다중 서비스의 단일 진입 edge | `development/edge-api-gateway/` | `migrated-target` |
 | `front-web-console` | front | surviving 단일 웹 콘솔 | 권한 기반 통합 웹 UI 정본 | `development/front-web-console/` | `migrated-target` |
 | `service-organization-registry` | service | 회사/플릿 정본 | 조직 기준 마스터 registry | `development/service-organization-registry/` | `migrated-target` |
