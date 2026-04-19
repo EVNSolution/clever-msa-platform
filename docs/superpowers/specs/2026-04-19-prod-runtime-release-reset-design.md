@@ -294,6 +294,75 @@ The trust boundary is narrowed by:
 - GitHub environment usage
 - production workflow path
 
+### GitHub Configuration Minimization
+
+GitHub configuration for the production release system is minimized on purpose.
+
+The standard organization-level GitHub Actions variables are exactly two:
+
+- `PROD_AWS_ROLE_ARN`
+  - the ARN of the production release role assumed by `runtime-prod-release`
+- `AWS_REGION`
+  - the shared AWS region for production release workflows
+
+This standard follows GitHub Actions variable guidance:
+
+- variables are for non-sensitive configuration
+- secrets are for sensitive data
+
+`PROD_AWS_ROLE_ARN` is treated as a non-sensitive configuration value and therefore belongs in a GitHub variable, not a secret.
+
+`AWS_REGION` is also required as an explicit workflow input to `aws-actions/configure-aws-credentials`.
+
+That means a role ARN alone is not a complete production AWS configuration according to the official workflow model; the region must be provided alongside it.
+
+### Forbidden GitHub AWS Configuration
+
+The following are outside the GitHub organization or repository variable and secret standard for the production runtime release system:
+
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_SESSION_TOKEN`
+- `AWS_ACCOUNT_ID`
+- `ECR_REGISTRY_URI`
+- `INSTANCE_ID`
+- `SUBNET_ID`
+- `SECURITY_GROUP_ID`
+
+The meaning is fixed as follows:
+
+- `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`
+  - forbidden because production runtime auth is OIDC-only
+- `AWS_ACCOUNT_ID`
+  - derived from the assumed role session or AWS runtime identity
+- `ECR_REGISTRY_URI`
+  - derived from account and region at runtime
+- `INSTANCE_ID`
+  - replaced by SSM tag-based or inventory-derived targeting
+- `SUBNET_ID`, `SECURITY_GROUP_ID`
+  - infra-owned inventory data, not routine release inputs
+
+The production release path must not standardize ad hoc instance id input.
+
+SSM Run Command supports target-based resolution, including tag-based targets, and the release system must use tag- or inventory-derived target resolution instead.
+
+### Sensitive Data Handling
+
+Long-lived AWS credential secrets are forbidden in GitHub for the production runtime release system.
+
+Only OIDC-based short-lived AWS authentication is allowed.
+
+Application runtime secrets must not be duplicated into GitHub secrets as a second source of truth.
+
+The canonical runtime secret source is:
+
+- AWS Secrets Manager
+- or AWS Systems Manager Parameter Store
+
+The release system must also avoid passing plaintext secret values directly as SSM Run Command arguments.
+
+SSM dispatch should reference runtime-managed secret sources or pre-rendered secure runtime material, not inline plaintext secret injection.
+
 ### Concurrency
 
 Production rollout uses one shared concurrency group.
@@ -469,3 +538,5 @@ This design is considered achieved when:
 - no prod rollout entrypoint exists outside `runtime-prod-release`
 - release evidence stores SSM command id, manifest, approver, and smoke result together
 - routine production release no longer requires operator SSH
+- the only standard organization-level GitHub Actions variables are `PROD_AWS_ROLE_ARN` and `AWS_REGION`
+- no GitHub organization or repository secret stores long-lived AWS credentials for production runtime release

@@ -68,6 +68,28 @@ The rollout policy is fixed as:
   - rollback every workload already applied in the current release in reverse rollout order
 - do not mark a release successful until final smoke passes
 
+## GitHub Configuration Minimization Policy
+
+- organization-level GitHub Actions variables: exactly two
+- `PROD_AWS_ROLE_ARN`
+- `AWS_REGION`
+- AWS long-lived credential secrets: forbidden
+- app repo prod AWS credentials: forbidden
+- production runtime auth path: OIDC only
+- SSM target resolution: tag-based or inventory-derived, never ad hoc instance id input
+- runtime secrets source: AWS-managed secret store only
+
+Interpretation rules:
+
+- `PROD_AWS_ROLE_ARN` is the production runtime release role ARN and is stored as a variable because it is non-sensitive configuration
+- `AWS_REGION` is the shared workflow region and remains explicit because `aws-actions/configure-aws-credentials` requires an `aws-region` input
+- `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `AWS_SESSION_TOKEN` are forbidden in GitHub organization and repository secrets for this production release path
+- `AWS_ACCOUNT_ID` and `ECR_REGISTRY_URI` are runtime-derived values, not standard GitHub variables
+- `INSTANCE_ID` is replaced by SSM tag targeting or inventory-derived targeting
+- `SUBNET_ID` and `SECURITY_GROUP_ID` remain infra-owned inventory, not release-time GitHub inputs
+- application runtime secrets stay in AWS Secrets Manager or SSM Parameter Store
+- SSM commands must not embed plaintext secret values directly in command arguments
+
 ## File Structure
 
 ### New repo / control plane
@@ -203,6 +225,13 @@ git add development/runtime-prod-release
 git commit -m "feat: scaffold runtime prod release repo"
 ```
 
+- [ ] **Verification additions**
+
+Verify:
+- `runtime-prod-release` introduces no long-lived AWS credential secret usage
+- production role assume path exists only in `runtime-prod-release`
+- organization variables target the two-name standard: `PROD_AWS_ROLE_ARN`, `AWS_REGION`
+
 ### Task 2: Implement Canonical Runtime Inventory Resolution
 
 **Files:**
@@ -249,6 +278,12 @@ Expected: PASS
 git add development/runtime-prod-release development/infra-ev-dashboard-platform
 git commit -m "feat: add canonical prod runtime inventory resolution"
 ```
+
+- [ ] **Verification additions**
+
+Verify:
+- SSM dispatch and release resolution consume tag-based or inventory-derived targets
+- no instance id variable becomes a standard release input
 
 ### Task 3: Add Workload Metadata and Dynamic Expansion Engine
 
@@ -436,6 +471,13 @@ git add development/runtime-prod-release
 git commit -m "feat: add prod runtime release workflows"
 ```
 
+- [ ] **Verification additions**
+
+Verify:
+- GitHub org and repo secrets used by the production release path contain no long-lived AWS credentials
+- only `runtime-prod-release` contains the prod role assume path
+- SSM dispatch uses inventory or tag resolution, never ad hoc instance id variable input
+
 ### Task 7: Phase A Representative Validation
 
 **Files:**
@@ -532,6 +574,14 @@ git add development/*/README.md development/*/.github/workflows
 git commit -m "chore: remove prod rollout from app repos"
 ```
 
+- [ ] **Verification additions**
+
+Verify:
+- active app repos retain no prod environment usage
+- active app repos retain no prod OIDC assume path
+- active app repos retain no prod deploy secret
+- active app repos retain no prod rollout workflow entrypoint
+
 ### Task 10: Wire Docs, Workspace Map, and Acceptance Evidence
 
 **Files:**
@@ -570,6 +620,14 @@ Search for stale references to:
 git add /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-19-prod-runtime-release-reset-design.md development/runtime-prod-release/README.md
 git commit -m "docs: record prod runtime release operating model"
 ```
+
+- [ ] **Verification additions**
+
+Verify:
+- docs explicitly state the organization variable standard is only `PROD_AWS_ROLE_ARN` and `AWS_REGION`
+- docs explicitly forbid long-lived AWS credential secrets in GitHub
+- docs explicitly state runtime-prod-release is the only prod role assume path
+- docs explicitly state SSM target resolution is tag-based or inventory-derived
 
 ### Task 11: Final Verification Gate
 
