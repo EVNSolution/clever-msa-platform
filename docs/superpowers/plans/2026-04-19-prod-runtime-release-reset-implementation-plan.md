@@ -47,6 +47,80 @@ Only after Phase B verification passes:
 - remove prod rollout credentials and prod OIDC assume paths from app repos
 - lock prod ownership to `runtime-prod-release`
 
+## Execution Status
+
+Current execution status in this workspace:
+
+- Phase A bootstrap is complete
+  - `runtime-prod-release` repo exists and is pushed
+  - `runtime-prod-platform` repo exists and is pushed
+  - representative repos were updated with `ECR_BUILD_AWS_ROLE_ARN` and workload metadata
+- Phase B build-contract fan-out is complete
+  - active app repos now use `ECR_BUILD_AWS_ROLE_ARN`
+  - active app repos no longer retain `GH_ACTIONS_ECR_BUILD_ROLE_ARN`
+  - active app repos do not expose `PROD_AWS_ROLE_ARN`
+- GitHub configuration minimization cutover is complete for the current standard
+  - org variables are `AWS_REGION`, `PROD_AWS_ROLE_ARN`
+  - org AWS secrets are empty
+- prod deploy role trust now includes `runtime-prod-release:environment:prod`
+- current minimal runtime target contract is one shared prod host group
+  - the running prod app host is tagged with:
+    - `CleverProject=clever-msa`
+    - `CleverEnvironment=prod`
+    - `CleverRole=app-host`
+    - `CleverHostGroup=prod-shared`
+- minimal release path code is currently limited to:
+  - release intent resolution
+  - dynamic expansion
+  - inventory resolution
+  - OIDC prod auth
+  - SSM dispatch
+- shared prod host preflight is complete
+  - `tag:CleverHostGroup=prod-shared` reaches the running prod app host
+  - the host is not using `/opt/clever/runtime/bin/rollout-*`
+  - the real runtime root is `/opt/ev-dashboard`
+  - the host exposes `runtime-images.json`, `service-env/`, and `state/`
+  - the current remaining minimal blocker is dispatch-command adaptation to the real `/opt/ev-dashboard` runtime layout
+
+Not done yet:
+
+- first real workload rollout command against the actual `/opt/ev-dashboard` runtime contract
+- `prod-smoke` real execution
+- `prod-rollback` real execution
+- persistent release evidence flow
+- old prod rollout path removal
+
+## Immediate Next Plan
+
+The next execution scope stays intentionally narrow.
+
+1. Adapt dispatch to the real shared prod host runtime contract
+   - use `/opt/ev-dashboard`
+   - do not assume `/opt/clever/runtime/bin/rollout-*`
+   - keep the command surface minimal and workload-scoped
+2. Prepare one minimal release intent
+   - start with `front-web-console`
+   - pin one immutable image digest
+3. Run resolve-only and confirm the resolved rollout plan
+   - one workload
+   - one shared host group
+   - no smoke / rollback / evidence automation yet
+4. Perform the first real minimal prod dispatch
+   - only after the dispatch adapter matches the live `/opt/ev-dashboard` runtime layout
+   - only through `runtime-prod-release`
+5. Record the result back into docs
+   - success or failure
+   - missing runtime contract
+   - next required delta
+
+Current minimum success criterion:
+
+- digest chosen
+- resolved plan generated
+- prod role assumed
+- SSM command dispatched to the canonical shared prod host
+- the dispatched command matches the live `/opt/ev-dashboard` runtime contract for the selected workload
+
 ## Rollout Policy To Implement
 
 The runtime release workflow must not invent orchestration semantics ad hoc.
