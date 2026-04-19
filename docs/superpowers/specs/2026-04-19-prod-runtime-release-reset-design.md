@@ -103,6 +103,14 @@ The production system must not use mutable image tags as rollout truth.
 
 The canonical runtime release input is a release manifest whose items are pinned to immutable image digests.
 
+The release unit is fixed as:
+
+- workload
+
+The repo remains source-ownership metadata only.
+
+The runtime control plane must reason in workload units, not repo units.
+
 ## Release Manifest Model
 
 Each release item must contain at least:
@@ -119,17 +127,103 @@ The system does not use fixed predeclared bundles such as a permanent `settlemen
 
 Instead, the release manifest starts from explicitly selected changed items and expands the release set only when impact rules require companion items.
 
+### Canonical manifest semantics
+
+- `workload_id`
+  - the canonical runtime release unit
+- `repo`
+  - source repo metadata only
+- `image_digest`
+  - immutable release artifact
+- `target_host_group`
+  - not a free-form operator field
+  - resolved from infra-owned canonical runtime inventory
+- `deploy_method`
+  - not selected per release
+  - derived from workload class metadata
+- `healthcheck`
+  - workload-owned health assertion contract
+- `rollback_target`
+  - the last successful release item for that workload
+
+### Host group ownership
+
+`target_host_group` is owned by infra truth, not by release-time operator choice.
+
+The canonical source is an infra-owned runtime inventory that maps:
+
+- `workload_id`
+- workload class
+- target host group
+- deploy method
+- healthcheck contract
+
+The release repo may resolve this inventory, but it does not invent or override it during routine production rollout.
+
+### Deploy method ownership
+
+`deploy_method` is fixed by workload class.
+
+The release repo does not choose deployment mechanics item by item.
+
+The starting policy is:
+
+- `entry`
+  - `compose`
+- `core-api`
+  - `compose`
+- `worker`
+  - `systemd`
+- `consumer`
+  - `systemd`
+
+The runtime inventory may refine classes, but release-time choice remains disallowed.
+
+### Rollback target ownership
+
+`rollback_target` is the last successful release item for the same workload.
+
+The minimum rollback evidence is:
+
+- `image_digest`
+- applied config revision
+- smoke pass record
+
+Rollback is therefore pinned to the most recent successful applied item, not an abstract label.
+
 ## Manifest Expansion Rules
 
 The confirmed rule is:
 
 - no fixed bundle model
-- service-level image release by default
+- workload-level image release by default
 - manifest-based dynamic expansion when runtime impact requires companion rollout
 
 ### Base rule
 
-The default release unit is one runtime item per repo image.
+The default release unit is one runtime workload item pinned to one immutable image digest.
+
+Repo membership does not define the release unit.
+
+### Impact metadata ownership
+
+Dynamic expansion is not inferred ad hoc from operator judgment.
+
+It is determined from repo- and workload-owned metadata declarations, enforced by the production release system.
+
+The metadata contract must declare at least:
+
+- `workload_id`
+- `workload_class`
+- `entry_impact`
+- `public_api_contract_impact`
+- `read_model_impact`
+- `async_event_impact`
+- `runtime_config_gate`
+- `depends_on_workloads`
+- `expands_to_workloads`
+
+The release system evaluates the declared metadata and computes the final release set before approval and execution.
 
 ### Expansion rules
 
@@ -149,6 +243,8 @@ When the change affects the production entry flow, the release set expands to in
 - `edge-api-gateway`
 - `service-account-access`
 
+The 판정 주체 is the workload metadata field `entry_impact`.
+
 ### Public API contract impact
 
 When a public route, auth boundary, or response contract changes:
@@ -157,11 +253,15 @@ When a public route, auth boundary, or response contract changes:
 - include the changed upstream service
 - include `front-web-console` when the frontend directly depends on that public contract
 
+The 판정 주체 is the workload metadata field `public_api_contract_impact`.
+
 ### Read-model impact
 
 When a source-of-truth change can invalidate a read-model runtime contract:
 
 - include the corresponding `*-operations-view` repo in the same release set
+
+The 판정 주체 is the workload metadata field `read_model_impact` plus declared `expands_to_workloads`.
 
 ### Async/event impact
 
@@ -169,12 +269,16 @@ When producer-consumer schema compatibility is at risk:
 
 - include the affected producer and consumer items together
 
+The 판정 주체 is the workload metadata field `async_event_impact` plus declared producer-consumer dependencies.
+
 ### Runtime config and migration impact
 
 When runtime config, secret shape, or migration boundaries are involved:
 
 - the release must be gated for explicit approval
 - this is not treated as a routine automatic application-only release
+
+The 판정 주체 is the workload metadata field `runtime_config_gate`.
 
 ## Production Release Execution
 
@@ -361,3 +465,7 @@ This design is considered achieved when:
 - release scope is manifest-driven and image-digest based
 - production validation is impact-scoped
 - infra rollout is no longer the normal application release path
+- app repos no longer retain prod rollout credentials
+- no prod rollout entrypoint exists outside `runtime-prod-release`
+- release evidence stores SSM command id, manifest, approver, and smoke result together
+- routine production release no longer requires operator SSH
