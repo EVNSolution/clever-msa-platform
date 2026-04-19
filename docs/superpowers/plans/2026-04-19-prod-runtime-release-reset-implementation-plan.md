@@ -483,7 +483,7 @@ git commit -m "feat: add prod runtime release workflows"
 - [ ] **Verification additions**
 
 Verify:
-- GitHub org and repo secrets used by the production release path contain no long-lived AWS credentials
+- GitHub org and repo secrets used by either the production release path or app-repo build/publish path contain no long-lived AWS credentials
 - only `runtime-prod-release` contains the prod role assume path
 - SSM dispatch uses inventory or tag resolution, never ad hoc instance id variable input
 

@@ -608,4 +608,4 @@ This design is considered achieved when:
 - the only standard organization-level GitHub Actions variables are `PROD_AWS_ROLE_ARN` and `AWS_REGION`
 - every app repo build and publish path is standardized on `ECR_BUILD_AWS_ROLE_ARN` plus shared `AWS_REGION`
 - no app repo uses `PROD_AWS_ROLE_ARN` as its build or publish credential path
-- no GitHub organization or repository secret stores long-lived AWS credentials for production runtime release
+- no GitHub organization or repository secret stores long-lived AWS credentials for either production runtime release or app-repo build and publish
