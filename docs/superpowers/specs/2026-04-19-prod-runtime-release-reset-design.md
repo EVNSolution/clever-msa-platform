@@ -322,9 +322,12 @@ The trust boundary is narrowed by:
 
 ### GitHub Configuration Minimization
 
-GitHub configuration for the production release system is minimized on purpose.
+GitHub configuration is minimized on purpose, but the standard is split by path:
 
-The standard organization-level GitHub Actions variables are exactly two:
+- production runtime release path
+- app-repo build and publish path
+
+The standard organization-level GitHub Actions variables remain exactly two:
 
 - `PROD_AWS_ROLE_ARN`
   - the ARN of the production release role assumed by `runtime-prod-release`
@@ -341,6 +344,37 @@ This standard follows GitHub Actions variable guidance:
 `AWS_REGION` is also required as an explicit workflow input to `aws-actions/configure-aws-credentials`.
 
 That means a role ARN alone is not a complete production AWS configuration according to the official workflow model; the region must be provided alongside it.
+
+### App Repo Build and Publish GitHub Configuration
+
+Application repos still need a standard AWS-authenticated build and publish path for immutable ECR image output.
+
+That build and publish path is separate from production rollout.
+
+The app-repo standard is:
+
+- repo-level `ECR_BUILD_AWS_ROLE_ARN`
+- shared `AWS_REGION`
+
+Interpretation:
+
+- `ECR_BUILD_AWS_ROLE_ARN`
+  - repo-local or selected-repo variable for build and publish only
+- `AWS_REGION`
+  - shared non-sensitive region value, typically inherited from the organization-level variable
+
+This means app repos still consume two configuration values for their GitHub Actions build path, but only one of them is app-repo specific.
+
+The production rollout role must never be reused for build and publish.
+
+The boundary is fixed as:
+
+- app repo build and publish
+  - `ECR_BUILD_AWS_ROLE_ARN` + `AWS_REGION`
+- production runtime release
+  - `PROD_AWS_ROLE_ARN` + `AWS_REGION`
+
+`PROD_AWS_ROLE_ARN` must not be configured as an app-repo production deployment path.
 
 ### Forbidden GitHub AWS Configuration
 
@@ -367,6 +401,10 @@ The meaning is fixed as follows:
   - replaced by SSM tag-based or inventory-derived targeting
 - `SUBNET_ID`, `SECURITY_GROUP_ID`
   - infra-owned inventory data, not routine release inputs
+
+For app repos, the same forbidden list applies to runtime release concerns.
+
+The only AWS-authenticated app-repo standard input beyond shared region is `ECR_BUILD_AWS_ROLE_ARN`.
 
 The production release path must not standardize ad hoc instance id input.
 
@@ -565,4 +603,6 @@ This design is considered achieved when:
 - release evidence stores SSM command id, manifest, approver, and smoke result together
 - routine production release no longer requires operator SSH
 - the only standard organization-level GitHub Actions variables are `PROD_AWS_ROLE_ARN` and `AWS_REGION`
+- every app repo build and publish path is standardized on `ECR_BUILD_AWS_ROLE_ARN` plus shared `AWS_REGION`
+- no app repo uses `PROD_AWS_ROLE_ARN` as its build or publish credential path
 - no GitHub organization or repository secret stores long-lived AWS credentials for production runtime release

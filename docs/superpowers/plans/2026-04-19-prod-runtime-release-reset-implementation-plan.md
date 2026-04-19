@@ -73,6 +73,7 @@ The rollout policy is fixed as:
 - organization-level GitHub Actions variables: exactly two
 - `PROD_AWS_ROLE_ARN`
 - `AWS_REGION`
+- app-repo build/publish AWS variable: `ECR_BUILD_AWS_ROLE_ARN`
 - AWS long-lived credential secrets: forbidden
 - app repo prod AWS credentials: forbidden
 - production runtime auth path: OIDC only
@@ -83,6 +84,8 @@ Interpretation rules:
 
 - `PROD_AWS_ROLE_ARN` is the production runtime release role ARN and is stored as a variable because it is non-sensitive configuration
 - `AWS_REGION` is the shared workflow region and remains explicit because `aws-actions/configure-aws-credentials` requires an `aws-region` input
+- app repos use `ECR_BUILD_AWS_ROLE_ARN` for build and publish only, together with shared `AWS_REGION`
+- `PROD_AWS_ROLE_ARN` is reserved for `runtime-prod-release` and must not appear as an app-repo build or publish role
 - `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `AWS_SESSION_TOKEN` are forbidden in GitHub organization and repository secrets for this production release path
 - `AWS_ACCOUNT_ID` and `ECR_REGISTRY_URI` are runtime-derived values, not standard GitHub variables
 - `INSTANCE_ID` is replaced by SSM tag targeting or inventory-derived targeting
@@ -145,6 +148,9 @@ The existing `infra-ev-dashboard-platform` repo is not used as the canonical sou
 - Create per-repo metadata files:
   - `release/workload-metadata.json`
 - Modify repo READMEs to state build/test/publish-only prod contract
+- Modify representative repo Actions variables to standardize on:
+  - `ECR_BUILD_AWS_ROLE_ARN`
+  - shared `AWS_REGION`
 
 ### Evidence semantics
 
@@ -233,6 +239,7 @@ Verify:
 - `runtime-prod-release` introduces no long-lived AWS credential secret usage
 - production role assume path exists only in `runtime-prod-release`
 - organization variables target the two-name standard: `PROD_AWS_ROLE_ARN`, `AWS_REGION`
+- no app repo uses `PROD_AWS_ROLE_ARN` for build or publish
 
 ### Task 2: Implement Canonical Runtime Inventory Resolution
 
@@ -493,11 +500,18 @@ Expected: representative release intent resolves correctly without real SSM disp
 
 Expected: all seven representative repos declare workload metadata correctly.
 
-- [ ] **Step 3: Run representative rollback/evidence validation**
+- [ ] **Step 3: Run representative GitHub build-path validation**
+
+Expected:
+- the seven representative repos use `ECR_BUILD_AWS_ROLE_ARN`
+- the seven representative repos use shared `AWS_REGION`
+- none of the seven representative repos use `PROD_AWS_ROLE_ARN`
+
+- [ ] **Step 4: Run representative rollback/evidence validation**
 
 Expected: PASS
 
-- [ ] **Step 4: Commit Phase A checkpoint**
+- [ ] **Step 5: Commit Phase A checkpoint**
 
 ```bash
 git add -A
@@ -513,15 +527,22 @@ git commit -m "test: validate phase a representative prod release flow"
 
 Expected output: every active app repo has `release/workload-metadata.json`.
 
-- [ ] **Step 2: Update README build-only prod contract in every active app repo**
+- [ ] **Step 2: Standardize build/publish variable naming in every active app repo**
+
+Expected output:
+- every active app repo uses `ECR_BUILD_AWS_ROLE_ARN`
+- every active app repo consumes shared `AWS_REGION`
+- no active app repo uses `PROD_AWS_ROLE_ARN`
+
+- [ ] **Step 3: Update README build-only prod contract in every active app repo**
 
 Expected output: every active app repo points prod rollout ownership to `runtime-prod-release`.
 
-- [ ] **Step 3: Run metadata fan-out verification**
+- [ ] **Step 4: Run metadata fan-out verification**
 
 Expected: PASS for all active repos.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add development/*/release/workload-metadata.json development/*/README.md
@@ -551,6 +572,8 @@ The script must fail if any active app repo still has:
 - prod environment definition or use
 - prod OIDC assume path
 - README deploy ownership drift
+- nonstandard build role variable name for ECR publish
+- `PROD_AWS_ROLE_ARN` referenced from app-repo workflow or vars
 
 - [ ] **Step 3: Remove or disable prod rollout paths in app repos**
 
@@ -583,6 +606,8 @@ Verify:
 - active app repos retain no prod OIDC assume path
 - active app repos retain no prod deploy secret
 - active app repos retain no prod rollout workflow entrypoint
+- active app repos standardize build/publish on `ECR_BUILD_AWS_ROLE_ARN` plus shared `AWS_REGION`
+- active app repos never reference `PROD_AWS_ROLE_ARN`
 
 ### Task 10: Wire Docs, Workspace Map, and Acceptance Evidence
 
@@ -627,6 +652,7 @@ git commit -m "docs: record prod runtime release operating model"
 
 Verify:
 - docs explicitly state the organization variable standard is only `PROD_AWS_ROLE_ARN` and `AWS_REGION`
+- docs explicitly state app repo build/publish standard is `ECR_BUILD_AWS_ROLE_ARN` plus shared `AWS_REGION`
 - docs explicitly forbid long-lived AWS credential secrets in GitHub
 - docs explicitly state runtime-prod-release is the only prod role assume path
 - docs explicitly state SSM target resolution is tag-based or inventory-derived
