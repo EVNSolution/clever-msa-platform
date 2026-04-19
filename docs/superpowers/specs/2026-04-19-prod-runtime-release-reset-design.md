@@ -29,13 +29,16 @@ The production release system must not depend on stale manual inputs such as sub
 
 The confirmed operating model is:
 
-- EC2 fixed runtime
+- single EC2 runtime host
+- attached EBS data volume
 - single prod release repo
 - separate prod platform repo for runtime shape
 
 This means:
 
-- runtime hosts remain EC2-based
+- the canonical production runtime host is one EC2 instance named `EVDash-msa`
+- runtime data persists on one attached EBS volume mounted at `/data`
+- application containers, PostgreSQL, and Redis run on the same runtime host in this first production reset phase
 - application rollout is handled by one dedicated production release control plane
 - runtime shape ownership remains separate in a newly created prod platform repo
 
@@ -185,6 +188,16 @@ The canonical source is an infra-owned runtime inventory that maps:
 - healthcheck contract
 
 The release repo may resolve this inventory, but it does not invent or override it during routine production rollout.
+
+For the first production reset phase, the canonical inventory resolves every workload to one runtime target:
+
+- `target_host_group = evdash-msa`
+
+That host group maps to:
+
+- EC2 instance name `EVDash-msa`
+- attached EBS volume mounted at `/data`
+- one shared host-local runtime for app containers, PostgreSQL, and Redis
 
 ### Deploy method ownership
 
@@ -453,17 +466,21 @@ This removes bastion- or operator-driven SSH as the normal production release pa
 
 ## Runtime Topology Rule
 
-The runtime is not treated as one shared undifferentiated EC2 host.
+The first production reset phase intentionally uses one minimal EC2 + EBS runtime unit.
 
-The release model uses host groups.
+The canonical runtime topology is:
 
-The minimum production grouping is:
+- one EC2 instance named `EVDash-msa`
+- one attached EBS volume mounted at `/data`
+- one host-local PostgreSQL runtime
+- one host-local Redis runtime
+- one shared container runtime for all application workloads
 
-- entry
-- core api
-- worker or consumer
+The release model still resolves workloads individually, but initial target resolution is intentionally collapsed to a single runtime target:
 
-The release target is always workload-oriented, not a single all-in-one host blob.
+- `evdash-msa`
+
+This phase does not preserve a separate `app-host` and `data-host` production topology.
 
 ## Production Validation Rule
 
@@ -502,7 +519,7 @@ That flow is the top-priority protected smoke path.
 ### Infra
 
 - `runtime-prod-platform`
-  - role: production runtime shape owner for the fixed EC2 runtime slice
+  - role: production runtime shape owner for the single-host EC2 + EBS runtime slice
   - GitHub: to be created
 
 ### Services
@@ -589,6 +606,8 @@ The production runtime release system is fixed as:
 - GitHub `environment=prod`, shared production concurrency, and OIDC-based AWS authentication are mandatory
 - EC2 rollout execution is performed through SSM Run Command
 - `runtime-prod-platform` owns runtime shape only
+- the canonical production runtime target is one EC2 instance named `EVDash-msa`
+- the canonical production data path is one attached EBS volume mounted at `/data`
 - release scope is determined by a manifest of workload items pinned to immutable image digests with impact-based dynamic expansion
 
 ## Acceptance Criteria
@@ -609,3 +628,6 @@ This design is considered achieved when:
 - every app repo build and publish path is standardized on `ECR_BUILD_AWS_ROLE_ARN` plus shared `AWS_REGION`
 - no app repo uses `PROD_AWS_ROLE_ARN` as its build or publish credential path
 - no GitHub organization or repository secret stores long-lived AWS credentials for either production runtime release or app-repo build and publish
+- the canonical production runtime instance name is `EVDash-msa`
+- the canonical production runtime data mount is `/data`
+- the canonical production runtime topology no longer depends on a separate `app-host` and `data-host` split

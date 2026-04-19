@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a production-only runtime release system centered on a new `runtime-prod-release` repo, while converting app repos to build/test/publish-only for prod and isolating runtime shape ownership in a new `runtime-prod-platform` repo.
+**Goal:** Build a production-only runtime release system centered on a new `runtime-prod-release` repo, while converting app repos to build/test/publish-only for prod and isolating runtime shape ownership in a new `runtime-prod-platform` repo. The first runtime target is one EC2 instance named `EVDash-msa` with one attached EBS volume mounted at `/data`.
 
-**Architecture:** The work is split into four layers: inventory and release metadata, the new production release control plane, app-repo rollout removal, and evidence/smoke/rollback wiring. Runtime release decisions are workload-based, resolved from prod-platform-owned inventory plus workload metadata, and executed on fixed EC2 runtime hosts through SSM Run Command.
+**Architecture:** The work is split into four layers: inventory and release metadata, the new production release control plane, app-repo rollout removal, and evidence/smoke/rollback wiring. Runtime release decisions are workload-based, resolved from prod-platform-owned inventory plus workload metadata, and executed through SSM Run Command against one canonical runtime target: `EVDash-msa`. In this first phase, PostgreSQL and Redis are colocated on the same EC2 host and persist on `/data`.
 
-**Tech Stack:** GitHub Actions, GitHub environments, AWS OIDC, AWS SSM Run Command, ECR immutable image digests, EC2 fixed runtime, manifest-based rollout control
+**Tech Stack:** GitHub Actions, GitHub environments, AWS OIDC, AWS SSM Run Command, ECR immutable image digests, single EC2 runtime with attached EBS, manifest-based rollout control
 
 ---
 
@@ -34,6 +34,8 @@ This phase validates:
 - rollback evidence
 - resolve-only workflow
 - real production workflow shape without fan-out
+- one-host runtime targeting on `EVDash-msa`
+- `/data`-mounted EBS runtime persistence assumptions
 
 ### Phase B: Full Fan-Out
 
@@ -52,6 +54,13 @@ Only after Phase B verification passes:
 The runtime release workflow must not invent orchestration semantics ad hoc.
 
 The rollout policy is fixed as:
+
+- initial runtime topology uses exactly one canonical host group:
+  - `evdash-msa`
+- that host group resolves to:
+  - instance name `EVDash-msa`
+  - attached EBS mounted at `/data`
+- PostgreSQL and Redis are host-local runtime dependencies in this first phase
 
 - workload class order:
   - `worker`
@@ -134,6 +143,14 @@ Only `runtime-prod-platform` owns the canonical inventory.
 The existing `infra-ev-dashboard-platform` repo is not used as the canonical source in this reset plan.
 
 `runtime-prod-release` reads the exported artifact only. It does not create or persist an independent canonical inventory copy.
+
+The first canonical inventory shape is intentionally minimal:
+
+- one host group: `evdash-msa`
+- one EC2 instance name: `EVDash-msa`
+- one attached EBS mount: `/data`
+- host-local PostgreSQL and Redis runtime
+- all application workloads initially resolve to the same runtime target
 
 ### App repo rollout removal and workload metadata
 
@@ -273,6 +290,11 @@ Implement resolver that reads only the infra-owned exported inventory artifact a
 - [ ] **Step 4: Add infra-side inventory artifact and ownership doc**
 
 Document that `runtime-prod-platform` owns canonical host group mapping and runtime classes.
+Document the initial minimal runtime shape:
+- one instance name `EVDash-msa`
+- one host group `evdash-msa`
+- one attached EBS mount `/data`
+- host-local PostgreSQL and Redis
 
 - [ ] **Step 5: Re-run tests**
 
@@ -460,6 +482,7 @@ Required flow:
 - approve through `prod` environment
 - assume AWS role with OIDC
 - dispatch SSM commands by rollout order
+- dispatch SSM commands by rollout order to `EVDash-msa`
 - stop immediately on first failure
 - trigger reverse-order rollback of already-applied workloads
 - collect smoke evidence
@@ -686,6 +709,8 @@ Confirm by inspection:
 - deploy method comes from workload class
 - rollback target is last successful release item
 - dynamic expansion is metadata-driven
+- canonical runtime target is one EC2 instance named `EVDash-msa`
+- canonical runtime data mount is `/data`
 
 - [ ] **Step 5: Commit any final cleanup**
 
