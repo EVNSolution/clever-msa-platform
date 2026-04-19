@@ -42,7 +42,10 @@
 
 ## Current Empty Shell Repos
 
-현재 없음.
+- `runtime-prod-release`
+  - prod runtime rollout control plane target
+- `runtime-prod-platform`
+  - prod runtime shape and canonical inventory owner target
 
 ## Notes
 
@@ -55,5 +58,5 @@
    - deploy 전: [../runbooks/ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md)
    - deploy 중: [../runbooks/ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
    - deploy 후: [../runbooks/ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
-6. `ev-dashboard` canonical prod truth는 `infra-ev-dashboard-platform -> CDK -> EC2 app host + EC2 data host(EBS) -> ev-dashboard.com` 이다. `clever-deploy-control` 은 bridge lane이나 legacy reference일 뿐, 이 surface의 정본이 아니다.
+6. `ev-dashboard` prod runtime reset target은 `runtime-prod-platform -> fixed EC2 runtime -> runtime-prod-release -> ev-dashboard.com` 이다. 기존 `infra-ev-dashboard-platform` 과 `clever-deploy-control` 은 이 reset의 canonical source가 아니다.
 7. live operator runbook이나 frontend proxy 기본값에서 `hub.evnlogistics.com` subroute를 current target처럼 쓰지 않는다. `hub` references are legacy bridge or historical evidence only.

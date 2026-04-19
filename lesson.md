@@ -14,6 +14,35 @@ Keep deploy/runtime wording short and operator-friendly:
 
 Avoid old slice/proof shorthand in live docs and operator talk. Use the plain terms above instead.
 
+## Use Stable Secret Names, Not Stack-Generated Secret IDs
+
+Deleting CDK stack-generated secrets proved that the old runtime still depended on physical secret names as if they were canonical. The safer runtime rule is:
+
+- GitHub owns no runtime secrets
+- runtime secrets live in AWS-managed secret stores
+- runtime names stay stable across infra recreation
+
+If the runtime contract depends on a random CloudFormation suffix, the runtime is not reset-safe yet.
+
+## Single-Host Cutover Is Safer Through Snapshot Clone Than Cross-AZ Volume Moves
+
+The successful `EVDash-msa + /data` cutover did not reuse the old data volume in place. It used a snapshot, created a new volume in the target AZ, attached it to the target app host, and mounted it at `/data`. That pattern is faster to reason about and easier to roll back than trying to preserve a split app/data topology during a reset.
+
+## Do Not Try To Move AMD64 App Images Onto An ARM64 Data Host
+
+The old data host was `arm64`, while the live app images were `amd64`. That made the tempting “just run everything on the old data host” recovery path fail with `exec format error`. During runtime reset, check architecture before you plan a rescue host. If the architectures differ, move the data to the canonical app host instead of moving the apps to the data host.
+
+## Minimum Release First, Automation Later
+
+The new release system was validated in the right order:
+
+- digest build and publish from app repos
+- resolve-only and dispatch through `runtime-prod-release`
+- one real workload
+- repeated workload release with unique timestamp-based `releaseId`
+
+That was enough to prove the lane. `smoke`, `rollback`, and persistent evidence are follow-up work, not blockers for the first honest success.
+
 ## Start With One Boundary
 
 Cross-repo runtime patches go wrong when several repos move at once and no one remembers which layer really changed behavior. The safer pattern is small and repeatable: one repo at a time, one focused test, one minimal change, one verification pass, one recorded lesson. If the rule matters beyond a single repo, copy it back to this root file.

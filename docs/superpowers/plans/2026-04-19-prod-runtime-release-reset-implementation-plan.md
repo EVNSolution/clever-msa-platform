@@ -8,6 +8,8 @@
 
 **Tech Stack:** GitHub Actions, GitHub environments, AWS OIDC, AWS SSM Run Command, ECR immutable image digests, single EC2 runtime with attached EBS, manifest-based rollout control
 
+**Plan Status:** Complete for the minimal production cutover wave. The remaining smoke, rollback, and evidence automation work is explicitly deferred to the next wave.
+
 ---
 
 ## Delivery Phases
@@ -48,6 +50,106 @@ Only after Phase B verification passes:
 - remove old prod rollout entrypoints
 - remove prod rollout credentials and prod OIDC assume paths from app repos
 - lock prod ownership to `runtime-prod-release`
+
+## Execution Status
+
+Current execution status in this workspace:
+
+- Phase A bootstrap is complete
+  - `runtime-prod-release` repo exists and is pushed
+  - `runtime-prod-platform` repo exists and is pushed
+  - representative repos were updated with `ECR_BUILD_AWS_ROLE_ARN` and workload metadata
+- Phase B build-contract fan-out is complete
+  - active app repos now use `ECR_BUILD_AWS_ROLE_ARN`
+  - active app repos no longer retain `GH_ACTIONS_ECR_BUILD_ROLE_ARN`
+  - active app repos do not expose `PROD_AWS_ROLE_ARN`
+- GitHub configuration minimization cutover is complete for the current standard
+  - org variables are `AWS_REGION`, `PROD_AWS_ROLE_ARN`
+  - org AWS secrets are empty
+- prod deploy role trust now includes `runtime-prod-release:environment:prod`
+- current minimal runtime target contract is one single-host prod group
+  - the running prod app host is tagged with:
+    - `CleverProject=clever-msa`
+    - `CleverEnvironment=prod`
+    - `CleverRole=app-host`
+    - `CleverHostGroup=evdash-msa`
+- minimal release path code is currently limited to:
+  - release intent resolution
+  - dynamic expansion
+  - inventory resolution
+  - OIDC prod auth
+  - SSM dispatch
+- single-host prod preflight is complete
+  - `tag:CleverHostGroup=evdash-msa` reaches the running prod app host
+  - the host is not using `/opt/clever/runtime/bin/rollout-*`
+  - the real runtime root is `/opt/ev-dashboard`
+  - the host exposes `runtime-images.json`, `service-env/`, and `state/`
+  - dispatch is now adapted to the real `/opt/ev-dashboard` runtime layout
+- first minimal prod dispatch is complete
+  - workload: `service-announcement-registry`
+  - target: `evdash-msa`
+  - image digest: `902837199612.dkr.ecr.ap-northeast-2.amazonaws.com/service-announcement-registry@sha256:a2979492e2eeca445112dc089f6bb36f20e8aa449c86bc91f4f0c0d88b19302b`
+  - path: `runtime-prod-release` resolve -> SSM -> `/opt/ev-dashboard/release-manifest.json` -> `ev-dashboard-app-reconcile.service`
+  - result: reconcile succeeded on the prod host and the runtime release journal recorded the applied wave
+  - evidence:
+    - successful reconcile journal start/apply window on host: `2026-04-19T12:23:33Z` -> `2026-04-19T12:23:40Z`
+    - successful runtime command id before the non-minimal curl failure: `f5a5e1b0-6ed6-415d-b1f3-27f894c66f0f`
+- repeated minimal prod dispatch is complete
+  - the same workload was dispatched again with a unique timestamp-based `releaseId`
+  - repeated command id: `ecfec409-eb0f-4eac-8e99-ccc9d01895c3`
+  - repeated result: `Success`
+  - fixed point:
+    - `releaseId` is no longer workload-static
+    - repeated dispatch of the same workload no longer collides with a closed wave
+
+- single-host runtime convergence is complete
+  - canonical runtime host: `EVDash-msa`
+  - canonical host group: `evdash-msa`
+  - canonical data path: `/data`
+  - local PostgreSQL and Redis now run on the same host
+  - the old split data host was terminated
+  - public checks stayed healthy:
+    - `https://ev-dashboard.com/healthz`
+    - `https://ev-dashboard.com/api/healthz`
+    - `https://ev-dashboard.com/api/org/companies/public/resolve/?tenant_code=cheonha`
+  - Safari E2E on `https://ev-dashboard.com/cheonha/login` confirmed the company login entry after cutover
+
+Deferred to the next wave:
+
+- `prod-smoke` real execution
+- `prod-rollback` real execution
+- persistent release evidence flow
+- old prod rollout path removal
+
+## Follow-Up Scope
+
+This plan is closed for the minimal production cutover wave. The next execution scope stays intentionally narrow and belongs to a separate follow-up wave.
+
+1. Preserve the same narrow scope
+   - one workload
+   - one single host group
+   - no smoke / rollback / evidence automation yet
+2. Decide the next minimal hardening slice
+   - either lightweight smoke
+   - or release evidence persistence
+   - or rollback entrypoint
+3. Record the next slice decision back into docs
+   - success or failure
+   - next required delta
+
+Current minimum success criterion:
+
+- digest chosen
+- resolved plan generated
+- prod role assumed
+- SSM command dispatched to the canonical single prod host
+- the dispatched command matches the live `/opt/ev-dashboard` runtime contract for the selected workload
+
+Current status against the minimum success criterion:
+
+- achieved for a real workload
+- achieved again for the same workload with a fresh timestamp-based `releaseId`
+- current minimum path is now repeatable
 
 ## Rollout Policy To Implement
 
