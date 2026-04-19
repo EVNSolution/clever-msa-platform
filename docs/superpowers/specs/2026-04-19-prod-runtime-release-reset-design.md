@@ -31,13 +31,13 @@ The confirmed operating model is:
 
 - EC2 fixed runtime
 - single prod release repo
-- infra separated from runtime release
+- separate prod platform repo for runtime shape
 
 This means:
 
 - runtime hosts remain EC2-based
 - application rollout is handled by one dedicated production release control plane
-- infrastructure shape ownership remains separate
+- runtime shape ownership remains separate in a newly created prod platform repo
 
 ## Runtime Release Model
 
@@ -77,7 +77,11 @@ It owns:
 
 ### 3. Infra remains separate
 
-`infra-ev-dashboard-platform` continues to own runtime shape:
+A new dedicated prod platform repo owns runtime shape:
+
+- `runtime-prod-platform`
+
+The existing `infra-ev-dashboard-platform` repo is not reused as the canonical source for this prod runtime reset.
 
 - ALB
 - EC2 hosts
@@ -456,9 +460,9 @@ That flow is the top-priority protected smoke path.
 
 ### Infra
 
-- `infra-ev-dashboard-platform`
-  - role: runtime infra shape owner for the `ev-dashboard` production slice
-  - GitHub: <https://github.com/EVNSolution/infra-ev-dashboard-platform>
+- `runtime-prod-platform`
+  - role: production runtime shape owner for the fixed EC2 runtime slice
+  - GitHub: to be created
 
 ### Services
 
@@ -543,7 +547,7 @@ The production runtime release system is fixed as:
 - production rollout is executed only from `runtime-prod-release`
 - GitHub `environment=prod`, shared production concurrency, and OIDC-based AWS authentication are mandatory
 - EC2 rollout execution is performed through SSM Run Command
-- `infra-ev-dashboard-platform` owns runtime shape only
+- `runtime-prod-platform` owns runtime shape only
 - release scope is determined by a manifest of workload items pinned to immutable image digests with impact-based dynamic expansion
 
 ## Acceptance Criteria

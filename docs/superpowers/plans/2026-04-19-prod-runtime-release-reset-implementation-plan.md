@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a production-only runtime release system centered on a new `runtime-prod-release` repo, while converting app repos to build/test/publish-only for prod and leaving infra shape changes in `infra-ev-dashboard-platform`.
+**Goal:** Build a production-only runtime release system centered on a new `runtime-prod-release` repo, while converting app repos to build/test/publish-only for prod and isolating runtime shape ownership in a new `runtime-prod-platform` repo.
 
-**Architecture:** The work is split into four layers: inventory and release metadata, the new production release control plane, app-repo rollout removal, and evidence/smoke/rollback wiring. Runtime release decisions are workload-based, resolved from infra-owned inventory plus workload metadata, and executed on fixed EC2 runtime hosts through SSM Run Command.
+**Architecture:** The work is split into four layers: inventory and release metadata, the new production release control plane, app-repo rollout removal, and evidence/smoke/rollback wiring. Runtime release decisions are workload-based, resolved from prod-platform-owned inventory plus workload metadata, and executed on fixed EC2 runtime hosts through SSM Run Command.
 
 **Tech Stack:** GitHub Actions, GitHub environments, AWS OIDC, AWS SSM Run Command, ECR immutable image digests, EC2 fixed runtime, manifest-based rollout control
 
@@ -119,14 +119,16 @@ Interpretation rules:
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-19-prod-runtime-release-reset-design.md`
 
-### Infra inventory contract
+### Prod platform inventory contract
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/README.md`
-- Create or modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/release/prod-runtime-inventory.json`
-- Create or modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/scripts/export-runtime-inventory.*`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/*inventory*.test.*`
+- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/runtime-prod-platform/README.md`
+- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/runtime-prod-platform/release/prod-runtime-inventory.json`
+- Create or modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/runtime-prod-platform/scripts/export-runtime-inventory.*`
+- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/runtime-prod-platform/test/*inventory*.test.*`
 
-Only `infra-ev-dashboard-platform` owns the canonical inventory.
+Only `runtime-prod-platform` owns the canonical inventory.
+
+The existing `infra-ev-dashboard-platform` repo is not used as the canonical source in this reset plan.
 
 `runtime-prod-release` reads the exported artifact only. It does not create or persist an independent canonical inventory copy.
 
@@ -237,9 +239,9 @@ Verify:
 **Files:**
 - Create: `development/runtime-prod-release/release/resolve_release.py`
 - Create: `development/runtime-prod-release/release/tests/test_inventory_resolution.py`
-- Modify: `development/infra-ev-dashboard-platform/README.md`
-- Create or modify: `development/infra-ev-dashboard-platform/release/prod-runtime-inventory.json`
-- Create or modify: `development/infra-ev-dashboard-platform/scripts/export-runtime-inventory.*`
+- Create: `development/runtime-prod-platform/README.md`
+- Create or modify: `development/runtime-prod-platform/release/prod-runtime-inventory.json`
+- Create or modify: `development/runtime-prod-platform/scripts/export-runtime-inventory.*`
 
 - [ ] **Step 1: Write failing inventory resolution tests**
 
@@ -263,7 +265,7 @@ Implement resolver that reads only the infra-owned exported inventory artifact a
 
 - [ ] **Step 4: Add infra-side inventory artifact and ownership doc**
 
-Document that `infra-ev-dashboard-platform` owns canonical host group mapping and runtime classes.
+Document that `runtime-prod-platform` owns canonical host group mapping and runtime classes.
 
 - [ ] **Step 5: Re-run tests**
 
@@ -275,7 +277,7 @@ Expected: PASS
 - [ ] **Step 6: Commit**
 
 ```bash
-git add development/runtime-prod-release development/infra-ev-dashboard-platform
+git add development/runtime-prod-release development/runtime-prod-platform
 git commit -m "feat: add canonical prod runtime inventory resolution"
 ```
 
@@ -481,7 +483,7 @@ Verify:
 ### Task 7: Phase A Representative Validation
 
 **Files:**
-- Validate only the seven representative repos plus `runtime-prod-release` and `infra-ev-dashboard-platform`
+- Validate only the seven representative repos plus `runtime-prod-release` and `runtime-prod-platform`
 
 - [ ] **Step 1: Run Phase A resolve-only validation**
 
