@@ -90,10 +90,16 @@ Current execution status in this workspace:
   - evidence:
     - successful reconcile journal start/apply window on host: `2026-04-19T12:23:33Z` -> `2026-04-19T12:23:40Z`
     - successful runtime command id before the non-minimal curl failure: `f5a5e1b0-6ed6-415d-b1f3-27f894c66f0f`
+- repeated minimal prod dispatch is complete
+  - the same workload was dispatched again with a unique timestamp-based `releaseId`
+  - repeated command id: `ecfec409-eb0f-4eac-8e99-ccc9d01895c3`
+  - repeated result: `Success`
+  - fixed point:
+    - `releaseId` is no longer workload-static
+    - repeated dispatch of the same workload no longer collides with a closed wave
 
 Not done yet:
 
-- unique release id generation per dispatch so repeated rollouts of the same workload do not collide with a closed wave
 - `prod-smoke` real execution
 - `prod-rollback` real execution
 - persistent release evidence flow
@@ -103,16 +109,15 @@ Not done yet:
 
 The next execution scope stays intentionally narrow.
 
-1. Make release ids unique per dispatch
-   - do not reuse a fixed `runtime-prod-release-{workload}` identifier
-   - avoid rerun failure from `wave 1 ... is already closed`
-2. Re-run the same single-workload minimal dispatch
-   - verify repeated dispatch succeeds with a fresh release id
-3. Preserve the same narrow scope
+1. Preserve the same narrow scope
    - one workload
    - one shared host group
    - no smoke / rollback / evidence automation yet
-4. Record the repeated-dispatch result back into docs
+2. Decide the next minimal hardening slice
+   - either lightweight smoke
+   - or release evidence persistence
+   - or rollback entrypoint
+3. Record the next slice decision back into docs
    - success or failure
    - next required delta
 
@@ -126,8 +131,9 @@ Current minimum success criterion:
 
 Current status against the minimum success criterion:
 
-- achieved once for a real workload
-- not yet hardened for repeated dispatch of the same workload because release ids are still fixed per workload
+- achieved for a real workload
+- achieved again for the same workload with a fresh timestamp-based `releaseId`
+- current minimum path is now repeatable
 
 ## Rollout Policy To Implement
 
