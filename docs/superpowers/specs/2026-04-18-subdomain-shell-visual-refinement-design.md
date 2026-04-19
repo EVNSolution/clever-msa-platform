@@ -119,6 +119,15 @@
 - 같은 규칙은 detached vehicle sidebar에도 적용한다.
 - 이후 shell refinement에서는 radius, color, active tone은 바뀔 수 있어도 이 width contract는 깨지지 않아야 한다.
 
+### 4. Settlement Dispatch Layout Contract
+
+`정산 > 배차 데이터`는 viewport에 따라 두 가지 레이아웃을 가진다.
+
+- 넓은 viewport에서는 `업로드 범위 | 업로드 파일` 2열을 유지한다.
+- 좁은 viewport에서만 `업로드 범위`를 가로 launcher/expander로 접는다.
+- 접힘 상태는 세로 카드가 아니라 낮은 가로 bar여야 한다.
+- local-sandbox mock은 이 route에서 필요한 `/drivers/` read path를 포함해야 하며, unsupported API 경고를 화면에 노출하지 않는다.
+
 ## Implementation Direction
 
 이번 시각 변경은 역할 분리 구조를 유지한 채 구현한다.
