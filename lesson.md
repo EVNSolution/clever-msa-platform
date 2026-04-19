@@ -43,6 +43,8 @@ The new release system was validated in the right order:
 
 That was enough to prove the lane. `smoke`, `rollback`, and persistent evidence are follow-up work, not blockers for the first honest success.
 
+When that next wave starts, keep `smoke` thin. Do not turn it into release-by-release handwritten test code. The right model is impact-scoped probes derived from the resolved release plan.
+
 ## Start With One Boundary
 
 Cross-repo runtime patches go wrong when several repos move at once and no one remembers which layer really changed behavior. The safer pattern is small and repeatable: one repo at a time, one focused test, one minimal change, one verification pass, one recorded lesson. If the rule matters beyond a single repo, copy it back to this root file.

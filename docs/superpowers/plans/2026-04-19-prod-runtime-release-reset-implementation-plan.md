@@ -130,12 +130,22 @@ This plan is closed for the minimal production cutover wave. The next execution 
    - one single host group
    - no smoke / rollback / evidence automation yet
 2. Decide the next minimal hardening slice
-   - either lightweight smoke
+   - either lightweight impact-scoped smoke
    - or release evidence persistence
    - or rollback entrypoint
 3. Record the next slice decision back into docs
    - success or failure
    - next required delta
+
+Follow-up smoke policy:
+
+- `prod-smoke` is not a per-release bespoke test-code lane
+- `prod-smoke` reads the resolved release plan and chooses a small probe set by workload impact
+- example:
+  - `front-web-console` or `edge-api-gateway` change -> front shell + gateway health + company login entry
+  - `service-organization-registry` change -> tenant resolve + protected org route
+  - settlement-only change -> settlement API health and one read-only page entry
+- the first implementation should stay probe-based and read-only, not a new matrix of handwritten scenario tests per release
 
 Current minimum success criterion:
 
