@@ -113,7 +113,27 @@ The runtime control plane must reason in workload units, not repo units.
 
 ## Release Manifest Model
 
-Each release item must contain at least:
+The production release system separates:
+
+1. release intent input
+2. resolved rollout plan
+
+The operator-facing release intent contains only the requested release input.
+
+Each release intent item must contain at least:
+
+- `workload_id`
+- `repo`
+- `image_digest`
+- `release_reason`
+
+The release system then resolves the rollout plan from:
+
+- infra-owned canonical inventory
+- workload metadata
+- rollback evidence
+
+Each resolved rollout plan item must contain at least:
 
 - `workload_id`
 - `repo`
@@ -125,7 +145,7 @@ Each release item must contain at least:
 
 The system does not use fixed predeclared bundles such as a permanent `settlement bundle` or `vehicle bundle`.
 
-Instead, the release manifest starts from explicitly selected changed items and expands the release set only when impact rules require companion items.
+Instead, the release intent starts from explicitly selected changed items and expands into a resolved rollout plan only when impact rules require companion items.
 
 ### Canonical manifest semantics
 
@@ -135,6 +155,8 @@ Instead, the release manifest starts from explicitly selected changed items and 
   - source repo metadata only
 - `image_digest`
   - immutable release artifact
+- `release_reason`
+  - operator-supplied release context only
 - `target_host_group`
   - not a free-form operator field
   - resolved from infra-owned canonical runtime inventory
