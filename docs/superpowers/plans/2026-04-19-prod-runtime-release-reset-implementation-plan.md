@@ -10,24 +10,85 @@
 
 ---
 
+## Delivery Phases
+
+### Phase A: Representative Validation
+
+Use a small representative set first to validate the model without cutting over every active repo.
+
+The representative set is:
+
+- `front-web-console`
+- `edge-api-gateway`
+- `service-account-access`
+- `service-dispatch-registry`
+- `service-dispatch-operations-view`
+- `service-settlement-payroll`
+- `service-settlement-operations-view`
+
+This phase validates:
+
+- inventory resolution
+- workload metadata loading
+- dynamic expansion
+- rollback evidence
+- resolve-only workflow
+- real production workflow shape without fan-out
+
+### Phase B: Full Fan-Out
+
+Once Phase A passes, fan out metadata and build-only prod contract to all active deployable app repos.
+
+### Phase C: Old Path Removal
+
+Only after Phase B verification passes:
+
+- remove old prod rollout entrypoints
+- remove prod rollout credentials and prod OIDC assume paths from app repos
+- lock prod ownership to `runtime-prod-release`
+
+## Rollout Policy To Implement
+
+The runtime release workflow must not invent orchestration semantics ad hoc.
+
+The rollout policy is fixed as:
+
+- workload class order:
+  - `worker`
+  - `consumer`
+  - `core-api`
+  - `entry`
+- within a workload class, use declared `depends_on_workloads` topological order
+- after each host group apply, run group-scoped health before proceeding
+- if apply fails before current group health passes:
+  - stop immediately
+  - rollback all workloads already applied in the current group
+- if a later group fails after earlier groups passed:
+  - stop immediately
+  - rollback every workload already applied in the current release in reverse rollout order
+- do not mark a release successful until final smoke passes
+
 ## File Structure
 
 ### New repo / control plane
 
 - Create: `development/runtime-prod-release/`
 - Create: `development/runtime-prod-release/README.md`
+- Create: `development/runtime-prod-release/.github/workflows/resolve-prod-release.yml`
 - Create: `development/runtime-prod-release/.github/workflows/prod-release.yml`
 - Create: `development/runtime-prod-release/.github/workflows/prod-smoke.yml`
 - Create: `development/runtime-prod-release/.github/workflows/prod-rollback.yml`
-- Create: `development/runtime-prod-release/release/inventory/prod-runtime-inventory.json`
-- Create: `development/runtime-prod-release/release/schema/release-manifest.schema.json`
+- Create: `development/runtime-prod-release/release/schema/release-intent.schema.json`
+- Create: `development/runtime-prod-release/release/schema/resolved-release-plan.schema.json`
 - Create: `development/runtime-prod-release/release/schema/workload-metadata.schema.json`
+- Create: `development/runtime-prod-release/release/schema/release-evidence.schema.json`
 - Create: `development/runtime-prod-release/release/resolve_release.py`
 - Create: `development/runtime-prod-release/release/dispatch_ssm.py`
 - Create: `development/runtime-prod-release/release/evidence.py`
 - Create: `development/runtime-prod-release/release/tests/test_release_resolution.py`
 - Create: `development/runtime-prod-release/release/tests/test_inventory_resolution.py`
 - Create: `development/runtime-prod-release/release/tests/test_rollback_target_resolution.py`
+- Create: `development/runtime-prod-release/release/tests/test_resolve_only_workflow.py`
 
 ### Platform docs and repo visibility
 
@@ -43,15 +104,46 @@
 - Create or modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/scripts/export-runtime-inventory.*`
 - Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/*inventory*.test.*`
 
+Only `infra-ev-dashboard-platform` owns the canonical inventory.
+
+`runtime-prod-release` reads the exported artifact only. It does not create or persist an independent canonical inventory copy.
+
 ### App repo rollout removal and workload metadata
 
-- Modify representative repos first:
+- Phase A representative repos:
   - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/.github/workflows/*`
   - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/.github/workflows/*`
   - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-account-access/.github/workflows/*`
+  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/.github/workflows/*`
+  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-operations-view/.github/workflows/*`
+  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll/.github/workflows/*`
+  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-operations-view/.github/workflows/*`
 - Create per-repo metadata files:
   - `release/workload-metadata.json`
 - Modify repo READMEs to state build/test/publish-only prod contract
+
+### Evidence semantics
+
+The evidence schema must store at least:
+
+- `workload_id`
+- `target_host_group`
+- `image_digest`
+- `manifest_id`
+- `approver`
+- `ssm_command_id`
+- `applied_config_revision`
+- `smoke_result`
+- `timestamp`
+
+`applied_config_revision` is fixed as a deterministic hash of the applied runtime config artifact:
+
+- for `compose` workloads:
+  - rendered compose file hash + env bundle hash
+- for `systemd` workloads:
+  - rendered unit file hash + env bundle hash + referenced runtime launcher payload hash
+
+The same field name is retained across workload classes, but the hashing inputs are class-specific and explicit.
 
 ### Central old path deprecation or bridge
 
@@ -64,16 +156,20 @@
 
 **Files:**
 - Create: `development/runtime-prod-release/README.md`
-- Create: `development/runtime-prod-release/release/schema/release-manifest.schema.json`
+- Create: `development/runtime-prod-release/release/schema/release-intent.schema.json`
+- Create: `development/runtime-prod-release/release/schema/resolved-release-plan.schema.json`
 - Create: `development/runtime-prod-release/release/schema/workload-metadata.schema.json`
+- Create: `development/runtime-prod-release/release/schema/release-evidence.schema.json`
 - Create: `development/runtime-prod-release/release/tests/test_release_resolution.py`
 
 - [ ] **Step 1: Write the failing schema and resolution tests**
 
 Create tests that assert:
 - release unit is `workload_id`, not repo
+- release intent contains only operator input fields
+- resolved release plan contains only system-resolved fields
 - `target_host_group` is resolved from inventory, not passed ad hoc
-- `deploy_method` is derived from workload class
+- `deploy_method` is derived from workload class, not selected in release input
 
 - [ ] **Step 2: Run tests to verify they fail**
 
@@ -83,11 +179,17 @@ Expected: FAIL because repo and resolver do not exist yet.
 - [ ] **Step 3: Add minimal repo structure and schemas**
 
 Create minimal README and schema files with required fields:
-- `workload_id`
-- `repo`
-- `image_digest`
-- `healthcheck`
-- `rollback_target`
+- release intent:
+  - `workload_id`
+  - `repo`
+  - `image_digest`
+  - `release_reason`
+- resolved release plan:
+  - `workload_id`
+  - `target_host_group`
+  - `deploy_method`
+  - `healthcheck`
+  - `rollback_target`
 
 - [ ] **Step 4: Re-run tests and keep them red for missing resolver logic**
 
@@ -104,11 +206,11 @@ git commit -m "feat: scaffold runtime prod release repo"
 ### Task 2: Implement Canonical Runtime Inventory Resolution
 
 **Files:**
-- Create: `development/runtime-prod-release/release/inventory/prod-runtime-inventory.json`
 - Create: `development/runtime-prod-release/release/resolve_release.py`
 - Create: `development/runtime-prod-release/release/tests/test_inventory_resolution.py`
 - Modify: `development/infra-ev-dashboard-platform/README.md`
 - Create or modify: `development/infra-ev-dashboard-platform/release/prod-runtime-inventory.json`
+- Create or modify: `development/infra-ev-dashboard-platform/scripts/export-runtime-inventory.*`
 
 - [ ] **Step 1: Write failing inventory resolution tests**
 
@@ -124,7 +226,7 @@ Expected: FAIL due to missing inventory resolver.
 
 - [ ] **Step 3: Implement minimal inventory resolver**
 
-Implement resolver that reads infra-owned inventory and returns:
+Implement resolver that reads only the infra-owned exported inventory artifact and returns:
 - workload class
 - target host group
 - deploy method
@@ -180,6 +282,7 @@ Minimal implementation:
 - load per-repo workload metadata
 - compute final release set
 - reject missing dependency declarations
+- emit a resolved release plan artifact that is separate from the release intent input
 
 - [ ] **Step 4: Re-run tests**
 
@@ -193,18 +296,60 @@ git add development/runtime-prod-release development/front-web-console developme
 git commit -m "feat: add workload metadata expansion rules"
 ```
 
-### Task 4: Implement Rollback Evidence and Last Successful Release Resolution
+### Task 4: Add Resolve-Only Workflow Before Real SSM Dispatch
+
+**Files:**
+- Create: `development/runtime-prod-release/.github/workflows/resolve-prod-release.yml`
+- Create: `development/runtime-prod-release/release/tests/test_resolve_only_workflow.py`
+- Modify: `development/runtime-prod-release/release/resolve_release.py`
+
+- [ ] **Step 1: Write failing resolve-only workflow tests**
+
+Cover:
+- release intent parsing
+- dynamic expansion
+- inventory resolution
+- rollout wave or group ordering
+- rendered SSM command preview without execution
+
+- [ ] **Step 2: Run tests to verify failure**
+
+Run: `pytest development/runtime-prod-release/release/tests/test_resolve_only_workflow.py -v`
+Expected: FAIL because resolve-only workflow and render path do not exist.
+
+- [ ] **Step 3: Implement resolve-only workflow**
+
+The workflow must:
+- never execute SSM
+- emit resolved release plan artifact
+- emit rollout order
+- emit expected SSM command rendering preview
+
+- [ ] **Step 4: Re-run tests**
+
+Run: `pytest development/runtime-prod-release/release/tests/test_resolve_only_workflow.py -v`
+Expected: PASS
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add development/runtime-prod-release
+git commit -m "feat: add resolve-only prod release workflow"
+```
+
+### Task 5: Implement Rollback Evidence and Last Successful Release Resolution
 
 **Files:**
 - Create: `development/runtime-prod-release/release/evidence.py`
 - Create: `development/runtime-prod-release/release/tests/test_rollback_target_resolution.py`
+- Create: `development/runtime-prod-release/release/schema/release-evidence.schema.json`
 - Modify: `development/runtime-prod-release/release/resolve_release.py`
 
 - [ ] **Step 1: Write failing rollback target tests**
 
 Test cases:
 - rollback target is last successful release item for same workload
-- evidence requires `image_digest + config revision + smoke pass`
+- evidence requires `image_digest + applied_config_revision + smoke pass`
 - incomplete evidence is rejected
 
 - [ ] **Step 2: Run tests to verify failure**
@@ -215,11 +360,15 @@ Expected: FAIL due to missing evidence logic.
 - [ ] **Step 3: Implement minimal evidence resolver**
 
 Store and resolve:
+- workload id
+- target host group
+- image digest
 - release manifest id
 - approver
 - SSM command id
 - applied config revision
 - smoke result
+- timestamp
 
 - [ ] **Step 4: Re-run tests**
 
@@ -233,7 +382,7 @@ git add development/runtime-prod-release
 git commit -m "feat: add rollback evidence resolution"
 ```
 
-### Task 5: Build Production Release Workflow
+### Task 6: Implement Rollout Ordering and Partial Failure Rules in Production Workflow
 
 **Files:**
 - Create: `development/runtime-prod-release/.github/workflows/prod-release.yml`
@@ -241,13 +390,16 @@ git commit -m "feat: add rollback evidence resolution"
 - Create: `development/runtime-prod-release/.github/workflows/prod-smoke.yml`
 - Create: `development/runtime-prod-release/.github/workflows/prod-rollback.yml`
 
-- [ ] **Step 1: Write a failing workflow contract test or smoke script**
+- [ ] **Step 1: Write failing rollout orchestration tests**
 
 Check for:
 - `environment=prod`
 - shared concurrency key
 - OIDC AWS auth
-- release manifest resolution before SSM dispatch
+- release intent resolution before SSM dispatch
+- rollout order `worker -> consumer -> core-api -> entry`
+- stop-on-failure semantics
+- reverse-order rollback semantics
 
 - [ ] **Step 2: Run the contract test to verify failure**
 
@@ -257,11 +409,15 @@ Run the chosen local validation command for workflow lint or script assertions.
 
 Required flow:
 - checkout
-- resolve manifest
+- resolve release intent
 - resolve inventory and metadata expansion
+- compute resolved release plan
+- compute rollout order
 - approve through `prod` environment
 - assume AWS role with OIDC
-- dispatch SSM commands
+- dispatch SSM commands by rollout order
+- stop immediately on first failure
+- trigger reverse-order rollback of already-applied workloads
 - collect smoke evidence
 - write release evidence
 
@@ -280,17 +436,66 @@ git add development/runtime-prod-release
 git commit -m "feat: add prod runtime release workflows"
 ```
 
-### Task 6: Remove Prod Rollout Credentials and Entrypoints from App Repos
+### Task 7: Phase A Representative Validation
 
 **Files:**
-- Modify representative app repo workflows and docs first
-- Then fan out to all active deployable app repos
+- Validate only the seven representative repos plus `runtime-prod-release` and `infra-ev-dashboard-platform`
+
+- [ ] **Step 1: Run Phase A resolve-only validation**
+
+Expected: representative release intent resolves correctly without real SSM dispatch.
+
+- [ ] **Step 2: Run representative metadata validation**
+
+Expected: all seven representative repos declare workload metadata correctly.
+
+- [ ] **Step 3: Run representative rollback/evidence validation**
+
+Expected: PASS
+
+- [ ] **Step 4: Commit Phase A checkpoint**
+
+```bash
+git add -A
+git commit -m "test: validate phase a representative prod release flow"
+```
+
+### Task 8: Phase B Fan-Out to All Active App Repos
+
+**Files:**
+- Modify all active deployable app repos
+
+- [ ] **Step 1: Add workload metadata to every active deployable app repo**
+
+Expected output: every active app repo has `release/workload-metadata.json`.
+
+- [ ] **Step 2: Update README build-only prod contract in every active app repo**
+
+Expected output: every active app repo points prod rollout ownership to `runtime-prod-release`.
+
+- [ ] **Step 3: Run metadata fan-out verification**
+
+Expected: PASS for all active repos.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add development/*/release/workload-metadata.json development/*/README.md
+git commit -m "feat: fan out workload metadata to active repos"
+```
+
+### Task 9: Phase C Remove Prod Rollout Credentials and Entrypoints from App Repos
+
+**Files:**
+- Modify all active app repo workflows and docs
 
 - [ ] **Step 1: Inventory current prod rollout secrets, workflows, and entrypoints**
 
 Create a checklist of:
 - prod deploy secrets
 - prod rollout workflows
+- prod environment usage
+- prod OIDC assume paths
 - docs that still claim app repo deploy ownership
 
 - [ ] **Step 2: Write failing verification script**
@@ -299,6 +504,9 @@ The script must fail if any active app repo still has:
 - prod rollout workflow
 - prod deploy credentials
 - prod runtime apply step
+- prod environment definition or use
+- prod OIDC assume path
+- README deploy ownership drift
 
 - [ ] **Step 3: Remove or disable prod rollout paths in app repos**
 
@@ -324,7 +532,7 @@ git add development/*/README.md development/*/.github/workflows
 git commit -m "chore: remove prod rollout from app repos"
 ```
 
-### Task 7: Wire Docs, Workspace Map, and Acceptance Evidence
+### Task 10: Wire Docs, Workspace Map, and Acceptance Evidence
 
 **Files:**
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md`
@@ -363,7 +571,7 @@ git add /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-
 git commit -m "docs: record prod runtime release operating model"
 ```
 
-### Task 8: Final Verification Gate
+### Task 11: Final Verification Gate
 
 **Files:**
 - Verify all touched files and repos
@@ -377,7 +585,7 @@ Expected: PASS
 
 - [ ] **Step 2: Run app repo rollout-entrypoint verification**
 
-Run the verification script from Task 6.
+Run the verification script from Task 9.
 Expected: PASS
 
 - [ ] **Step 3: Run any workflow lint or schema validation**
