@@ -8,6 +8,8 @@
 
 **Tech Stack:** GitHub Actions, GitHub environments, AWS OIDC, AWS SSM Run Command, ECR immutable image digests, EC2 fixed runtime, manifest-based rollout control
 
+**Plan Status:** Complete for the minimal production cutover wave. The remaining smoke, rollback, and evidence automation work is explicitly deferred to the next wave.
+
 ---
 
 ## Delivery Phases
@@ -63,27 +65,27 @@ Current execution status in this workspace:
   - org variables are `AWS_REGION`, `PROD_AWS_ROLE_ARN`
   - org AWS secrets are empty
 - prod deploy role trust now includes `runtime-prod-release:environment:prod`
-- current minimal runtime target contract is one shared prod host group
+- current minimal runtime target contract is one single-host prod group
   - the running prod app host is tagged with:
     - `CleverProject=clever-msa`
     - `CleverEnvironment=prod`
     - `CleverRole=app-host`
-    - `CleverHostGroup=prod-shared`
+    - `CleverHostGroup=evdash-msa`
 - minimal release path code is currently limited to:
   - release intent resolution
   - dynamic expansion
   - inventory resolution
   - OIDC prod auth
   - SSM dispatch
-- shared prod host preflight is complete
-  - `tag:CleverHostGroup=prod-shared` reaches the running prod app host
+- single-host prod preflight is complete
+  - `tag:CleverHostGroup=evdash-msa` reaches the running prod app host
   - the host is not using `/opt/clever/runtime/bin/rollout-*`
   - the real runtime root is `/opt/ev-dashboard`
   - the host exposes `runtime-images.json`, `service-env/`, and `state/`
   - dispatch is now adapted to the real `/opt/ev-dashboard` runtime layout
 - first minimal prod dispatch is complete
   - workload: `service-announcement-registry`
-  - target: `prod-shared`
+  - target: `evdash-msa`
   - image digest: `902837199612.dkr.ecr.ap-northeast-2.amazonaws.com/service-announcement-registry@sha256:a2979492e2eeca445112dc089f6bb36f20e8aa449c86bc91f4f0c0d88b19302b`
   - path: `runtime-prod-release` resolve -> SSM -> `/opt/ev-dashboard/release-manifest.json` -> `ev-dashboard-app-reconcile.service`
   - result: reconcile succeeded on the prod host and the runtime release journal recorded the applied wave
@@ -98,20 +100,32 @@ Current execution status in this workspace:
     - `releaseId` is no longer workload-static
     - repeated dispatch of the same workload no longer collides with a closed wave
 
-Not done yet:
+- single-host runtime convergence is complete
+  - canonical runtime host: `EVDash-msa`
+  - canonical host group: `evdash-msa`
+  - canonical data path: `/data`
+  - local PostgreSQL and Redis now run on the same host
+  - the old split data host was terminated
+  - public checks stayed healthy:
+    - `https://ev-dashboard.com/healthz`
+    - `https://ev-dashboard.com/api/healthz`
+    - `https://ev-dashboard.com/api/org/companies/public/resolve/?tenant_code=cheonha`
+  - Safari E2E on `https://ev-dashboard.com/cheonha/login` confirmed the company login entry after cutover
+
+Deferred to the next wave:
 
 - `prod-smoke` real execution
 - `prod-rollback` real execution
 - persistent release evidence flow
 - old prod rollout path removal
 
-## Immediate Next Plan
+## Follow-Up Scope
 
-The next execution scope stays intentionally narrow.
+This plan is closed for the minimal production cutover wave. The next execution scope stays intentionally narrow and belongs to a separate follow-up wave.
 
 1. Preserve the same narrow scope
    - one workload
-   - one shared host group
+   - one single host group
    - no smoke / rollback / evidence automation yet
 2. Decide the next minimal hardening slice
    - either lightweight smoke
@@ -126,7 +140,7 @@ Current minimum success criterion:
 - digest chosen
 - resolved plan generated
 - prod role assumed
-- SSM command dispatched to the canonical shared prod host
+- SSM command dispatched to the canonical single prod host
 - the dispatched command matches the live `/opt/ev-dashboard` runtime contract for the selected workload
 
 Current status against the minimum success criterion:
