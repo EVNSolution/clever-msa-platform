@@ -1,0 +1,363 @@
+# 2026-04-19 Prod Runtime Release Reset Design
+
+## Purpose
+
+This document fixes the target operating model for a new production-only deployment system for the current CLEVER MSA runtime.
+
+The reset boundary is intentionally narrow:
+
+- keep the current service layer and frontend repo structure
+- keep the current business-domain boundaries
+- redesign only the production runtime release system
+
+The goal is operational stability for `prod`, not a generalized multi-environment platform.
+
+## Product-Level Objective
+
+Production deployment must become one standard runtime release path.
+
+The target operator experience is:
+
+- application repos build and publish immutable images
+- one production release system decides what moves to runtime
+- infrastructure shape changes stay separate from runtime release
+- release selection is based on image digest and release manifest, not mutable tags
+
+The production release system must not depend on stale manual inputs such as subnet ids, security group ids, or ad hoc instance lookup values during normal application rollout.
+
+## Deployment Architecture
+
+The confirmed operating model is:
+
+- EC2 fixed runtime
+- single prod release repo
+- infra separated from runtime release
+
+This means:
+
+- runtime hosts remain EC2-based
+- application rollout is handled by one dedicated production release control plane
+- infrastructure shape ownership remains separate
+
+## Runtime Release Model
+
+### 1. App repos are build-only
+
+All application repos are fixed as:
+
+- build
+- test
+- publish immutable image
+
+They do not perform production rollout jobs.
+
+Their runtime-facing contract is:
+
+- produce an immutable image
+- publish image metadata
+- hand off runtime selection to the production release system
+
+### 2. Production rollout is centralized
+
+Production rollout is owned by one dedicated repo:
+
+- `runtime-prod-release`
+
+This repo is the only production deployment entrypoint.
+
+It owns:
+
+- `prod` GitHub environment approvals
+- production release concurrency
+- release manifest resolution
+- AWS OIDC runtime authentication
+- SSM-based EC2 rollout execution
+- release evidence
+- scoped smoke and rollback control
+
+### 3. Infra remains separate
+
+`infra-ev-dashboard-platform` continues to own runtime shape:
+
+- ALB
+- EC2 hosts
+- security groups
+- Route53
+- secrets and runtime wiring
+- infrastructure-level shape changes
+
+It does not decide which application version is released to production on a given day.
+
+## Release Identity
+
+The release identity is:
+
+- workload item
+- image digest
+- target host group
+- deploy method
+- healthcheck contract
+- rollback target
+
+The production system must not use mutable image tags as rollout truth.
+
+The canonical runtime release input is a release manifest whose items are pinned to immutable image digests.
+
+## Release Manifest Model
+
+Each release item must contain at least:
+
+- `workload_id`
+- `repo`
+- `image_digest`
+- `target_host_group`
+- `deploy_method`
+- `healthcheck`
+- `rollback_target`
+
+The system does not use fixed predeclared bundles such as a permanent `settlement bundle` or `vehicle bundle`.
+
+Instead, the release manifest starts from explicitly selected changed items and expands the release set only when impact rules require companion items.
+
+## Manifest Expansion Rules
+
+The confirmed rule is:
+
+- no fixed bundle model
+- service-level image release by default
+- manifest-based dynamic expansion when runtime impact requires companion rollout
+
+### Base rule
+
+The default release unit is one runtime item per repo image.
+
+### Expansion rules
+
+The release system automatically expands the selected set when needed by:
+
+- entry impact
+- public API contract impact
+- read-model impact
+- async/event impact
+- runtime config or migration gate impact
+
+### Entry impact
+
+When the change affects the production entry flow, the release set expands to include the canonical entry path items:
+
+- `front-web-console`
+- `edge-api-gateway`
+- `service-account-access`
+
+### Public API contract impact
+
+When a public route, auth boundary, or response contract changes:
+
+- include `edge-api-gateway`
+- include the changed upstream service
+- include `front-web-console` when the frontend directly depends on that public contract
+
+### Read-model impact
+
+When a source-of-truth change can invalidate a read-model runtime contract:
+
+- include the corresponding `*-operations-view` repo in the same release set
+
+### Async/event impact
+
+When producer-consumer schema compatibility is at risk:
+
+- include the affected producer and consumer items together
+
+### Runtime config and migration impact
+
+When runtime config, secret shape, or migration boundaries are involved:
+
+- the release must be gated for explicit approval
+- this is not treated as a routine automatic application-only release
+
+## Production Release Execution
+
+### Authentication
+
+AWS authentication is unified on GitHub Actions OIDC.
+
+The production release repo alone may assume the production release role.
+
+The trust boundary is narrowed by:
+
+- repository identity
+- GitHub environment usage
+- production workflow path
+
+### Concurrency
+
+Production rollout uses one shared concurrency group.
+
+The production release queue must be serialized even if multiple candidate releases are ready.
+
+`prod` environment approval and concurrency are both mandatory.
+
+### Remote execution
+
+Runtime execution is unified on AWS Systems Manager Run Command.
+
+The release workflow sends commands to target EC2 host groups for actions such as:
+
+- image pull
+- compose update
+- service restart
+- runtime health assertion
+
+This removes bastion- or operator-driven SSH as the normal production release path.
+
+## Runtime Topology Rule
+
+The runtime is not treated as one shared undifferentiated EC2 host.
+
+The release model uses host groups.
+
+The minimum production grouping is:
+
+- entry
+- core api
+- worker or consumer
+
+The release target is always workload-oriented, not a single all-in-one host blob.
+
+## Production Validation Rule
+
+Smoke scope is determined by release impact.
+
+Production validation must not always run a full-platform smoke for every change.
+
+Examples:
+
+- entry-only release validates company entry path, login, and dashboard landing
+- settlement-facing release validates settlement-facing routes and health
+- dispatch-facing release validates dispatch-facing routes and health
+
+The priority business entry flow already fixed for production protection is:
+
+- company path identification
+- login
+- company dashboard landing
+
+That flow is the top-priority protected smoke path.
+
+## Active Front, Edge, Infra, and Service Repos
+
+### Front
+
+- `front-web-console`
+  - role: single operator web console
+  - GitHub: <https://github.com/EVNSolution/front-web-console>
+
+### Edge
+
+- `edge-api-gateway`
+  - role: public edge entry and route mediation
+  - GitHub: <https://github.com/EVNSolution/edge-api-gateway>
+
+### Infra
+
+- `infra-ev-dashboard-platform`
+  - role: runtime infra shape owner for the `ev-dashboard` production slice
+  - GitHub: <https://github.com/EVNSolution/infra-ev-dashboard-platform>
+
+### Services
+
+- `service-account-access`
+  - role: account, authentication, authorization
+  - GitHub: <https://github.com/EVNSolution/service-account-access>
+- `service-organization-registry`
+  - role: organization and fleet master
+  - GitHub: <https://github.com/EVNSolution/service-organization-registry>
+- `service-driver-profile`
+  - role: driver base profile
+  - GitHub: <https://github.com/EVNSolution/service-driver-profile>
+- `service-personnel-document-registry`
+  - role: personnel and proof-document metadata
+  - GitHub: <https://github.com/EVNSolution/service-personnel-document-registry>
+- `service-vehicle-registry`
+  - role: vehicle master and operator access
+  - GitHub: <https://github.com/EVNSolution/service-vehicle-registry>
+- `service-vehicle-assignment`
+  - role: driver-to-vehicle assignment truth
+  - GitHub: <https://github.com/EVNSolution/service-vehicle-assignment>
+- `service-vehicle-operations-view`
+  - role: vehicle operations read model
+  - GitHub: <https://github.com/EVNSolution/service-vehicle-operations-view>
+- `service-driver-operations-view`
+  - role: driver operations read model
+  - GitHub: <https://github.com/EVNSolution/service-driver-operations-view>
+- `service-terminal-registry`
+  - role: terminal and device registry
+  - GitHub: <https://github.com/EVNSolution/service-terminal-registry>
+- `service-telemetry-hub`
+  - role: telemetry ingest, normalization, snapshot
+  - GitHub: <https://github.com/EVNSolution/service-telemetry-hub>
+- `service-telemetry-listener`
+  - role: MQTT ingress worker
+  - GitHub: <https://github.com/EVNSolution/service-telemetry-listener>
+- `service-telemetry-dead-letter`
+  - role: telemetry dead-letter storage
+  - GitHub: <https://github.com/EVNSolution/service-telemetry-dead-letter>
+- `service-settlement-registry`
+  - role: settlement rule and pricing registry
+  - GitHub: <https://github.com/EVNSolution/service-settlement-registry>
+- `service-attendance-registry`
+  - role: daily attendance truth
+  - GitHub: <https://github.com/EVNSolution/service-attendance-registry>
+- `service-delivery-record`
+  - role: delivery source records and daily snapshots
+  - GitHub: <https://github.com/EVNSolution/service-delivery-record>
+- `service-settlement-payroll`
+  - role: settlement result write owner
+  - GitHub: <https://github.com/EVNSolution/service-settlement-payroll>
+- `service-settlement-operations-view`
+  - role: settlement operations read model
+  - GitHub: <https://github.com/EVNSolution/service-settlement-operations-view>
+- `service-dispatch-registry`
+  - role: dispatch source-of-truth
+  - GitHub: <https://github.com/EVNSolution/service-dispatch-registry>
+- `service-dispatch-operations-view`
+  - role: dispatch operations read model
+  - GitHub: <https://github.com/EVNSolution/service-dispatch-operations-view>
+- `service-region-registry`
+  - role: region master
+  - GitHub: <https://github.com/EVNSolution/service-region-registry>
+- `service-region-analytics`
+  - role: region analytics
+  - GitHub: <https://github.com/EVNSolution/service-region-analytics>
+- `service-announcement-registry`
+  - role: announcement source-of-truth
+  - GitHub: <https://github.com/EVNSolution/service-announcement-registry>
+- `service-support-registry`
+  - role: support and ticket source-of-truth
+  - GitHub: <https://github.com/EVNSolution/service-support-registry>
+- `service-notification-hub`
+  - role: notification token, inbox, send log
+  - GitHub: <https://github.com/EVNSolution/service-notification-hub>
+
+## Target Operating Sentence
+
+The production runtime release system is fixed as:
+
+- app repos perform build, test, and immutable image publish only
+- production rollout is executed only from `runtime-prod-release`
+- GitHub `environment=prod`, shared production concurrency, and OIDC-based AWS authentication are mandatory
+- EC2 rollout execution is performed through SSM Run Command
+- `infra-ev-dashboard-platform` owns runtime shape only
+- release scope is determined by a manifest of workload items pinned to immutable image digests with impact-based dynamic expansion
+
+## Acceptance Criteria
+
+This design is considered achieved when:
+
+- every app repo is build-only for production purposes
+- one production release repo becomes the only runtime rollout entrypoint
+- production rollout no longer requires subnet, security group, or instance id inputs during routine release
+- release scope is manifest-driven and image-digest based
+- production validation is impact-scoped
+- infra rollout is no longer the normal application release path
