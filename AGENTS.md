@@ -53,4 +53,4 @@
 
 - `../MSA-Server/` is a legacy/reference workspace, not the active implementation root.
 - Use it only for historical context, old notes, or migration cross-checks.
-- `hub.evnlogistics.com` is legacy bridge context, not the default current operator target for `front-web-console` remote proxy checks.
+- legacy bridge domains are reference-only context, not the default current operator target for `front-web-console`.
