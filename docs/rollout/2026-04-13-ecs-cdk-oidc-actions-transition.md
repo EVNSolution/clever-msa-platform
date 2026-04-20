@@ -48,7 +48,7 @@ service repo push
 이 bridge lane을 구성하는 축은 아래다.
 
 - 서비스 repo별 image build는 GitHub Actions가 수행한다.
-- image build는 org variable `GH_ACTIONS_ECR_BUILD_ROLE_ARN` 기준으로 동작한다.
+- image build는 repo variable `ECR_BUILD_AWS_ROLE_ARN` 와 shared `AWS_REGION` 기준으로 동작한다.
 - 환경 배포는 `clever-deploy-control`이 `GH_ACTIONS_DEV_DEPLOY_ROLE_ARN`, `GH_ACTIONS_STAGE_DEPLOY_ROLE_ARN`, `GH_ACTIONS_PROD_DEPLOY_ROLE_ARN`를 사용해 실행한다.
 - runtime deploy target은 bridge lane에서만 EC2 app-host + SSM + compose다.
 - root `clever-msa-platform`은 docs truth와 API docs freshness gate를 유지한다.
@@ -315,7 +315,7 @@ CLEVER 현재 구조에 맞춘 매핑은 아래다.
 새 ECS/CDK 경로도 GitHub 쪽 AWS role 참조를 유지한다.
 
 - image build:
-  - `vars.GH_ACTIONS_ECR_BUILD_ROLE_ARN`
+  - `vars.ECR_BUILD_AWS_ROLE_ARN`
 - ECS/CDK infra deploy:
   - `secrets.GH_ACTIONS_INFRA_ROLE_ARN`
 - current EC2 deploy:

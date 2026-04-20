@@ -171,7 +171,7 @@ Use simple repo-local expectations:
 
 - `front-web-console` should publish `front-web-console:<sha>`
 - `edge-api-gateway` should publish `edge-api-gateway:<sha>`
-- both workflows should use `${{ vars.GH_ACTIONS_ECR_BUILD_ROLE_ARN }}`
+- both workflows should use `${{ vars.ECR_BUILD_AWS_ROLE_ARN }}`
 
 - [ ] **Step 2: Copy the service-account-access build workflow pattern**
 

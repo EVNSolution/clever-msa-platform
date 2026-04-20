@@ -12,6 +12,11 @@
 - `no`: baseline 부재
 - `n/a`: 해당 archetype에는 비적용
 
+Build workflow baseline:
+- image-owning repo의 `build-image.yml` 은 `role-to-assume: ${{ vars.ECR_BUILD_AWS_ROLE_ARN }}` 를 사용한다.
+- shared region input은 `AWS_REGION` 으로 유지한다.
+- active build workflow에 `GH_ACTIONS_ECR_BUILD_ROLE_ARN` 는 남기지 않는다.
+
 ## Batch 1
 
 | Repo | Archetype | `.gitignore` | `README.md` baseline | `lesson.md` | `Dockerfile` | Build workflow | Notes |

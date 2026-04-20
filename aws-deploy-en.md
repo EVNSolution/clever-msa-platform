@@ -10,7 +10,7 @@ Follow each Phase sequentially.
 - **No Assumption**: Never guess user environment (DB passwords, domains, regions). Always ask.
 - **Step-by-Step**: Do NOT process all Phases at once. After each Phase, show Context Memo and ask "Proceed to next Phase?"
 - **Context Memory**: Before starting any Phase, re-summarize Phase 1 settings and confirm with user. (e.g., re-check domain availability before Phase 5 Nginx config)
-- **Security First**: Never expose real AWS Access Keys, passwords, or ARNs in code. For GitHub Actions -> AWS auth, prefer GitHub OIDC with role references by purpose such as `${{ vars.GH_ACTIONS_ECR_BUILD_ROLE_ARN }}`, `${{ secrets.GH_ACTIONS_INFRA_ROLE_ARN }}`, and `${{ secrets.GH_ACTIONS_<ENV>_DEPLOY_ROLE_ARN }}`. Do not use long-lived AWS access keys. RDS SG must block all inbound by default; only Fargate SG allowed.
+- **Security First**: Never expose real AWS Access Keys, passwords, or ARNs in code. For GitHub Actions -> AWS auth, prefer GitHub OIDC with role references by purpose such as `${{ vars.ECR_BUILD_AWS_ROLE_ARN }}`, `${{ secrets.GH_ACTIONS_INFRA_ROLE_ARN }}`, and `${{ secrets.GH_ACTIONS_<ENV>_DEPLOY_ROLE_ARN }}`. Do not use long-lived AWS access keys. RDS SG must block all inbound by default; only Fargate SG allowed.
 - **Validation**: After generating CDK code, self-review against Phase 2 Context Memo specs. Verify region matches, RDS SG is not open to 0.0.0.0/0, and `publiclyAccessible` + SG block are both applied.
 - **Idempotency**: Do not comment out or backup original code. Output final complete files. If AWS integration code already exists, modify it instead of duplicating.
 - **Migration Safety**: If `DROP TABLE` or `ALTER COLUMN` (type change) is found in SQL, warn user about data loss risk and get confirmation before proceeding.
@@ -26,7 +26,7 @@ Follow each Phase sequentially.
   - GitHub OIDC Provider registered (once per AWS account)
   - IAM roles created by purpose (ECR build, infra provision, deploy per environment)
   - GitHub org/repo config registered
-    - org variable `GH_ACTIONS_ECR_BUILD_ROLE_ARN`
+    - repo variable `ECR_BUILD_AWS_ROLE_ARN`
     - repo or org secrets `GH_ACTIONS_INFRA_ROLE_ARN`, `GH_ACTIONS_DEV_DEPLOY_ROLE_ARN`, `GH_ACTIONS_STAGE_DEPLOY_ROLE_ARN`, `GH_ACTIONS_PROD_DEPLOY_ROLE_ARN`
 - Optional later-phase alternative:
   - AWS CodeConnections connection approved for the target GitHub repository/org
@@ -307,7 +307,7 @@ GitHub repo
 
 Rules:
 
-- Reuse purpose-specific GitHub role references such as `${{ vars.GH_ACTIONS_ECR_BUILD_ROLE_ARN }}` and `${{ secrets.GH_ACTIONS_<ENV>_DEPLOY_ROLE_ARN }}`
+- Reuse purpose-specific GitHub role references such as `${{ vars.ECR_BUILD_AWS_ROLE_ARN }}` and `${{ secrets.GH_ACTIONS_<ENV>_DEPLOY_ROLE_ARN }}`
 - Keep ECR, ECS, CloudWatch, and CDK deploy target in the **same AWS region** as the OIDC-assumed role unless the user explicitly wants cross-region complexity
 - Prefer one repo-local ECS/CDK workflow per service first; do not rewrite the whole platform control plane in one step
 - Prefer a pilot rollout on one ECS/CDK workload first; do not switch every repo in one step
@@ -730,7 +730,7 @@ Only after both are confirmed, inform user that deployment is complete.
 - [ ] CloudFormation stack `CREATE_IN_PROGRESS` → cannot update → wait or delete via console
 - [ ] `cdk deploy` for changes; **stack deletion is last resort**
 - [ ] Secrets Manager duplicate name check
-- [ ] `GH_ACTIONS_ECR_BUILD_ROLE_ARN` can be shared as an org variable for image builds
+- [ ] `ECR_BUILD_AWS_ROLE_ARN` is set as the repo variable for image builds
 - [ ] `GH_ACTIONS_<ENV>_DEPLOY_ROLE_ARN` secrets must be set per deployment environment (`dev`, `stage`, `prod` as applicable)
 - [ ] GitHub Environment `prod` + Required reviewers recommended
 - [ ] GitHub Actions `timeout-minutes: 60` (RDS snapshot wait time)
