@@ -2,6 +2,8 @@
 
 이 폴더는 `clever-msa-platform`의 문서 정본이다.
 
+이 `README.md`는 문서 index와 진입 안내만 담당한다. canonical truth는 링크된 실제 문서들에 있다.
+
 ## Start Here
 
 - 플랫폼 전체 구조와 작업 원칙: [../WORKSPACE.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md)

@@ -8,6 +8,8 @@
 
 이 루트는 플랫폼 안내판이다. 서비스 구현 코드를 직접 두는 곳이 아니다.
 
+`AGENTS.md`와 각 repo의 `README.md`는 운영 안내 문서다. 정본은 `docs/`와 root mapping 문서에만 둔다.
+
 ## Top-Level Structure
 
 ```text
@@ -157,7 +159,7 @@ root `development/` whitelist 변경은 아래 두 문서에서 먼저 정본을
 ## Working Rules
 
 1. 새로운 서비스나 구조 변경은 먼저 `docs/`에 반영한다.
-2. `development/` repo 안의 README는 repo 사용법만 담고, 아키텍처 정본은 `docs/`를 가리킨다.
+2. `development/` repo 안의 README는 repo 사용법과 운영 메모만 담고, 아키텍처/경계/런타임 정본은 `docs/`를 가리킨다.
 3. 로컬 통합 실행 자산은 root `development/` whitelist 바깥의 별도 integration repo가 소유한다.
 4. `settlement`처럼 아직 덜 분해된 영역은 기존 폴더를 그대로 승격하지 않는다.
 5. 현재 runtime naming, compose service, gateway prefix는 `docs/mappings/current-runtime-inventory.md`를 먼저 본다.

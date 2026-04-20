@@ -132,7 +132,8 @@
 
 - repo-local `AGENTS.md`는 모든 repo에 복제하지 않는다.
 - 현재 유지 대상은 플랫폼 루트와 `edge-api-gateway`다.
-- 나머지 repo는 `README`와 `docs/` 정본으로 관리한다.
+- `AGENTS.md`와 각 `README.md`는 운영 안내 문서일 뿐 정본이 아니다.
+- 나머지 repo의 canonical truth는 root `docs/`와 mapping 문서로 관리한다.
 - 새 repo-local `AGENTS.md`는 경계 오염 위험이 높거나 접착 역할이 큰 repo에만 추가한다.
 
 ## Migration Priorities

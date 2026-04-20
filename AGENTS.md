@@ -4,6 +4,7 @@
 
 - This directory is the active platform root for CLEVER MSA work.
 - Treat `docs/` as the source of truth for architecture, boundaries, mappings, contracts, and rollout decisions.
+- `AGENTS.md` and every `README.md` in this workspace are operational guidance only. They are not canonical truth.
 - Treat `development/` as a whitelist of independent implementation repos exposed from the root.
 - The current root whitelist is `front-web-console`, `edge-api-gateway`, `runtime-prod-release`, `runtime-prod-platform`, and the active `service-*` repos.
 - Do not treat this root as a shared runtime codebase.
