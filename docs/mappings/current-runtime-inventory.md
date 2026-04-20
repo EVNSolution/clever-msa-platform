@@ -57,6 +57,8 @@
     - one attached EBS mounted at `/data`
     - host-local PostgreSQL and Redis
 
+배포 구조 요약 다이어그램은 [prod-runtime-deployment-diagram.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/prod-runtime-deployment-diagram.md) 를 기준으로 본다.
+
 ## Notes
 
 1. runtime naming truth는 repo 이름이 아니라 현재 compose service와 gateway prefix까지 같이 본다.
