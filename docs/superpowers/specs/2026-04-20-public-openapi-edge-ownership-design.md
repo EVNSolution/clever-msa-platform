@@ -223,6 +223,42 @@ The public aggregation step reads:
 - edge-owned overlays and public-route metadata
 - temporary fallback metadata only for services that have not yet adopted service-owned export
 
+### Aggregation contract
+
+The aggregation step must follow one explicit contract.
+
+Version 1 rules are:
+
+1. all inputs must resolve to one OpenAPI major/minor target chosen by edge build configuration
+2. duplicate `path + method` pairs are not merged heuristically
+3. component naming collisions are not silently overwritten
+4. internal-only and non-public endpoints are excluded before the public artifact is emitted
+5. the public artifact uses one normalized security-scheme vocabulary defined by edge-owned overlays
+
+Operational meaning:
+
+- version mismatch -> build fails
+- duplicate public route definition -> build fails
+- duplicate component name with different content -> build fails
+- private route leaking into the public artifact -> build fails
+- service-local security naming drift must be normalized or rejected before publish
+
+The stable rule is that edge does not "guess" how to merge conflicting contracts.
+
+If two inputs disagree on the public contract, the build must stop.
+
+### CI gates
+
+`edge-api-gateway` public docs CI must at minimum fail on:
+
+- invalid OpenAPI syntax or schema
+- unresolved `$ref`
+- duplicate public `path + method`
+- component collision after normalization
+- private/internal route leak into the public artifact
+- missing required docs revision metadata
+- non-reproducible output from the same declared inputs
+
 ### Temporary migration fallback
 
 During migration, not every service repo may provide a ready export.
@@ -237,6 +273,31 @@ But the fallback is transitional only.
 The long-term target is:
 
 - public aggregated OpenAPI is built primarily from service-owned exports
+
+### Fallback sunset rule
+
+Fallback is allowed only under an explicit edge-owned allowlist.
+
+That allowlist must identify, for each fallback service:
+
+- `service_id`
+- why service-owned export is not yet used
+- which fallback mode is in use
+  - `route_inventory`
+  - `overlay_only`
+- the exit condition for removing that fallback entry
+
+Fallback must not be treated as the default ingestion path for a service that already has a usable export.
+
+A fallback entry must be removed when all of the following are true:
+
+1. the service repo publishes a valid service-owned export
+2. edge CI successfully builds the public artifact from that export
+3. the next edge docs refresh change removes the fallback entry before the next production release for that service surface
+
+The steady-state acceptance target is:
+
+- no fallback allowlist entries for public HTTP services included in the aggregated public docs artifact
 
 ## Release Coupling
 
@@ -254,6 +315,27 @@ This couples docs to runtime in an honest way:
 - no separate docs deploy lane
 - no root-repo docs freshness gate
 - no ambiguity about which docs snapshot belongs to the live edge
+
+### `api_docs_revision` identity
+
+`runtime-prod-release` must not record docs revision as a vague human note.
+
+The release evidence contract must record an explicit `api_docs_revision` object with at least:
+
+- `openapi_sha256`
+  - SHA-256 of the exact public `/openapi.yaml` artifact packaged into the deployed edge image
+- `edge_commit_sha`
+  - the edge repo commit used to build that image
+- `service_export_manifest_sha`
+  - SHA-256 of the manifest that enumerates the service-owned exports and fallback inputs used for aggregation
+
+This is the minimum identity needed to answer:
+
+- which public docs artifact was deployed
+- which edge source revision produced it
+- which service export set and fallback set were used to build it
+
+Without these fields, release evidence is not strong enough to prove docs/runtime parity.
 
 ## Root Workflow Policy
 
@@ -318,11 +400,13 @@ Rejected because:
 ## Migration Sequence
 
 1. Write this ownership rule into active docs.
-2. Remove root deploy/provision/public-docs workflows from `clever-msa-platform`.
-3. Add public docs artifact ownership and refresh/build workflow to `edge-api-gateway`.
-4. Keep `/openapi.yaml`, `/swagger/`, and `/redoc/` publicly routed from edge.
-5. Make `runtime-prod-release` treat docs as part of the deployed edge image, not as a separate gate.
-6. Remove active references that describe `clever-deploy-control` as current deployment or docs truth.
+2. Add public docs artifact ownership and refresh/build workflow to `edge-api-gateway`.
+3. Implement the static artifact serving path for `/openapi.yaml`, `/swagger/`, and `/redoc/` in edge.
+4. Verify parity between the new edge-owned public artifact and the current public docs surface before cutover.
+5. Make `runtime-prod-release` treat docs as part of the deployed edge image and record `api_docs_revision` in release evidence.
+6. Cut over public docs ownership to the edge-delivered artifact path.
+7. Remove root deploy/provision/public-docs workflows from `clever-msa-platform` only after edge parity and release-path verification succeed.
+8. Remove active references that describe `clever-deploy-control` as current deployment or docs truth.
 
 ## Acceptance Criteria
 
@@ -334,3 +418,7 @@ This design is active when:
 4. `runtime-prod-release` remains the only production rollout entrypoint.
 5. active docs no longer describe `clever-deploy-control` as current truth.
 6. the public docs snapshot moves to production only through the deployed edge image.
+7. edge build deterministically produces the same public docs artifact from the same declared inputs.
+8. release evidence records `api_docs_revision.openapi_sha256`, `api_docs_revision.edge_commit_sha`, and `api_docs_revision.service_export_manifest_sha`.
+9. public docs CI fails on invalid spec, duplicate route, component collision, unresolved ref, and private-route leak.
+10. fallback allowlist entries are empty for all public HTTP services in the steady-state target.
