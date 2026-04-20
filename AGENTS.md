@@ -43,50 +43,11 @@
 - `service-delivery-record` is an active runtime repo for delivery source records and daily input snapshots only.
 - `service-terminal-registry` and `service-telemetry-hub` are active runtime repos and must stay within their approved boundary specs.
 
-## Remote Frontend Proxy Warning
+## Local Verification
 
-- If a user configures `front-web-console` `5174` to proxy to a remote API target, explicitly send this warning:
-  - `현재 로컬 프론트 테스트의 CRUD는 실제 DB에 영향을 줍니다. 변경을 원하면, PROXY TARGET을 변경하십시오.`
-- Prefer `.env.local-test` for dev/staging remote targets and reserve `.env.local` for intentional real-data checks.
-- Current dev/local-test remote target is `https://clever-hub-dev-public-alb-709320164.ap-northeast-2.elb.amazonaws.com`.
-- Default frontend testing should use `.env.local-test`; reserve `.env.local` for explicit prod verification only.
-
-## Local Verification Questions
-
-- Before starting local verification, ask the user which mode they want.
-- Before starting `5174`, `8080`, low-CPU hybrid, or full Docker, explicitly send the mode-selection questions below and wait for the user's answer.
-- Do not choose a mode on the user's behalf when the request is only "open it", "bring it up", or "run local verification". Ask first.
-- If you already started the wrong mode, stop, report the current state briefly, and ask which mode to keep.
-- Use this mode-selection question by default:
-  - `어떤 모드로 열까요: local-sandbox(mock, 무영향), local-test(dev/staging), real-proxy?`
-- Ask one more question only when the user selects `local-test(dev/staging)`:
-  - `local-test는 실제 dev/staging DB에 영향을 줄 수 있습니다. 쓰기/CRUD도 허용할까요?`
-- Map the answers like this:
-  - `local-sandbox`
-    - use `front-web-console` `npm run dev:local-sandbox`
-    - treat it as a mock-only, no-network, manual frontend verification mode
-    - require host entries before opening the browser:
-      - `127.0.0.1 ev-dashboard.com`
-      - `127.0.0.1 cheonha.ev-dashboard.com`
-    - if the host entries are missing, explain that the browser will resolve public DNS and the local sandbox will not open correctly
-    - if host entries are correct but the page still will not open in a browser, suspect HSTS or forced HTTPS upgrade next
-    - `local-sandbox` is plain HTTP on `5174`; use a fresh browser profile or clear HSTS state before debugging the app
-  - Frontend-only + real proxy + CRUD allowed
-    - use `front-web-console/.env.local`
-    - current real proxy target is `https://ev-dashboard.com`
-    - run `npm run dev`
-    - do not bring up `8080` unless the user explicitly asks for full integration
-  - Frontend-only + real proxy + CRUD not allowed
-    - do not use `front-web-console/.env.local`
-    - switch to `front-web-console/.env.local-test` or ask for another safe target
-  - Frontend-only + remote local-test(dev/staging) target
-    - use `front-web-console/.env.local-test`
-    - current dev target is `https://clever-hub-dev-public-alb-709320164.ap-northeast-2.elb.amazonaws.com`
-    - run `npm run dev:local-test`
-  - Backend development + local runtime
-    - use low-CPU hybrid or full Docker depending on the requested scope
-  - Full integration smoke
-    - use the out-of-band integration repo and `8080`
+- Before starting local verification, ask the user what they want to validate and whether live-data impact is acceptable.
+- Do not choose a verification setup on the user's behalf when the request is only "open it", "bring it up", or "run local verification". Ask first.
+- Keep operational execution detail out of `AGENTS.md`. Follow repo-local scripts and canonical docs when those details are needed.
 
 ## Legacy Workspace
 
