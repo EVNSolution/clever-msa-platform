@@ -4,13 +4,15 @@
 
 - This directory is the active platform root for CLEVER MSA work.
 - Treat `docs/` as the source of truth for architecture, boundaries, mappings, contracts, and rollout decisions.
-- Treat `development/` as a set of independent implementation repos exposed from the root as linked child repos. Do not treat this root as a shared runtime codebase.
+- Treat `development/` as a whitelist of independent implementation repos exposed from the root.
+- The current root whitelist is `front-web-console`, `edge-api-gateway`, `runtime-prod-release`, `runtime-prod-platform`, and the active `service-*` repos.
+- Do not treat this root as a shared runtime codebase.
 - Start from [WORKSPACE.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md) and [repo-map.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md) before moving files or changing repo boundaries.
 
 ## Repo Selection Rules
 
 - If the task is architecture, migration, mapping, contract, or rollout work, update `docs/` first.
-- If the task is local compose, seed orchestration, env templates, or smoke scripts, work in `development/integration-local-stack/`.
+- If the task is local compose, seed orchestration, env templates, or smoke scripts, use the out-of-band integration repo. It is not part of the root `development/` whitelist.
 - If the task is gateway routing or edge entry behavior, work in `development/edge-api-gateway/`.
 - If the task is operator UI or admin UI behavior, work in the matching `front-*` repo only.
 - If the task is backend behavior, work in the matching `service-*` repo only.
@@ -21,7 +23,8 @@
 - After pulling root changes that move child repo pointers, run `git submodule update --init --recursive` again.
 - The first recursive submodule init can take noticeable time because it clones many private child repos in sequence.
 - Do not reintroduce root-tracked implementation snapshots for active `development/*` repos.
-- New `development/*` repos must be registered from the root as linked child repos immediately.
+- New root-visible `development/*` repos must be registered from the root as linked child repos immediately.
+- Non-whitelisted support or legacy repos must stay out of the root `development/` tree.
 
 ## Boundary Rules
 
@@ -82,7 +85,7 @@
   - Backend development + local runtime
     - use low-CPU hybrid or full Docker depending on the requested scope
   - Full integration smoke
-    - use `development/integration-local-stack` and `8080`
+    - use the out-of-band integration repo and `8080`
 
 ## Legacy Workspace
 

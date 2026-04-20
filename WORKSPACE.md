@@ -55,7 +55,7 @@ clever-msa-platform/
 
 원칙:
 - 각 디렉토리는 독립 repo 전제다.
-- 루트에서는 모든 `development/*`를 linked child repo로 노출한다.
+- 루트에서는 whitelist에 포함된 `development/*`만 linked child repo로 노출한다.
 - 서비스는 다른 서비스 내부 구현을 import하지 않는다.
 - 공유 코드는 기본 금지다.
 - cross-service 연결은 계약 문서와 API 기준으로만 관리한다.
@@ -90,11 +90,10 @@ clever-msa-platform/
 - `listener`
 - `dead-letter`
 
-## Active Naming Set
+## Root Development Whitelist
 
-현재 기준 target repo는 아래와 같다.
+현재 root GitHub view와 `development/` tree 에서 유지하는 필수 repo는 아래와 같다.
 
-- `integration-local-stack`
 - `runtime-prod-release`
 - `runtime-prod-platform`
 - `edge-api-gateway`
@@ -124,6 +123,12 @@ clever-msa-platform/
 - `service-settlement-payroll`
 - `service-settlement-operations-view`
 
+아래 repo들은 root `development/` whitelist 바깥으로 둔다.
+
+- local stack support repo
+- legacy infra repo
+- bridge lane / historical support repo
+
 ## Active Platform Runtime Repo Names
 
 현재 application repo와 별도로, production runtime cutover를 위해 아래 runtime repo 이름을 active target으로 유지한다.
@@ -142,32 +147,32 @@ clever-msa-platform/
 
 ## Repo Retention Rule
 
-`development/*` repo 삭제는 아래 두 문서에서 모두 active set 바깥으로 내려간 뒤에만 한다.
+root `development/` whitelist 변경은 아래 두 문서에서 먼저 정본을 바꾼 뒤에만 한다.
 
 - `repo-map.md`
 - `docs/mappings/current-runtime-inventory.md`
 
-`WORKSPACE.md`의 부분 목록만 보고 repo를 지우지 않는다. active runtime repo, operator support repo, infra repo는 모두 linked child repo로 유지한다.
+`WORKSPACE.md`의 부분 목록만 보고 repo를 지우지 않는다. root visibility 는 whitelist 기준으로만 유지하고, support/legacy repo는 root 바깥으로 둔다.
 
 ## Working Rules
 
 1. 새로운 서비스나 구조 변경은 먼저 `docs/`에 반영한다.
 2. `development/` repo 안의 README는 repo 사용법만 담고, 아키텍처 정본은 `docs/`를 가리킨다.
-3. 로컬 통합 실행 자산은 `development/integration-local-stack/`만 소유한다.
+3. 로컬 통합 실행 자산은 root `development/` whitelist 바깥의 별도 integration repo가 소유한다.
 4. `settlement`처럼 아직 덜 분해된 영역은 기존 폴더를 그대로 승격하지 않는다.
 5. 현재 runtime naming, compose service, gateway prefix는 `docs/mappings/current-runtime-inventory.md`를 먼저 본다.
 6. `docs/rollout/plans/`는 active plan only다. 완료된 rollout artifact는 `docs/archive/historical/rollout/`로 이동한다.
 7. archive는 문서 전용이다. 코드와 runtime 자산은 archive로 보내지 않는다.
-8. repo-local `AGENTS.md`는 예외 규칙이 많은 repo에만 둔다. 현재 허용 범위는 플랫폼 루트, `development/integration-local-stack/`, `development/edge-api-gateway/`까지다.
+8. repo-local `AGENTS.md`는 예외 규칙이 많은 repo에만 둔다. 현재 허용 범위는 플랫폼 루트와 `development/edge-api-gateway/`까지다.
 9. `development/infra-*` repo는 platform-specific runtime infra만 소유한다. app code, shared library, cross-domain catch-all infra repo로 키우지 않는다.
 
 ## Current Workspace State
 
-현재 시점은 `development/* linked child repo migration completed` 상태다.
+현재 시점은 `development whitelist linked child repo migration completed` 상태다.
 
 - `docs/`는 platform source of truth다.
-- active `development/*` repo는 모두 independent child repo다.
-- 루트는 각 child repo를 linked child repo로 노출한다.
+- root whitelist에 포함된 `development/*` repo는 모두 independent child repo다.
+- 루트는 whitelist 대상 child repo만 linked child repo로 노출한다.
 - active child repo에 대한 root-tracked implementation snapshot은 더 이상 남아 있지 않다.
 - old `MSA-Server/services`에는 direct runtime source가 더 이상 남아 있지 않다.
 
@@ -183,8 +188,8 @@ clever-msa-platform/
 
 ## Workspace Governance Update (2026-04-09)
 
-- The active `clever-msa-platform` root is the umbrella workspace for platform docs, contracts, rollout, and `development/*` repo visibility.
+- The active `clever-msa-platform` root is the umbrella workspace for platform docs, contracts, rollout, and the whitelisted `development/*` repo visibility.
 - Runtime implementation code under `development/` remains owned by each independent child repo.
-- The root GitHub view must expose `development/*` repos consistently and must not hide one child repo selectively while others remain visible.
+- The root GitHub view must expose only the approved whitelist: `front-web-console`, `edge-api-gateway`, `runtime-prod-release`, `runtime-prod-platform`, and active `service-*` repos.
 - Child repo implementation ownership stays in the child repo even when the root workspace also exposes that repo for umbrella visibility.
-- New `development/*` repos must be added as linked child repos from day one.
+- New root-visible `development/*` repos must be added to the whitelist and registered as linked child repos from day one.

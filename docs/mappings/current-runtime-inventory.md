@@ -63,7 +63,7 @@
 
 1. runtime naming truth는 repo 이름이 아니라 현재 compose service와 gateway prefix까지 같이 본다.
 2. naming drift나 route 변경이 생기면 historical rollout plan을 소급 수정하는 대신 이 문서와 current living docs를 먼저 갱신한다.
-3. `integration-local-stack`, `seed-runner`, `mqtt-broker`, DB 컨테이너는 local stack support component이며 위 표의 target repo inventory에는 넣지 않는다.
+3. `integration-local-stack`, `seed-runner`, `mqtt-broker`, DB 컨테이너는 local stack support component이며 root `development/` whitelist 바깥에서 관리한다. 위 표의 target repo inventory에는 넣지 않는다.
 4. `2026-04-14` 기준 `api.ev-dashboard.com` 의 external prefix 는 planned slices 기준으로 external production proof를 마쳤다. 예외는 internal worker `service-telemetry-listener` 뿐이며, 이 서비스는 broker 확인 전까지 `desired=0` 으로 유지한다.
 5. `ev-dashboard` 운영 절차는 rollout note보다 runbook 기준으로 본다.
    - prod 전 gate: [../runbooks/ev-dashboard-preprod-release-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-preprod-release-gate.md)
