@@ -1,22 +1,30 @@
-# Subdomain Shell Role-Split Design
+# Company Path Shell Role-Split Design
 
 ## Purpose
 
-이 문서는 기존 `Subdomain-First Web Definition Design`을 보강해서, 서브도메인 shell을 **역할 분리형 구조**로 다시 고정하기 위한 설계다.
+이 문서는 기존 company path web definition을 보강해서, 회사 path shell을 **역할 분리형 구조**로 다시 고정하기 위한 설계다.
+
+## Current Canonical Contract
+
+- canonical route base is `ev-dashboard.com/{tenant}`
+- `*.ev-dashboard.com` host tenant resolution is compatibility fallback only
+- main domain remains system-admin surface
+- system-admin may enter a company tenant path before cockpit render
+- wrong-company manager is blocked before cockpit render
 
 이번 문서의 목적은 아래를 닫는 것이다.
 
-1. 서브도메인 `대시보드`에서 좌측 사이드 영역을 제거한다.
+1. 회사 path `대시보드`에서 좌측 사이드 영역을 제거한다.
 2. `천하운수` 브랜드 영역을 홈 카드와 상위 메뉴 확장 트리거로 분리한다.
 3. `정산` 진입 시에만 별도 정산 전용 사이드바가 생기는 구조를 고정한다.
 4. 카드 영역, 상위 메뉴, 정산 전용 사이드바를 서로 다른 책임으로 분리한다.
-5. 기존 parent spec의 서브도메인 dashboard 정의 중 이번 shell 개편에서 바뀌는 부분을 명시적으로 덮어쓴다.
+5. 기존 parent spec의 company path dashboard 정의 중 이번 shell 개편에서 바뀌는 부분을 명시적으로 덮어쓴다.
 
 ## Scope
 
 이번 문서는 아래만 다룬다.
 
-- 서브도메인 shell 레이아웃
+- 회사 path shell 레이아웃
 - `대시보드`와 `정산`의 좌측 구조 차이
 - 상위 메뉴와 정산 내부 메뉴의 역할 분리
 - `front-web-console` 내부 컴포넌트 책임 경계
@@ -30,7 +38,7 @@
 
 ## Problem Statement
 
-현재 서브도메인 shell은 `대시보드`와 `정산` 모두에서 같은 좌측 레일을 유지하는 구조에 가깝다. 이 상태는 이번에 의도한 사용자 경험과 맞지 않는다.
+현재 회사 path shell은 `대시보드`와 `정산` 모두에서 같은 좌측 레일을 유지하는 구조에 가깝다. 이 상태는 이번에 의도한 사용자 경험과 맞지 않는다.
 
 남아 있는 문제는 아래와 같다.
 
@@ -73,9 +81,9 @@
 
 이번 문서는 이 안을 채택한다.
 
-### 3. 서브도메인 shell 완전 재작성
+### 3. 회사 path shell 완전 재작성
 
-기존 cockpit shell/navigation을 사실상 버리고, 서브도메인 전용 shell을 새로 짜는 방식이다.
+기존 cockpit shell/navigation을 사실상 버리고, 회사 path 전용 shell을 새로 짜는 방식이다.
 
 장점:
 
@@ -90,7 +98,7 @@
 
 ## Primary Decision
 
-서브도메인 shell은 **역할 분리형**으로 재구성한다.
+회사 path shell은 **역할 분리형**으로 재구성한다.
 
 즉 아래 세 레이어를 분리한다.
 
@@ -100,7 +108,7 @@
 
 그리고 `CockpitShell`은 현재 surface가 `대시보드`인지 `정산`인지에 따라 이 레이어들을 조합한다.
 
-이 문서는 parent spec의 서브도메인 dashboard 본문 정의를 일부 대체한다.
+이 문서는 parent spec의 회사 path dashboard 본문 정의를 일부 대체한다.
 
 - parent spec에서는 dashboard에 summary section들이 존재했다
 - 이번 spec에서는 그 summary section들을 제거하고, dashboard를 **빈 본문을 가진 shell landing**으로 다시 고정한다
@@ -312,4 +320,4 @@ route rule:
 
 - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-17-subdomain-web-definition-design.md`
 
-즉 기존 문서의 메인/서브도메인 경계, 세션 규칙, `정산` workspace 원칙은 유지하고, 이번 문서는 **서브도메인 shell layout과 navigation 역할 분리**만 더 구체화한다.
+즉 기존 문서의 메인/회사 path 경계, 세션 규칙, `정산` workspace 원칙은 유지하고, 이번 문서는 **회사 path shell layout과 navigation 역할 분리**만 더 구체화한다.

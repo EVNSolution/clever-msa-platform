@@ -1,4 +1,6 @@
-# Subdomain-First Web Definition Implementation Plan
+# Company Path Web Definition Implementation Plan
+
+현재 canonical route contract는 `ev-dashboard.com/{tenant}`다. 이 plan 본문에 남아 있는 `subdomain` 표현은 historical component/file naming이나 compatibility host fallback을 가리키지 않는 한, 현재 구현 기준의 company path shell로 읽는다.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 

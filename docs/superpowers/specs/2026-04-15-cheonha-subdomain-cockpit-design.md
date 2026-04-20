@@ -1,4 +1,4 @@
-# Cheonha Subdomain Cockpit Design
+# Cheonha Company Path Cockpit Design
 
 ## Purpose
 
@@ -6,8 +6,8 @@
 
 이번 문서의 목적은 아래를 먼저 닫는 것이다.
 
-1. `천하운수` 전용 진입을 메인 허브 안의 메뉴가 아니라 서브도메인 cockpit으로 둘지 결정한다.
-2. `cheonha.ev-dashboard.com`의 메인 정보구조를 고정한다.
+1. `천하운수` 전용 진입을 메인 허브 안의 메뉴가 아니라 회사 path cockpit으로 둘지 결정한다.
+2. `ev-dashboard.com/cheonha`의 메인 정보구조를 고정한다.
 3. 천하운수 사용자가 익숙한 참고 프런트 구조를 어디까지 재현할지 범위를 고정한다.
 4. 현재 `front-web-console`의 세션/권한 구조 위에 tenant/workflow bootstrap을 어떤 층으로 올릴지 정한다.
 
@@ -27,12 +27,12 @@
 
 ## Primary Decision
 
-천하운수 1차 전용 운영 화면은 `메인 허브 내부 메뉴`가 아니라 `회사 전용 서브도메인 cockpit`으로 구성한다.
+천하운수 1차 전용 운영 화면은 `메인 허브 내부 메뉴`가 아니라 `회사 전용 company path cockpit`으로 구성한다.
 
 - 메인 허브: `ev-dashboard.com`
-- 천하운수 cockpit: `cheonha.ev-dashboard.com`
+- 천하운수 cockpit: `ev-dashboard.com/cheonha`
 
-이때 `ev-dashboard.com`은 플랫폼 공통 관리/운영 허브 역할만 남기고, 천하운수 실제 업무 entry는 `cheonha.ev-dashboard.com`으로 분리한다.
+이때 `ev-dashboard.com`은 플랫폼 공통 관리/운영 허브 역할만 남기고, 천하운수 실제 업무 entry는 `/{tenant}` path로 분리한다.
 
 ## Rejected Alternatives
 
@@ -58,14 +58,14 @@
 
 ## Chosen Strategy
 
-### 1. 서브도메인별 company cockpit
+### 1. 회사 path별 company cockpit
 
-각 회사는 필요 시 자기 서브도메인 cockpit을 가진다.
+각 회사는 필요 시 자기 company path cockpit을 가진다.
 
-- `cheonha.ev-dashboard.com`
-- 이후 다른 회사가 필요하면 `foo.ev-dashboard.com`
+- `ev-dashboard.com/cheonha`
+- 이후 다른 회사가 필요하면 `ev-dashboard.com/foo`
 
-이 구조에서 서브도메인은 단순 브랜딩이 아니라 `tenant entrypoint`다.
+이 구조에서 company path는 단순 브랜딩이 아니라 `tenant entrypoint`다.
 
 ### 2. 단일 프런트 repo 유지
 
@@ -108,7 +108,7 @@
 
 메인 허브는 천하운수 실무 사용자의 기본 업무 entry로 삼지 않는다.
 
-### 2. `cheonha.ev-dashboard.com`
+### 2. `ev-dashboard.com/cheonha`
 
 천하운수 사용자의 기본 업무 entry로 고정한다.
 
@@ -119,6 +119,13 @@
 3. 로그인 후 천하운수 cockpit shell로 바로 진입한다.
 
 ## Cheonha Cockpit Information Architecture
+
+## Current Canonical Contract
+
+- canonical tenant entry is `ev-dashboard.com/{tenant}`
+- `*.ev-dashboard.com` host tenant resolution may remain as compatibility fallback, but it is not the primary contract
+- system-admin sessions may enter a company tenant path before the cockpit shell renders
+- wrong-company manager sessions are still blocked before cockpit render
 
 ### 1. Cockpit main route
 
@@ -303,14 +310,14 @@
 
 ### 1. Public entry resolution
 
-서브도메인으로 tenant를 고정한다.
+company path로 tenant를 고정한다.
 
 예:
 
-- host = `cheonha.ev-dashboard.com`
+- path = `ev-dashboard.com/cheonha`
 - resolved tenant = `cheonha`
 
-이 값은 프런트가 직접 해석해도 되고, gateway/backend가 host 기준으로 해석해도 된다.
+이 값은 프런트가 URL path 기준으로 직접 해석해도 되고, gateway/backend가 같은 tenant code를 기준으로 해석해도 된다.
 
 ### 2. Signup/login rule
 
@@ -319,8 +326,8 @@
 원칙:
 
 1. 회사명 직접 입력 또는 검색 없음
-2. tenant는 host 기준으로 고정
-3. 프런트는 로그인/회원가입 요청에 tenant 문맥을 함께 전달하거나, backend가 host로 확정한다
+2. tenant는 company path 기준으로 고정
+3. 프런트는 로그인/회원가입 요청에 tenant 문맥을 함께 전달하거나, backend가 같은 tenant code로 확정한다
 
 ### 3. Post-login sequence
 
@@ -400,7 +407,7 @@
 
 이번 설계에서 1차로 보는 범위는 아래다.
 
-1. `cheonha.ev-dashboard.com` tenant entry 결정
+1. `ev-dashboard.com/cheonha` tenant entry 결정
 2. cockpit 메인 4카드 dashboard
 3. `정산` 카드 연결
 4. settlement workspace 상단 탭 구조
@@ -419,10 +426,10 @@
 
 ## Final Decision Summary
 
-1. 천하운수 전용 운영 entry는 `cheonha.ev-dashboard.com` 서브도메인 cockpit으로 고정한다.
+1. 천하운수 전용 운영 entry는 `ev-dashboard.com/cheonha` company path cockpit으로 고정한다.
 2. `ev-dashboard.com`은 플랫폼 공통 관리 허브 역할만 남긴다.
 3. 천하운수 cockpit 메인은 `정산 / 차량 / 빈 카드 / 빈 카드` 4-card dashboard로 고정한다.
 4. 참고 프런트와의 prototype parity는 cockpit 전체가 아니라 `정산` workspace 안에서만 적용한다.
-5. `정산` workspace는 `배차 데이터 / 배송원 관리 / 운영 현황 / 정산 처리 / 팀 관리` 상단 탭 구조로 고정한다.
+5. `정산` workspace는 `배차 데이터 / 배송원 현황 / 운영 현황 / 정산 처리 / 팀 관리` 상단 탭 구조로 고정한다.
 6. 현재 `front-web-console` 단일 repo는 유지하고, tenant/workflow bootstrap으로 shell과 workspace preset을 결정한다.
 7. 권한(`allowed_nav_keys`)과 정보구조(`workflow_profile`, `workspace_presets`)는 분리한다.

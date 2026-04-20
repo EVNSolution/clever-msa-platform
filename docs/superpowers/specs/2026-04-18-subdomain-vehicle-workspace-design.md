@@ -1,12 +1,18 @@
-# Subdomain Vehicle Workspace Design
+# Company Path Vehicle Workspace Design
 
 ## Purpose
 
-이 문서는 기존 subdomain shell 정의 위에, `차량` 상위 메뉴와 차량 전용 workspace를 추가하기 위한 보강 설계다.
+이 문서는 기존 company path shell 정의 위에, `차량` 상위 메뉴와 차량 전용 workspace를 추가하기 위한 보강 설계다.
+
+## Current Canonical Contract
+
+- vehicle workspace belongs to the company path shell under `ev-dashboard.com/{tenant}/vehicles/*`
+- `*.ev-dashboard.com` host tenant resolution is compatibility fallback only
+- the current launcher order is `대시보드 / 차량 / 정산`
 
 이번 문서의 목적은 아래를 닫는 것이다.
 
-1. 서브도메인 상위 메뉴를 `대시보드 / 차량 / 정산`으로 확장한다.
+1. 회사 path 상위 메뉴를 `대시보드 / 차량 / 정산`으로 확장한다.
 2. `차량`이 `정산`과 같은 형식의 전용 workspace를 가진다는 점을 고정한다.
 3. `차량` 전용 사이드바의 1차 메뉴와 기본 landing을 고정한다.
 4. 기존 차량/배송원/차량 배정 페이지를 새 workspace 안에서 어떻게 재사용할지 고정한다.
@@ -23,11 +29,11 @@
 
 ## Problem Statement
 
-현재 subdomain shell은 `대시보드`와 `정산`만 가진다. 이 구조는 정산 중심 제품 surface로는 충분하지만, 차량 관련 기능을 상위 수준에서 묶어 보여주기엔 부족하다.
+현재 company path shell은 `대시보드`와 `정산`만 가진다. 이 구조는 정산 중심 제품 surface로는 충분하지만, 차량 관련 기능을 상위 수준에서 묶어 보여주기엔 부족하다.
 
 남아 있는 문제는 아래와 같다.
 
-1. 기존 `배송원`, `차량`, `차량 배정` 페이지는 존재하지만, subdomain shell 상위 탐색 구조 안에서 하나의 vehicle workspace로 읽히지 않는다.
+1. 기존 `배송원`, `차량`, `차량 배정` 페이지는 존재하지만, company path shell 상위 탐색 구조 안에서 하나의 vehicle workspace로 읽히지 않는다.
 2. `정산`만 전용 workspace를 가진 상태라, 향후 product-level top menu 확장 규칙이 비대칭적이다.
 3. 차량 관련 기능을 상위 메뉴로 올리더라도, 기존 페이지를 버리지 않고 재사용하는 연결 규칙이 먼저 필요하다.
 
@@ -75,7 +81,7 @@
 
 ## Primary Decision
 
-subdomain 상위 메뉴는 아래로 확장한다.
+company path 상위 메뉴는 아래로 확장한다.
 
 - `대시보드`
 - `차량`
@@ -83,7 +89,7 @@ subdomain 상위 메뉴는 아래로 확장한다.
 
 여기서 `차량`은 `정산`과 같은 형식의 전용 workspace다.
 
-즉 subdomain shell은 이제:
+즉 company path shell은 이제:
 
 - dashboard landing
 - vehicle workspace

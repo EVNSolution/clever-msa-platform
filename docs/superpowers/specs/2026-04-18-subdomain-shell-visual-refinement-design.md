@@ -1,8 +1,14 @@
-# Subdomain Shell Visual Refinement Design
+# Company Path Shell Visual Refinement Design
 
 ## Purpose
 
-이 문서는 `Subdomain Shell Role-Split Design` 위에, 서브도메인 shell의 시각 규칙을 더 좁게 고정하기 위한 보강 설계다.
+이 문서는 `Company Path Shell Role-Split Design` 위에, 회사 path shell의 시각 규칙을 더 좁게 고정하기 위한 보강 설계다.
+
+## Current Canonical Contract
+
+- canonical route base is `ev-dashboard.com/{tenant}`
+- `*.ev-dashboard.com` host tenant resolution is compatibility fallback only
+- visual shell guidance applies to the company path shell, not a dedicated company host product
 
 이번 문서의 목적은 아래 세 가지를 닫는 것이다.
 
@@ -17,11 +23,11 @@
 - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-17-subdomain-web-definition-design.md`
 - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-18-subdomain-shell-role-split-design.md`
 
-메인/서브도메인 경계, shell 역할 분리, canonical route 계약은 그대로 유지한다.
+메인/회사 path 경계, shell 역할 분리, canonical route 계약은 그대로 유지한다.
 
 ## Problem Statement
 
-현재 서브도메인 shell은 기능 경계는 맞아도, 시각 구조는 아직 최종 의도와 다르다.
+현재 회사 path shell은 기능 경계는 맞아도, 시각 구조는 아직 최종 의도와 다르다.
 
 남아 있는 문제는 아래와 같다.
 

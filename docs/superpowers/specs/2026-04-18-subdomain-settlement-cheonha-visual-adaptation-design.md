@@ -1,8 +1,14 @@
-# Subdomain Settlement Cheonha Visual Adaptation Design
+# Company Path Settlement Cheonha Visual Adaptation Design
 
 ## Purpose
 
-이 문서는 현재 subdomain shell 위에, `정산` workspace 내부를 `cheonha` 레퍼런스 톤에 맞춰 시각적으로 재정렬하기 위한 보강 설계다.
+이 문서는 현재 company path shell 위에, `정산` workspace 내부를 `cheonha` 레퍼런스 톤에 맞춰 시각적으로 재정렬하기 위한 보강 설계다.
+
+## Current Canonical Contract
+
+- settlement workspace belongs to the company path shell under `ev-dashboard.com/{tenant}/settlement/*`
+- the current detached sidebar order is `홈 / 배차 데이터 / 배송원 현황 / 운영 현황 / 정산 처리 / 팀 관리`
+- `*.ev-dashboard.com` host tenant resolution is compatibility fallback only
 
 이번 문서의 목적은 아래를 닫는 것이다.
 

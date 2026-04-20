@@ -1,25 +1,34 @@
-# Subdomain-First Web Definition Design
+# Company Path Web Definition Design
 
 ## Purpose
 
-이 문서는 `ev-dashboard` 웹 제품을 다시 정의할 때, 메인 도메인보다 **서브도메인 회사 제품을 먼저 정본으로 고정**하기 위한 1차 설계다.
+이 문서는 `ev-dashboard` 웹 제품을 다시 정의할 때, 메인 도메인과 **회사 path tenant 제품**의 경계를 현재 구현 기준으로 정본 고정하기 위한 1차 설계다.
 
 이번 문서의 목적은 아래를 닫는 것이다.
 
-1. 메인 도메인과 서브도메인을 같은 웹으로 볼지, 다른 제품으로 볼지 고정한다.
+1. 메인 도메인과 회사 path tenant를 같은 웹으로 볼지, 다른 제품으로 볼지 고정한다.
 2. 시스템 관리자와 회사 계정의 세션 경계를 고정한다.
-3. 서브도메인 1차 MVP의 정보구조와 deep-link 계약을 고정한다.
+3. 회사 path 1차 MVP의 정보구조와 deep-link 계약을 고정한다.
 4. `배차 -> 근태 -> 자동 정산` 흐름을 웹 기준의 핵심 데이터 파이프라인으로 고정한다.
-5. `front-web-console` 하나를 유지하면서도 메인 도메인과 서브도메인이 거의 다른 제품처럼 보이게 하는 원칙을 고정한다.
+5. `front-web-console` 하나를 유지하면서도 메인 도메인과 회사 path tenant가 거의 다른 제품처럼 보이게 하는 원칙을 고정한다.
+
+## Current Canonical Contract
+
+- canonical company tenant entry is `ev-dashboard.com/{tenant}`
+- `*.ev-dashboard.com` host tenant resolution remains compatibility fallback only
+- main domain stays the system-admin surface
+- company manager sessions are rejected from the main-domain shell
+- system-admin sessions may enter a company tenant path before cockpit render
+- wrong-company manager sessions are blocked before cockpit render
 
 ## Scope
 
 이번 문서는 아래만 다룬다.
 
-- 메인 도메인과 서브도메인의 제품 정의
+- 메인 도메인과 회사 path 제품 정의
 - 세션/권한 경계
-- 서브도메인 1차 MVP의 상단 정보구조
-- 서브도메인 대시보드/정산과 정산 내부 메뉴의 역할
+- 회사 path 1차 MVP의 상단 정보구조
+- 회사 path 대시보드/정산과 정산 내부 메뉴의 역할
 - 프론트와 gateway/API 조합 원칙
 
 이번 문서는 아래를 아직 확정하지 않는다.
@@ -34,7 +43,7 @@
 현재 웹은 `front-web-console` 하나를 정본으로 유지하고 있지만, 사용자 경험 관점에서는 아래가 아직 명확히 분리돼 있지 않다.
 
 1. 시스템 관리자용 메인 도메인
-2. 회사 실무용 서브도메인
+2. 회사 실무용 company path
 3. 회사별 전용 workflow
 
 이 상태를 그대로 두면 아래 문제가 남는다.
@@ -48,7 +57,7 @@
 
 ### 1. 공용 허브 유지 + 메뉴만 분기
 
-메인 도메인과 서브도메인을 사실상 같은 제품으로 두고, 메뉴와 첫 화면 정도만 다르게 두는 방식이다.
+메인 도메인과 회사 path tenant를 사실상 같은 제품으로 두고, 메뉴와 첫 화면 정도만 다르게 두는 방식이다.
 
 장점:
 
@@ -59,13 +68,13 @@
 
 - 회사 전용 제품처럼 느껴지지 않는다.
 - 시스템 관리자와 회사 운영자의 제품 경계가 흐려진다.
-- 서브도메인 복제 모델에도 맞지 않는다.
+- tenant path 복제 모델에도 맞지 않는다.
 
 이 안은 채택하지 않는다.
 
 ### 2. 완전 별도 프론트 제품
 
-메인 도메인과 서브도메인을 repo, 빌드, 배포까지 모두 다른 프론트 제품으로 나누는 방식이다.
+메인 도메인과 회사 path tenant를 repo, 빌드, 배포까지 모두 다른 프론트 제품으로 나누는 방식이다.
 
 장점:
 
@@ -80,20 +89,20 @@
 
 이 안도 1차에서는 채택하지 않는다.
 
-### 3. 단일 프론트 앱 유지 + 도메인별 거의 다른 제품 surface
+### 3. 단일 프론트 앱 유지 + surface별 거의 다른 제품 경험
 
-repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **서로 다른 shell, 다른 첫 진입, 다른 상단 구조, 다른 페이지 묶음**을 갖게 만드는 방식이다.
+repo와 앱은 하나로 유지하되, 메인 도메인과 회사 path tenant는 **서로 다른 shell, 다른 첫 진입, 다른 상단 구조, 다른 페이지 묶음**을 갖게 만드는 방식이다.
 
 장점:
 
 - 현재 구조를 유지하면서도 제품 경험은 분리할 수 있다.
-- 회사별 서브도메인 복제 모델과 잘 맞는다.
+- 회사별 tenant path 복제 모델과 잘 맞는다.
 - gateway와 MSA 경계를 바꾸지 않아도 된다.
 
 단점:
 
 - 프론트 내부에서 제품 경계를 엄격히 지켜야 한다.
-- 메인/서브도메인 공용 자산과 제품별 자산의 구분이 필요하다.
+- 메인/회사 path 공용 자산과 제품별 자산의 구분이 필요하다.
 
 이번 문서는 이 안을 채택한다.
 
@@ -103,7 +112,7 @@ repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **
 
 - 메인 도메인 제품
   - 시스템 관리자 전용
-- 서브도메인 제품
+- 회사 path 제품
   - 회사 1개에 고정된 전용 실무 제품
 
 즉 **코드베이스는 하나, 제품 경험은 둘**이라는 원칙을 채택한다.
@@ -129,45 +138,45 @@ repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **
 
 즉 메인 도메인은 1차에서 “회사 운영 제품”이 아니라 “시스템 관리자 허브”로 남는다.
 
-### 2. Subdomain
+### 2. Company Path
 
-서브도메인은 회사 1개에 고정된 전용 제품이다.
+회사 path는 회사 1개에 고정된 전용 제품이다.
 
 핵심 원칙:
 
-- 회사 1개 = 서브도메인 1개
-- 메인 도메인에서 회사 생성이 곧 서브도메인 생성은 아니다
-- 서브도메인/회사 매핑은 시스템 레벨에서 관리되고 DB에 고정된다
-- 회사 계정은 자기 회사 서브도메인에서만 세션을 사용한다
+- 회사 1개 = tenant path 1개
+- 메인 도메인에서 회사 생성이 곧 tenant path 생성은 아니다
+- tenant path/회사 매핑은 시스템 레벨에서 관리되고 DB에 고정된다
+- 회사 계정은 자기 회사 tenant path에서만 세션을 사용한다
 
 예시 문맥:
 
 - 메인 도메인: 시스템 관리자용
-- 현재 서브도메인: `CHEONHA`
+- 현재 tenant path: `CHEONHA`
 
-### 3. Host Resolution Contract
+### 3. Tenant Resolution Contract
 
-서브도메인 host는 회사 display name으로 즉석 계산하지 않는다. 시스템이 관리하는 **고정 tenant slug**를 기준으로 해석한다.
+회사 tenant는 회사 display name으로 즉석 계산하지 않는다. 시스템이 관리하는 **고정 tenant slug**를 기준으로 해석한다.
 
 1차 host 규칙:
 
 - 메인 도메인
   - `ev-dashboard.com`
-- 회사 서브도메인
-  - `<tenant-slug>.ev-dashboard.com`
+- 회사 path
+  - `ev-dashboard.com/{tenant-slug}`
 - 현재 예시
-  - `cheonha.ev-dashboard.com`
+  - `ev-dashboard.com/cheonha`
 
 원칙:
 
 - `tenant-slug`는 시스템 레벨에서 별도로 관리되는 고정 식별자다
-- 회사 생성이 곧 slug 생성 또는 서브도메인 생성은 아니다
+- 회사 생성이 곧 slug 생성 또는 tenant path 생성은 아니다
 - 회사 display name과 slug는 같은 값일 필요가 없다
-- 프론트 bootstrap은 현재 host에서 `main-domain`인지 `company-subdomain`인지 먼저 해석한 뒤 shell을 결정한다
+- 프론트 bootstrap은 현재 URL에서 `main-domain`인지 `company-path`인지 먼저 해석한 뒤 shell을 결정한다
 
 1차 failure 동작:
 
-- 알 수 없는 subdomain host
+- 알 수 없는 company path
   - 회사 cockpit shell로 진입시키지 않는다
   - tenant not found 상태로 처리한다
 - 유효한 host지만 세션의 회사 문맥이 맞지 않는 경우
@@ -185,9 +194,9 @@ repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **
 
 ### 2. Login UX
 
-메인 도메인과 서브도메인의 로그인은 공통 로직을 일부 재사용해도, UX는 다르게 보여야 한다.
+메인 도메인과 회사 path tenant의 로그인은 공통 로직을 일부 재사용해도, UX는 다르게 보여야 한다.
 
-서브도메인 로그인 원칙:
+회사 path 로그인 원칙:
 
 - 로그인 카드 상단 중앙 헤더에 회사명을 고정 노출한다.
 - 사용자는 로그인 시점부터 자기 회사 시스템에 들어왔음을 인지해야 한다.
@@ -195,7 +204,7 @@ repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **
 ### 3. Company / Fleet / Driver Boundary
 
 - 플릿은 회사 내부 단위다.
-- 서브도메인의 기본 조회 범위는 회사 전체다.
+- 회사 path의 기본 조회 범위는 회사 전체다.
 - 필요 시 플릿으로 좁힌다.
 
 배송원과 차량의 1차 경계:
@@ -204,27 +213,27 @@ repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **
 - 1차 MVP에서는 `회사 + 배송원`, `회사 + 차량` 문맥으로 본다.
 - 같은 사람이 여러 회사에 존재하더라도 시스템상 각 회사의 별도 엔티티로 취급한다.
 
-## Subdomain MVP Information Architecture
+## Company Path MVP Information Architecture
 
-서브도메인 1차 MVP의 주 내비게이션은 **항상 노출되는 탑바**가 아니라, 좌상단 회사 브랜드 영역에서 펼쳐지는 **아코디언 메뉴**로 고정한다.
+회사 path 1차 MVP의 주 내비게이션은 **항상 노출되는 탑바**가 아니라, 좌상단 회사 브랜드 영역에서 펼쳐지는 **아코디언 메뉴**로 고정한다.
 
 1차 아코디언 상위 메뉴는 아래 2개다.
 
 - `대시보드`
 - `정산`
 
-즉 1차 MVP의 canonical subdomain shell은 `대시보드 / 정산` 2축이다.
+즉 1차 MVP의 canonical company path shell은 `대시보드 / 차량 / 정산` 3축이다.
 
 ### 1. Dashboard
 
-서브도메인의 첫 진입 페이지는 회사별 대시보드다.
+회사 path의 첫 진입 페이지는 회사별 대시보드다.
 
-이 대시보드는 서브도메인의 **유일한 기본 진입점**이다.
+이 대시보드는 회사 path의 **유일한 기본 진입점**이다.
 
 즉 1차 구현 계획에서는:
 
-- 서브도메인 첫 진입을 별도 cockpit home으로 두지 않는다
-- `대시보드 / 정산` 아코디언 shell이 유일한 canonical subdomain shell이다
+- 회사 path 첫 진입을 별도 cockpit home으로 두지 않는다
+- `대시보드 / 차량 / 정산` 아코디언 shell이 유일한 canonical company path shell이다
 - 기존 `cheonha` cockpit 문서는 `정산` 내부 reference policy의 근거로만 남긴다
 
 핵심 섹션:
@@ -316,26 +325,26 @@ repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **
 
 이 중 `배차 데이터`가 1차 MVP의 실제 출발점이다.
 
-### 4. Subdomain Route and Deep-Link Contract
+### 4. Company Path Route and Deep-Link Contract
 
-서브도메인 route는 아래를 canonical contract로 둔다.
+회사 path route는 아래를 canonical contract로 둔다.
 
 | Surface | Route | Meaning |
 | --- | --- | --- |
-| 대시보드 | `/` | 회사 대시보드 기본 진입 |
-| 정산 기본 | `/settlement` | 정산 workspace 진입. 기본 화면은 `홈` |
-| 정산 홈 | `/settlement/home` | `cheonha` 기준 `홈` |
-| 배차 데이터 | `/settlement/dispatch` | 배차 업로드, 업로드 결과, 보정의 출발점 |
-| 배송원 관리 | `/settlement/crew` | 배송원 관리 |
-| 운영 현황 | `/settlement/operations` | 운영 현황 |
-| 정산 처리 | `/settlement/process` | 자동 계산 결과와 스냅샷 잠금 |
-| 팀 관리 | `/settlement/team` | 팀 관리 |
+| 대시보드 | `/{tenant}` | 회사 대시보드 기본 진입 |
+| 정산 기본 | `/{tenant}/settlement` | 정산 workspace 진입. 기본 화면은 `홈` |
+| 정산 홈 | `/{tenant}/settlement/home` | `cheonha` 기준 `홈` |
+| 배차 데이터 | `/{tenant}/settlement/dispatch` | 배차 업로드, 업로드 결과, 보정의 출발점 |
+| 배송원 현황 | `/{tenant}/settlement/crew` | 배송원 현황 |
+| 운영 현황 | `/{tenant}/settlement/operations` | 운영 현황 |
+| 정산 처리 | `/{tenant}/settlement/process` | 자동 계산 결과와 스냅샷 잠금 |
+| 팀 관리 | `/{tenant}/settlement/team` | 팀 관리 |
 
 원칙:
 
-- 서브도메인의 기본 진입은 항상 `/`
+- 회사 path의 기본 진입은 항상 `/{tenant}`
 - `정산` 상위 메뉴를 열면 내부 deep-link는 위 route를 사용한다
-- `배차`는 `/dispatch` 같은 top-level route를 가지지 않는다
+- `배차`는 `/{tenant}/dispatch` 같은 top-level route를 가지지 않는다
 
 ### 5. Attendance Surface
 
@@ -357,7 +366,7 @@ repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **
 
 ## Cheonha Reference Policy
 
-서브도메인 제품 전체가 `cheonha`를 그대로 복제하는 것은 아니다.
+회사 path 제품 전체가 `cheonha`를 그대로 복제하는 것은 아니다.
 
 정확한 적용 범위는 아래와 같다.
 
@@ -377,14 +386,14 @@ repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **
 
 ## Core Data Flow
 
-서브도메인 1차 MVP의 핵심 데이터 파이프라인은 아래로 고정한다.
+회사 path 1차 MVP의 핵심 데이터 파이프라인은 아래로 고정한다.
 
 1. `정산 > 배차 데이터`에서 `배차 업로드`
 2. `금일 배차 반영`
 3. `금월 근태 반영`
 4. `정산 초안 생성`
 
-즉 서브도메인 제품의 핵심 가치는 **배차 중심 자동 정산**이다.
+즉 회사 path 제품의 핵심 가치는 **배차 중심 자동 정산**이다.
 
 ### Dispatch-First Automation Rule
 
@@ -403,7 +412,7 @@ repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **
 ### 1. Frontend Boundary
 
 - 프론트는 계속 `front-web-console` 하나를 사용한다
-- 메인 도메인과 서브도메인은 이 앱 안에서 서로 다른 product surface를 가진다
+- 메인 도메인과 회사 path tenant는 이 앱 안에서 서로 다른 product surface를 가진다
 
 ### 2. API Boundary
 
@@ -420,12 +429,12 @@ repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **
 
 ## Error Handling Principles
 
-1차 MVP에서 서브도메인 제품은 아래 실패를 사용자에게 분명히 보여야 한다.
+1차 MVP에서 회사 path 제품은 아래 실패를 사용자에게 분명히 보여야 한다.
 
 ### 1. Wrong Domain / Wrong Company Session
 
 - 자기 회사가 아닌 도메인으로 로그인하려는 경우
-- 시스템 관리자 계정으로 서브도메인 실무 진입을 시도하는 경우
+- 시스템 관리자 계정으로 회사 path 실무 진입을 시도하는 경우
 - 회사 계정으로 메인 도메인 실무 사용을 시도하는 경우
 
 이 경우는 조용히 fallback 하지 않고, 명시적으로 도메인/권한 불일치를 안내해야 한다.
@@ -449,9 +458,9 @@ repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **
 
 이번 설계를 구현할 때 최소 검증은 아래를 기준으로 둔다.
 
-1. 메인 도메인과 서브도메인이 서로 다른 top-level shell을 가진다
-2. 서브도메인 로그인 카드에 회사명 헤더가 고정 노출된다
-3. 서브도메인 아코디언 상위 메뉴가 `대시보드 / 정산`으로 고정된다
+1. 메인 도메인과 회사 path tenant가 서로 다른 top-level shell을 가진다
+2. 회사 path 로그인 카드에 회사명 헤더가 고정 노출된다
+3. 회사 path 아코디언 상위 메뉴가 `대시보드 / 차량 / 정산`으로 고정된다
 4. `정산 > 배차 데이터` 업로드 후 `금일 배차 / 금월 근태 / 정산 초안`까지 이어지는 흐름을 검증한다
 5. `정산` 내부 메뉴와 페이지 이름이 `cheonha` 레퍼런스 구조와 맞는지 검증한다
 
@@ -474,7 +483,7 @@ repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **
 정확한 관계:
 
 - 기존 문서는 `천하운수 cockpit`의 전용 진입과 정산 workspace reference parity를 먼저 닫은 문서다
-- 이번 문서는 그 결정을 확장해, **서브도메인 전체 제품 정의를 먼저 정본으로 고정**한다
+- 이번 문서는 그 결정을 확장해, **회사 path 전체 제품 정의를 먼저 정본으로 고정**한다
 - 구현 계획은 이번 문서를 우선 기준으로 삼고, `cheonha` 문서는 정산 내부 reference policy의 근거 문서로 남긴다
 - 기존 문서의 cockpit home은 이번 문서에서 더 이상 canonical entrypoint가 아니다
 
@@ -482,8 +491,8 @@ repo와 앱은 하나로 유지하되, 메인 도메인과 서브도메인은 **
 
 이번 설계가 닫혔다고 보기 위한 기준:
 
-1. 메인 도메인과 서브도메인의 제품 경계가 구현 계획 수준으로 충분히 명확하다
+1. 메인 도메인과 회사 path tenant의 제품 경계가 구현 계획 수준으로 충분히 명확하다
 2. 시스템 관리자 세션과 회사 세션의 경계가 명확하다
-3. 서브도메인 1차 MVP의 상단 정보구조가 확정됐다
+3. 회사 path 1차 MVP의 상단 정보구조가 확정됐다
 4. `배차 -> 근태 -> 자동 정산` 흐름이 웹 제품의 핵심 파이프라인으로 명시됐다
 5. `cheonha` 레퍼런스를 어디까지 따를지 범위가 명확하다
