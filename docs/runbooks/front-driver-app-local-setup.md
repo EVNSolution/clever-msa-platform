@@ -2,7 +2,20 @@
 
 ## Purpose
 
-This runbook records the verified local Expo/React Native baseline on the current macOS machine for `front-driver-app` bootstrap and UI testing.
+This runbook records the current macOS baseline for `front-driver-app` before native mobile bootstrap begins.
+
+The current goal is not to validate a framework-specific scaffold.
+The goal is to confirm that this machine can support a real Android/iOS app workflow once the native framework decision is fixed in docs.
+
+## Current Repo State
+
+- repo path: `development/front-driver-app/`
+- repo type: official linked child repo
+- current branch expectation: `main`
+- current implementation state: empty shell
+
+Do not treat this repo as bootstrapped.
+Do not reintroduce Expo, Flutter, or web-preview assumptions until a native framework decision is documented first.
 
 ## Current Machine Baseline
 
@@ -10,21 +23,25 @@ This runbook records the verified local Expo/React Native baseline on the curren
 - Memory: 8 GB RAM
 - OS: macOS 26.4.1
 
-## Verified Toolchain
+## Verified Tooling on This Machine
 
+- Git: available through the normal developer toolchain
 - Node.js: `v25.9.0`
 - npm: `11.12.1`
 - Xcode: `26.4.1`
-- Available iOS runtime: `iOS 26.4`
+- available iOS runtime: `iOS 26.4`
 - Android AVD: `pixel_8_api_35`
+
+Node is recorded because some cross-platform native stacks may use it, but it is not by itself a framework decision.
 
 ## Missing or Not Yet Verified
 
-- `watchman`
-- Expo scaffold execution inside `development/front-driver-app/`
-- Expo launch on iOS simulator from the app repo
-- Expo launch on Android emulator from the app repo
-- `EAS CLI`
+- approved native app framework and bootstrap command
+- framework-specific package manager and CLI workflow
+- app scaffold execution inside `development/front-driver-app/`
+- app launch from the repo on iOS simulator
+- app launch from the repo on Android emulator
+- beta delivery tooling chosen for the selected framework
 
 ## Verified Commands
 
@@ -34,18 +51,17 @@ npm -v
 xcodebuild -version
 xcrun simctl list devices available
 emulator -list-avds
-npx create-expo-app@latest --help
 ```
 
 Latest verification result:
 
-- `create-expo-app` help loads successfully
-- available iOS devices include `iPhone 17 Pro`, `iPhone 17`, and related iOS 26.4 simulators
+- available iOS devices include current iOS 26.4 simulators
 - available Android AVD includes `pixel_8_api_35`
+- this machine is ready for framework selection and native bootstrap planning
 
-## iOS UI Test Flow
+## iOS Readiness Check
 
-Open Simulator:
+Open Simulator when needed:
 
 ```sh
 open -a Simulator
@@ -57,26 +73,15 @@ List available devices:
 xcrun simctl list devices available
 ```
 
-Bootstrap or run the app:
+Do not treat simulator availability alone as app bootstrap success.
+The actual gate is whether the selected framework launches from `development/front-driver-app/`.
 
-```sh
-cd development/front-driver-app
-npx expo start --ios
-```
-
-## Android UI Test Flow
+## Android Readiness Check
 
 Launch the prepared Android emulator if needed:
 
 ```sh
 emulator @pixel_8_api_35
-```
-
-Then run the app:
-
-```sh
-cd development/front-driver-app
-npx expo start --android
 ```
 
 If Android Studio is needed for SDK Manager or Device Manager:
@@ -85,40 +90,36 @@ If Android Studio is needed for SDK Manager or Device Manager:
 open -a "Android Studio"
 ```
 
-## Optional Web Preview
-
-The product target is still a mobile app, but a web preview can be used for fast layout checks:
-
-```sh
-cd development/front-driver-app
-npx expo start --web
-```
-
-Do not treat web preview success as the mobile verification gate.
+Do not treat emulator boot alone as app bootstrap success.
+The actual gate is whether the selected framework launches from `development/front-driver-app/`.
 
 ## Operational Guidance for This Machine
 
-- Keep only one heavy runtime active at a time:
+- keep only one heavy runtime active at a time:
   - one iOS Simulator, or
   - one Android emulator
-- Avoid running Android Studio, Xcode, Simulator, and Android Emulator together on 8 GB RAM.
-- Prefer:
+- avoid running Android Studio, Xcode, Simulator, and Android Emulator together on 8 GB RAM
+- prefer:
   - iOS layout checks on Simulator
-  - Android checks on a single AVD
-- Install `watchman` only if Expo file watching is unstable without it.
+  - Android checks on a single AVD or real device
 
-## Ready State for Bootstrap
+## Ready State for Native Bootstrap
 
-Treat this machine as ready for `front-driver-app` bootstrap when all of the following are true:
+Treat this machine as ready to start native bootstrap only when all of the following are true:
 
 1. `development/front-driver-app/` exists and points at the official GitHub repo.
-2. `npx create-expo-app@latest` has scaffolded the app in that repo.
-3. `npx expo start --ios` launches without framework-level bootstrap errors.
-4. `npx expo start --android` launches without framework-level bootstrap errors.
+2. one iOS simulator target is available locally.
+3. one Android emulator target is available locally.
+4. the native framework decision is fixed in canonical docs.
+5. the framework-specific bootstrap command is documented before scaffold execution.
 
-## Recommended Next Step
+## Current Next Step
 
-Proceed to bootstrap `development/front-driver-app/` with Expo and verify the clean scaffold on:
+Proceed in this order:
 
-1. an iOS simulator
-2. the `pixel_8_api_35` Android target
+1. fix the native framework decision in canonical docs
+2. create the framework-specific bootstrap plan
+3. scaffold the app in `development/front-driver-app/`
+4. verify launch on:
+   - one iOS simulator
+   - one Android target
