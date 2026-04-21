@@ -9,7 +9,7 @@
 1. Android/iOS 통합 개발 방식과 repo 방향을 고정한다.
 2. `driver_account` 전용 앱이라는 제품 경계를 고정한다.
 3. 1차 MVP 화면, API 재사용 범위, 필요한 backend 보강 지점을 정리한다.
-4. 제한 베타 배포와 이후 `Shorebird` patch 운영까지 이어지는 실무 경로를 고정한다.
+4. 제한 베타 배포와 이후 `Expo EAS` 운영까지 이어지는 실무 경로를 고정한다.
 
 ## 배경과 현재 문맥
 
@@ -159,25 +159,25 @@
 
 ### 앱 프레임워크
 
-- `Flutter`
+- `Expo` (`React Native + TypeScript`)
 
 ### 선택 이유
 
-1. Android/iOS를 단일 코드베이스로 빠르게 닫을 수 있다.
-2. 에이전트와 사람이 같은 구조를 읽고 수정하기 쉽다.
-3. UI, 상태관리, 네트워킹을 한 언어와 한 프로젝트 구조에서 유지할 수 있다.
-4. 이후 `Shorebird` patch 운영과도 자연스럽게 연결된다.
+1. Android/iOS 앱 개발을 단일 `TypeScript` 코드베이스로 빠르게 시작할 수 있다.
+2. 에이전트와 사람이 같은 `React` 생태계를 읽고 수정하기 쉽고, Context7/공식 문서 활용성이 높다.
+3. `Expo Router`, `SecureStore`, `Notifications`, `EAS`처럼 모바일 MVP에 필요한 공식 경로가 닫혀 있다.
+4. web preview는 선택적으로 열 수 있지만, 제품 판단은 계속 `모바일 앱` 기준으로 유지할 수 있다.
 
 ### 권장 라이브러리
 
-- 상태관리: `Riverpod`
-- 라우팅: `go_router`
-- HTTP: `dio`
-- 모델: `freezed`, `json_serializable`
-- 보안 저장소: `flutter_secure_storage`
-- 비민감 설정: `shared_preferences`
-- 푸시: `firebase_messaging`
-- 관측성: `Sentry`
+- 라우팅: `expo-router`
+- server state: `@tanstack/react-query`
+- 폼/검증: `react-hook-form`, `zod`
+- HTTP: `fetch` 기반 thin API client
+- 보안 저장소: `expo-secure-store`
+- 비민감 설정: `expo-constants` 또는 app config `extra`
+- 푸시: `expo-notifications`
+- 관측성: `@sentry/react-native`
 
 ## Repo 방향
 
@@ -194,8 +194,12 @@
 
 ```text
 front-driver-app/
-├── lib/
-│   ├── app/
+├── app/
+│   ├── _layout.tsx
+│   ├── index.tsx
+│   ├── login.tsx
+│   └── ...
+├── src/
 │   ├── core/
 │   │   ├── auth/
 │   │   ├── env/
@@ -215,12 +219,14 @@ front-driver-app/
 │   │   ├── attendance/
 │   │   └── dispatch/
 │   └── shared/
+├── app.json
+├── package.json
 └── ...
 ```
 
 원칙은 아래와 같다.
 
-1. 화면과 상태는 feature 기준으로 나눈다.
+1. route entry는 `app/`에 두고, 실제 로직은 feature 기준 `src/`로 분리한다.
 2. 인증, 네트워크, 에러, 보안 저장소는 `core`에 둔다.
 3. 앱은 MSA repo 경계를 직접 복제하지 않는다.
 4. API ownership은 backend service에 두고, 모바일은 consumer feature 기준으로 조합한다.
@@ -448,7 +454,7 @@ API 없음.
 2. `APP_FLAVOR`
 3. `SENTRY_DSN`
 4. `FIREBASE_PROJECT_ID`
-5. `SHOREBIRD_CHANNEL`
+5. `EAS_PROJECT_ID`
 
 ## IDE / 툴링 권장안
 
@@ -458,12 +464,12 @@ API 없음.
 
 필수 툴:
 
-1. `Flutter SDK`
-2. `FVM`
-3. `Android Studio`
+1. `Node.js`
+2. `npm`
+3. `Android Studio` 또는 Android SDK/AVD 도구
 4. `Xcode`
-5. `CocoaPods`
-6. iOS automation용 `bundler`
+5. iOS Simulator runtime
+6. 선택으로 `watchman`
 
 ## 현재 로컬 환경 점검 결과
 
@@ -480,26 +486,22 @@ API 없음.
 
 현재 설치 확인:
 
-1. `Xcode 26.4`
-2. `VS Code`
-3. `Homebrew`
-4. `Java 21`
-5. `adb`
+1. `Node.js 25.9.0`
+2. `npm 11.12.1`
+3. `Xcode 26.4.1`
+4. 사용 가능한 iOS 26.4 simulator device 세트
+5. Android AVD `pixel_8_api_35`
 
 현재 미설치 또는 미확인:
 
-1. `Flutter SDK`
-2. `Dart SDK`
-3. `FVM`
-4. `CocoaPods`
-5. `Android Studio`
-6. `Android Emulator`
-7. `avdmanager`
-8. 사용 가능한 `iOS Simulator` runtime / device
+1. `watchman`
+2. `Expo` scaffold를 실제 `front-driver-app` repo에서 실행한 결과
+3. Android emulator를 Expo launch flow로 부팅한 결과
+4. `EAS CLI`
 
 현재 결론:
 
-1. 이 Mac에서는 Flutter 제한 베타 개발이 가능하다.
+1. 이 Mac에서는 Expo 기반 Android/iOS 앱 bootstrap을 시작할 수 있다.
 2. 다만 `RAM 8GB`이므로 Android Emulator와 iOS Simulator를 동시에 무겁게 돌리는 방식은 피한다.
 3. 1차 개발 중 UI 테스트는 `시뮬레이터/에뮬레이터 1개 + IDE 1개` 수준으로 운영하는 것이 안전하다.
 
@@ -509,70 +511,65 @@ API 없음.
 
 ### 필수 설치
 
-1. `Flutter SDK`
-2. `FVM`
-3. `CocoaPods`
-4. `Android Studio`
+1. `Node.js`
+2. `npm`
+3. `Xcode`
+4. iOS Simulator runtime 1세트
 5. Android SDK + Emulator 1세트
-6. iOS Simulator runtime 1세트
+6. 필요 시 `watchman`
 
 ### 선택 설치
 
 1. `Sentry CLI`
-2. `Shorebird CLI`
-3. `bundler` + iOS 배포 자동화 도구
+2. `EAS CLI`
+3. `Expo Orbit` 또는 동등한 device launch 도구
 
 ### 설치 원칙
 
-1. Flutter는 시스템 전역 버전만 믿지 않고 `FVM`으로 repo-local 버전을 고정한다.
-2. iOS는 `Xcode`를 기준으로 하고, Flutter iOS 의존성은 `CocoaPods`를 먼저 기준으로 둔다.
-3. Android는 `Android Studio` 표준 SDK/AVD 구성을 먼저 완성한 뒤 Flutter와 연결한다.
-4. `Shorebird`는 앱 repo bootstrap과 첫 beta release 흐름이 안정화된 뒤 붙인다.
+1. 앱 bootstrap은 `npx create-expo-app@latest` 기준으로 시작한다.
+2. iOS는 `Xcode + iOS Simulator`를 기준으로 한다.
+3. Android는 표준 SDK/AVD 구성을 먼저 완성한 뒤 Expo launch로 연결한다.
+4. web은 개발 편의용 preview만 허용하고 제품 판단은 모바일 앱 기준으로 유지한다.
 
 ## 로컬 설치 순서
 
 권장 순서는 아래와 같다.
 
-### 1. Flutter / FVM
+### 1. Node / Expo
 
-1. `Flutter SDK` 설치
-2. `FVM` 설치
-3. 앱 repo에 `.fvmrc`로 Flutter 버전 고정
-4. `flutter doctor`로 1차 점검
+1. `Node.js`와 `npm` 확인
+2. 필요 시 `watchman` 설치
+3. `npx create-expo-app@latest` 동작 확인
+4. 앱 repo bootstrap
 
 ### 2. iOS 준비
 
-1. `CocoaPods` 설치
-2. iOS Simulator runtime 다운로드
-3. 최소 1개 iPhone simulator 생성
-4. Xcode license / command line tools 상태 점검
+1. iOS Simulator runtime 다운로드
+2. 최소 1개 iPhone simulator 확인
+3. Xcode license / command line tools 상태 점검
+4. `npx expo start --ios` 동작 확인
 
 ### 3. Android 준비
 
-1. `Android Studio` 설치
-2. Android SDK 기본 구성 설치
-3. ARM64 emulator image 설치
-4. 최소 1개 AVD 생성
+1. Android SDK 기본 구성 설치
+2. ARM64 emulator image 설치
+3. 최소 1개 AVD 생성
+4. `npx expo start --android` 동작 확인
 
 ### 4. 앱 배포 준비
 
 1. Firebase 프로젝트 연결
 2. Android signing / iOS signing 확인
-3. 제한 베타 배포 계정 연결
-4. 필요 시 `Shorebird` 연결
+3. `EAS` project 연결
+4. 제한 베타 배포 계정 연결
 
 ## 예상 추가 디스크 사용량
 
-정확한 수치는 버전과 캐시에 따라 달라지지만, 현재 로컬 준비에는 아래 정도를 본다.
+정확한 수치는 버전과 캐시에 따라 달라지지만, 현재 로컬 준비에서 큰 비중은 여전히 `iOS Simulator runtime`과 `Android SDK/Emulator`가 차지한다.
 
-1. `Flutter SDK + FVM + pub cache`: 약 `4~8GB`
-2. `CocoaPods + iOS build cache`: 약 `2~4GB`
-3. `iOS Simulator runtime 1개`: 약 `8~12GB`
-4. `Android Studio`: 약 `1~2GB`
-5. `Android SDK + Emulator + AVD 1개`: 약 `10~15GB`
-
-즉 1차 개발 가능한 최소 실전 세팅은 대략 `25~35GB` 추가 사용량으로 본다.
-현재 여유 디스크 `61GiB` 기준으로는 설치 가능하다.
+1. `Node modules`와 Expo cache는 비교적 작다.
+2. `iOS Simulator runtime 1개`와 `Android SDK + Emulator + AVD 1개`가 전체 사용량 대부분을 차지한다.
+3. 현재 여유 디스크 `61GiB` 기준으로 1차 bootstrap은 가능하다.
 
 ## 로컬 성능 운영 원칙
 
@@ -591,7 +588,7 @@ API 없음.
 
 장점:
 
-1. Flutter iOS UI 확인이 가장 빠르다.
+1. iOS UI 확인이 가장 빠르다.
 2. macOS에서 기본적으로 가장 안정적인 테스트 경로다.
 
 용도:
@@ -628,13 +625,13 @@ API 없음.
 
 ## 로컬 준비 완료 기준
 
-아래가 모두 되면 로컬 Flutter 개발 준비가 완료된 것으로 본다.
+아래가 모두 되면 로컬 Expo 개발 준비가 완료된 것으로 본다.
 
-1. `flutter doctor` 주요 항목이 통과한다.
-2. `flutter devices`에 최소 1개 iOS simulator와 1개 Android target이 보인다.
-3. `front-driver-app` 예제 앱이 iOS simulator에서 실행된다.
-4. 같은 앱이 Android emulator 또는 실기기에서 실행된다.
-5. flavor별 base URL 분기가 로컬에서 동작한다.
+1. `npx create-expo-app@latest`가 정상 동작한다.
+2. `front-driver-app` 예제 앱이 `iOS simulator`에서 실행된다.
+3. 같은 앱이 Android emulator 또는 실기기에서 실행된다.
+4. Expo router baseline이 동작한다.
+5. environment별 base URL 분기가 로컬에서 동작한다.
 
 ## 제한 베타 배포 전략
 
@@ -651,21 +648,21 @@ API 없음.
 2. 동일 앱에서 여러 배송원 계정으로 회사/플릿 문맥을 검증한다.
 3. staging-beta와 prod-beta를 나눠 내부 QA와 제한 외부 베타를 분리한다.
 
-## Shorebird 도입 원칙
+## EAS 도입 원칙
 
-`Shorebird`는 이번 방향과 잘 맞는다.
+`Expo EAS`는 이번 방향과 잘 맞는다.
 
 다만 도입 순서는 아래처럼 잡는다.
 
-1. Flutter 앱 골격과 flavor 구조를 먼저 고정한다.
+1. Expo 앱 골격과 environment 구조를 먼저 고정한다.
 2. Android/iOS beta release를 먼저 만든다.
-3. 그 다음 `Shorebird release`를 붙인다.
-4. 이후 Dart/UI/API 로직 수정은 patch로 운영한다.
+3. 그 다음 `EAS Build`와 release profile을 고정한다.
+4. 이후 UI/API 로직 수정은 동일한 Expo 코드베이스에서 운영한다.
 
 주의:
 
 1. 네이티브 권한 변경
-2. `Info.plist`, `AndroidManifest.xml` 변경
+2. config plugin 또는 native project 생성 이후의 iOS/Android native 설정 변경
 3. 네이티브 SDK 추가/업데이트
 
 위 항목은 일반 스토어 배포가 필요하다.
@@ -675,7 +672,7 @@ API 없음.
 ### Phase 1. 앱 기반선
 
 1. `front-driver-app` repo 생성
-2. Flutter/FVM/flavor/bootstrap 설정
+2. Expo/bootstrap/environment 설정
 3. auth/session shell 구축
 4. 관리자 차단 화면 구축
 
@@ -698,14 +695,14 @@ API 없음.
 1. Firebase push 연동
 2. Android closed test
 3. iOS TestFlight external
-4. Shorebird release 준비
+4. EAS build/release profile 준비
 
 ## 주요 리스크
 
 1. driver self-service용 read query가 아직 없다.
 2. announcement exposure scope에 `driver`가 현재 비관리자 read 경로에서 빠져 있을 수 있다.
 3. 여러 회사/플릿 계정 테스트 시 linked driver/account consistency 이슈가 먼저 드러날 수 있다.
-4. iOS push certificate / APNs 설정은 Flutter 앱보다 운영 설정에서 더 자주 막힌다.
+4. iOS signing / push certificate / APNs 설정은 Expo 앱 코드보다 운영 설정에서 더 자주 막힌다.
 
 ## 완료 기준
 
@@ -715,7 +712,7 @@ API 없음.
 2. 관리자 계정 차단 UX가 고정된다.
 3. 1차 화면 범위와 허용 쓰기 범위가 고정된다.
 4. 기존 API 재사용 범위와 새 self-scoped query 범위가 구분된다.
-5. Flutter repo / 환경 / 제한 베타 / Shorebird 운영 순서가 고정된다.
+5. Expo repo / 환경 / 제한 베타 / EAS 운영 순서가 고정된다.
 
 ## 연결 문서
 

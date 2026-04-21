@@ -2,67 +2,46 @@
 
 ## Purpose
 
-This runbook records the verified local Flutter mobile toolchain on the current macOS machine for `front-driver-app` bootstrap and UI testing.
+This runbook records the verified local Expo/React Native baseline on the current macOS machine for `front-driver-app` bootstrap and UI testing.
 
 ## Current Machine Baseline
 
 - Machine: Apple M2
 - Memory: 8 GB RAM
 - OS: macOS 26.4.1
-- Free disk after setup: about 34 GiB
 
-## Installed Toolchain
+## Verified Toolchain
 
-- Flutter: `3.41.6`
-- Dart: `3.11.4`
-- DevTools: `2.54.2`
-- FVM: `4.0.5`
-- CocoaPods: `1.16.2`
-- Xcode: `26.4` (`Build 17E192`)
-- iOS Simulator runtime: `iOS 26.4 (23E244)`
-- Android Studio: `2025.3.3.6`
-- Android SDK: `36.0.0`
-- Android Build Tools: `36.0.0`
-- Android Emulator: `36.5.10.0`
+- Node.js: `v25.9.0`
+- npm: `11.12.1`
+- Xcode: `26.4.1`
+- Available iOS runtime: `iOS 26.4`
+- Android AVD: `pixel_8_api_35`
 
-## Important Paths
+## Missing or Not Yet Verified
 
-- Flutter SDK: `/opt/homebrew/share/flutter`
-- Android SDK: `/Users/jiin/Library/Android/sdk`
-- Android AVD name: `pixel_8_api_35`
-- Shell config updated: `/Users/jiin/.zshrc`
-
-The shell is configured with:
-
-```sh
-export ANDROID_HOME="$HOME/Library/Android/sdk"
-export ANDROID_SDK_ROOT="$ANDROID_HOME"
-export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH"
-export PATH="$HOME/.pub-cache/bin:$PATH"
-```
-
-Open a new terminal or run `source ~/.zshrc` before using the tools in a fresh shell.
+- `watchman`
+- Expo scaffold execution inside `development/front-driver-app/`
+- Expo launch on iOS simulator from the app repo
+- Expo launch on Android emulator from the app repo
+- `EAS CLI`
 
 ## Verified Commands
 
 ```sh
-flutter --version
-fvm --version
-pod --version
-flutter doctor -v
-flutter emulators
-emulator -list-avds
+node -v
+npm -v
+xcodebuild -version
 xcrun simctl list devices available
+emulator -list-avds
+npx create-expo-app@latest --help
 ```
 
 Latest verification result:
 
-- `flutter doctor -v`: no blocking issues
-- Available Flutter emulators:
-  - `apple_ios_simulator`
-  - `pixel_8_api_35`
-- Available Android AVDs:
-  - `pixel_8_api_35`
+- `create-expo-app` help loads successfully
+- available iOS devices include `iPhone 17 Pro`, `iPhone 17`, and related iOS 26.4 simulators
+- available Android AVD includes `pixel_8_api_35`
 
 ## iOS UI Test Flow
 
@@ -78,42 +57,26 @@ List available devices:
 xcrun simctl list devices available
 ```
 
-Example currently available devices:
-
-- `iPhone 17`
-- `iPhone 17 Pro`
-- `iPhone 17 Pro Max`
-- `iPhone 17e`
-- `iPhone Air`
-
-Run Flutter on the booted iOS simulator:
+Bootstrap or run the app:
 
 ```sh
-flutter run -d apple_ios_simulator
+cd development/front-driver-app
+npx expo start --ios
 ```
-
-There is also one detected physical iPhone connection via wireless debugging:
-
-- `ImJing`
 
 ## Android UI Test Flow
 
-Launch the prepared Android emulator:
-
-```sh
-flutter emulators --launch pixel_8_api_35
-```
-
-Or directly:
+Launch the prepared Android emulator if needed:
 
 ```sh
 emulator @pixel_8_api_35
 ```
 
-Run Flutter on the Android emulator:
+Then run the app:
 
 ```sh
-flutter run -d pixel_8_api_35
+cd development/front-driver-app
+npx expo start --android
 ```
 
 If Android Studio is needed for SDK Manager or Device Manager:
@@ -122,16 +85,16 @@ If Android Studio is needed for SDK Manager or Device Manager:
 open -a "Android Studio"
 ```
 
-## FVM Usage for the App Repo
+## Optional Web Preview
 
-When `development/front-driver-app/` is created, pin Flutter in `.fvmrc` and use:
+The product target is still a mobile app, but a web preview can be used for fast layout checks:
 
 ```sh
-fvm use <flutter-version>
-fvm flutter pub get
-fvm flutter test
-fvm flutter run
+cd development/front-driver-app
+npx expo start --web
 ```
+
+Do not treat web preview success as the mobile verification gate.
 
 ## Operational Guidance for This Machine
 
@@ -140,13 +103,22 @@ fvm flutter run
   - one Android emulator
 - Avoid running Android Studio, Xcode, Simulator, and Android Emulator together on 8 GB RAM.
 - Prefer:
-  - iOS layout checks on Simulator or the connected iPhone
+  - iOS layout checks on Simulator
   - Android checks on a single AVD
-- Re-run `flutter doctor -v` after major Xcode or Android SDK updates.
+- Install `watchman` only if Expo file watching is unstable without it.
+
+## Ready State for Bootstrap
+
+Treat this machine as ready for `front-driver-app` bootstrap when all of the following are true:
+
+1. `development/front-driver-app/` exists and points at the official GitHub repo.
+2. `npx create-expo-app@latest` has scaffolded the app in that repo.
+3. `npx expo start --ios` launches without framework-level bootstrap errors.
+4. `npx expo start --android` launches without framework-level bootstrap errors.
 
 ## Recommended Next Step
 
-Proceed to bootstrap `development/front-driver-app/` with Flutter + FVM and verify the clean scaffold on:
+Proceed to bootstrap `development/front-driver-app/` with Expo and verify the clean scaffold on:
 
-1. `apple_ios_simulator`
-2. `pixel_8_api_35`
+1. an iOS simulator
+2. the `pixel_8_api_35` Android target

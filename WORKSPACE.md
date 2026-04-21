@@ -100,6 +100,7 @@ clever-msa-platform/
 - `runtime-prod-platform`
 - `edge-api-gateway`
 - `front-web-console`
+- `front-driver-app`
 - `service-organization-registry`
 - `service-account-access`
 - `service-driver-profile`
@@ -192,6 +193,6 @@ root `development/` whitelist 변경은 아래 두 문서에서 먼저 정본을
 
 - The active `clever-msa-platform` root is the umbrella workspace for platform docs, contracts, rollout, and the whitelisted `development/*` repo visibility.
 - Runtime implementation code under `development/` remains owned by each independent child repo.
-- The root GitHub view must expose only the approved whitelist: `front-web-console`, `edge-api-gateway`, `runtime-prod-release`, `runtime-prod-platform`, and active `service-*` repos.
+- The root GitHub view must expose only the approved whitelist: `front-web-console`, `front-driver-app`, `edge-api-gateway`, `runtime-prod-release`, `runtime-prod-platform`, and active `service-*` repos.
 - Child repo implementation ownership stays in the child repo even when the root workspace also exposes that repo for umbrella visibility.
 - New root-visible `development/*` repos must be added to the whitelist and registered as linked child repos from day one.
