@@ -2,7 +2,7 @@
 
 ## 문서 목적
 
-이 문서는 local unified OpenAPI 문서를 현재 MSA 기준으로 어떻게 읽어야 하는지 설명하는 가이드다.
+이 문서는 `edge-api-gateway`가 소유하는 public OpenAPI artifact를 현재 MSA 기준으로 어떻게 읽어야 하는지 설명하는 가이드다.
 
 현재 산출물은 더 이상 운영 Swagger나 legacy namespace를 source로 사용하지 않는다.
 
@@ -142,9 +142,9 @@ service-owned OpenAPI export가 없는 서비스는 각 서비스 코드의 `vie
 - `service-telemetry-hub`
 - `service-telemetry-dead-letter`
 
-이 서비스들은 `development/integration-local-stack/compose/api-docs/service-schemas/` 아래 exported schema가 있으면 unified OpenAPI에서 그 schema를 우선 사용한다.
+이 서비스들의 schema input은 edge build 시 `development/edge-api-gateway/public-api-docs/service-source-registry.json` 기준으로 수집되고, 결과는 edge artifact의 `public-api-docs/service-export-manifest.json`에 기록된다.
 
-exported schema가 없거나 export에 실패하면 자동으로 route inventory fallback으로 남는다.
+exported schema가 없거나 export에 실패하면 edge-owned fallback allowlist와 route inventory 기준으로 artifact에 남는다.
 
 ## 현재 문서가 보장하는 것
 
@@ -166,35 +166,38 @@ exported schema가 없거나 export에 실패하면 자동으로 route inventory
 
 정확한 request/response schema 범위를 넓히려면 이후 각 서비스에 service-owned OpenAPI exporter를 더 붙여야 한다.
 
-## Refresh 와 배포 연동 상태
+## Build 와 배포 연동 상태
 
 현재 API docs 운영 방식은 아래처럼 연결되어 있다.
 
-1. API docs refresh
-   - workflow: `.github/workflows/refresh-api-docs.yml`
-   - trigger:
-     - `pull_request`
-     - `push` to `main`
-     - `workflow_dispatch`
-   - output:
-     - `development/integration-local-stack/compose/api-docs/`
-     - GitHub artifact `clever-current-msa-api-docs`
+1. edge public docs build
+   - owner: `development/edge-api-gateway/`
+   - builder:
+     - `scripts/build_public_openapi.py`
+   - build output:
+     - `public-api-docs/openapi.yaml`
+     - `public-api-docs/swagger/`
+     - `public-api-docs/revision.json`
+     - `public-api-docs/service-export-manifest.json`
+   - public runtime surface:
+     - `/openapi.yaml`
+     - `/swagger/`
+     - `/redoc/`
 
-2. 중앙 배포
-   - `clever-deploy-control` central deploy는 API docs freshness gate를 가진다.
-   - 대상 workflow:
-     - `clever-msa-platform/.github/workflows/refresh-api-docs.yml`
-   - 기본 모드:
-     - `api_docs_gate=enforce`
-   - 예외 모드:
-     - `api_docs_gate=skip`
+2. prod release evidence
+   - owner: `development/runtime-prod-release/`
+   - release workflow는 deployed edge runtime에서 docs revision을 읽어 `release-evidence.json`에 넣는다.
+   - edge workload evidence는 아래 세 값을 같이 가진다.
+     - `edge_commit_sha`
+     - `openapi_sha256`
+     - `service_export_manifest_sha`
 
 현재 결론:
 
-1. API docs는 CI refresh와는 연동된다.
-2. 중앙 배포는 latest refresh run success를 기본 precondition으로 확인한다.
-3. 다만 이 gate는 per-service schema diff가 아니라 freshness gate다.
-4. 즉 운영 기준으로는 `배포 완료`가 `API docs freshness gate 통과`를 포함하지만, 서비스별 세밀한 schema review까지 자동 보장하는 것은 아니다.
+1. root `clever-msa-platform`은 더 이상 API docs refresh workflow를 소유하지 않는다.
+2. public docs current truth는 edge image에 포함된 artifact와 그 runtime surface다.
+3. prod 기준 증적은 latest root refresh run이 아니라 `runtime-prod-release` evidence의 `api_docs_revision`이다.
+4. 다만 이 구조도 per-service semantic schema review를 자동 보장하는 것은 아니고, exporter coverage와 parity gate 범위에 의존한다.
 
 ## 운영 원칙
 
@@ -202,4 +205,4 @@ exported schema가 없거나 export에 실패하면 자동으로 route inventory
 
 1. `docs/mappings/current-runtime-inventory.md` 또는 `docs/mappings/repo-responsibility-matrix.md`를 먼저 고친다.
 2. 서비스 코드의 `urls.py` / `views.py`를 현재 truth로 고친다.
-3. 그 다음 unified OpenAPI artifact를 다시 생성한다.
+3. 그 다음 edge public OpenAPI artifact를 다시 생성하고 release evidence를 확인한다.

@@ -23,25 +23,15 @@
 ## Start Here
 
 - 현재 runtime/service/prefix inventory: [../mappings/current-runtime-inventory.md](../mappings/current-runtime-inventory.md)
+- prod runtime/deploy 구조 다이어그램: [../mappings/prod-runtime-deployment-diagram.md](../mappings/prod-runtime-deployment-diagram.md)
 - runtime/deploy runbook index: [../runbooks/README.md](../runbooks/README.md)
 - `ev-dashboard` deploy gate: [../runbooks/ev-dashboard-ecs-preflight-gate.md](../runbooks/ev-dashboard-ecs-preflight-gate.md)
 - `ev-dashboard` deploy operator loop: [../runbooks/ev-dashboard-ecs-deploy-operator-loop.md](../runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
 - `ev-dashboard` UI smoke와 decommission close-out: [../runbooks/ev-dashboard-ui-smoke-and-decommission.md](../runbooks/ev-dashboard-ui-smoke-and-decommission.md)
-- `ev-dashboard` canonical runtime truth: [2026-04-13-ecs-cdk-oidc-actions-transition.md](2026-04-13-ecs-cdk-oidc-actions-transition.md)
+- `ev-dashboard` transition background / bridge-lane note: [2026-04-13-ecs-cdk-oidc-actions-transition.md](2026-04-13-ecs-cdk-oidc-actions-transition.md)
 - 플랫폼 전체 구조와 작업 원칙: [../../WORKSPACE.md](../../WORKSPACE.md)
 - repo 상태와 active runtime / empty shell 구분: [../../repo-map.md](../../repo-map.md)
-- 중앙 배포 레이어 레퍼런스: [2026-04-07-central-deploy-reference.md](2026-04-07-central-deploy-reference.md)
-- 중앙 배포 OIDC 가이드: [2026-04-07-aws-oidc-actions-setup.md](2026-04-07-aws-oidc-actions-setup.md)
-- ECS/CDK + GitHub Actions OIDC 전환 기준: [2026-04-13-ecs-cdk-oidc-actions-transition.md](2026-04-13-ecs-cdk-oidc-actions-transition.md)
-- 중앙 배포 전환 체크리스트: [2026-04-07-central-deploy-cutover-checklist.md](2026-04-07-central-deploy-cutover-checklist.md)
 - 새 EC2 부트스트랩 가이드: [2026-04-07-ec2-host-bootstrap.md](2026-04-07-ec2-host-bootstrap.md)
-- GitHub 저장소 설정 가이드: [2026-04-07-github-repo-setup.md](2026-04-07-github-repo-setup.md)
-- 중앙 배포 카탈로그: [../mappings/central-deploy-catalog.yaml](../mappings/central-deploy-catalog.yaml)
-- 타겟 산출 스크립트: [../../scripts/deploy/compute-targets.py](../../scripts/deploy/compute-targets.py)
-- 중앙 배포 런타임 실행기: [../../scripts/deploy/runner.sh](../../scripts/deploy/runner.sh)
-- 중앙 배포 워크플로: [.github/workflows/central-deploy.yml](../../.github/workflows/central-deploy.yml)
-- 중앙 배포 수동 디스패치: [.github/workflows/central-deploy-dispatch.yml](../../.github/workflows/central-deploy-dispatch.yml)
-- EC2 앱 호스트 프로비저닝 워크플로: [.github/workflows/provision-ec2-app-host.yml](../../.github/workflows/provision-ec2-app-host.yml)
 - 정산 phase 2 gate 정리: [12-settlement-phase-2-api-gates.md](12-settlement-phase-2-api-gates.md)
 - 남은 empty-shell 서비스 구현 우선순위: [09-remaining-empty-shell-service-priority.md](09-remaining-empty-shell-service-priority.md)
 - phase 1 구현물 정리 우선순위: [10-phase-1-runtime-refactor-priority.md](10-phase-1-runtime-refactor-priority.md)
@@ -51,15 +41,6 @@
 - 웹 우선 전체 완성 순서: [16-web-first-platform-delivery-order.md](16-web-first-platform-delivery-order.md)
 - 현재 front UI 규칙 감사: [14-front-ui-rule-audit.md](14-front-ui-rule-audit.md)
 - `ev-dashboard` backend migration execution record: [../superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md](../superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md)
-
-예시:
-
-```bash
-python3 scripts/deploy/compute-targets.py \
-  --base-sha "$GITHUB_BASE_SHA" \
-  --head-sha "$GITHUB_SHA" \
-  --output target.json
-```
 
 ## ev-dashboard Current Operator Sequence
 
@@ -72,4 +53,4 @@ python3 scripts/deploy/compute-targets.py \
 
 backend slice migration 자체는 완료됐고, 남은 것은 operational close-out이다.
 
-`clever-deploy-control` 관련 문서는 `ev-dashboard` canonical prod truth를 정의하는 문서가 아니다. bridge lane이나 legacy reference가 필요할 때만 읽는다.
+current operator/current truth는 root workflow나 `clever-deploy-control`이 아니라 `runtime-prod-platform -> EVDash-msa(/data) -> runtime-prod-release` 기준으로 읽는다. old central-deploy/root-workflow 문서는 [../archive/historical/rollout/](../archive/historical/rollout/) 아래 historical reference로만 남긴다.

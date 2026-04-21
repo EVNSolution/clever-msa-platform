@@ -49,9 +49,9 @@ service repo push
 
 - 서비스 repo별 image build는 GitHub Actions가 수행한다.
 - image build는 repo variable `ECR_BUILD_AWS_ROLE_ARN` 와 shared `AWS_REGION` 기준으로 동작한다.
-- 환경 배포는 `clever-deploy-control`이 `GH_ACTIONS_DEV_DEPLOY_ROLE_ARN`, `GH_ACTIONS_STAGE_DEPLOY_ROLE_ARN`, `GH_ACTIONS_PROD_DEPLOY_ROLE_ARN`를 사용해 실행한다.
+- 현재 prod EC2 lane 배포는 `runtime-prod-release`가 `vars.PROD_AWS_ROLE_ARN` 기준으로 실행한다.
 - runtime deploy target은 bridge lane에서만 EC2 app-host + SSM + compose다.
-- root `clever-msa-platform`은 docs truth와 API docs freshness gate를 유지한다.
+- root `clever-msa-platform`은 docs truth만 유지한다. public API docs artifact는 `edge-api-gateway`가, 배포 증적은 `runtime-prod-release`가 소유한다.
 
 즉, `clever-deploy-control` 은 여전히 존재하지만, `ev-dashboard` canonical prod truth 자체를 정의하지는 않는다.
 
@@ -465,8 +465,8 @@ pilot 선택 기준:
 
 ## Relationship to Existing Docs
 
-- current EC2/OIDC truth는 [2026-04-07-central-deploy-reference.md](2026-04-07-central-deploy-reference.md)를 따른다.
-- current GitHub repo setup은 [2026-04-07-github-repo-setup.md](2026-04-07-github-repo-setup.md)를 따른다.
+- current prod runtime/release truth는 [../mappings/current-runtime-inventory.md](../mappings/current-runtime-inventory.md) 와 [../mappings/prod-runtime-deployment-diagram.md](../mappings/prod-runtime-deployment-diagram.md)를 따른다.
+- historical central-deploy/root-workflow reference는 [../archive/historical/rollout/2026-04-07-central-deploy-reference.md](../archive/historical/rollout/2026-04-07-central-deploy-reference.md) 와 [../archive/historical/rollout/2026-04-07-github-repo-setup.md](../archive/historical/rollout/2026-04-07-github-repo-setup.md)를 본다.
 - 새 ECS/CDK + GitHub Actions OIDC 문서는 이 문서를 출발점으로 한다.
 - 과거 phase-1에서 `CodeConnections first`를 보류한 설계와도 방향이 맞다.
 

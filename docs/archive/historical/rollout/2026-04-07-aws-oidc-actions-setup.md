@@ -1,4 +1,4 @@
-# AWS OIDC + GitHub Actions 배포 권한 설정 (중앙 배포 레이어용)
+# AWS OIDC + GitHub Actions 배포 권한 설정 (Historical 중앙 배포 레이어용)
 
 현재 환경 점검 기준으로, OIDC 공급자와 배포용 Role은 아직 미구성 상태였다.
 
