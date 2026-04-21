@@ -43,36 +43,36 @@ This plan does not include:
 
 The implementation should use the following file responsibilities.
 
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/StatusBadge.tsx`
+- Create: `development/front-web-console/src/components/StatusBadge.tsx`
   - semantic badge wrapper with stable tone mapping
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/StatusBadge.test.tsx`
+- Create: `development/front-web-console/src/components/StatusBadge.test.tsx`
   - tests for tone/class/data-attribute behavior
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/SurfaceNote.tsx`
+- Create: `development/front-web-console/src/components/SurfaceNote.tsx`
   - helper/explanatory copy primitive that is not an empty state
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/SurfaceNote.test.tsx`
+- Create: `development/front-web-console/src/components/SurfaceNote.test.tsx`
   - tests for helper/explanatory rendering
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
+- Modify: `development/front-web-console/src/styles.css`
   - shared button states, badge tones, helper note styles
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DispatchBoardsPage.tsx`
+- Modify: `development/front-web-console/src/pages/DispatchBoardsPage.tsx`
   - semantic status badge adoption for board cards
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DispatchBoardDetailPage.tsx`
+- Modify: `development/front-web-console/src/pages/DispatchBoardDetailPage.tsx`
   - semantic badge adoption and board-vs-maintenance hierarchy cleanup
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/DispatchUploadWizard.tsx`
+- Modify: `development/front-web-console/src/components/DispatchUploadWizard.tsx`
   - semantic badge adoption for upload batch statuses
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/NotificationsPage.tsx`
+- Modify: `development/front-web-console/src/pages/NotificationsPage.tsx`
   - helper copy separation and management form reduction
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/SupportPage.tsx`
+- Modify: `development/front-web-console/src/pages/SupportPage.tsx`
   - helper copy separation and management detail cleanup
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/AnnouncementFormPage.tsx`
+- Modify: `development/front-web-console/src/pages/AnnouncementFormPage.tsx`
   - replace helper copy misuse of `empty-state`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/CompaniesPage.tsx`
+- Modify: `development/front-web-console/src/pages/CompaniesPage.tsx`
   - replace helper copy misuse of `empty-state`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/RegionsPage.tsx`
+- Modify: `development/front-web-console/src/pages/RegionsPage.tsx`
   - replace helper copy misuse of `empty-state`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DispatchBoardDetailPage.test.tsx`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/NotificationsPage.test.tsx`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/SupportPage.test.tsx`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/TopNotificationBar.test.tsx`
+- Test: `development/front-web-console/src/pages/DispatchBoardDetailPage.test.tsx`
+- Test: `development/front-web-console/src/pages/NotificationsPage.test.tsx`
+- Test: `development/front-web-console/src/pages/SupportPage.test.tsx`
+- Test: `development/front-web-console/src/components/TopNotificationBar.test.tsx`
 
 ## Execution Strategy
 
@@ -87,18 +87,18 @@ If the user gives a limited go signal later, Task 1 and Task 2 can be executed f
 ### Task 1: Add Shared UI Audit Primitives
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/StatusBadge.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/StatusBadge.test.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/SurfaceNote.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/SurfaceNote.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/TopNotificationBar.test.tsx`
+- Create: `development/front-web-console/src/components/StatusBadge.tsx`
+- Create: `development/front-web-console/src/components/StatusBadge.test.tsx`
+- Create: `development/front-web-console/src/components/SurfaceNote.tsx`
+- Create: `development/front-web-console/src/components/SurfaceNote.test.tsx`
+- Modify: `development/front-web-console/src/styles.css`
+- Test: `development/front-web-console/src/components/TopNotificationBar.test.tsx`
 
 - [ ] **Step 1: Read the current audit contract and shared style anchors**
 
 Read:
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/contracts/21-design-system-and-surface-rules.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
+- `docs/contracts/21-design-system-and-surface-rules.md`
+- `development/front-web-console/src/styles.css`
 
 - [ ] **Step 2: Write failing badge tests**
 
@@ -141,7 +141,7 @@ Modify `styles.css` to add:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/components/StatusBadge.test.tsx src/components/SurfaceNote.test.tsx src/components/TopNotificationBar.test.tsx
 ```
 
@@ -151,7 +151,7 @@ Expected:
 - [ ] **Step 7: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/components/StatusBadge.tsx src/components/StatusBadge.test.tsx src/components/SurfaceNote.tsx src/components/SurfaceNote.test.tsx src/styles.css src/components/TopNotificationBar.test.tsx
 git commit -m "feat: add semantic badge and helper note primitives"
 ```
@@ -159,13 +159,13 @@ git commit -m "feat: add semantic badge and helper note primitives"
 ### Task 2: Replace Empty-State Misuse On Audited Surface Copy
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/AnnouncementFormPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/CompaniesPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/RegionsPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/NotificationsPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/SupportPage.tsx`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/NotificationsPage.test.tsx`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/SupportPage.test.tsx`
+- Modify: `development/front-web-console/src/pages/AnnouncementFormPage.tsx`
+- Modify: `development/front-web-console/src/pages/CompaniesPage.tsx`
+- Modify: `development/front-web-console/src/pages/RegionsPage.tsx`
+- Modify: `development/front-web-console/src/pages/NotificationsPage.tsx`
+- Modify: `development/front-web-console/src/pages/SupportPage.tsx`
+- Test: `development/front-web-console/src/pages/NotificationsPage.test.tsx`
+- Test: `development/front-web-console/src/pages/SupportPage.test.tsx`
 
 - [ ] **Step 1: Write failing management page tests**
 
@@ -204,7 +204,7 @@ Keep `empty-state` only for:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/pages/NotificationsPage.test.tsx src/pages/SupportPage.test.tsx
 ```
 
@@ -214,7 +214,7 @@ Expected:
 - [ ] **Step 4: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/pages/AnnouncementFormPage.tsx src/pages/CompaniesPage.tsx src/pages/RegionsPage.tsx src/pages/NotificationsPage.tsx src/pages/SupportPage.tsx src/pages/NotificationsPage.test.tsx src/pages/SupportPage.test.tsx
 git commit -m "refactor: separate helper copy from empty states"
 ```
@@ -222,10 +222,10 @@ git commit -m "refactor: separate helper copy from empty states"
 ### Task 3: Roll Out Semantic Status Badges
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DispatchBoardsPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DispatchBoardDetailPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/DispatchUploadWizard.tsx`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DispatchBoardDetailPage.test.tsx`
+- Modify: `development/front-web-console/src/pages/DispatchBoardsPage.tsx`
+- Modify: `development/front-web-console/src/pages/DispatchBoardDetailPage.tsx`
+- Modify: `development/front-web-console/src/components/DispatchUploadWizard.tsx`
+- Test: `development/front-web-console/src/pages/DispatchBoardDetailPage.test.tsx`
 
 - [ ] **Step 1: Write failing badge-tone assertions**
 
@@ -256,7 +256,7 @@ Tone mapping should follow these rules:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/pages/DispatchBoardDetailPage.test.tsx
 ```
 
@@ -266,7 +266,7 @@ Expected:
 - [ ] **Step 4: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/pages/DispatchBoardsPage.tsx src/pages/DispatchBoardDetailPage.tsx src/components/DispatchUploadWizard.tsx src/pages/DispatchBoardDetailPage.test.tsx
 git commit -m "refactor: add semantic status badge usage"
 ```
@@ -274,8 +274,8 @@ git commit -m "refactor: add semantic status badge usage"
 ### Task 4: Reduce Dispatch Board Detail Hierarchy Overload
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DispatchBoardDetailPage.tsx`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DispatchBoardDetailPage.test.tsx`
+- Modify: `development/front-web-console/src/pages/DispatchBoardDetailPage.tsx`
+- Test: `development/front-web-console/src/pages/DispatchBoardDetailPage.test.tsx`
 
 - [ ] **Step 1: Write failing hierarchy tests**
 
@@ -300,7 +300,7 @@ Keep route and API behavior unchanged, but reorganize the page so:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/pages/DispatchBoardDetailPage.test.tsx
 ```
 
@@ -310,7 +310,7 @@ Expected:
 - [ ] **Step 4: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/pages/DispatchBoardDetailPage.tsx src/pages/DispatchBoardDetailPage.test.tsx
 git commit -m "refactor: simplify dispatch board detail hierarchy"
 ```
@@ -318,10 +318,10 @@ git commit -m "refactor: simplify dispatch board detail hierarchy"
 ### Task 5: Reduce Raw Internal Weight In Notification And Support Management
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/NotificationsPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/SupportPage.tsx`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/NotificationsPage.test.tsx`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/SupportPage.test.tsx`
+- Modify: `development/front-web-console/src/pages/NotificationsPage.tsx`
+- Modify: `development/front-web-console/src/pages/SupportPage.tsx`
+- Test: `development/front-web-console/src/pages/NotificationsPage.test.tsx`
+- Test: `development/front-web-console/src/pages/SupportPage.test.tsx`
 
 - [ ] **Step 1: Write failing management-flow tests**
 
@@ -350,7 +350,7 @@ In `SupportPage.tsx`:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/pages/NotificationsPage.test.tsx src/pages/SupportPage.test.tsx
 ```
 
@@ -362,7 +362,7 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run build
 ```
 
@@ -374,7 +374,7 @@ Expected:
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/pages/NotificationsPage.tsx src/pages/SupportPage.tsx src/pages/NotificationsPage.test.tsx src/pages/SupportPage.test.tsx
 git commit -m "refactor: reduce raw internal weight in management pages"
 ```
@@ -384,7 +384,7 @@ git commit -m "refactor: reduce raw internal weight in management pages"
 After Tasks 1 through 5, run this local-only verification set before asking for the next instruction:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/components/StatusBadge.test.tsx src/components/SurfaceNote.test.tsx src/components/TopNotificationBar.test.tsx src/pages/DispatchBoardDetailPage.test.tsx src/pages/NotificationsPage.test.tsx src/pages/SupportPage.test.tsx
 npm run build
 ```

@@ -42,73 +42,73 @@
 
 ### Root Docs
 
-- Reference spec: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-09-dispatch-upload-settlement-phase1-design.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-09-dispatch-upload-settlement-phase1-implementation-plan.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/contracts/18-single-web-console-screen-map.md`
+- Reference spec: `docs/superpowers/specs/2026-04-09-dispatch-upload-settlement-phase1-design.md`
+- Create: `docs/superpowers/plans/2026-04-09-dispatch-upload-settlement-phase1-implementation-plan.md`
+- Modify: `docs/contracts/18-single-web-console-screen-map.md`
 
 ### `development/service-driver-profile`
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile/drivers/models.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile/drivers/serializers.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile/drivers/views.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile/drivers/management/commands/seed_drivers.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile/drivers/migrations/0006_driverprofile_external_user_name.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile/drivers/tests/test_driver_api.py`
+- Modify: `development/service-driver-profile/drivers/models.py`
+- Modify: `development/service-driver-profile/drivers/serializers.py`
+- Modify: `development/service-driver-profile/drivers/views.py`
+- Modify: `development/service-driver-profile/drivers/management/commands/seed_drivers.py`
+- Create: `development/service-driver-profile/drivers/migrations/0006_driverprofile_external_user_name.py`
+- Modify: `development/service-driver-profile/drivers/tests/test_driver_api.py`
 
 ### `development/service-settlement-registry`
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/settlementregistry/models.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/settlementregistry/serializers.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/settlementregistry/views.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/settlementregistry/urls.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/settlementregistry/management/commands/seed_settlement_registry.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/settlementregistry/migrations/0003_companyfleetpricingtable.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/settlementregistry/tests/test_company_fleet_pricing_api.py`
+- Modify: `development/service-settlement-registry/settlementregistry/models.py`
+- Modify: `development/service-settlement-registry/settlementregistry/serializers.py`
+- Modify: `development/service-settlement-registry/settlementregistry/views.py`
+- Modify: `development/service-settlement-registry/settlementregistry/urls.py`
+- Modify: `development/service-settlement-registry/settlementregistry/management/commands/seed_settlement_registry.py`
+- Create: `development/service-settlement-registry/settlementregistry/migrations/0003_companyfleetpricingtable.py`
+- Create: `development/service-settlement-registry/settlementregistry/tests/test_company_fleet_pricing_api.py`
 
 ### `development/service-dispatch-registry`
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/models.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/serializers.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/views.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/urls.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/services/source_clients.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/management/commands/seed_dispatch.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/migrations/0005_dispatchuploadbatch_dispatchuploadrow.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/services/dispatch_upload_service.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/tests/test_dispatch_upload_api.py`
+- Modify: `development/service-dispatch-registry/dispatch/models.py`
+- Modify: `development/service-dispatch-registry/dispatch/serializers.py`
+- Modify: `development/service-dispatch-registry/dispatch/views.py`
+- Modify: `development/service-dispatch-registry/dispatch/urls.py`
+- Modify: `development/service-dispatch-registry/dispatch/services/source_clients.py`
+- Modify: `development/service-dispatch-registry/dispatch/management/commands/seed_dispatch.py`
+- Create: `development/service-dispatch-registry/dispatch/migrations/0005_dispatchuploadbatch_dispatchuploadrow.py`
+- Create: `development/service-dispatch-registry/dispatch/services/dispatch_upload_service.py`
+- Create: `development/service-dispatch-registry/dispatch/tests/test_dispatch_upload_api.py`
 
 ### `development/service-delivery-record`
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/deliveryrecords/views.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/deliveryrecords/urls.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/deliveryrecords/tests/test_delivery_record_api.py`
+- Modify: `development/service-delivery-record/deliveryrecords/views.py`
+- Modify: `development/service-delivery-record/deliveryrecords/urls.py`
+- Modify: `development/service-delivery-record/deliveryrecords/tests/test_delivery_record_api.py`
 
 ### `development/service-settlement-payroll`
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll/settlements/views.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll/settlements/tests/test_settlement_api.py`
+- Modify: `development/service-settlement-payroll/settlements/views.py`
+- Modify: `development/service-settlement-payroll/settlements/tests/test_settlement_api.py`
 
 ### `development/front-web-console`
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/types.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/api/drivers.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/api/dispatchRegistry.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/api/settlementRegistry.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DriverFormPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DriverDetailPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DriversPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DispatchBoardDetailPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/SettlementCriteriaPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/SettlementInputsPage.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/DispatchUploadWizard.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/DispatchUploadWizard.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DriverFormPage.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DriverDetailPage.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DriversPage.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DispatchBoardDetailPage.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/SettlementCriteriaPage.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/SettlementInputsPage.test.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/e2e/dispatch-upload.spec.ts`
+- Modify: `development/front-web-console/src/types.ts`
+- Modify: `development/front-web-console/src/api/drivers.ts`
+- Modify: `development/front-web-console/src/api/dispatchRegistry.ts`
+- Modify: `development/front-web-console/src/api/settlementRegistry.ts`
+- Modify: `development/front-web-console/src/pages/DriverFormPage.tsx`
+- Modify: `development/front-web-console/src/pages/DriverDetailPage.tsx`
+- Modify: `development/front-web-console/src/pages/DriversPage.tsx`
+- Modify: `development/front-web-console/src/pages/DispatchBoardDetailPage.tsx`
+- Modify: `development/front-web-console/src/pages/SettlementCriteriaPage.tsx`
+- Modify: `development/front-web-console/src/pages/SettlementInputsPage.tsx`
+- Create: `development/front-web-console/src/components/DispatchUploadWizard.tsx`
+- Create: `development/front-web-console/src/components/DispatchUploadWizard.test.tsx`
+- Modify: `development/front-web-console/src/pages/DriverFormPage.test.tsx`
+- Modify: `development/front-web-console/src/pages/DriverDetailPage.test.tsx`
+- Modify: `development/front-web-console/src/pages/DriversPage.test.tsx`
+- Modify: `development/front-web-console/src/pages/DispatchBoardDetailPage.test.tsx`
+- Modify: `development/front-web-console/src/pages/SettlementCriteriaPage.test.tsx`
+- Modify: `development/front-web-console/src/pages/SettlementInputsPage.test.tsx`
+- Create: `development/front-web-console/e2e/dispatch-upload.spec.ts`
 
 ## Task 0: Preflight And Baseline
 
@@ -120,7 +120,7 @@
 Run:
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform status --short
+git -C . status --short
 ```
 
 Expected:
@@ -132,7 +132,7 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && npm run test -- DriverFormPage.test.tsx DriverDetailPage.test.tsx DriversPage.test.tsx DispatchBoardDetailPage.test.tsx SettlementCriteriaPage.test.tsx SettlementInputsPage.test.tsx
+cd development/front-web-console && npm run test -- DriverFormPage.test.tsx DriverDetailPage.test.tsx DriversPage.test.tsx DispatchBoardDetailPage.test.tsx SettlementCriteriaPage.test.tsx SettlementInputsPage.test.tsx
 ```
 
 Expected:
@@ -143,9 +143,9 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile && python3 manage.py test drivers.tests.test_driver_api -v 2
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry && python3 manage.py test dispatch.tests.test_dispatch_api -v 2
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry && python3 manage.py test settlementregistry.tests.test_global_settlement_config_api -v 2
+cd development/service-driver-profile && python3 manage.py test drivers.tests.test_driver_api -v 2
+cd development/service-dispatch-registry && python3 manage.py test dispatch.tests.test_dispatch_api -v 2
+cd development/service-settlement-registry && python3 manage.py test settlementregistry.tests.test_global_settlement_config_api -v 2
 ```
 
 Expected:
@@ -155,12 +155,12 @@ Expected:
 ## Task 1: Add `external_user_name` To DriverProfile Backend Contract
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile/drivers/models.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile/drivers/serializers.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile/drivers/views.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile/drivers/management/commands/seed_drivers.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile/drivers/migrations/0006_driverprofile_external_user_name.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile/drivers/tests/test_driver_api.py`
+- Modify: `development/service-driver-profile/drivers/models.py`
+- Modify: `development/service-driver-profile/drivers/serializers.py`
+- Modify: `development/service-driver-profile/drivers/views.py`
+- Modify: `development/service-driver-profile/drivers/management/commands/seed_drivers.py`
+- Create: `development/service-driver-profile/drivers/migrations/0006_driverprofile_external_user_name.py`
+- Modify: `development/service-driver-profile/drivers/tests/test_driver_api.py`
 
 - [ ] **Step 1: 배송원 API failing test를 먼저 쓴다**
 
@@ -197,7 +197,7 @@ def test_driver_list_filters_by_external_user_name(self):
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile && python3 manage.py test drivers.tests.test_driver_api -v 2
+cd development/service-driver-profile && python3 manage.py test drivers.tests.test_driver_api -v 2
 ```
 
 Expected:
@@ -226,7 +226,7 @@ if external_user_name := request.query_params.get("external_user_name"):
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile && python3 manage.py test drivers.tests.test_driver_api -v 2
+cd development/service-driver-profile && python3 manage.py test drivers.tests.test_driver_api -v 2
 ```
 
 Expected:
@@ -235,7 +235,7 @@ Expected:
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile
+cd development/service-driver-profile
 git add drivers/models.py drivers/serializers.py drivers/views.py drivers/management/commands/seed_drivers.py drivers/migrations/0006_driverprofile_external_user_name.py drivers/tests/test_driver_api.py
 git commit -m "feat: add driver external user name"
 ```
@@ -243,14 +243,14 @@ git commit -m "feat: add driver external user name"
 ## Task 2: Surface `external_user_name` In Driver Console Screens
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/types.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/api/drivers.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DriverFormPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DriverDetailPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DriversPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DriverFormPage.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DriverDetailPage.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DriversPage.test.tsx`
+- Modify: `development/front-web-console/src/types.ts`
+- Modify: `development/front-web-console/src/api/drivers.ts`
+- Modify: `development/front-web-console/src/pages/DriverFormPage.tsx`
+- Modify: `development/front-web-console/src/pages/DriverDetailPage.tsx`
+- Modify: `development/front-web-console/src/pages/DriversPage.tsx`
+- Modify: `development/front-web-console/src/pages/DriverFormPage.test.tsx`
+- Modify: `development/front-web-console/src/pages/DriverDetailPage.test.tsx`
+- Modify: `development/front-web-console/src/pages/DriversPage.test.tsx`
 
 - [ ] **Step 1: 폼과 상세 화면의 failing test를 먼저 쓴다**
 
@@ -272,7 +272,7 @@ it("shows external user name in driver detail", async () => {
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && npm run test -- DriverFormPage.test.tsx DriverDetailPage.test.tsx DriversPage.test.tsx
+cd development/front-web-console && npm run test -- DriverFormPage.test.tsx DriverDetailPage.test.tsx DriversPage.test.tsx
 ```
 
 Expected:
@@ -299,7 +299,7 @@ export type DriverProfile = {
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && npm run test -- DriverFormPage.test.tsx DriverDetailPage.test.tsx DriversPage.test.tsx
+cd development/front-web-console && npm run test -- DriverFormPage.test.tsx DriverDetailPage.test.tsx DriversPage.test.tsx
 ```
 
 Expected:
@@ -308,7 +308,7 @@ Expected:
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/types.ts src/api/drivers.ts src/pages/DriverFormPage.tsx src/pages/DriverDetailPage.tsx src/pages/DriversPage.tsx src/pages/DriverFormPage.test.tsx src/pages/DriverDetailPage.test.tsx src/pages/DriversPage.test.tsx
 git commit -m "feat: expose driver external user name in console"
 ```
@@ -316,13 +316,13 @@ git commit -m "feat: expose driver external user name in console"
 ## Task 3: Add Company/Fleet Pricing Table To Settlement Registry
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/settlementregistry/models.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/settlementregistry/serializers.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/settlementregistry/views.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/settlementregistry/urls.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/settlementregistry/management/commands/seed_settlement_registry.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/settlementregistry/migrations/0003_companyfleetpricingtable.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/settlementregistry/tests/test_company_fleet_pricing_api.py`
+- Modify: `development/service-settlement-registry/settlementregistry/models.py`
+- Modify: `development/service-settlement-registry/settlementregistry/serializers.py`
+- Modify: `development/service-settlement-registry/settlementregistry/views.py`
+- Modify: `development/service-settlement-registry/settlementregistry/urls.py`
+- Modify: `development/service-settlement-registry/settlementregistry/management/commands/seed_settlement_registry.py`
+- Create: `development/service-settlement-registry/settlementregistry/migrations/0003_companyfleetpricingtable.py`
+- Create: `development/service-settlement-registry/settlementregistry/tests/test_company_fleet_pricing_api.py`
 
 - [ ] **Step 1: 단가표 API failing test를 쓴다**
 
@@ -347,7 +347,7 @@ def test_can_create_company_fleet_pricing_table(self):
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry && python3 manage.py test settlementregistry.tests.test_company_fleet_pricing_api -v 2
+cd development/service-settlement-registry && python3 manage.py test settlementregistry.tests.test_company_fleet_pricing_api -v 2
 ```
 
 Expected:
@@ -369,7 +369,7 @@ class CompanyFleetPricingTable(models.Model):
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry && python3 manage.py test settlementregistry.tests.test_company_fleet_pricing_api settlementregistry.tests.test_global_settlement_config_api -v 2
+cd development/service-settlement-registry && python3 manage.py test settlementregistry.tests.test_company_fleet_pricing_api settlementregistry.tests.test_global_settlement_config_api -v 2
 ```
 
 Expected:
@@ -378,7 +378,7 @@ Expected:
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry
+cd development/service-settlement-registry
 git add settlementregistry/models.py settlementregistry/serializers.py settlementregistry/views.py settlementregistry/urls.py settlementregistry/management/commands/seed_settlement_registry.py settlementregistry/migrations/0003_companyfleetpricingtable.py settlementregistry/tests/test_company_fleet_pricing_api.py
 git commit -m "feat: add company fleet settlement pricing table"
 ```
@@ -386,15 +386,15 @@ git commit -m "feat: add company fleet settlement pricing table"
 ## Task 4: Add Dispatch Upload Batch And Matching API
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/models.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/serializers.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/views.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/urls.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/services/source_clients.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/management/commands/seed_dispatch.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/migrations/0005_dispatchuploadbatch_dispatchuploadrow.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/services/dispatch_upload_service.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/tests/test_dispatch_upload_api.py`
+- Modify: `development/service-dispatch-registry/dispatch/models.py`
+- Modify: `development/service-dispatch-registry/dispatch/serializers.py`
+- Modify: `development/service-dispatch-registry/dispatch/views.py`
+- Modify: `development/service-dispatch-registry/dispatch/urls.py`
+- Modify: `development/service-dispatch-registry/dispatch/services/source_clients.py`
+- Modify: `development/service-dispatch-registry/dispatch/management/commands/seed_dispatch.py`
+- Create: `development/service-dispatch-registry/dispatch/migrations/0005_dispatchuploadbatch_dispatchuploadrow.py`
+- Create: `development/service-dispatch-registry/dispatch/services/dispatch_upload_service.py`
+- Create: `development/service-dispatch-registry/dispatch/tests/test_dispatch_upload_api.py`
 
 - [ ] **Step 1: upload preview API failing test를 쓴다**
 
@@ -425,7 +425,7 @@ def test_preview_upload_creates_rows_with_driver_matches(self):
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry && python3 manage.py test dispatch.tests.test_dispatch_upload_api -v 2
+cd development/service-dispatch-registry && python3 manage.py test dispatch.tests.test_dispatch_upload_api -v 2
 ```
 
 Expected:
@@ -469,7 +469,7 @@ def test_confirm_upload_marks_batch_confirmed(self):
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry && python3 manage.py test dispatch.tests.test_dispatch_upload_api dispatch.tests.test_dispatch_api -v 2
+cd development/service-dispatch-registry && python3 manage.py test dispatch.tests.test_dispatch_upload_api dispatch.tests.test_dispatch_api -v 2
 ```
 
 Expected:
@@ -478,7 +478,7 @@ Expected:
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry
+cd development/service-dispatch-registry
 git add dispatch/models.py dispatch/serializers.py dispatch/views.py dispatch/urls.py dispatch/services/source_clients.py dispatch/management/commands/seed_dispatch.py dispatch/migrations/0005_dispatchuploadbatch_dispatchuploadrow.py dispatch/services/dispatch_upload_service.py dispatch/tests/test_dispatch_upload_api.py
 git commit -m "feat: add dispatch upload batch and matching flow"
 ```
@@ -486,13 +486,13 @@ git commit -m "feat: add dispatch upload batch and matching flow"
 ## Task 5: Add Dispatch Upload Wizard To The Console
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/types.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/api/dispatchRegistry.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DispatchBoardDetailPage.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/DispatchUploadWizard.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/DispatchUploadWizard.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DispatchBoardDetailPage.test.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/e2e/dispatch-upload.spec.ts`
+- Modify: `development/front-web-console/src/types.ts`
+- Modify: `development/front-web-console/src/api/dispatchRegistry.ts`
+- Modify: `development/front-web-console/src/pages/DispatchBoardDetailPage.tsx`
+- Create: `development/front-web-console/src/components/DispatchUploadWizard.tsx`
+- Create: `development/front-web-console/src/components/DispatchUploadWizard.test.tsx`
+- Modify: `development/front-web-console/src/pages/DispatchBoardDetailPage.test.tsx`
+- Create: `development/front-web-console/e2e/dispatch-upload.spec.ts`
 
 - [ ] **Step 1: wizard component failing test를 쓴다**
 
@@ -510,7 +510,7 @@ it("shows upload preview rows with driver match and box count", async () => {
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && npm run test -- DispatchBoardDetailPage.test.tsx src/components/DispatchUploadWizard.test.tsx
+cd development/front-web-console && npm run test -- DispatchBoardDetailPage.test.tsx src/components/DispatchUploadWizard.test.tsx
 ```
 
 Expected:
@@ -536,7 +536,7 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && npm run test -- DispatchBoardDetailPage.test.tsx src/components/DispatchUploadWizard.test.tsx
+cd development/front-web-console && npm run test -- DispatchBoardDetailPage.test.tsx src/components/DispatchUploadWizard.test.tsx
 ```
 
 Expected:
@@ -547,7 +547,7 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && PLAYWRIGHT_BASE_URL=http://localhost:5174 npm run test:e2e -- e2e/dispatch-upload.spec.ts
+cd development/front-web-console && PLAYWRIGHT_BASE_URL=http://localhost:5174 npm run test:e2e -- e2e/dispatch-upload.spec.ts
 ```
 
 Expected:
@@ -557,7 +557,7 @@ Expected:
 - [ ] **Step 7: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/types.ts src/api/dispatchRegistry.ts src/pages/DispatchBoardDetailPage.tsx src/components/DispatchUploadWizard.tsx src/components/DispatchUploadWizard.test.tsx src/pages/DispatchBoardDetailPage.test.tsx e2e/dispatch-upload.spec.ts
 git commit -m "feat: add dispatch upload wizard"
 ```
@@ -565,11 +565,11 @@ git commit -m "feat: add dispatch upload wizard"
 ## Task 6: Generate Settlement Snapshots From Confirmed Dispatch Upload
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/deliveryrecords/views.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/deliveryrecords/urls.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/deliveryrecords/tests/test_delivery_record_api.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/SettlementInputsPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/SettlementInputsPage.test.tsx`
+- Modify: `development/service-delivery-record/deliveryrecords/views.py`
+- Modify: `development/service-delivery-record/deliveryrecords/urls.py`
+- Modify: `development/service-delivery-record/deliveryrecords/tests/test_delivery_record_api.py`
+- Modify: `development/front-web-console/src/pages/SettlementInputsPage.tsx`
+- Modify: `development/front-web-console/src/pages/SettlementInputsPage.test.tsx`
 
 - [ ] **Step 1: bootstrap endpoint failing test를 쓴다**
 
@@ -593,7 +593,7 @@ def test_bootstrap_from_dispatch_creates_daily_snapshots(self):
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record && python3 manage.py test deliveryrecords.tests.test_delivery_record_api -v 2
+cd development/service-delivery-record && python3 manage.py test deliveryrecords.tests.test_delivery_record_api -v 2
 ```
 
 Expected:
@@ -632,8 +632,8 @@ it("renders upload-first review language ahead of manual correction", async () =
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record && python3 manage.py test deliveryrecords.tests.test_delivery_record_api -v 2
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && npm run test -- SettlementInputsPage.test.tsx DispatchBoardDetailPage.test.tsx
+cd development/service-delivery-record && python3 manage.py test deliveryrecords.tests.test_delivery_record_api -v 2
+cd development/front-web-console && npm run test -- SettlementInputsPage.test.tsx DispatchBoardDetailPage.test.tsx
 ```
 
 Expected:
@@ -642,11 +642,11 @@ Expected:
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record
+cd development/service-delivery-record
 git add deliveryrecords/views.py deliveryrecords/urls.py deliveryrecords/tests/test_delivery_record_api.py
 git commit -m "feat: bootstrap delivery snapshots from dispatch upload"
 
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/pages/SettlementInputsPage.tsx src/pages/SettlementInputsPage.test.tsx src/pages/DispatchBoardDetailPage.test.tsx
 git commit -m "feat: make settlement inputs upload-first review"
 ```
@@ -654,11 +654,11 @@ git commit -m "feat: make settlement inputs upload-first review"
 ## Task 7: Apply Company/Fleet Pricing During Settlement Execution
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll/settlements/views.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll/settlements/tests/test_settlement_api.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/api/settlementRegistry.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/SettlementCriteriaPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/SettlementCriteriaPage.test.tsx`
+- Modify: `development/service-settlement-payroll/settlements/views.py`
+- Modify: `development/service-settlement-payroll/settlements/tests/test_settlement_api.py`
+- Modify: `development/front-web-console/src/api/settlementRegistry.ts`
+- Modify: `development/front-web-console/src/pages/SettlementCriteriaPage.tsx`
+- Modify: `development/front-web-console/src/pages/SettlementCriteriaPage.test.tsx`
 
 - [ ] **Step 1: settlement run failing test를 쓴다**
 
@@ -674,7 +674,7 @@ def test_settlement_run_reads_company_fleet_pricing_table(self):
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll && python3 manage.py test settlements.tests.test_settlement_api -v 2
+cd development/service-settlement-payroll && python3 manage.py test settlements.tests.test_settlement_api -v 2
 ```
 
 Expected:
@@ -698,8 +698,8 @@ it("renders company-fleet pricing editor separately from global config", async (
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll && python3 manage.py test settlements.tests.test_settlement_api -v 2
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && npm run test -- SettlementCriteriaPage.test.tsx SettlementRunsPage.test.tsx SettlementResultsPage.test.tsx
+cd development/service-settlement-payroll && python3 manage.py test settlements.tests.test_settlement_api -v 2
+cd development/front-web-console && npm run test -- SettlementCriteriaPage.test.tsx SettlementRunsPage.test.tsx SettlementResultsPage.test.tsx
 ```
 
 Expected:
@@ -708,11 +708,11 @@ Expected:
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll
+cd development/service-settlement-payroll
 git add settlements/views.py settlements/tests/test_settlement_api.py
 git commit -m "feat: apply company fleet pricing in settlement runs"
 
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/api/settlementRegistry.ts src/pages/SettlementCriteriaPage.tsx src/pages/SettlementCriteriaPage.test.tsx
 git commit -m "feat: add pricing editor to settlement criteria"
 ```
@@ -720,7 +720,7 @@ git commit -m "feat: add pricing editor to settlement criteria"
 ## Task 8: Final Verification And Contract Sync
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/contracts/18-single-web-console-screen-map.md`
+- Modify: `docs/contracts/18-single-web-console-screen-map.md`
 - Read for verification: spec + modified repos
 
 - [x] **Step 1: screen map 문서를 현재 IA에 맞게 맞춘다**
@@ -732,13 +732,13 @@ git commit -m "feat: add pricing editor to settlement criteria"
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile && python3 manage.py test drivers.tests.test_driver_api -v 2
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry && python3 manage.py test settlementregistry.tests.test_global_settlement_config_api settlementregistry.tests.test_company_fleet_pricing_api -v 2
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry && python3 manage.py test dispatch.tests.test_dispatch_api dispatch.tests.test_dispatch_upload_api -v 2
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record && python3 manage.py test deliveryrecords.tests.test_delivery_record_api -v 2
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll && python3 manage.py test settlements.tests.test_settlement_api -v 2
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && npm run test -- DriverFormPage.test.tsx DriverDetailPage.test.tsx DriversPage.test.tsx DispatchBoardDetailPage.test.tsx SettlementCriteriaPage.test.tsx SettlementInputsPage.test.tsx SettlementRunsPage.test.tsx SettlementResultsPage.test.tsx
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && PLAYWRIGHT_BASE_URL=http://localhost:5174 npm run test:e2e -- e2e/dispatch-upload.spec.ts e2e/settlement-navigation.spec.ts
+cd development/service-driver-profile && python3 manage.py test drivers.tests.test_driver_api -v 2
+cd development/service-settlement-registry && python3 manage.py test settlementregistry.tests.test_global_settlement_config_api settlementregistry.tests.test_company_fleet_pricing_api -v 2
+cd development/service-dispatch-registry && python3 manage.py test dispatch.tests.test_dispatch_api dispatch.tests.test_dispatch_upload_api -v 2
+cd development/service-delivery-record && python3 manage.py test deliveryrecords.tests.test_delivery_record_api -v 2
+cd development/service-settlement-payroll && python3 manage.py test settlements.tests.test_settlement_api -v 2
+cd development/front-web-console && npm run test -- DriverFormPage.test.tsx DriverDetailPage.test.tsx DriversPage.test.tsx DispatchBoardDetailPage.test.tsx SettlementCriteriaPage.test.tsx SettlementInputsPage.test.tsx SettlementRunsPage.test.tsx SettlementResultsPage.test.tsx
+cd development/front-web-console && PLAYWRIGHT_BASE_URL=http://localhost:5174 npm run test:e2e -- e2e/dispatch-upload.spec.ts e2e/settlement-navigation.spec.ts
 ```
 
 Expected:
@@ -754,6 +754,6 @@ Expected:
 - [x] **Step 4: Final docs commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform add docs/contracts/18-single-web-console-screen-map.md docs/superpowers/plans/2026-04-09-dispatch-upload-settlement-phase1-implementation-plan.md
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform commit -m "docs: sync dispatch upload settlement implementation plan"
+git -C . add docs/contracts/18-single-web-console-screen-map.md docs/superpowers/plans/2026-04-09-dispatch-upload-settlement-phase1-implementation-plan.md
+git -C . commit -m "docs: sync dispatch upload settlement implementation plan"
 ```

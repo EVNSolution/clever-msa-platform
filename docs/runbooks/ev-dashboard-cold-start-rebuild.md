@@ -24,8 +24,8 @@
 
 아래가 모두 확인되어야 rebuild 를 시작한다.
 
-1. [ev-dashboard-runtime-environment-review.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-runtime-environment-review.md) 를 먼저 통과했다.
-2. [2026-04-15-ev-dashboard-full-runtime-shutdown-design.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-15-ev-dashboard-full-runtime-shutdown-design.md) 에서 정의한 retained asset 과 destroy boundary 를 이해했다.
+1. [ev-dashboard-runtime-environment-review.md](ev-dashboard-runtime-environment-review.md) 를 먼저 통과했다.
+2. [2026-04-15-ev-dashboard-full-runtime-shutdown-design.md](../superpowers/specs/2026-04-15-ev-dashboard-full-runtime-shutdown-design.md) 에서 정의한 retained asset 과 destroy boundary 를 이해했다.
 3. retained ECR repository 와 image tag 또는 digest 가 존재한다.
 4. current code 기준으로 rebuild 할 branch 또는 SHA 가 확정되어 있다.
 5. GitHub OIDC, CDK bootstrap, VPC/subnet 등 infra prerequisite 이 유효하다.
@@ -76,10 +76,10 @@ rebuild 전에 아래 자산을 실제로 확인한다.
 
 표준 실행 순서는 아래다.
 
-1. [ev-dashboard-runtime-environment-review.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-runtime-environment-review.md)
-2. [ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md)
-3. [ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
-4. [ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
+1. [ev-dashboard-runtime-environment-review.md](ev-dashboard-runtime-environment-review.md)
+2. [ev-dashboard-ecs-preflight-gate.md](ev-dashboard-ecs-preflight-gate.md)
+3. [ev-dashboard-ecs-deploy-operator-loop.md](ev-dashboard-ecs-deploy-operator-loop.md)
+4. [ev-dashboard-ui-smoke-and-decommission.md](ev-dashboard-ui-smoke-and-decommission.md)
 
 운영자는 이 순서를 바꾸지 않는다.
 
@@ -113,4 +113,4 @@ deploy 가 끝나면 아래를 확인한다.
 4. current code 와 retained ECR image 기반으로 rebuild 했다.
 5. `ev-dashboard.com` 과 `api.ev-dashboard.com` 의 public path 가 새 runtime 에서 동작한다.
 
-완료 후에는 rebuild 에서 확인한 전제를 다음 운영 문서에 반영한다. 이후의 일반 deploy 는 다시 [ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md) 부터 탄다.
+완료 후에는 rebuild 에서 확인한 전제를 다음 운영 문서에 반영한다. 이후의 일반 deploy 는 다시 [ev-dashboard-ecs-preflight-gate.md](ev-dashboard-ecs-preflight-gate.md) 부터 탄다.

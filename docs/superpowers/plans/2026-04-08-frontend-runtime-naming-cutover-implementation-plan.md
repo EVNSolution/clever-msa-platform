@@ -14,24 +14,24 @@
 
 ### Platform root
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md`
+- Modify: `WORKSPACE.md`
   - Update active frontend inventory from `front-admin-console`/`front-operator-console` to the canonical `front-web-console` line.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md`
+- Modify: `repo-map.md`
   - Replace active frontend rows so the surviving UI is represented as `front-web-console` and the old names are described as alias/legacy history.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md`
+- Modify: `docs/mappings/current-runtime-inventory.md`
   - Update the current runtime inventory naming for the frontend runtime.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-08-clever-msa-master-roadmap-design.md`
+- Modify: `docs/superpowers/specs/2026-04-08-clever-msa-master-roadmap-design.md`
   - Replace the temporary `front-admin-console` deployment wording with the new canonical/runtime state.
-- Rename directory: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-admin-console` -> `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console`
+- Rename directory: `development/front-admin-console` -> `development/front-web-console`
   - Move the surviving frontend source tree into its canonical path.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/docker-compose.account-driver-settlement.yml`
+- Modify: `development/integration-local-stack/docker-compose.account-driver-settlement.yml`
   - Stage A: point the build context to `../front-web-console` while keeping the runtime service alias stable.
   - Stage B: rename the compose service from `admin-front` to `web-console` and update dependencies.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/compose/README.md`
+- Modify: `development/integration-local-stack/compose/README.md`
   - Update frontend path, compose service, and naming examples after each cutover stage.
-- Rename file: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/infra/env/admin-front.env.example` -> `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/infra/env/web-console.env.example`
+- Rename file: `development/integration-local-stack/infra/env/admin-front.env.example` -> `development/integration-local-stack/infra/env/web-console.env.example`
   - Stage B runtime naming alignment for the frontend env contract.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/nginx.conf`
+- Modify: `development/edge-api-gateway/nginx.conf`
   - Stage B: update the frontend upstream from `admin-front:5174` to `web-console:5174`.
 
 ### Deploy control repo
@@ -46,10 +46,10 @@
 ## Task 1: Freeze the cutover inventory and user gate
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-08-clever-msa-master-roadmap-design.md`
+- Modify: `WORKSPACE.md`
+- Modify: `repo-map.md`
+- Modify: `docs/mappings/current-runtime-inventory.md`
+- Modify: `docs/superpowers/specs/2026-04-08-clever-msa-master-roadmap-design.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/docs/inventory/current-runtime-deploy-inventory.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/docs/runbooks/central-deploy-reference.md`
 
@@ -82,10 +82,10 @@ Run:
 
 ```bash
 rg -n "front-admin-console|front-web-console|front-operator-console|admin-front" \
-  /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md \
-  /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md \
-  /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md \
-  /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-08-clever-msa-master-roadmap-design.md \
+  WORKSPACE.md \
+  repo-map.md \
+  docs/mappings/current-runtime-inventory.md \
+  docs/superpowers/specs/2026-04-08-clever-msa-master-roadmap-design.md \
   /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/docs/inventory/current-runtime-deploy-inventory.md \
   /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/docs/runbooks/central-deploy-reference.md
 ```
@@ -97,12 +97,12 @@ Expected:
 - [ ] **Step 5: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform add \
+git -C . add \
   WORKSPACE.md \
   repo-map.md \
   docs/mappings/current-runtime-inventory.md \
   docs/superpowers/specs/2026-04-08-clever-msa-master-roadmap-design.md
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform commit -m "docs: freeze frontend naming cutover inventory"
+git -C . commit -m "docs: freeze frontend naming cutover inventory"
 
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control add \
   docs/inventory/current-runtime-deploy-inventory.md \
@@ -113,9 +113,9 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-c
 ## Task 2: Rename the frontend repo/path while preserving the runtime alias
 
 **Files:**
-- Rename directory: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-admin-console` -> `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/docker-compose.account-driver-settlement.yml`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/compose/README.md`
+- Rename directory: `development/front-admin-console` -> `development/front-web-console`
+- Modify: `development/integration-local-stack/docker-compose.account-driver-settlement.yml`
+- Modify: `development/integration-local-stack/compose/README.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/catalog/services.yaml`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/docs/inventory/current-runtime-deploy-inventory.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/docs/runbooks/central-deploy-reference.md`
@@ -126,8 +126,8 @@ Rename the directory:
 
 ```bash
 mv \
-  /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-admin-console \
-  /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+  development/front-admin-console \
+  development/front-web-console
 ```
 
 Do not change source contents in this step.
@@ -135,7 +135,7 @@ Do not change source contents in this step.
 - [ ] **Step 2: Point compose to the renamed path without changing the service name yet**
 
 Update:
-`/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/docker-compose.account-driver-settlement.yml`
+`development/integration-local-stack/docker-compose.account-driver-settlement.yml`
 
 Change only the frontend build context:
 
@@ -178,7 +178,7 @@ This step must happen only after the GitHub repo rename has completed successful
 Run:
 
 ```bash
-docker compose -f /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/docker-compose.account-driver-settlement.yml config >/tmp/clever-frontend-rename-compose.out
+docker compose -f development/integration-local-stack/docker-compose.account-driver-settlement.yml config >/tmp/clever-frontend-rename-compose.out
 ```
 
 Expected:
@@ -205,12 +205,12 @@ Expected:
 - [ ] **Step 8: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform add \
+git -C . add \
   development/front-web-console \
   development/integration-local-stack/docker-compose.account-driver-settlement.yml \
   development/integration-local-stack/compose/README.md
 
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform commit -m "refactor: rename frontend path to front-web-console"
+git -C . commit -m "refactor: rename frontend path to front-web-console"
 
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control add \
   catalog/services.yaml \
@@ -223,10 +223,10 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-c
 ## Task 3: Rename the runtime service and env contract
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/docker-compose.account-driver-settlement.yml`
-- Rename file: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/infra/env/admin-front.env.example` -> `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/infra/env/web-console.env.example`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/compose/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/nginx.conf`
+- Modify: `development/integration-local-stack/docker-compose.account-driver-settlement.yml`
+- Rename file: `development/integration-local-stack/infra/env/admin-front.env.example` -> `development/integration-local-stack/infra/env/web-console.env.example`
+- Modify: `development/integration-local-stack/compose/README.md`
+- Modify: `development/edge-api-gateway/nginx.conf`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/catalog/services.yaml`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/docs/inventory/current-runtime-deploy-inventory.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/docs/runbooks/central-deploy-reference.md`
@@ -251,8 +251,8 @@ Rename:
 
 ```bash
 mv \
-  /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/infra/env/admin-front.env.example \
-  /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/infra/env/web-console.env.example
+  development/integration-local-stack/infra/env/admin-front.env.example \
+  development/integration-local-stack/infra/env/web-console.env.example
 ```
 
 Update any compose/readme references in the same task.
@@ -260,7 +260,7 @@ Update any compose/readme references in the same task.
 - [ ] **Step 3: Update the gateway frontend upstream**
 
 Change the root upstream in:
-`/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/nginx.conf`
+`development/edge-api-gateway/nginx.conf`
 
 From:
 
@@ -287,9 +287,9 @@ Make deploy-control references converge on the final naming set:
 Run:
 
 ```bash
-docker run --rm -v /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/nginx.conf:/etc/nginx/nginx.conf:ro nginx:stable nginx -t
+docker run --rm -v development/edge-api-gateway/nginx.conf:/etc/nginx/nginx.conf:ro nginx:stable nginx -t
 
-docker compose -f /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/docker-compose.account-driver-settlement.yml config >/tmp/clever-web-console-compose.out
+docker compose -f development/integration-local-stack/docker-compose.account-driver-settlement.yml config >/tmp/clever-web-console-compose.out
 ```
 
 Expected:
@@ -323,13 +323,13 @@ Expected:
 - [ ] **Step 7: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform add \
+git -C . add \
   development/integration-local-stack/docker-compose.account-driver-settlement.yml \
   development/integration-local-stack/infra/env/web-console.env.example \
   development/integration-local-stack/compose/README.md \
   development/edge-api-gateway/nginx.conf
 
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform commit -m "refactor: rename frontend runtime service to web-console"
+git -C . commit -m "refactor: rename frontend runtime service to web-console"
 
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control add \
   catalog/services.yaml \
@@ -342,10 +342,10 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-c
 ## Task 4: Retire the old names and record the cutover
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-08-clever-msa-master-roadmap-design.md`
+- Modify: `WORKSPACE.md`
+- Modify: `repo-map.md`
+- Modify: `docs/mappings/current-runtime-inventory.md`
+- Modify: `docs/superpowers/specs/2026-04-08-clever-msa-master-roadmap-design.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/docs/inventory/current-runtime-deploy-inventory.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/docs/runbooks/central-deploy-reference.md`
 
@@ -368,13 +368,13 @@ Run:
 
 ```bash
 rg -n "front-admin-console|front-operator-console|admin-front|admin-front\.env\.example" \
-  /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md \
-  /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md \
-  /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md \
-  /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-08-clever-msa-master-roadmap-design.md \
-  /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/docker-compose.account-driver-settlement.yml \
-  /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/compose/README.md \
-  /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/nginx.conf \
+  WORKSPACE.md \
+  repo-map.md \
+  docs/mappings/current-runtime-inventory.md \
+  docs/superpowers/specs/2026-04-08-clever-msa-master-roadmap-design.md \
+  development/integration-local-stack/docker-compose.account-driver-settlement.yml \
+  development/integration-local-stack/compose/README.md \
+  development/edge-api-gateway/nginx.conf \
   /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/catalog/services.yaml \
   /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/docs/inventory/current-runtime-deploy-inventory.md \
   /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/docs/runbooks/central-deploy-reference.md
@@ -387,13 +387,13 @@ Expected:
 - [ ] **Step 4: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform add \
+git -C . add \
   WORKSPACE.md \
   repo-map.md \
   docs/mappings/current-runtime-inventory.md \
   docs/superpowers/specs/2026-04-08-clever-msa-master-roadmap-design.md
 
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform commit -m "docs: retire old frontend alias names"
+git -C . commit -m "docs: retire old frontend alias names"
 
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control add \
   docs/inventory/current-runtime-deploy-inventory.md \

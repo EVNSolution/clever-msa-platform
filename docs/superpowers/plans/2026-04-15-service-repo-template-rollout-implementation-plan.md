@@ -13,8 +13,8 @@
 ### Task 1: Build The Audit Matrix
 
 **Files:**
-- Inspect: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-15-service-repo-template-baseline-design.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/service-repo-template-audit-matrix.md`
+- Inspect: `docs/superpowers/specs/2026-04-15-service-repo-template-baseline-design.md`
+- Create: `docs/mappings/service-repo-template-audit-matrix.md`
 
 - [x] **Step 1: Read the baseline spec**
 
@@ -46,7 +46,7 @@ Start the matrix with:
 
 **Files:**
 - Modify: first-batch child repos as needed
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/service-repo-template-audit-matrix.md`
+- Modify: `docs/mappings/service-repo-template-audit-matrix.md`
 
 - [x] **Step 1: Normalize `front-web-console`**
 
@@ -78,7 +78,7 @@ Do not leave the matrix as a blank inventory. Mark which baseline items are comp
 
 **Files:**
 - Modify: additional child repos in batches
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/service-repo-template-audit-matrix.md`
+- Modify: `docs/mappings/service-repo-template-audit-matrix.md`
 
 - [x] **Step 1: Group remaining repos by archetype**
 
@@ -139,9 +139,9 @@ Current progress:
 ### Task 4: Publish The Standard As Ongoing Platform Policy
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-15-platform-next-development-and-deploy-scenarios-plan.md`
+- Modify: `docs/README.md`
+- Modify: `lesson.md`
+- Modify: `docs/superpowers/plans/2026-04-15-platform-next-development-and-deploy-scenarios-plan.md`
 
 - [x] **Step 1: Link the baseline spec and audit matrix from the docs entrypoint**
 

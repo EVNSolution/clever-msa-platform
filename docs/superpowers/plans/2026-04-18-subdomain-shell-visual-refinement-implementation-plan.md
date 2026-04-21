@@ -16,32 +16,32 @@
 
 ### Existing files to modify
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/CockpitShell.tsx`
+- Modify: `development/front-web-console/src/cockpit/CockpitShell.tsx`
   - Keep route-aware shell composition, but switch it to the refined visual layout contract.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainAccordionNav.tsx`
+- Modify: `development/front-web-console/src/cockpit/SubdomainAccordionNav.tsx`
   - Replace the text-like `정산` trigger with the new arrow affordance and compose the card/menu/sidebar from smaller units.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaDashboardPage.tsx`
+- Modify: `development/front-web-console/src/cockpit/cheonha/CheonhaDashboardPage.tsx`
   - Keep the dashboard body empty and ensure it does not accidentally reintroduce placeholder text or cards.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
+- Modify: `development/front-web-console/src/styles.css`
   - Add the square card, arrow-trigger, right-expanding menu, and detached settlement sidebar layout rules.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.cockpit.test.tsx`
+- Modify: `development/front-web-console/src/App.cockpit.test.tsx`
   - Lock the subdomain shell integration behavior from app entry.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainAccordionNav.test.tsx`
+- Modify: `development/front-web-console/src/cockpit/SubdomainAccordionNav.test.tsx`
   - Lock the refined card content, trigger behavior, and detached settlement sidebar behavior.
 
 ### New files to create
 
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainBrandCard.tsx`
+- Create: `development/front-web-console/src/cockpit/SubdomainBrandCard.tsx`
   - Focused square card component for `CLEVER / EV&Solution / 천하운수` plus the home-link interaction.
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainExpandTrigger.tsx`
+- Create: `development/front-web-console/src/cockpit/SubdomainExpandTrigger.tsx`
   - Arrow-only expand trigger for the top-level product menu launcher.
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainSettlementSidebar.tsx`
+- Create: `development/front-web-console/src/cockpit/SubdomainSettlementSidebar.tsx`
   - Always-open settlement menu block rendered only for settlement routes.
 
 ### Optional docs sync
 
-- Modify if needed: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/README.md`
-- Modify if needed: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/lesson.md`
+- Modify if needed: `development/front-web-console/README.md`
+- Modify if needed: `development/front-web-console/lesson.md`
   - Only update if the current shell contract text is now inaccurate after the visual refinement.
 
 ---
@@ -49,8 +49,8 @@
 ### Task 1: Lock the refined shell contract in tests
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainAccordionNav.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.cockpit.test.tsx`
+- Modify: `development/front-web-console/src/cockpit/SubdomainAccordionNav.test.tsx`
+- Modify: `development/front-web-console/src/App.cockpit.test.tsx`
 
 - [ ] **Step 1: Add failing shell assertions for the new card content**
 
@@ -96,7 +96,7 @@ expect(screen.getByTestId('subdomain-settlement-sidebar')).toBeInTheDocument();
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/cockpit/SubdomainAccordionNav.test.tsx src/App.cockpit.test.tsx
 ```
 
@@ -114,12 +114,12 @@ git commit -m "test: lock subdomain shell visual refinement contract"
 ### Task 2: Split the shell into brand card, expand trigger, and detached settlement sidebar
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainBrandCard.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainExpandTrigger.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainSettlementSidebar.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainAccordionNav.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/CockpitShell.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaDashboardPage.tsx`
+- Create: `development/front-web-console/src/cockpit/SubdomainBrandCard.tsx`
+- Create: `development/front-web-console/src/cockpit/SubdomainExpandTrigger.tsx`
+- Create: `development/front-web-console/src/cockpit/SubdomainSettlementSidebar.tsx`
+- Modify: `development/front-web-console/src/cockpit/SubdomainAccordionNav.tsx`
+- Modify: `development/front-web-console/src/cockpit/CockpitShell.tsx`
+- Modify: `development/front-web-console/src/cockpit/cheonha/CheonhaDashboardPage.tsx`
 
 - [ ] **Step 1: Implement the focused brand card component**
 
@@ -185,7 +185,7 @@ No placeholder text, no summary cards, no filler copy.
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/cockpit/SubdomainAccordionNav.test.tsx src/App.cockpit.test.tsx
 ```
 
@@ -211,9 +211,9 @@ git commit -m "feat: split subdomain shell visual roles"
 ### Task 3: Apply the visual refinement and prevent layout resizing on settlement entry
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainAccordionNav.test.tsx`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.cockpit.test.tsx`
+- Modify: `development/front-web-console/src/styles.css`
+- Test: `development/front-web-console/src/cockpit/SubdomainAccordionNav.test.tsx`
+- Test: `development/front-web-console/src/App.cockpit.test.tsx`
 
 - [ ] **Step 1: Add the square card and text hierarchy styles**
 
@@ -251,7 +251,7 @@ If absolute positioning proves too brittle, use a fixed-width stacked container 
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/cockpit/SubdomainAccordionNav.test.tsx src/App.cockpit.test.tsx src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx
 ```
 
@@ -262,7 +262,7 @@ Expected: PASS
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test
 npm run build
 ```
@@ -284,8 +284,8 @@ git commit -m "feat: refine subdomain shell visual layout"
 ### Task 4: Sync docs if needed and perform final manual verification
 
 **Files:**
-- Modify if needed: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/README.md`
-- Modify if needed: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/lesson.md`
+- Modify if needed: `development/front-web-console/README.md`
+- Modify if needed: `development/front-web-console/lesson.md`
 
 - [ ] **Step 1: Check whether README/lesson still describe the old card/trigger shell**
 
@@ -308,7 +308,7 @@ Keep the doc patch minimal. Record:
 Start:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run dev:local-sandbox
 ```
 

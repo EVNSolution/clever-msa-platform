@@ -318,6 +318,6 @@ route rule:
 
 이 문서는 아래 문서의 **보강 설계**다.
 
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-17-subdomain-web-definition-design.md`
+- `docs/superpowers/specs/2026-04-17-subdomain-web-definition-design.md`
 
 즉 기존 문서의 메인/회사 path 경계, 세션 규칙, `정산` workspace 원칙은 유지하고, 이번 문서는 **회사 path shell layout과 navigation 역할 분리**만 더 구체화한다.

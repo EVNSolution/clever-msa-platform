@@ -15,9 +15,9 @@
 ### Task 1: Lock The Auth Slice Boundary In Docs
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
+- Modify: `docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
+- Modify: `docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
+- Modify: `lesson.md`
 
 - [x] Write the auth-slice scope update before code changes.
 - [x] State that this phase adds dedicated `service-account-access` Postgres and Redis, not the full backend graph.
@@ -27,8 +27,8 @@
 ### Task 2: Add Failing Infra Tests For Data Resources
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/config.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/config.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
 
 - [x] Write a failing config test for private subnet parsing and auth-slice runtime env defaults.
 - [x] Write a failing stack test that expects a dedicated Postgres instance, Redis resource, and ECS secret/env wiring for `service-account-access`.
@@ -37,10 +37,10 @@
 ### Task 3: Implement Dedicated service-account-access Data Infrastructure
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/config.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lesson.md`
+- Modify: `development/infra-ev-dashboard-platform/lib/config.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Modify: `development/infra-ev-dashboard-platform/README.md`
+- Modify: `development/infra-ev-dashboard-platform/lesson.md`
 
 - [x] Add private subnet config inputs for stateful resources.
 - [x] Create dedicated `service-account-access` Postgres 16 in private subnets.
@@ -52,8 +52,8 @@
 ### Task 4: Configure Dev Runtime Variables And Rehearse The Auth Slice
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
+- Modify: `development/infra-ev-dashboard-platform/lesson.md`
+- Modify: `lesson.md`
 
 - [x] Set the new private subnet variables in `EVNSolution/infra-ev-dashboard-platform`.
 - [x] Raise `GATEWAY_DESIRED_COUNT=1` and `ACCOUNT_ACCESS_DESIRED_COUNT=1` for the dev environment.

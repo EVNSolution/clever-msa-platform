@@ -13,10 +13,10 @@
 ### Task 1: Lock The Cleanup Scope
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-14-ev-dashboard-docs-and-decommission-cleanup-plan.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/README.md`
+- Create: `docs/superpowers/plans/2026-04-14-ev-dashboard-docs-and-decommission-cleanup-plan.md`
+- Modify: `docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md`
+- Modify: `docs/rollout/README.md`
+- Modify: `docs/README.md`
 
 - [ ] Record the exact cleanup target: `runbooks` index, `ev-dashboard` close-out runbook, `rollout` start-here pointers.
 - [ ] Explicitly keep archive migration out of scope for this pass.
@@ -25,8 +25,8 @@
 ### Task 2: Add A Runbooks Index
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/README.md`
+- Create: `docs/runbooks/README.md`
+- Modify: `docs/README.md`
 
 - [ ] Create a compact `docs/runbooks/README.md` that separates:
   - local development runbooks
@@ -38,8 +38,8 @@
 ### Task 3: Tighten The Decommission Runbook
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
+- Modify: `docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md`
+- Modify: `lesson.md`
 
 - [ ] Add a short current-status section that distinguishes:
   - what is already migrated
@@ -54,9 +54,9 @@
 ### Task 4: Clean The Rollout Pointers
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md`
+- Modify: `docs/rollout/README.md`
+- Modify: `docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
+- Modify: `docs/superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md`
 
 - [ ] Update `docs/rollout/README.md` so `ev-dashboard` readers see the current sequence:
   - transition truth

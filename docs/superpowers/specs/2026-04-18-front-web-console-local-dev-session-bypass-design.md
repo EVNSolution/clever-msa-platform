@@ -42,11 +42,11 @@
 현재 프론트의 핵심 제어점은 아래다.
 
 - 세션 저장:
-  - [development/front-web-console/src/sessionPersistence.ts](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/sessionPersistence.ts)
+  - [development/front-web-console/src/sessionPersistence.ts](../../../development/front-web-console/src/sessionPersistence.ts)
 - 서브도메인 host 해석:
-  - [development/front-web-console/src/tenant/resolveTenantEntry.ts](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/tenant/resolveTenantEntry.ts)
+  - [development/front-web-console/src/tenant/resolveTenantEntry.ts](../../../development/front-web-console/src/tenant/resolveTenantEntry.ts)
 - dev 프록시:
-  - [development/front-web-console/vite.config.ts](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/vite.config.ts)
+  - [development/front-web-console/vite.config.ts](../../../development/front-web-console/vite.config.ts)
 
 현재 host 해석 규칙은 `localhost`를 회사 서브도메인으로 보지 않는다. 따라서 로컬 서브도메인 테스트는 **host 자체를 맞춰서 들어가야 한다.**
 
@@ -204,7 +204,7 @@ host별 허용 preset:
 
 주입 방식:
 
-- 기존 [sessionPersistence.ts](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/sessionPersistence.ts) 저장 구조를 그대로 사용한다.
+- 기존 [sessionPersistence.ts](../../../development/front-web-console/src/sessionPersistence.ts) 저장 구조를 그대로 사용한다.
 - `세션 주입` 버튼을 누르면 preset `SessionPayload`를 local storage에 기록한다.
 - Safari나 stricter site-data policy가 local storage write를 거부하면, sandbox session은 in-memory fallback으로 유지되어야 한다.
 - 완료 후 `/`로 이동한다.

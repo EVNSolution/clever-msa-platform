@@ -22,10 +22,10 @@
 
 이 문서는 아래 문서를 대체하지 않고, `정산` 내부 presentation layer만 더 구체화한다.
 
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-17-subdomain-web-definition-design.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-18-subdomain-shell-role-split-design.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-18-subdomain-shell-visual-refinement-design.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-18-subdomain-vehicle-workspace-design.md`
+- `docs/superpowers/specs/2026-04-17-subdomain-web-definition-design.md`
+- `docs/superpowers/specs/2026-04-18-subdomain-shell-role-split-design.md`
+- `docs/superpowers/specs/2026-04-18-subdomain-shell-visual-refinement-design.md`
+- `docs/superpowers/specs/2026-04-18-subdomain-vehicle-workspace-design.md`
 
 즉 아래는 기존 shell spec의 선행 조건으로 유지한다.
 

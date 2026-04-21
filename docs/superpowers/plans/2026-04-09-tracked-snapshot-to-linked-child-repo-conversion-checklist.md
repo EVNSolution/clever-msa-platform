@@ -6,7 +6,7 @@ This checklist standardizes one repo conversion from `tracked_snapshot` to `link
 
 Use it for each repo selected from:
 
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-09-development-linked-child-repos-inventory.md`
+- `docs/superpowers/plans/2026-04-09-development-linked-child-repos-inventory.md`
 
 ## Preconditions
 

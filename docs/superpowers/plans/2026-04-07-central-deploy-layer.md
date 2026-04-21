@@ -28,7 +28,7 @@
 - [x] **Step 1의 실행**
 
 Run:
-- `cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform && rg -n "staging|prod|deploy|wave|central" docs/rollout/README.md`
+- `cd . && rg -n "staging|prod|deploy|wave|central" docs/rollout/README.md`
 - 문서에 기존 정책과 충돌하는 항목이 있으면 정리
 
 - [ ] **Step 2: Strategy/Runbook v0.1 확정**
@@ -70,7 +70,7 @@ Run:
 - [ ] **Step 2 실행**
 
 Run:
-- `cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform && rg -n \"development/service-|service-\" docs/mappings/current-runtime-inventory.md`
+- `cd . && rg -n \"development/service-|service-\" docs/mappings/current-runtime-inventory.md`
 
 ### Task 3: 변경 감지 로직 설계
 

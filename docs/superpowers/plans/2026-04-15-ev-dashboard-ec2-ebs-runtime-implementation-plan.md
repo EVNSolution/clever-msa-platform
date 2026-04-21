@@ -14,59 +14,59 @@
 
 ### Infra repo implementation files
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/config.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/config.ts`
   - Replace ECS/RDS-specific config expectations with EC2 app/data host config, image map, and bootstrap inputs.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
   - Remove ECS/Fargate/RDS/ElastiCache resource graph and compose the new EC2-based topology.
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ec2-app-host.ts`
+- Create: `development/infra-ev-dashboard-platform/lib/ec2-app-host.ts`
   - Focused construct for the application EC2 host, IAM, security group attachment, and bootstrap contract.
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ec2-data-host.ts`
+- Create: `development/infra-ev-dashboard-platform/lib/ec2-data-host.ts`
   - Focused construct for the data EC2 host, EBS attachment, PostgreSQL/Redis bootstrap contract, and security boundaries.
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ec2-bootstrap.ts`
+- Create: `development/infra-ev-dashboard-platform/lib/ec2-bootstrap.ts`
   - Shared user-data/script rendering helpers for app host and data host bootstrap.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/bin/ev-dashboard-platform.ts`
+- Modify: `development/infra-ev-dashboard-platform/bin/ev-dashboard-platform.ts`
   - Wire any new config values into the stack entrypoint.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/preflight.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/preflight.ts`
   - Fail if required EC2 host inputs, image SHAs, or host bootstrap contracts are missing.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/postDeploySmoke.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/postDeploySmoke.ts`
   - Keep edge/public smoke, but adjust expectations away from ECS-specific readiness assumptions.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/README.md`
+- Modify: `development/infra-ev-dashboard-platform/README.md`
   - Update canonical runtime ownership and required configuration.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lesson.md`
+- Modify: `development/infra-ev-dashboard-platform/lesson.md`
   - Record infra/runtime migration lessons as they appear.
 
 ### Infra repo tests
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/config.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/preflight.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/postDeploySmoke.test.ts`
-- Modify or replace: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/config.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/preflight.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/postDeploySmoke.test.ts`
+- Modify or replace: `development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
   - Assert EC2 hosts, EBS, ALB wiring, and the absence of ECS/RDS/ElastiCache resources.
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ec2-host-bootstrap.test.ts`
+- Create: `development/infra-ev-dashboard-platform/test/ec2-host-bootstrap.test.ts`
   - Validate rendered bootstrap/user-data content and required host-level contracts.
 
 ### Canonical truth docs
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
+- Modify: `docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
+- Modify: `docs/mappings/current-runtime-inventory.md`
+- Modify: `docs/runbooks/ev-dashboard-ecs-preflight-gate.md`
+- Modify: `docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md`
+- Modify: `lesson.md`
   - Update canonical runtime truth and operator rules after the runtime change is actually proven.
 
 ### Optional follow-up docs if naming drift becomes confusing
 
-- Create only if needed: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ec2-runtime-gate.md`
-- Create only if needed: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ec2-deploy-operator-loop.md`
+- Create only if needed: `docs/runbooks/ev-dashboard-ec2-runtime-gate.md`
+- Create only if needed: `docs/runbooks/ev-dashboard-ec2-deploy-operator-loop.md`
 
 ---
 
 ### Task 1: Lock new config and test boundaries
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/config.ts`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/config.test.ts`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/preflight.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/config.ts`
+- Test: `development/infra-ev-dashboard-platform/test/config.test.ts`
+- Test: `development/infra-ev-dashboard-platform/test/preflight.test.ts`
 
 - [x] **Step 1: Write the failing config tests**
 
@@ -90,7 +90,7 @@ it('requires app and data host subnet/instance config for ec2 runtime mode', () 
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/config.test.ts test/preflight.test.ts
 ```
 
@@ -105,7 +105,7 @@ Add `RUNTIME_MODE=ec2` and the smallest required host/data inputs to `lib/config
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/config.test.ts test/preflight.test.ts
 ```
 
@@ -114,17 +114,17 @@ Expected: PASS
 - [x] **Step 5: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add lib/config.ts test/config.test.ts test/preflight.test.ts
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "feat: add ec2 runtime config contract"
+git -C development/infra-ev-dashboard-platform add lib/config.ts test/config.test.ts test/preflight.test.ts
+git -C development/infra-ev-dashboard-platform commit -m "feat: add ec2 runtime config contract"
 ```
 
 ### Task 2: Build focused EC2 host constructs
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ec2-app-host.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ec2-data-host.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ec2-bootstrap.ts`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ec2-host-bootstrap.test.ts`
+- Create: `development/infra-ev-dashboard-platform/lib/ec2-app-host.ts`
+- Create: `development/infra-ev-dashboard-platform/lib/ec2-data-host.ts`
+- Create: `development/infra-ev-dashboard-platform/lib/ec2-bootstrap.ts`
+- Test: `development/infra-ev-dashboard-platform/test/ec2-host-bootstrap.test.ts`
 
 - [x] **Step 1: Write failing bootstrap tests**
 
@@ -146,7 +146,7 @@ it('renders app host bootstrap with ECR image map inputs', () => {
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/ec2-host-bootstrap.test.ts
 ```
 
@@ -164,7 +164,7 @@ Create the helper files so that:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/ec2-host-bootstrap.test.ts
 ```
 
@@ -173,16 +173,16 @@ Expected: PASS
 - [x] **Step 5: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add lib/ec2-app-host.ts lib/ec2-data-host.ts lib/ec2-bootstrap.ts test/ec2-host-bootstrap.test.ts
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "feat: add ec2 host constructs"
+git -C development/infra-ev-dashboard-platform add lib/ec2-app-host.ts lib/ec2-data-host.ts lib/ec2-bootstrap.ts test/ec2-host-bootstrap.test.ts
+git -C development/infra-ev-dashboard-platform commit -m "feat: add ec2 host constructs"
 ```
 
 ### Task 3: Replace the stack topology and prove it in tests
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/bin/ev-dashboard-platform.ts`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Modify: `development/infra-ev-dashboard-platform/bin/ev-dashboard-platform.ts`
+- Test: `development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
 
 - [x] **Step 1: Write the failing stack assertions**
 
@@ -200,7 +200,7 @@ template.resourceCountIs('AWS::EC2::Volume', 1);
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/ev-dashboard-platform-stack.test.ts
 ```
 
@@ -219,7 +219,7 @@ Refactor `lib/ev-dashboard-platform-stack.ts` so it:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/ev-dashboard-platform-stack.test.ts
 ```
 
@@ -228,17 +228,17 @@ Expected: PASS
 - [x] **Step 5: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add lib/ev-dashboard-platform-stack.ts bin/ev-dashboard-platform.ts test/ev-dashboard-platform-stack.test.ts
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "feat: replace ev-dashboard runtime topology with ec2 hosts"
+git -C development/infra-ev-dashboard-platform add lib/ev-dashboard-platform-stack.ts bin/ev-dashboard-platform.ts test/ev-dashboard-platform-stack.test.ts
+git -C development/infra-ev-dashboard-platform commit -m "feat: replace ev-dashboard runtime topology with ec2 hosts"
 ```
 
 ### Task 4: Rework deploy gates and smoke for EC2 runtime
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/preflight.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/postDeploySmoke.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/preflight.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/postDeploySmoke.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/preflight.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/postDeploySmoke.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/preflight.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/postDeploySmoke.test.ts`
 
 - [x] **Step 1: Add failing gate/smoke cases**
 
@@ -251,7 +251,7 @@ Add tests for the new rules, for example:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/preflight.test.ts test/postDeploySmoke.test.ts
 ```
 
@@ -266,7 +266,7 @@ Make the gate validate host/runtime inputs and keep the public edge smoke as the
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/preflight.test.ts test/postDeploySmoke.test.ts
 ```
 
@@ -275,20 +275,20 @@ Expected: PASS
 - [x] **Step 5: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add lib/preflight.ts lib/postDeploySmoke.ts test/preflight.test.ts test/postDeploySmoke.test.ts
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "feat: adapt deploy gates for ec2 runtime"
+git -C development/infra-ev-dashboard-platform add lib/preflight.ts lib/postDeploySmoke.ts test/preflight.test.ts test/postDeploySmoke.test.ts
+git -C development/infra-ev-dashboard-platform commit -m "feat: adapt deploy gates for ec2 runtime"
 ```
 
 ### Task 5: Update docs and lesson after the runtime proof
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
+- Modify: `development/infra-ev-dashboard-platform/README.md`
+- Modify: `development/infra-ev-dashboard-platform/lesson.md`
+- Modify: `docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
+- Modify: `docs/mappings/current-runtime-inventory.md`
+- Modify: `docs/runbooks/ev-dashboard-ecs-preflight-gate.md`
+- Modify: `docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md`
+- Modify: `lesson.md`
 
 - [ ] **Step 1: Write the runtime-proof checklist into the docs**
 
@@ -307,7 +307,7 @@ Record:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand
 npx cdk synth
 ```
@@ -315,7 +315,6 @@ npx cdk synth
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 git diff --check
 ```
 
@@ -324,24 +323,24 @@ Expected: all tests pass, synth succeeds, no diff-check errors.
 - [ ] **Step 4: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add README.md lesson.md
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform add docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md docs/mappings/current-runtime-inventory.md docs/runbooks/ev-dashboard-ecs-preflight-gate.md docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md lesson.md
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform commit -m "docs: record ev-dashboard ec2 runtime cutover"
+git -C development/infra-ev-dashboard-platform add README.md lesson.md
+git -C . add docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md docs/mappings/current-runtime-inventory.md docs/runbooks/ev-dashboard-ecs-preflight-gate.md docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md lesson.md
+git -C . commit -m "docs: record ev-dashboard ec2 runtime cutover"
 ```
 
 ### Task 6: Deploy rehearsal and production cutover
 
 **Files:**
-- Modify as needed: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/README.md`
-- Modify as needed: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lesson.md`
-- Modify as needed: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
+- Modify as needed: `development/infra-ev-dashboard-platform/README.md`
+- Modify as needed: `development/infra-ev-dashboard-platform/lesson.md`
+- Modify as needed: `lesson.md`
 
 - [ ] **Step 1: Run the mandatory deploy gate**
 
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm run preflight
 npm test -- --runInBand
 npx cdk synth
@@ -367,7 +366,7 @@ Update repo-local and root lessons with operator wait patterns, host bootstrap d
 - [ ] **Step 5: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add lesson.md README.md
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform add lesson.md
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform commit -m "docs: capture ec2 runtime deployment lessons"
+git -C development/infra-ev-dashboard-platform add lesson.md README.md
+git -C . add lesson.md
+git -C . commit -m "docs: capture ec2 runtime deployment lessons"
 ```

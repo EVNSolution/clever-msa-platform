@@ -33,95 +33,95 @@
 
 ### Root Docs
 
-- Add: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-12-attendance-registry-daily-truth-design.md`
-- Add: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-12-attendance-registry-phase1-implementation-plan.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/.gitmodules`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/repo-responsibility-matrix.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/contracts/04-driver-360-read-model.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/12-settlement-phase-2-api-gates.md`
+- Add: `docs/superpowers/specs/2026-04-12-attendance-registry-daily-truth-design.md`
+- Add: `docs/superpowers/plans/2026-04-12-attendance-registry-phase1-implementation-plan.md`
+- Modify: `repo-map.md`
+- Modify: `.gitmodules`
+- Modify: `docs/mappings/repo-responsibility-matrix.md`
+- Modify: `docs/mappings/current-runtime-inventory.md`
+- Modify: `docs/contracts/04-driver-360-read-model.md`
+- Modify: `docs/rollout/12-settlement-phase-2-api-gates.md`
 
 ### `development/service-attendance-registry`
 
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/.env.example`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/.github/workflows/build-image.yml`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/Dockerfile`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/entrypoint.sh`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/manage.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/requirements.txt`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/config/__init__.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/config/asgi.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/config/settings.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/config/urls.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/config/wsgi.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/__init__.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/apps.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/authentication.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/exceptions.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/models.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/permissions.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/permissions_navigation.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/serializers.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/urls.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/views.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/services/__init__.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/services/attendance_resolution_service.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/management/commands/seed_attendance_registry.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/migrations/0001_initial.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/tests/test_attendance_api.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/tests/test_attendance_resolution_service.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/tests/test_health_api.py`
+- Create: `development/service-attendance-registry/.env.example`
+- Create: `development/service-attendance-registry/.github/workflows/build-image.yml`
+- Create: `development/service-attendance-registry/Dockerfile`
+- Create: `development/service-attendance-registry/README.md`
+- Create: `development/service-attendance-registry/entrypoint.sh`
+- Create: `development/service-attendance-registry/manage.py`
+- Create: `development/service-attendance-registry/requirements.txt`
+- Create: `development/service-attendance-registry/config/__init__.py`
+- Create: `development/service-attendance-registry/config/asgi.py`
+- Create: `development/service-attendance-registry/config/settings.py`
+- Create: `development/service-attendance-registry/config/urls.py`
+- Create: `development/service-attendance-registry/config/wsgi.py`
+- Create: `development/service-attendance-registry/attendanceregistry/__init__.py`
+- Create: `development/service-attendance-registry/attendanceregistry/apps.py`
+- Create: `development/service-attendance-registry/attendanceregistry/authentication.py`
+- Create: `development/service-attendance-registry/attendanceregistry/exceptions.py`
+- Create: `development/service-attendance-registry/attendanceregistry/models.py`
+- Create: `development/service-attendance-registry/attendanceregistry/permissions.py`
+- Create: `development/service-attendance-registry/attendanceregistry/permissions_navigation.py`
+- Create: `development/service-attendance-registry/attendanceregistry/serializers.py`
+- Create: `development/service-attendance-registry/attendanceregistry/urls.py`
+- Create: `development/service-attendance-registry/attendanceregistry/views.py`
+- Create: `development/service-attendance-registry/attendanceregistry/services/__init__.py`
+- Create: `development/service-attendance-registry/attendanceregistry/services/attendance_resolution_service.py`
+- Create: `development/service-attendance-registry/attendanceregistry/management/commands/seed_attendance_registry.py`
+- Create: `development/service-attendance-registry/attendanceregistry/migrations/0001_initial.py`
+- Create: `development/service-attendance-registry/attendanceregistry/tests/test_attendance_api.py`
+- Create: `development/service-attendance-registry/attendanceregistry/tests/test_attendance_resolution_service.py`
+- Create: `development/service-attendance-registry/attendanceregistry/tests/test_health_api.py`
 
 ### `development/service-dispatch-registry`
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/services/source_clients.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/services/dispatch_upload_service.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/views.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/tests/test_dispatch_upload_api.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/tests/test_source_clients.py`
+- Modify: `development/service-dispatch-registry/dispatch/services/source_clients.py`
+- Modify: `development/service-dispatch-registry/dispatch/services/dispatch_upload_service.py`
+- Modify: `development/service-dispatch-registry/dispatch/views.py`
+- Modify: `development/service-dispatch-registry/dispatch/tests/test_dispatch_upload_api.py`
+- Modify: `development/service-dispatch-registry/dispatch/tests/test_source_clients.py`
 
 ### `development/service-delivery-record`
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/deliveryrecords/services/source_clients.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/deliveryrecords/views.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/deliveryrecords/tests/test_delivery_record_api.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/deliveryrecords/tests/test_source_clients.py`
+- Modify: `development/service-delivery-record/deliveryrecords/services/source_clients.py`
+- Modify: `development/service-delivery-record/deliveryrecords/views.py`
+- Modify: `development/service-delivery-record/deliveryrecords/tests/test_delivery_record_api.py`
+- Modify: `development/service-delivery-record/deliveryrecords/tests/test_source_clients.py`
 
 ### `development/service-settlement-payroll`
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll/settlements/services/source_clients.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll/settlements/views.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll/settlements/tests/test_settlement_api.py`
+- Modify: `development/service-settlement-payroll/settlements/services/source_clients.py`
+- Modify: `development/service-settlement-payroll/settlements/views.py`
+- Modify: `development/service-settlement-payroll/settlements/tests/test_settlement_api.py`
 
 ### `development/integration-local-stack`
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/docker-compose.account-driver-settlement.yml`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/docker-compose.deploy.account-driver-settlement.yml`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/compose/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/compose/dev-gateway.nginx.conf`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/compose/local-startup-manifest.json`
-- Add: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/infra/env/local/attendance-registry.env.example`
-- Add: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/infra/env/deploy/attendance-registry.env.example`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/infra/env/local/dispatch-registry.env.example`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/infra/env/local/delivery-record.env.example`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/infra/env/local/settlement-payroll.env.example`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/infra/env/deploy/dispatch-registry.env.example`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/infra/env/deploy/delivery-record.env.example`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/infra/env/deploy/settlement-payroll.env.example`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/infra/env/local/deploy-images.env.example`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/infra/env/deploy/deploy-images.env.example`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/scripts/build_unified_openapi.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/compose/api-docs/README.md`
-- Add: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/compose/api-docs/service-schemas/service-attendance-registry.openapi.yaml`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/compose/api-docs/clever-unified.openapi.yaml`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/.github/workflows/refresh-api-docs.yml`
+- Modify: `development/integration-local-stack/docker-compose.account-driver-settlement.yml`
+- Modify: `development/integration-local-stack/docker-compose.deploy.account-driver-settlement.yml`
+- Modify: `development/integration-local-stack/README.md`
+- Modify: `development/integration-local-stack/compose/README.md`
+- Modify: `development/integration-local-stack/compose/dev-gateway.nginx.conf`
+- Modify: `development/integration-local-stack/compose/local-startup-manifest.json`
+- Add: `development/integration-local-stack/infra/env/local/attendance-registry.env.example`
+- Add: `development/integration-local-stack/infra/env/deploy/attendance-registry.env.example`
+- Modify: `development/integration-local-stack/infra/env/local/dispatch-registry.env.example`
+- Modify: `development/integration-local-stack/infra/env/local/delivery-record.env.example`
+- Modify: `development/integration-local-stack/infra/env/local/settlement-payroll.env.example`
+- Modify: `development/integration-local-stack/infra/env/deploy/dispatch-registry.env.example`
+- Modify: `development/integration-local-stack/infra/env/deploy/delivery-record.env.example`
+- Modify: `development/integration-local-stack/infra/env/deploy/settlement-payroll.env.example`
+- Modify: `development/integration-local-stack/infra/env/local/deploy-images.env.example`
+- Modify: `development/integration-local-stack/infra/env/deploy/deploy-images.env.example`
+- Modify: `development/integration-local-stack/scripts/build_unified_openapi.py`
+- Modify: `development/integration-local-stack/compose/api-docs/README.md`
+- Add: `development/integration-local-stack/compose/api-docs/service-schemas/service-attendance-registry.openapi.yaml`
+- Modify: `development/integration-local-stack/compose/api-docs/clever-unified.openapi.yaml`
+- Modify: `.github/workflows/refresh-api-docs.yml`
 
 ### `development/edge-api-gateway`
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/nginx.conf`
+- Modify: `development/edge-api-gateway/nginx.conf`
 
 ### `../clever-deploy-control`
 
@@ -139,7 +139,7 @@
 Run:
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform status --short
+git -C . status --short
 git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control status --short
 ```
 
@@ -168,12 +168,12 @@ Expected:
 ## Task 1: Docs Of Truth And Planned Target Registration
 
 **Files:**
-- Add: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-12-attendance-registry-daily-truth-design.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/repo-responsibility-matrix.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/contracts/04-driver-360-read-model.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/12-settlement-phase-2-api-gates.md`
+- Add: `docs/superpowers/specs/2026-04-12-attendance-registry-daily-truth-design.md`
+- Modify: `repo-map.md`
+- Modify: `docs/mappings/repo-responsibility-matrix.md`
+- Modify: `docs/mappings/current-runtime-inventory.md`
+- Modify: `docs/contracts/04-driver-360-read-model.md`
+- Modify: `docs/rollout/12-settlement-phase-2-api-gates.md`
 
 - [ ] **Step 1: attendance service boundary spec를 추가한다**
 
@@ -209,8 +209,8 @@ Expected:
 ## Task 2: Create The Remote Repo, Linked Child Repo, And Service Skeleton
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/.gitmodules`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/*`
+- Modify: `.gitmodules`
+- Create: `development/service-attendance-registry/*`
 
 - [ ] **Step 1: remote GitHub repo 선행조건을 만든다**
 
@@ -229,7 +229,7 @@ Expected:
 Run:
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform submodule add https://github.com/EVNSolution/service-attendance-registry development/service-attendance-registry
+git -C . submodule add https://github.com/EVNSolution/service-attendance-registry development/service-attendance-registry
 ```
 
 Expected:
@@ -255,7 +255,7 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry
+cd development/service-attendance-registry
 python3 manage.py check
 python3 manage.py test attendanceregistry.tests.test_health_api -v 2
 ```
@@ -267,14 +267,14 @@ Expected:
 ## Task 3: Implement Attendance Truth Core
 
 **Files:**
-- Modify/Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/models.py`
-- Modify/Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/serializers.py`
-- Modify/Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/views.py`
-- Modify/Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/urls.py`
-- Modify/Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/services/attendance_resolution_service.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/migrations/0001_initial.py`
-- Modify/Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/tests/test_attendance_api.py`
-- Modify/Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/tests/test_attendance_resolution_service.py`
+- Modify/Create: `development/service-attendance-registry/attendanceregistry/models.py`
+- Modify/Create: `development/service-attendance-registry/attendanceregistry/serializers.py`
+- Modify/Create: `development/service-attendance-registry/attendanceregistry/views.py`
+- Modify/Create: `development/service-attendance-registry/attendanceregistry/urls.py`
+- Modify/Create: `development/service-attendance-registry/attendanceregistry/services/attendance_resolution_service.py`
+- Create: `development/service-attendance-registry/attendanceregistry/migrations/0001_initial.py`
+- Modify/Create: `development/service-attendance-registry/attendanceregistry/tests/test_attendance_api.py`
+- Modify/Create: `development/service-attendance-registry/attendanceregistry/tests/test_attendance_resolution_service.py`
 
 - [ ] **Step 1: failing tests로 dispatch-derived truth를 먼저 고정한다**
 
@@ -330,7 +330,7 @@ AttendanceSignal(
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry
+cd development/service-attendance-registry
 python3 manage.py test attendanceregistry.tests.test_attendance_resolution_service attendanceregistry.tests.test_attendance_api -v 2
 ```
 
@@ -341,11 +341,11 @@ Expected:
 ## Task 4: Publish Dispatch-Derived Attendance Signals On Confirm
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/services/source_clients.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/services/dispatch_upload_service.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/views.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/tests/test_dispatch_upload_api.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/dispatch/tests/test_source_clients.py`
+- Modify: `development/service-dispatch-registry/dispatch/services/source_clients.py`
+- Modify: `development/service-dispatch-registry/dispatch/services/dispatch_upload_service.py`
+- Modify: `development/service-dispatch-registry/dispatch/views.py`
+- Modify: `development/service-dispatch-registry/dispatch/tests/test_dispatch_upload_api.py`
+- Modify: `development/service-dispatch-registry/dispatch/tests/test_source_clients.py`
 
 - [ ] **Step 1: attendance sync client failing test를 쓴다**
 
@@ -382,7 +382,7 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry
+cd development/service-dispatch-registry
 python3 manage.py test dispatch.tests.test_dispatch_upload_api dispatch.tests.test_source_clients -v 2
 ```
 
@@ -392,13 +392,13 @@ Expected:
 ## Task 5: Gate Delivery Snapshot Bootstrap And Payroll By Attendance Truth
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/deliveryrecords/services/source_clients.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/deliveryrecords/views.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/deliveryrecords/tests/test_delivery_record_api.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/deliveryrecords/tests/test_source_clients.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll/settlements/services/source_clients.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll/settlements/views.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll/settlements/tests/test_settlement_api.py`
+- Modify: `development/service-delivery-record/deliveryrecords/services/source_clients.py`
+- Modify: `development/service-delivery-record/deliveryrecords/views.py`
+- Modify: `development/service-delivery-record/deliveryrecords/tests/test_delivery_record_api.py`
+- Modify: `development/service-delivery-record/deliveryrecords/tests/test_source_clients.py`
+- Modify: `development/service-settlement-payroll/settlements/services/source_clients.py`
+- Modify: `development/service-settlement-payroll/settlements/views.py`
+- Modify: `development/service-settlement-payroll/settlements/tests/test_settlement_api.py`
 
 - [ ] **Step 1: delivery bootstrap exclusion failing test를 추가한다**
 
@@ -432,10 +432,10 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record
+cd development/service-delivery-record
 python3 manage.py test deliveryrecords.tests.test_delivery_record_api deliveryrecords.tests.test_source_clients -v 2
 
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll
+cd development/service-settlement-payroll
 python3 manage.py test settlements.tests.test_settlement_api -v 2
 ```
 
@@ -446,10 +446,10 @@ Expected:
 ## Task 6: Wire Local Stack, Gateway, And API Docs
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/docker-compose.account-driver-settlement.yml`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/docker-compose.deploy.account-driver-settlement.yml`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/compose/dev-gateway.nginx.conf`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/nginx.conf`
+- Modify: `development/integration-local-stack/docker-compose.account-driver-settlement.yml`
+- Modify: `development/integration-local-stack/docker-compose.deploy.account-driver-settlement.yml`
+- Modify: `development/integration-local-stack/compose/dev-gateway.nginx.conf`
+- Modify: `development/edge-api-gateway/nginx.conf`
 - Modify/Add env files and API docs files from file map above
 
 - [ ] **Step 1: compose와 env template에 attendance service를 추가한다**
@@ -483,7 +483,6 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 python3 ./development/integration-local-stack/scripts/refresh_api_docs.py --strict
 ```
 
@@ -494,7 +493,7 @@ Expected:
 ## Task 7: Prepare Image Build And Central Deploy Control
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/.github/workflows/build-image.yml`
+- Modify: `development/service-attendance-registry/.github/workflows/build-image.yml`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/catalog/services.yaml`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/docs/inventory/current-runtime-deploy-inventory.md`
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/docs/runbooks/image-deploy-pilot.md`
@@ -544,10 +543,10 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry && python3 manage.py test -v 2
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry && python3 manage.py test dispatch.tests.test_dispatch_upload_api dispatch.tests.test_source_clients -v 2
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record && python3 manage.py test deliveryrecords.tests.test_delivery_record_api deliveryrecords.tests.test_source_clients -v 2
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll && python3 manage.py test settlements.tests.test_settlement_api -v 2
+cd development/service-attendance-registry && python3 manage.py test -v 2
+cd development/service-dispatch-registry && python3 manage.py test dispatch.tests.test_dispatch_upload_api dispatch.tests.test_source_clients -v 2
+cd development/service-delivery-record && python3 manage.py test deliveryrecords.tests.test_delivery_record_api deliveryrecords.tests.test_source_clients -v 2
+cd development/service-settlement-payroll && python3 manage.py test settlements.tests.test_settlement_api -v 2
 ```
 
 Expected:
@@ -558,7 +557,7 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack
+cd development/integration-local-stack
 docker compose -f docker-compose.account-driver-settlement.yml up -d attendance-registry-api dispatch-registry-api delivery-record-api settlement-payroll-api gateway
 ```
 

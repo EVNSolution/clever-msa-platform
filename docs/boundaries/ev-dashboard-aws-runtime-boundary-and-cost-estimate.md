@@ -14,9 +14,9 @@
   - [../mappings/current-runtime-inventory.md](../mappings/current-runtime-inventory.md)
   - [../rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md](../rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md)
 - infra ownership and stack truth:
-  - [../../development/infra-ev-dashboard-platform/README.md](../../development/infra-ev-dashboard-platform/README.md)
-  - [../../development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts](../../development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts)
-  - [../../development/infra-ev-dashboard-platform/lib/config.ts](../../development/infra-ev-dashboard-platform/lib/config.ts)
+  - `development/infra-ev-dashboard-platform/README.md` (out-of-band infra repo reference)
+  - `development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts` (out-of-band infra repo reference)
+  - `development/infra-ev-dashboard-platform/lib/config.ts` (out-of-band infra repo reference)
 
 이 문서에서 말하는 비용은 AWS 계정의 실제 청구서가 아니라, 현재 리포에 고정된 스택 정의와 공식 AWS Price List 기준의 추정치다.
 

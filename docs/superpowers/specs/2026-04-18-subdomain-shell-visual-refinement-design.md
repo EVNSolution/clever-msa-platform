@@ -20,8 +20,8 @@
 
 이 문서는 아래 두 문서를 대체하지 않고, 시각 규칙만 더 구체화한다.
 
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-17-subdomain-web-definition-design.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-18-subdomain-shell-role-split-design.md`
+- `docs/superpowers/specs/2026-04-17-subdomain-web-definition-design.md`
+- `docs/superpowers/specs/2026-04-18-subdomain-shell-role-split-design.md`
 
 메인/회사 path 경계, shell 역할 분리, canonical route 계약은 그대로 유지한다.
 

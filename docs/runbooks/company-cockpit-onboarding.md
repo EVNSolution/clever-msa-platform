@@ -12,8 +12,8 @@
 
 설계 기준:
 
-- [2026-04-15-cheonha-subdomain-cockpit-design.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-15-cheonha-subdomain-cockpit-design.md)
-- [2026-04-15-cheonha-cockpit-implementation-plan.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-15-cheonha-cockpit-implementation-plan.md)
+- [2026-04-15-cheonha-subdomain-cockpit-design.md](../superpowers/specs/2026-04-15-cheonha-subdomain-cockpit-design.md)
+- [2026-04-18-subdomain-settlement-cheonha-visual-adaptation-implementation-plan.md](../superpowers/plans/2026-04-18-subdomain-settlement-cheonha-visual-adaptation-implementation-plan.md)
 
 ## Required Inputs
 

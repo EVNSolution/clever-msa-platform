@@ -36,7 +36,7 @@ tag:CleverProject=clever-msa,tag:CleverEnvironment={environment},tag:CleverRole=
 
 실행 스크립트:
 
-- [bootstrap-ec2-amazon-linux-2023.sh](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/scripts/deploy/bootstrap-ec2-amazon-linux-2023.sh)
+- [bootstrap-ec2-amazon-linux-2023.sh](../../scripts/deploy/bootstrap-ec2-amazon-linux-2023.sh)
 
 기본 동작:
 

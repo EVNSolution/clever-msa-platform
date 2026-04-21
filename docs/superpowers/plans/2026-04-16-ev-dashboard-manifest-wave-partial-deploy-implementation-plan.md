@@ -26,56 +26,56 @@
 
 ### Infra repo runtime and workflow files
 
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/releaseManifest.ts`
+- Create: `development/infra-ev-dashboard-platform/lib/releaseManifest.ts`
   - Parse and validate the explicit release manifest file.
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/releaseWavePolicy.ts`
+- Create: `development/infra-ev-dashboard-platform/lib/releaseWavePolicy.ts`
   - Own the fixed service-to-wave mapping and ordered rollout list.
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/bin/previewReleaseManifest.ts`
+- Create: `development/infra-ev-dashboard-platform/bin/previewReleaseManifest.ts`
   - CLI entrypoint that shows which services/waves a manifest will touch before deploy.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/config.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/config.ts`
   - Add manifest-path aware config and a new incremental warm-host run path without disturbing the current base-stack flow.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/preflight.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/preflight.ts`
   - Fail fast on manifest, ECR tag, architecture, host-readiness, and wave-dependency problems.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/postDeploySmoke.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/postDeploySmoke.ts`
   - Support wave-level minimal smoke plus final public smoke.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/bootstrap/ev_dashboard_runtime/app_host.py`
+- Modify: `development/infra-ev-dashboard-platform/bootstrap/ev_dashboard_runtime/app_host.py`
   - Replace full-fleet reconcile assumptions with manifest-scoped partial reconcile.
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/bin/reconcileWave.ts`
+- Create: `development/infra-ev-dashboard-platform/bin/reconcileWave.ts`
   - Trigger one wave at a time against the warm app host.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/.github/workflows/deploy-ecs.yml`
+- Modify: `development/infra-ev-dashboard-platform/.github/workflows/deploy-ecs.yml`
   - Accept `release_manifest_path` and orchestrate preview -> preflight -> deploy -> wave reconcile -> smoke.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/README.md`
+- Modify: `development/infra-ev-dashboard-platform/README.md`
   - Document the new operating model.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lesson.md`
+- Modify: `development/infra-ev-dashboard-platform/lesson.md`
   - Record new deploy guard lessons.
 
 ### Infra repo tests
 
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/releaseManifest.test.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/releaseWavePolicy.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/config.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/preflight.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/postDeploySmoke.test.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/reconcileWave.test.ts`
+- Create: `development/infra-ev-dashboard-platform/test/releaseManifest.test.ts`
+- Create: `development/infra-ev-dashboard-platform/test/releaseWavePolicy.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/config.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/preflight.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/postDeploySmoke.test.ts`
+- Create: `development/infra-ev-dashboard-platform/test/reconcileWave.test.ts`
 
 ### Example manifest and operator docs
 
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/release-manifests/.gitkeep`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/release-manifests/examples/core-entry-sample.json`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
+- Create: `development/infra-ev-dashboard-platform/release-manifests/.gitkeep`
+- Create: `development/infra-ev-dashboard-platform/release-manifests/examples/core-entry-sample.json`
+- Modify: `docs/runbooks/ev-dashboard-ecs-preflight-gate.md`
+- Modify: `docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md`
+- Modify: `lesson.md`
 
 ---
 
 ### Task 1: Add explicit release manifest parsing and validation
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/releaseManifest.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/bin/previewReleaseManifest.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/releaseManifest.test.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/release-manifests/.gitkeep`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/release-manifests/examples/core-entry-sample.json`
+- Create: `development/infra-ev-dashboard-platform/lib/releaseManifest.ts`
+- Create: `development/infra-ev-dashboard-platform/bin/previewReleaseManifest.ts`
+- Create: `development/infra-ev-dashboard-platform/test/releaseManifest.test.ts`
+- Create: `development/infra-ev-dashboard-platform/release-manifests/.gitkeep`
+- Create: `development/infra-ev-dashboard-platform/release-manifests/examples/core-entry-sample.json`
 
 - [ ] **Step 1: Write failing tests for manifest parsing.**
   - Cover missing file, invalid JSON, duplicate service keys, unknown service names, and mutable tags.
@@ -83,7 +83,7 @@
 - [ ] **Step 2: Run the new manifest test file and confirm failure.**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/releaseManifest.test.ts
 ```
 
@@ -101,28 +101,28 @@ npm test -- --runInBand --runTestsByPath test/releaseManifest.test.ts
 - [ ] **Step 5: Add example manifest files and rerun tests.**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/releaseManifest.test.ts
 ```
 
 - [ ] **Step 6: Commit.**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+git -C development/infra-ev-dashboard-platform add \
   lib/releaseManifest.ts \
   bin/previewReleaseManifest.ts \
   test/releaseManifest.test.ts \
   release-manifests/.gitkeep \
   release-manifests/examples/core-entry-sample.json
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "feat: add explicit release manifest contract"
+git -C development/infra-ev-dashboard-platform commit -m "feat: add explicit release manifest contract"
 ```
 
 ### Task 2: Add fixed wave policy for backend-first incremental rollout
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/releaseWavePolicy.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/releaseWavePolicy.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/bin/previewReleaseManifest.ts`
+- Create: `development/infra-ev-dashboard-platform/lib/releaseWavePolicy.ts`
+- Create: `development/infra-ev-dashboard-platform/test/releaseWavePolicy.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/bin/previewReleaseManifest.ts`
 
 - [ ] **Step 1: Write failing tests for wave ordering.**
   - Cover backend-before-gateway-before-front ordering.
@@ -131,7 +131,7 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - [ ] **Step 2: Run the wave-policy test file and confirm failure.**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/releaseWavePolicy.test.ts
 ```
 
@@ -145,27 +145,27 @@ npm test -- --runInBand --runTestsByPath test/releaseWavePolicy.test.ts
 - [ ] **Step 5: Rerun the wave tests.**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/releaseWavePolicy.test.ts test/releaseManifest.test.ts
 ```
 
 - [ ] **Step 6: Commit.**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+git -C development/infra-ev-dashboard-platform add \
   lib/releaseWavePolicy.ts \
   test/releaseWavePolicy.test.ts \
   bin/previewReleaseManifest.ts
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "feat: add fixed release wave policy"
+git -C development/infra-ev-dashboard-platform commit -m "feat: add fixed release wave policy"
 ```
 
 ### Task 3: Extend config and preflight for manifest-driven warm-host deploys
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/config.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/preflight.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/config.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/preflight.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/config.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/preflight.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/config.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/preflight.test.ts`
 
 - [ ] **Step 1: Add failing config/preflight tests for the new path.**
   - Missing `RELEASE_MANIFEST_PATH`
@@ -176,7 +176,7 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - [ ] **Step 2: Run the targeted tests and confirm failure.**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/config.test.ts test/preflight.test.ts
 ```
 
@@ -194,27 +194,27 @@ npm test -- --runInBand --runTestsByPath test/config.test.ts test/preflight.test
 - [ ] **Step 5: Rerun targeted tests.**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/config.test.ts test/preflight.test.ts test/releaseManifest.test.ts test/releaseWavePolicy.test.ts
 ```
 
 - [ ] **Step 6: Commit.**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+git -C development/infra-ev-dashboard-platform add \
   lib/config.ts \
   lib/preflight.ts \
   test/config.test.ts \
   test/preflight.test.ts
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "feat: gate manifest-driven warm deploys"
+git -C development/infra-ev-dashboard-platform commit -m "feat: gate manifest-driven warm deploys"
 ```
 
 ### Task 4: Replace full reconcile with wave-scoped partial reconcile on the app host
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/bootstrap/ev_dashboard_runtime/app_host.py`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/bin/reconcileWave.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/reconcileWave.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/bootstrap/ev_dashboard_runtime/app_host.py`
+- Create: `development/infra-ev-dashboard-platform/bin/reconcileWave.ts`
+- Create: `development/infra-ev-dashboard-platform/test/reconcileWave.test.ts`
 
 - [ ] **Step 1: Write failing tests for wave-scoped reconcile.**
   - Verify that only manifest-listed services are restarted.
@@ -223,7 +223,7 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - [ ] **Step 2: Run the new reconcile tests and confirm failure.**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/reconcileWave.test.ts
 ```
 
@@ -241,25 +241,25 @@ npm test -- --runInBand --runTestsByPath test/reconcileWave.test.ts
 - [ ] **Step 5: Rerun the reconcile tests.**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/reconcileWave.test.ts
 ```
 
 - [ ] **Step 6: Commit.**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+git -C development/infra-ev-dashboard-platform add \
   bootstrap/ev_dashboard_runtime/app_host.py \
   bin/reconcileWave.ts \
   test/reconcileWave.test.ts
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "feat: add wave-scoped partial reconcile"
+git -C development/infra-ev-dashboard-platform commit -m "feat: add wave-scoped partial reconcile"
 ```
 
 ### Task 5: Add wave-level smoke and final public smoke
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/postDeploySmoke.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/postDeploySmoke.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/postDeploySmoke.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/postDeploySmoke.test.ts`
 
 - [ ] **Step 1: Write failing tests for wave-level smoke selection.**
   - Backend-only wave should not require front shell smoke.
@@ -269,7 +269,7 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - [ ] **Step 2: Run the smoke tests and confirm failure.**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/postDeploySmoke.test.ts
 ```
 
@@ -281,24 +281,24 @@ npm test -- --runInBand --runTestsByPath test/postDeploySmoke.test.ts
 - [ ] **Step 4: Rerun the smoke tests.**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/postDeploySmoke.test.ts
 ```
 
 - [ ] **Step 5: Commit.**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+git -C development/infra-ev-dashboard-platform add \
   lib/postDeploySmoke.ts \
   test/postDeploySmoke.test.ts
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "feat: add wave-level smoke gates"
+git -C development/infra-ev-dashboard-platform commit -m "feat: add wave-level smoke gates"
 ```
 
 ### Task 6: Update the deploy workflow to orchestrate preview, preflight, waves, and smoke
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/.github/workflows/deploy-ecs.yml`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/README.md`
+- Modify: `development/infra-ev-dashboard-platform/.github/workflows/deploy-ecs.yml`
+- Modify: `development/infra-ev-dashboard-platform/README.md`
 
 - [ ] **Step 1: Add workflow inputs for `release_manifest_path`.**
   - Keep existing environment selection.
@@ -320,7 +320,7 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - [ ] **Step 5: Run the workflow-related test suite and repo build.**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand
 npm run build
 ```
@@ -328,19 +328,19 @@ npm run build
 - [ ] **Step 6: Commit.**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+git -C development/infra-ev-dashboard-platform add \
   .github/workflows/deploy-ecs.yml \
   README.md
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "feat: orchestrate manifest wave deploy workflow"
+git -C development/infra-ev-dashboard-platform commit -m "feat: orchestrate manifest wave deploy workflow"
 ```
 
 ### Task 7: Update runbooks and lessons so operators stop treating full proof as the default deploy path
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
+- Modify: `docs/runbooks/ev-dashboard-ecs-preflight-gate.md`
+- Modify: `docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md`
+- Modify: `development/infra-ev-dashboard-platform/lesson.md`
+- Modify: `lesson.md`
 
 - [ ] **Step 1: Rewrite operator flow docs.**
   - Base stack bring-up
@@ -359,20 +359,19 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 - [ ] **Step 3: Run consistency checks for touched docs and tests.**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 git diff --check
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand
 ```
 
 - [ ] **Step 4: Commit.**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform add \
+git -C . add \
   docs/runbooks/ev-dashboard-ecs-preflight-gate.md \
   docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md \
   lesson.md
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform commit -m "docs: codify manifest wave deploy operator path"
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add lesson.md
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "docs: record manifest wave deploy lessons"
+git -C . commit -m "docs: codify manifest wave deploy operator path"
+git -C development/infra-ev-dashboard-platform add lesson.md
+git -C development/infra-ev-dashboard-platform commit -m "docs: record manifest wave deploy lessons"
 ```

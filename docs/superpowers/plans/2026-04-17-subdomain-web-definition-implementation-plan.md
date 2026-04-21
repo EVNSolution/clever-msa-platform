@@ -88,68 +88,68 @@ This plan does **not** include:
 
 The implementation should use the following file responsibilities.
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.tsx`
+- Modify: `development/front-web-console/src/App.tsx`
   - canonical route composition for main domain vs subdomain
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.cockpit.test.tsx`
+- Modify: `development/front-web-console/src/App.cockpit.test.tsx`
   - end-to-end shell routing contract tests for subdomain behavior
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.test.tsx`
+- Modify: `development/front-web-console/src/App.test.tsx`
   - main-domain IA and domain/session rejection coverage
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/tenant/resolveTenantEntry.ts`
+- Modify: `development/front-web-console/src/tenant/resolveTenantEntry.ts`
   - tenant slug/host parsing rules
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/tenant/resolveTenantEntry.test.ts`
+- Modify: `development/front-web-console/src/tenant/resolveTenantEntry.test.ts`
   - host parsing edge cases
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/api/companyTenant.ts`
+- Modify: `development/front-web-console/src/api/companyTenant.ts`
   - public tenant resolve helpers only if explicit tenant-not-found mapping is needed
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/api/workspaceBootstrap.ts`
+- Modify: `development/front-web-console/src/api/workspaceBootstrap.ts`
   - bootstrap typing only if shell gating needs explicit tenant/domain mismatch state
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/navigation.ts`
+- Modify: `development/front-web-console/src/navigation.ts`
   - explicit verification target for main-domain `대시보드 / 회사 / 정산`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/types.ts`
+- Modify: `development/front-web-console/src/types.ts`
   - workspace/bootstrap typing only if new explicit shell/menu presets are needed
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainAccordionNav.tsx`
+- Create: `development/front-web-console/src/cockpit/SubdomainAccordionNav.tsx`
   - focused accordion navigation component for subdomain shell
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainAccordionNav.test.tsx`
+- Create: `development/front-web-console/src/cockpit/SubdomainAccordionNav.test.tsx`
   - accordion expand/collapse/current-item tests
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/CockpitShell.tsx`
+- Modify: `development/front-web-console/src/cockpit/CockpitShell.tsx`
   - convert shell to left-brand accordion navigation container
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaDashboardPage.tsx`
+- Modify: `development/front-web-console/src/cockpit/cheonha/CheonhaDashboardPage.tsx`
   - dashboard-first subdomain landing page
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementWorkspace.tsx`
+- Modify: `development/front-web-console/src/cockpit/cheonha/CheonhaSettlementWorkspace.tsx`
   - settlement route/deep-link hierarchy
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx`
+- Modify: `development/front-web-console/src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx`
   - settlement menu and default route behavior
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementHomePage.tsx`
+- Create: `development/front-web-console/src/cockpit/cheonha/CheonhaSettlementHomePage.tsx`
   - settlement home content scaffold
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementHomePage.test.tsx`
+- Create: `development/front-web-console/src/cockpit/cheonha/CheonhaSettlementHomePage.test.tsx`
   - settlement home expectations
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaDispatchDataPage.tsx`
+- Create: `development/front-web-console/src/cockpit/cheonha/CheonhaDispatchDataPage.tsx`
   - adapter surface for existing dispatch-upload workflow
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaDispatchDataPage.test.tsx`
+- Create: `development/front-web-console/src/cockpit/cheonha/CheonhaDispatchDataPage.test.tsx`
   - dispatch data route expectations
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementProcessPage.tsx`
+- Create: `development/front-web-console/src/cockpit/cheonha/CheonhaSettlementProcessPage.tsx`
   - adapter surface for existing settlement read/snapshot workflow
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementProcessPage.test.tsx`
+- Create: `development/front-web-console/src/cockpit/cheonha/CheonhaSettlementProcessPage.test.tsx`
   - settlement process route expectations
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaRuleShellPanel.tsx`
+- Create: `development/front-web-console/src/cockpit/cheonha/CheonhaRuleShellPanel.tsx`
   - disabled rule-shell UI for company/fleet/driver scopes
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaRuleShellPanel.test.tsx`
+- Create: `development/front-web-console/src/cockpit/cheonha/CheonhaRuleShellPanel.test.tsx`
   - explicit “disabled/no save” rule-shell tests
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/LoginPage.tsx`
+- Modify: `development/front-web-console/src/pages/LoginPage.tsx`
   - subdomain company header treatment
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/LoginPage.test.tsx`
+- Modify: `development/front-web-console/src/pages/LoginPage.test.tsx`
   - login card header behavior
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
+- Modify: `development/front-web-console/src/styles.css`
   - accordion shell, left rail, and subdomain workspace styling
 
 ## Task 1: Lock Tenant Host Parsing and Bootstrap Gate
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/tenant/resolveTenantEntry.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/tenant/resolveTenantEntry.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.cockpit.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.tsx`
-- Optional Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/api/companyTenant.ts`
-- Optional Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/api/workspaceBootstrap.ts`
+- Modify: `development/front-web-console/src/tenant/resolveTenantEntry.ts`
+- Modify: `development/front-web-console/src/tenant/resolveTenantEntry.test.ts`
+- Modify: `development/front-web-console/src/App.cockpit.test.tsx`
+- Modify: `development/front-web-console/src/App.tsx`
+- Optional Modify: `development/front-web-console/src/api/companyTenant.ts`
+- Optional Modify: `development/front-web-console/src/api/workspaceBootstrap.ts`
 
 - [ ] **Step 1: Write the failing host-resolution tests**
 
@@ -188,7 +188,7 @@ Implementation rules:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/tenant/resolveTenantEntry.test.ts src/App.cockpit.test.tsx
 ```
 
@@ -198,7 +198,7 @@ Expected:
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/tenant/resolveTenantEntry.ts src/tenant/resolveTenantEntry.test.ts src/App.tsx src/App.cockpit.test.tsx
 git commit -m "feat: lock subdomain shell routing contract"
 ```
@@ -206,11 +206,11 @@ git commit -m "feat: lock subdomain shell routing contract"
 ## Task 2: Build the Accordion-Based Subdomain Shell
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainAccordionNav.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainAccordionNav.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/CockpitShell.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.cockpit.test.tsx`
+- Create: `development/front-web-console/src/cockpit/SubdomainAccordionNav.tsx`
+- Create: `development/front-web-console/src/cockpit/SubdomainAccordionNav.test.tsx`
+- Modify: `development/front-web-console/src/cockpit/CockpitShell.tsx`
+- Modify: `development/front-web-console/src/styles.css`
+- Modify: `development/front-web-console/src/App.cockpit.test.tsx`
 
 - [ ] **Step 1: Write the failing accordion navigation tests**
 
@@ -251,7 +251,7 @@ Modify `styles.css` with only the styles required for:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/cockpit/SubdomainAccordionNav.test.tsx src/App.cockpit.test.tsx
 ```
 
@@ -261,7 +261,7 @@ Expected:
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/cockpit/SubdomainAccordionNav.tsx src/cockpit/SubdomainAccordionNav.test.tsx src/cockpit/CockpitShell.tsx src/styles.css src/App.cockpit.test.tsx
 git commit -m "feat: add accordion subdomain shell"
 ```
@@ -269,9 +269,9 @@ git commit -m "feat: add accordion subdomain shell"
 ## Task 3: Make Dashboard the Canonical Subdomain Entry
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaDashboardPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.cockpit.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
+- Modify: `development/front-web-console/src/cockpit/cheonha/CheonhaDashboardPage.tsx`
+- Modify: `development/front-web-console/src/App.cockpit.test.tsx`
+- Modify: `development/front-web-console/src/styles.css`
 
 - [ ] **Step 1: Write the failing dashboard-entry test**
 
@@ -307,7 +307,7 @@ Extend `styles.css` only for:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/App.cockpit.test.tsx
 ```
 
@@ -317,7 +317,7 @@ Expected:
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/cockpit/cheonha/CheonhaDashboardPage.tsx src/App.cockpit.test.tsx src/styles.css
 git commit -m "feat: make subdomain dashboard the default entry"
 ```
@@ -325,17 +325,17 @@ git commit -m "feat: make subdomain dashboard the default entry"
 ## Task 4: Rebuild Settlement as the Real Workspace
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementWorkspace.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementHomePage.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementHomePage.test.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaDispatchDataPage.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaDispatchDataPage.test.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementProcessPage.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementProcessPage.test.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaRuleShellPanel.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaRuleShellPanel.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
+- Modify: `development/front-web-console/src/cockpit/cheonha/CheonhaSettlementWorkspace.tsx`
+- Modify: `development/front-web-console/src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx`
+- Create: `development/front-web-console/src/cockpit/cheonha/CheonhaSettlementHomePage.tsx`
+- Create: `development/front-web-console/src/cockpit/cheonha/CheonhaSettlementHomePage.test.tsx`
+- Create: `development/front-web-console/src/cockpit/cheonha/CheonhaDispatchDataPage.tsx`
+- Create: `development/front-web-console/src/cockpit/cheonha/CheonhaDispatchDataPage.test.tsx`
+- Create: `development/front-web-console/src/cockpit/cheonha/CheonhaSettlementProcessPage.tsx`
+- Create: `development/front-web-console/src/cockpit/cheonha/CheonhaSettlementProcessPage.test.tsx`
+- Create: `development/front-web-console/src/cockpit/cheonha/CheonhaRuleShellPanel.tsx`
+- Create: `development/front-web-console/src/cockpit/cheonha/CheonhaRuleShellPanel.test.tsx`
+- Modify: `development/front-web-console/src/styles.css`
 
 - [ ] **Step 1: Write the failing settlement route tests**
 
@@ -389,7 +389,7 @@ Rules:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx src/cockpit/cheonha/CheonhaSettlementHomePage.test.tsx src/cockpit/cheonha/CheonhaDispatchDataPage.test.tsx src/cockpit/cheonha/CheonhaSettlementProcessPage.test.tsx src/cockpit/cheonha/CheonhaRuleShellPanel.test.tsx
 ```
 
@@ -399,7 +399,7 @@ Expected:
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/cockpit/cheonha/CheonhaSettlementWorkspace.tsx src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx src/cockpit/cheonha/CheonhaSettlementHomePage.tsx src/cockpit/cheonha/CheonhaSettlementHomePage.test.tsx src/cockpit/cheonha/CheonhaDispatchDataPage.tsx src/cockpit/cheonha/CheonhaDispatchDataPage.test.tsx src/cockpit/cheonha/CheonhaSettlementProcessPage.tsx src/cockpit/cheonha/CheonhaSettlementProcessPage.test.tsx src/cockpit/cheonha/CheonhaRuleShellPanel.tsx src/cockpit/cheonha/CheonhaRuleShellPanel.test.tsx src/styles.css
 git commit -m "feat: rebuild cheonha settlement workspace"
 ```
@@ -407,10 +407,10 @@ git commit -m "feat: rebuild cheonha settlement workspace"
 ## Task 5: Add Subdomain Login Identity Treatment
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/LoginPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/LoginPage.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
+- Modify: `development/front-web-console/src/pages/LoginPage.tsx`
+- Modify: `development/front-web-console/src/pages/LoginPage.test.tsx`
+- Modify: `development/front-web-console/src/App.tsx`
+- Modify: `development/front-web-console/src/styles.css`
 
 - [ ] **Step 1: Write the failing login-header test**
 
@@ -438,7 +438,7 @@ Modify `styles.css` to support:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/pages/LoginPage.test.tsx src/App.cockpit.test.tsx
 ```
 
@@ -448,7 +448,7 @@ Expected:
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/pages/LoginPage.tsx src/pages/LoginPage.test.tsx src/App.tsx src/styles.css src/App.cockpit.test.tsx
 git commit -m "feat: add company-specific subdomain login shell"
 ```
@@ -456,10 +456,10 @@ git commit -m "feat: add company-specific subdomain login shell"
 ## Task 6: Enforce Domain/Session Boundaries and Main-Domain IA
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.cockpit.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.test.tsx`
-- Verify or Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/navigation.ts`
+- Modify: `development/front-web-console/src/App.tsx`
+- Modify: `development/front-web-console/src/App.cockpit.test.tsx`
+- Modify: `development/front-web-console/src/App.test.tsx`
+- Verify or Modify: `development/front-web-console/src/navigation.ts`
 
 - [ ] **Step 1: Write the failing domain/session rejection tests**
 
@@ -490,7 +490,7 @@ Modify `App.tsx` and only touch `navigation.ts` if needed so that:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/App.cockpit.test.tsx src/App.test.tsx
 ```
 
@@ -500,7 +500,7 @@ Expected:
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/App.tsx src/App.cockpit.test.tsx src/App.test.tsx src/navigation.ts
 git commit -m "feat: enforce domain-aware web shell boundaries"
 ```
@@ -508,9 +508,9 @@ git commit -m "feat: enforce domain-aware web shell boundaries"
 ## Task 7: Full Frontend Regression and Docs Sync
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/lesson.md`
-- Optional Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-17-subdomain-web-definition-design.md`
+- Modify: `development/front-web-console/README.md`
+- Modify: `development/front-web-console/lesson.md`
+- Optional Modify: `docs/superpowers/specs/2026-04-17-subdomain-web-definition-design.md`
 
 - [ ] **Step 1: Write down the current manual verification matrix before touching docs**
 
@@ -527,7 +527,7 @@ Record the expected manual checks:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/tenant/resolveTenantEntry.test.ts src/App.cockpit.test.tsx src/cockpit/SubdomainAccordionNav.test.tsx src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx src/cockpit/cheonha/CheonhaSettlementHomePage.test.tsx src/cockpit/cheonha/CheonhaRuleShellPanel.test.tsx src/pages/LoginPage.test.tsx
 npm run test
 npm run build
@@ -549,7 +549,7 @@ Document:
 - [ ] **Step 4: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add README.md lesson.md
 git commit -m "docs: record subdomain web shell contract"
 ```

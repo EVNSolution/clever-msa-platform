@@ -13,9 +13,9 @@
 ### Task 1: Lock The Canonical-vs-Legacy Vocabulary
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
+- Modify: `docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
+- Modify: `docs/mappings/current-runtime-inventory.md`
+- Modify: `lesson.md`
 
 - [x] **Step 1: Mark the rollout note as the canonical `ev-dashboard` runtime reference**
 
@@ -35,15 +35,15 @@ Add a durable lesson that says a migrated surface must not keep treating the cen
 
 - [x] **Step 5: Verify the markdown edits**
 
-Run: `git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform diff --check`
+Run: `git -C . diff --check`
 Expected: no output
 
 ### Task 2: Rebuild The Docs Entry Order
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/README.md`
+- Modify: `docs/README.md`
+- Modify: `docs/rollout/README.md`
+- Modify: `docs/runbooks/README.md`
 
 - [x] **Step 1: Update the top-level docs index**
 
@@ -63,14 +63,14 @@ Check that `docs/README.md`, `docs/rollout/README.md`, and `docs/runbooks/README
 
 - [x] **Step 5: Verify markdown formatting**
 
-Run: `git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform diff --check`
+Run: `git -C . diff --check`
 Expected: no output
 
 ### Task 3: Publish The Documentation Audit Plan
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-15-platform-docs-canonical-truth-alignment-implementation-plan.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/README.md`
+- Create: `docs/superpowers/plans/2026-04-15-platform-docs-canonical-truth-alignment-implementation-plan.md`
+- Modify: `docs/README.md`
 
 - [x] **Step 1: Save this implementation plan under `docs/superpowers/plans/`**
 
@@ -91,22 +91,22 @@ Read `docs/README.md` and confirm the plan link appears in the operator start pa
 - [x] **Step 5: Commit after the document set is coherent**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform add \
+git -C . add \
   docs/README.md \
   docs/rollout/README.md \
   docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md \
   docs/mappings/current-runtime-inventory.md \
   lesson.md \
   docs/superpowers/plans/2026-04-15-platform-docs-canonical-truth-alignment-implementation-plan.md
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform commit -m "docs: align canonical ev-dashboard runtime truth"
+git -C . commit -m "docs: align canonical ev-dashboard runtime truth"
 ```
 
 ### Task 4: Review The Remaining Drift After This Pass
 
 **Files:**
-- Inspect: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md`
-- Inspect: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md`
-- Inspect: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/**`
+- Inspect: `WORKSPACE.md`
+- Inspect: `repo-map.md`
+- Inspect: `docs/**`
 
 - [x] **Step 1: Search for leftover bridge-lane wording**
 
@@ -114,9 +114,9 @@ Run:
 
 ```bash
 rg -n "clever-deploy-control|central deploy|EC2 app-host|bridge lane|legacy" \
-  /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs \
-  /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md \
-  /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md
+  docs \
+  WORKSPACE.md \
+  repo-map.md
 ```
 
 Expected: matches remain only where legacy/reference wording is intentional.

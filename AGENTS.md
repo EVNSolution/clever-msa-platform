@@ -8,7 +8,7 @@
 - Treat `development/` as a whitelist of independent implementation repos exposed from the root.
 - The current root whitelist is `front-web-console`, `edge-api-gateway`, `runtime-prod-release`, `runtime-prod-platform`, and the active `service-*` repos.
 - Do not treat this root as a shared runtime codebase.
-- Start from [WORKSPACE.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md) and [repo-map.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md) before moving files or changing repo boundaries.
+- Start from [WORKSPACE.md](WORKSPACE.md) and [repo-map.md](repo-map.md) before moving files or changing repo boundaries.
 
 ## Repo Selection Rules
 

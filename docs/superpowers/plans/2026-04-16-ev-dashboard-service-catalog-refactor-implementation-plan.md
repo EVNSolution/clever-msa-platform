@@ -14,37 +14,37 @@
 
 ### New metadata source
 
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
+- Create: `development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
   - Central service metadata definitions and query helpers.
 
 ### First-wave consumers
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/releaseWavePolicy.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/releaseWavePolicy.ts`
   - Stop owning `SERVICE_WAVE_MAP`.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/releaseImpact.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/releaseImpact.ts`
   - Stop owning `serviceRouteGroupMap`.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/gatewayRouteProfile.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/gatewayRouteProfile.ts`
   - Stop hardcoding route-group membership from config fields.
 
 ### Tests
 
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/serviceCatalog.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/releaseImpact.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/releaseWavePolicy.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/gateway-route-profile.test.ts`
+- Create: `development/infra-ev-dashboard-platform/test/serviceCatalog.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/releaseImpact.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/releaseWavePolicy.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/gateway-route-profile.test.ts`
 
 ### Design docs
 
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-16-ev-dashboard-service-catalog-refactor-design.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-16-ev-dashboard-service-catalog-refactor-implementation-plan.md`
+- Create: `docs/superpowers/specs/2026-04-16-ev-dashboard-service-catalog-refactor-design.md`
+- Create: `docs/superpowers/plans/2026-04-16-ev-dashboard-service-catalog-refactor-implementation-plan.md`
 
 ---
 
 ### Task 1: Write and lock the service catalog contract
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/serviceCatalog.test.ts`
+- Create: `development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
+- Create: `development/infra-ev-dashboard-platform/test/serviceCatalog.test.ts`
 
 - [x] **Step 1: Write the failing catalog tests**
 
@@ -81,7 +81,7 @@ test('lists route-group members from one source of truth', () => {
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/serviceCatalog.test.ts
 ```
 
@@ -113,7 +113,7 @@ Requirements:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/serviceCatalog.test.ts
 ```
 
@@ -123,17 +123,17 @@ Expected:
 - [x] **Step 5: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+git -C development/infra-ev-dashboard-platform add \
   lib/serviceCatalog.ts \
   test/serviceCatalog.test.ts
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "refactor: add deployment service catalog"
+git -C development/infra-ev-dashboard-platform commit -m "refactor: add deployment service catalog"
 ```
 
 ### Task 2: Move wave policy to the catalog
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/releaseWavePolicy.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/releaseWavePolicy.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/releaseWavePolicy.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/releaseWavePolicy.test.ts`
 
 Phase 1 normalization note:
 - Tasks 2-4 were accepted as one bundled slice in Phase 1. Standalone RED/task-commit boxes are normalized here to match the accepted execution record reflected by Task 5 verification and the Phase 1 slice commit.
@@ -150,7 +150,7 @@ Add coverage that:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/releaseWavePolicy.test.ts
 ```
 
@@ -166,24 +166,24 @@ Requirements:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/releaseWavePolicy.test.ts test/serviceCatalog.test.ts
 ```
 
 - [x] **Step 5: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+git -C development/infra-ev-dashboard-platform add \
   lib/releaseWavePolicy.ts \
   test/releaseWavePolicy.test.ts
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "refactor: source release waves from service catalog"
+git -C development/infra-ev-dashboard-platform commit -m "refactor: source release waves from service catalog"
 ```
 
 ### Task 3: Move release impact route-group mapping to the catalog
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/releaseImpact.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/releaseImpact.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/releaseImpact.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/releaseImpact.test.ts`
 
 - [x] **Step 1: Add a failing test that proves touched route groups come from catalog metadata**
 
@@ -192,7 +192,7 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/releaseImpact.test.ts
 ```
 
@@ -207,24 +207,24 @@ Requirements:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/releaseImpact.test.ts test/releaseWavePolicy.test.ts test/serviceCatalog.test.ts
 ```
 
 - [x] **Step 5: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+git -C development/infra-ev-dashboard-platform add \
   lib/releaseImpact.ts \
   test/releaseImpact.test.ts
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "refactor: source release impact from service catalog"
+git -C development/infra-ev-dashboard-platform commit -m "refactor: source release impact from service catalog"
 ```
 
 ### Task 4: Move gateway route-group membership to the catalog
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/gatewayRouteProfile.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/gateway-route-profile.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/gatewayRouteProfile.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/gateway-route-profile.test.ts`
 
 - [x] **Step 1: Write a failing test for route-group membership derived from catalog entries**
 
@@ -233,7 +233,7 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/gateway-route-profile.test.ts
 ```
 
@@ -249,31 +249,31 @@ Requirements:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/gateway-route-profile.test.ts test/releaseImpact.test.ts test/releaseWavePolicy.test.ts test/serviceCatalog.test.ts
 ```
 
 - [x] **Step 5: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+git -C development/infra-ev-dashboard-platform add \
   lib/gatewayRouteProfile.ts \
   test/gateway-route-profile.test.ts
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "refactor: source gateway route groups from service catalog"
+git -C development/infra-ev-dashboard-platform commit -m "refactor: source gateway route groups from service catalog"
 ```
 
 ### Task 5: Verify, document next slice, and stop
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-16-ev-dashboard-service-catalog-refactor-design.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-16-ev-dashboard-service-catalog-refactor-implementation-plan.md`
+- Modify: `docs/superpowers/specs/2026-04-16-ev-dashboard-service-catalog-refactor-design.md`
+- Modify: `docs/superpowers/plans/2026-04-16-ev-dashboard-service-catalog-refactor-implementation-plan.md`
 
 - [x] **Step 1: Run the focused verification suite**
 
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath \
   test/serviceCatalog.test.ts \
   test/releaseWavePolicy.test.ts \
@@ -296,7 +296,7 @@ Record:
 - [x] **Step 3: Commit the completed first slice**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+git -C development/infra-ev-dashboard-platform add \
   lib/serviceCatalog.ts \
   lib/releaseWavePolicy.ts \
   lib/releaseImpact.ts \
@@ -305,7 +305,7 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-m
   test/releaseWavePolicy.test.ts \
   test/releaseImpact.test.ts \
   test/gateway-route-profile.test.ts
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "refactor: centralize deploy service metadata"
+git -C development/infra-ev-dashboard-platform commit -m "refactor: centralize deploy service metadata"
 ```
 
 ---
@@ -322,9 +322,9 @@ This phase keeps two constraints from the design:
 ### Task 6: Refactor `config.ts` to consume catalog env-key metadata
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/config.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/config.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/config.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/config.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
 
 - [x] **Step 1: Write failing tests for catalog-driven config parsing helpers**
 
@@ -338,7 +338,7 @@ Add tests that prove:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/config.test.ts
 ```
 
@@ -367,26 +367,26 @@ Do not change:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/config.test.ts test/serviceCatalog.test.ts
 ```
 
 - [x] **Step 6: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+git -C development/infra-ev-dashboard-platform add \
   lib/config.ts \
   lib/serviceCatalog.ts \
   test/config.test.ts
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "refactor: source config metadata from service catalog"
+git -C development/infra-ev-dashboard-platform commit -m "refactor: source config metadata from service catalog"
 ```
 
 ### Task 7: Refactor `preflight.ts` to consume catalog image-key and slice-group metadata
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/preflight.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/preflight.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/preflight.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/preflight.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
 
 - [x] **Step 1: Write failing tests for catalog-driven preflight metadata**
 
@@ -400,7 +400,7 @@ Add tests that prove:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/preflight.test.ts
 ```
 
@@ -423,18 +423,18 @@ Requirements:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/preflight.test.ts test/config.test.ts test/serviceCatalog.test.ts
 ```
 
 - [x] **Step 6: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+git -C development/infra-ev-dashboard-platform add \
   lib/preflight.ts \
   lib/serviceCatalog.ts \
   test/preflight.test.ts
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "refactor: source preflight metadata from service catalog"
+git -C development/infra-ev-dashboard-platform commit -m "refactor: source preflight metadata from service catalog"
 ```
 
 ## Phase 2.5 Boundary Preparation
@@ -444,9 +444,9 @@ Phase 2.5 is a boundary-preparation slice for the later stack migration. It is n
 ### Task 8: Prepare the `stack.ts` migration boundary without changing deploy behavior
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/edge-gateway-profile.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/edge-gateway-profile.test.ts`
 
 - [x] **Step 1: Write failing tests for stack consumption of catalog metadata**
 
@@ -459,7 +459,7 @@ Add coverage that proves:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/ev-dashboard-platform-stack.test.ts test/edge-gateway-profile.test.ts
 ```
 
@@ -486,7 +486,7 @@ Do not change:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath \
   test/ev-dashboard-platform-stack.test.ts \
   test/edge-gateway-profile.test.ts \
@@ -500,12 +500,12 @@ npm run build
 - [x] **Step 6: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+git -C development/infra-ev-dashboard-platform add \
   lib/ev-dashboard-platform-stack.ts \
   lib/serviceCatalog.ts \
   test/ev-dashboard-platform-stack.test.ts \
   test/edge-gateway-profile.test.ts
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "refactor: prepare stack metadata consumption from service catalog"
+git -C development/infra-ev-dashboard-platform commit -m "refactor: prepare stack metadata consumption from service catalog"
 ```
 
 ## Phase 3 Stack Migration
@@ -523,9 +523,9 @@ Expected Phase 3 scope:
 ### Task 9: Expand catalog-backed app-host runtime metadata for backend HTTP services
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
 
 - [x] **Step 1: Write failing stack tests for broader catalog-backed app-host runtime assembly**
 
@@ -539,7 +539,7 @@ Add coverage that proves:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/ev-dashboard-platform-stack.test.ts test/edge-gateway-profile.test.ts
 ```
 
@@ -569,7 +569,7 @@ Requirements:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath \
   test/ev-dashboard-platform-stack.test.ts \
   test/edge-gateway-profile.test.ts \
@@ -583,19 +583,19 @@ npm run build
 - [x] **Step 6: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+git -C development/infra-ev-dashboard-platform add \
   lib/serviceCatalog.ts \
   lib/ev-dashboard-platform-stack.ts \
   test/ev-dashboard-platform-stack.test.ts
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "refactor: expand stack catalog runtime metadata"
+git -C development/infra-ev-dashboard-platform commit -m "refactor: expand stack catalog runtime metadata"
 ```
 
 ### Task 10: Migrate runtime image-map assembly to catalog-backed lookup
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
 
 - [x] **Step 1: Write failing tests for catalog-backed runtime image-map generation**
 
@@ -609,7 +609,7 @@ Add coverage that proves:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/ev-dashboard-platform-stack.test.ts
 ```
 
@@ -632,7 +632,7 @@ Requirements:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath \
   test/ev-dashboard-platform-stack.test.ts \
   test/serviceCatalog.test.ts \
@@ -644,19 +644,19 @@ npm run build
 - [x] **Step 6: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+git -C development/infra-ev-dashboard-platform add \
   lib/serviceCatalog.ts \
   lib/ev-dashboard-platform-stack.ts \
   test/ev-dashboard-platform-stack.test.ts
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "refactor: source stack runtime image map from catalog"
+git -C development/infra-ev-dashboard-platform commit -m "refactor: source stack runtime image map from catalog"
 ```
 
 ### Task 11: Shrink remaining stack-local service metadata without changing deploy identity
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/serviceCatalog.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
 
 - [x] **Step 1: Write failing tests for the final Phase 3 metadata slice**
 
@@ -669,7 +669,7 @@ Add coverage that proves:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath test/ev-dashboard-platform-stack.test.ts test/edge-gateway-profile.test.ts
 ```
 
@@ -694,7 +694,7 @@ Execution guard:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand --runTestsByPath \
   test/config.test.ts \
   test/preflight.test.ts \
@@ -710,9 +710,9 @@ npm run build
 - [x] **Step 5: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform add \
+git -C development/infra-ev-dashboard-platform add \
   lib/serviceCatalog.ts \
   lib/ev-dashboard-platform-stack.ts \
   test/ev-dashboard-platform-stack.test.ts
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform commit -m "refactor: reduce remaining stack service metadata duplication"
+git -C development/infra-ev-dashboard-platform commit -m "refactor: reduce remaining stack service metadata duplication"
 ```

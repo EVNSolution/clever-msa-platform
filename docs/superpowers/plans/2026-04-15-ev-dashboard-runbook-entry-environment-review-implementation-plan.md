@@ -13,15 +13,14 @@
 ### Task 1: Reframe The Runbook Index
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/README.md`
-- Spec: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-15-ev-dashboard-runbook-entry-environment-review-design.md`
+- Modify: `docs/runbooks/README.md`
+- Spec: `docs/superpowers/specs/2026-04-15-ev-dashboard-runbook-entry-environment-review-design.md`
 
 - [ ] **Step 1: Confirm the current index does not start with environment review**
 
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 rg -n "Start Here|temporary pre-prod release gate|deploy preflight gate|deploy operator loop" docs/runbooks/README.md
 ```
 
@@ -31,7 +30,7 @@ Expected:
 
 - [ ] **Step 2: Edit the runbook index to insert the new operator sequence**
 
-Update `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/README.md` so both `Start Here` and `Runtime And Deploy` reflect:
+Update `docs/runbooks/README.md` so both `Start Here` and `Runtime And Deploy` reflect:
 
 1. `환경 검토`
 2. `cold start rebuild`
@@ -46,7 +45,6 @@ Keep the rest of the index structure intact.
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 rg -n "ev-dashboard-runtime-environment-review|ev-dashboard-cold-start-rebuild" docs/runbooks/README.md
 ```
 
@@ -58,7 +56,6 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 git diff -- docs/runbooks/README.md
 ```
 
@@ -69,17 +66,17 @@ Expected:
 ### Task 2: Add The Shared Environment Review Runbook
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-runtime-environment-review.md`
-- Reference: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/README.md`
-- Reference: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md`
-- Reference: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md`
+- Create: `docs/runbooks/ev-dashboard-runtime-environment-review.md`
+- Reference: `development/infra-ev-dashboard-platform/README.md`
+- Reference: `docs/runbooks/ev-dashboard-ecs-preflight-gate.md`
+- Reference: `docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md`
 
 - [ ] **Step 1: Verify the new runbook file does not already exist**
 
 Run:
 
 ```bash
-test ! -f /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-runtime-environment-review.md && echo "missing"
+test ! -f docs/runbooks/ev-dashboard-runtime-environment-review.md && echo "missing"
 ```
 
 Expected:
@@ -87,7 +84,7 @@ Expected:
 
 - [ ] **Step 2: Write the environment review runbook**
 
-Create `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-runtime-environment-review.md` with these sections:
+Create `docs/runbooks/ev-dashboard-runtime-environment-review.md` with these sections:
 
 - Purpose and scope
 - When to use this runbook
@@ -122,7 +119,6 @@ Avoid generic phrases like “go to the appropriate document”; the branch targ
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 rg -n "Retained Asset|Infra Prerequisite|GitHub Configuration|Runtime Policy|Branching Rule|Next Document Map" docs/runbooks/ev-dashboard-runtime-environment-review.md
 ```
 
@@ -134,7 +130,6 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 git diff -- docs/runbooks/ev-dashboard-runtime-environment-review.md
 ```
 
@@ -144,18 +139,18 @@ Expected:
 ### Task 3: Add The Cold-Start Rebuild Runbook
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-cold-start-rebuild.md`
-- Reference: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-runtime-environment-review.md`
-- Reference: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md`
-- Reference: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md`
-- Reference: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md`
+- Create: `docs/runbooks/ev-dashboard-cold-start-rebuild.md`
+- Reference: `docs/runbooks/ev-dashboard-runtime-environment-review.md`
+- Reference: `docs/runbooks/ev-dashboard-ecs-preflight-gate.md`
+- Reference: `docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md`
+- Reference: `docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md`
 
 - [ ] **Step 1: Verify the rebuild runbook file does not already exist**
 
 Run:
 
 ```bash
-test ! -f /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-cold-start-rebuild.md && echo "missing"
+test ! -f docs/runbooks/ev-dashboard-cold-start-rebuild.md && echo "missing"
 ```
 
 Expected:
@@ -163,7 +158,7 @@ Expected:
 
 - [ ] **Step 2: Write the cold-start rebuild runbook**
 
-Create `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-cold-start-rebuild.md` with these sections:
+Create `docs/runbooks/ev-dashboard-cold-start-rebuild.md` with these sections:
 
 - Scope and assumptions
 - Preconditions
@@ -194,7 +189,6 @@ Ensure the rebuild runbook has explicit links to:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 rg -n "Preconditions|Fresh Provision Assumptions|Execution Path|Post-Deploy Verification|Completion Criteria" docs/runbooks/ev-dashboard-cold-start-rebuild.md
 ```
 
@@ -206,7 +200,6 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 git diff -- docs/runbooks/ev-dashboard-cold-start-rebuild.md
 ```
 
@@ -216,17 +209,16 @@ Expected:
 ### Task 4: Final Consistency Pass
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-runtime-environment-review.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-cold-start-rebuild.md`
-- Spec: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-15-ev-dashboard-runbook-entry-environment-review-design.md`
+- Modify: `docs/runbooks/README.md`
+- Create: `docs/runbooks/ev-dashboard-runtime-environment-review.md`
+- Create: `docs/runbooks/ev-dashboard-cold-start-rebuild.md`
+- Spec: `docs/superpowers/specs/2026-04-15-ev-dashboard-runbook-entry-environment-review-design.md`
 
 - [ ] **Step 1: Verify the three runbook files cross-reference cleanly**
 
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 rg -n "ev-dashboard-runtime-environment-review|ev-dashboard-cold-start-rebuild|ev-dashboard-ecs-preflight-gate|ev-dashboard-ecs-deploy-operator-loop|ev-dashboard-ui-smoke-and-decommission" docs/runbooks/README.md docs/runbooks/ev-dashboard-runtime-environment-review.md docs/runbooks/ev-dashboard-cold-start-rebuild.md
 ```
 
@@ -238,7 +230,6 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 git diff -- docs/runbooks/README.md docs/runbooks/ev-dashboard-runtime-environment-review.md docs/runbooks/ev-dashboard-cold-start-rebuild.md
 ```
 
@@ -251,7 +242,6 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 git add docs/runbooks/README.md docs/runbooks/ev-dashboard-runtime-environment-review.md docs/runbooks/ev-dashboard-cold-start-rebuild.md docs/superpowers/plans/2026-04-15-ev-dashboard-runbook-entry-environment-review-implementation-plan.md
 git commit -m "docs: add ev-dashboard environment review runbook flow"
 ```

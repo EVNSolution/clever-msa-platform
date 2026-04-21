@@ -16,14 +16,14 @@ This plan covers every active backend service repo under `development/service-*`
 
 The canonical truth for this doc-alignment wave is:
 
-- [WORKSPACE.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md)
-- [repo-map.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md)
-- [current-runtime-inventory.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md)
-- active boundary docs in [docs/boundaries](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/boundaries)
-- active contract docs in [docs/contracts](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/contracts)
+- [WORKSPACE.md](../../../WORKSPACE.md)
+- [repo-map.md](../../../repo-map.md)
+- [current-runtime-inventory.md](../../mappings/current-runtime-inventory.md)
+- active boundary docs in [docs/boundaries](../../boundaries)
+- active contract docs in [docs/contracts](../../contracts)
 - runtime reset docs:
-  - [2026-04-19-prod-runtime-release-reset-design.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-19-prod-runtime-release-reset-design.md)
-  - [2026-04-19-prod-runtime-release-reset-implementation-plan.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-19-prod-runtime-release-reset-implementation-plan.md)
+  - [2026-04-19-prod-runtime-release-reset-design.md](../specs/2026-04-19-prod-runtime-release-reset-design.md)
+  - [2026-04-19-prod-runtime-release-reset-implementation-plan.md](2026-04-19-prod-runtime-release-reset-implementation-plan.md)
 
 Every service-local doc update must agree with the following runtime/deploy facts:
 
@@ -38,16 +38,16 @@ Every service-local doc update must agree with the following runtime/deploy fact
 ### Root docs used as audit inputs
 
 - Read only:
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md`
-  - relevant files under `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/boundaries/`
-  - relevant files under `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/contracts/`
+  - `WORKSPACE.md`
+  - `repo-map.md`
+  - `docs/mappings/current-runtime-inventory.md`
+  - relevant files under `docs/boundaries/`
+  - relevant files under `docs/contracts/`
 
 ### New audit artifact
 
 - Create:
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/service-doc-alignment-checklist.md`
+  - `docs/mappings/service-doc-alignment-checklist.md`
 
 This checklist becomes the working audit ledger for all service repos. It should capture, per service:
 
@@ -59,54 +59,54 @@ This checklist becomes the working audit ledger for all service repos. It should
 
 ### Service repo docs to audit and update
 
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-account-access/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-account-access/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-announcement-registry/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-announcement-registry/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-operations-view/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-operations-view/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-operations-view/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-operations-view/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-notification-hub/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-notification-hub/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-organization-registry/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-organization-registry/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-personnel-document-registry/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-personnel-document-registry/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-region-analytics/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-region-analytics/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-region-registry/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-region-registry/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-operations-view/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-operations-view/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-support-registry/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-support-registry/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-dead-letter/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-dead-letter/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-hub/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-hub/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-listener/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-listener/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-terminal-registry/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-terminal-registry/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-assignment/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-assignment/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-operations-view/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-operations-view/lesson.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-registry/README.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-registry/lesson.md`
+- `development/service-account-access/README.md`
+- `development/service-account-access/lesson.md`
+- `development/service-announcement-registry/README.md`
+- `development/service-announcement-registry/lesson.md`
+- `development/service-attendance-registry/README.md`
+- `development/service-attendance-registry/lesson.md`
+- `development/service-delivery-record/README.md`
+- `development/service-delivery-record/lesson.md`
+- `development/service-dispatch-operations-view/README.md`
+- `development/service-dispatch-operations-view/lesson.md`
+- `development/service-dispatch-registry/README.md`
+- `development/service-dispatch-registry/lesson.md`
+- `development/service-driver-operations-view/README.md`
+- `development/service-driver-operations-view/lesson.md`
+- `development/service-driver-profile/README.md`
+- `development/service-driver-profile/lesson.md`
+- `development/service-notification-hub/README.md`
+- `development/service-notification-hub/lesson.md`
+- `development/service-organization-registry/README.md`
+- `development/service-organization-registry/lesson.md`
+- `development/service-personnel-document-registry/README.md`
+- `development/service-personnel-document-registry/lesson.md`
+- `development/service-region-analytics/README.md`
+- `development/service-region-analytics/lesson.md`
+- `development/service-region-registry/README.md`
+- `development/service-region-registry/lesson.md`
+- `development/service-settlement-operations-view/README.md`
+- `development/service-settlement-operations-view/lesson.md`
+- `development/service-settlement-payroll/README.md`
+- `development/service-settlement-payroll/lesson.md`
+- `development/service-settlement-registry/README.md`
+- `development/service-settlement-registry/lesson.md`
+- `development/service-support-registry/README.md`
+- `development/service-support-registry/lesson.md`
+- `development/service-telemetry-dead-letter/README.md`
+- `development/service-telemetry-dead-letter/lesson.md`
+- `development/service-telemetry-hub/README.md`
+- `development/service-telemetry-hub/lesson.md`
+- `development/service-telemetry-listener/README.md`
+- `development/service-telemetry-listener/lesson.md`
+- `development/service-terminal-registry/README.md`
+- `development/service-terminal-registry/lesson.md`
+- `development/service-vehicle-assignment/README.md`
+- `development/service-vehicle-assignment/lesson.md`
+- `development/service-vehicle-operations-view/README.md`
+- `development/service-vehicle-operations-view/lesson.md`
+- `development/service-vehicle-registry/README.md`
+- `development/service-vehicle-registry/lesson.md`
 
 ## Audit Rules
 
@@ -134,11 +134,11 @@ Allowed outcome:
 ## Task 1: Create The Audit Ledger
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/service-doc-alignment-checklist.md`
+- Create: `docs/mappings/service-doc-alignment-checklist.md`
 - Read:
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md`
+  - `WORKSPACE.md`
+  - `repo-map.md`
+  - `docs/mappings/current-runtime-inventory.md`
 
 - [ ] **Step 1: Create the checklist file with one section per active service repo**
 
@@ -156,7 +156,7 @@ Copy the six drift categories above into the checklist so later workers use the 
 - [ ] **Step 3: Commit**
 
 ```bash
-git add /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/service-doc-alignment-checklist.md
+git add docs/mappings/service-doc-alignment-checklist.md
 git commit -m "docs: add service doc alignment checklist"
 ```
 
@@ -164,14 +164,14 @@ git commit -m "docs: add service doc alignment checklist"
 
 **Files:**
 - Read every `README.md` and `lesson.md` listed above
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/service-doc-alignment-checklist.md`
+- Modify: `docs/mappings/service-doc-alignment-checklist.md`
 
 - [ ] **Step 1: Run a bulk drift search before manual reading**
 
 Run:
 
 ```bash
-rg -n "infra-ev-dashboard-platform|clever-deploy-control|Service Connect|service connect|Fargate|ECS|prod-shared|hub.evnlogistics.com|runtime-prod-release|runtime-prod-platform" /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-*/README.md /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-*/lesson.md
+rg -n "infra-ev-dashboard-platform|clever-deploy-control|Service Connect|service connect|Fargate|ECS|prod-shared|hub.evnlogistics.com|runtime-prod-release|runtime-prod-platform" development/service-*/README.md development/service-*/lesson.md
 ```
 
 Expected: a drift candidate list, not a final truth judgment.
@@ -193,7 +193,7 @@ Expected outcome:
 - [ ] **Step 4: Commit the completed audit ledger**
 
 ```bash
-git add /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/service-doc-alignment-checklist.md
+git add docs/mappings/service-doc-alignment-checklist.md
 git commit -m "docs: audit service repo doc drift"
 ```
 
@@ -201,24 +201,24 @@ git commit -m "docs: audit service repo doc drift"
 
 **Files:**
 - Modify:
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-account-access/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-account-access/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-organization-registry/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-organization-registry/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-operations-view/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-operations-view/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-operations-view/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-operations-view/lesson.md`
+  - `development/service-account-access/README.md`
+  - `development/service-account-access/lesson.md`
+  - `development/service-organization-registry/README.md`
+  - `development/service-organization-registry/lesson.md`
+  - `development/service-dispatch-registry/README.md`
+  - `development/service-dispatch-registry/lesson.md`
+  - `development/service-dispatch-operations-view/README.md`
+  - `development/service-dispatch-operations-view/lesson.md`
+  - `development/service-attendance-registry/README.md`
+  - `development/service-attendance-registry/lesson.md`
+  - `development/service-delivery-record/README.md`
+  - `development/service-delivery-record/lesson.md`
+  - `development/service-settlement-registry/README.md`
+  - `development/service-settlement-registry/lesson.md`
+  - `development/service-settlement-payroll/README.md`
+  - `development/service-settlement-payroll/lesson.md`
+  - `development/service-settlement-operations-view/README.md`
+  - `development/service-settlement-operations-view/lesson.md`
 - Modify checklist statuses for the same repos
 
 - [ ] **Step 1: Rewrite boundary and deploy sections for this group**
@@ -241,7 +241,7 @@ Expected: these repos move to aligned status.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-account-access /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-organization-registry /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-operations-view /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-operations-view /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/service-doc-alignment-checklist.md
+git add development/service-account-access development/service-organization-registry development/service-dispatch-registry development/service-dispatch-operations-view development/service-attendance-registry development/service-delivery-record development/service-settlement-registry development/service-settlement-payroll development/service-settlement-operations-view docs/mappings/service-doc-alignment-checklist.md
 git commit -m "docs: align auth dispatch and settlement service docs"
 ```
 
@@ -249,20 +249,20 @@ git commit -m "docs: align auth dispatch and settlement service docs"
 
 **Files:**
 - Modify:
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-operations-view/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-operations-view/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-personnel-document-registry/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-personnel-document-registry/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-registry/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-registry/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-assignment/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-assignment/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-operations-view/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-operations-view/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-terminal-registry/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-terminal-registry/lesson.md`
+  - `development/service-driver-profile/README.md`
+  - `development/service-driver-profile/lesson.md`
+  - `development/service-driver-operations-view/README.md`
+  - `development/service-driver-operations-view/lesson.md`
+  - `development/service-personnel-document-registry/README.md`
+  - `development/service-personnel-document-registry/lesson.md`
+  - `development/service-vehicle-registry/README.md`
+  - `development/service-vehicle-registry/lesson.md`
+  - `development/service-vehicle-assignment/README.md`
+  - `development/service-vehicle-assignment/lesson.md`
+  - `development/service-vehicle-operations-view/README.md`
+  - `development/service-vehicle-operations-view/lesson.md`
+  - `development/service-terminal-registry/README.md`
+  - `development/service-terminal-registry/lesson.md`
 - Modify checklist statuses for the same repos
 
 - [ ] **Step 1: Align README boundary/runtime wording for this group**
@@ -282,7 +282,7 @@ Expected outcome:
 - [ ] **Step 4: Commit**
 
 ```bash
-git add /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-operations-view /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-personnel-document-registry /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-registry /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-assignment /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-operations-view /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-terminal-registry /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/service-doc-alignment-checklist.md
+git add development/service-driver-profile development/service-driver-operations-view development/service-personnel-document-registry development/service-vehicle-registry development/service-vehicle-assignment development/service-vehicle-operations-view development/service-terminal-registry docs/mappings/service-doc-alignment-checklist.md
 git commit -m "docs: align driver vehicle and terminal service docs"
 ```
 
@@ -290,22 +290,22 @@ git commit -m "docs: align driver vehicle and terminal service docs"
 
 **Files:**
 - Modify:
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-region-registry/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-region-registry/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-region-analytics/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-region-analytics/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-notification-hub/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-notification-hub/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-announcement-registry/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-announcement-registry/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-support-registry/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-support-registry/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-hub/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-hub/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-listener/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-listener/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-dead-letter/README.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-dead-letter/lesson.md`
+  - `development/service-region-registry/README.md`
+  - `development/service-region-registry/lesson.md`
+  - `development/service-region-analytics/README.md`
+  - `development/service-region-analytics/lesson.md`
+  - `development/service-notification-hub/README.md`
+  - `development/service-notification-hub/lesson.md`
+  - `development/service-announcement-registry/README.md`
+  - `development/service-announcement-registry/lesson.md`
+  - `development/service-support-registry/README.md`
+  - `development/service-support-registry/lesson.md`
+  - `development/service-telemetry-hub/README.md`
+  - `development/service-telemetry-hub/lesson.md`
+  - `development/service-telemetry-listener/README.md`
+  - `development/service-telemetry-listener/lesson.md`
+  - `development/service-telemetry-dead-letter/README.md`
+  - `development/service-telemetry-dead-letter/lesson.md`
 - Modify checklist statuses for the same repos
 
 - [ ] **Step 1: Align README boundary/runtime wording for this group**
@@ -325,7 +325,7 @@ Expected outcome:
 - [ ] **Step 4: Commit**
 
 ```bash
-git add /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-region-registry /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-region-analytics /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-notification-hub /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-announcement-registry /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-support-registry /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-hub /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-listener /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-dead-letter /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/service-doc-alignment-checklist.md
+git add development/service-region-registry development/service-region-analytics development/service-notification-hub development/service-announcement-registry development/service-support-registry development/service-telemetry-hub development/service-telemetry-listener development/service-telemetry-dead-letter docs/mappings/service-doc-alignment-checklist.md
 git commit -m "docs: align telemetry and support service docs"
 ```
 
@@ -333,10 +333,10 @@ git commit -m "docs: align telemetry and support service docs"
 
 **Files:**
 - Modify if needed:
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/service-doc-alignment-checklist.md`
+  - `repo-map.md`
+  - `docs/mappings/current-runtime-inventory.md`
+  - `lesson.md`
+  - `docs/mappings/service-doc-alignment-checklist.md`
 
 - [ ] **Step 1: Re-read root docs after service updates**
 
@@ -356,7 +356,7 @@ Expected:
 - [ ] **Step 4: Commit**
 
 ```bash
-git add /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/service-doc-alignment-checklist.md
+git add repo-map.md docs/mappings/current-runtime-inventory.md lesson.md docs/mappings/service-doc-alignment-checklist.md
 git commit -m "docs: reconcile service doc alignment with root truth"
 ```
 
@@ -370,7 +370,7 @@ git commit -m "docs: reconcile service doc alignment with root truth"
 Run:
 
 ```bash
-rg -n "infra-ev-dashboard-platform|clever-deploy-control|Service Connect|service connect|Fargate|ECS|prod-shared|hub.evnlogistics.com" /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-*/README.md /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-*/lesson.md
+rg -n "infra-ev-dashboard-platform|clever-deploy-control|Service Connect|service connect|Fargate|ECS|prod-shared|hub.evnlogistics.com" development/service-*/README.md development/service-*/lesson.md
 ```
 
 Expected:
@@ -388,7 +388,7 @@ Expected:
 Run:
 
 ```bash
-for d in /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-*; do
+for d in development/service-*; do
   echo "== $d =="
   git -C "$d" status --short
 done

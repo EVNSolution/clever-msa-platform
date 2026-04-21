@@ -3,8 +3,8 @@
 이 문서는 service repo template baseline에 대해 현재 repo들이 어디까지 맞춰져 있는지 보는 living matrix다.
 
 기준 설계:
-- [2026-04-15-service-repo-template-baseline-design.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-15-service-repo-template-baseline-design.md)
-- [2026-04-15-service-repo-template-rollout-implementation-plan.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-15-service-repo-template-rollout-implementation-plan.md)
+- [2026-04-15-service-repo-template-baseline-design.md](../superpowers/specs/2026-04-15-service-repo-template-baseline-design.md)
+- [2026-04-15-service-repo-template-rollout-implementation-plan.md](../superpowers/plans/2026-04-15-service-repo-template-rollout-implementation-plan.md)
 
 상태 표기:
 - `yes`: baseline 충족

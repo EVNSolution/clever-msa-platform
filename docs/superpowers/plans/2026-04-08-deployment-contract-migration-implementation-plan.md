@@ -152,7 +152,7 @@ Keep non-pilot dependencies unchanged unless they block config rendering.
 
 Run:
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack
+cd development/integration-local-stack
 docker compose -f docker-compose.deploy.account-driver-settlement.yml config
 ```
 
@@ -169,7 +169,7 @@ ACCOUNT_ACCESS_IMAGE=902837199612.dkr.ecr.ap-northeast-2.amazonaws.com/service-a
 
 Run:
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack
+cd development/integration-local-stack
 ACCOUNT_ACCESS_IMAGE=test-image docker compose -f docker-compose.deploy.account-driver-settlement.yml config
 ```
 
@@ -185,7 +185,7 @@ README must explicitly say:
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack
+cd development/integration-local-stack
 git add docker-compose.deploy.account-driver-settlement.yml infra/env/deploy-images.env.example compose/README.md
 git commit -m "feat: add deploy compose for account image pilot"
 ```
@@ -208,7 +208,7 @@ The Docker image must:
 
 Run:
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-account-access
+cd development/service-account-access
 docker build -t service-account-access:test .
 ```
 
@@ -235,7 +235,7 @@ Workflow requirements:
 
 Run:
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-account-access
+cd development/service-account-access
 docker build -t service-account-access:test .
 ```
 
@@ -244,7 +244,7 @@ Expected: PASS with a runnable image.
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-account-access
+cd development/service-account-access
 git add Dockerfile .dockerignore .github/workflows/build-image.yml
 git commit -m "feat: add account-access image build pipeline"
 ```
@@ -381,7 +381,6 @@ The rollout plan must explicitly separate:
 - [ ] **Step 4: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 git add docs/superpowers/specs/2026-04-08-operational-hardening-design.md docs/superpowers/specs/2026-04-08-production-cutover-design.md docs/superpowers/plans/2026-04-08-image-deploy-rollout-wave-plan.md
 git commit -m "docs: record image deploy pilot expansion policy"
 ```

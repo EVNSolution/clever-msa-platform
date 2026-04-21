@@ -21,9 +21,9 @@
 
 이 문서는 아래 문서들을 대체하지 않고, 상위 메뉴와 workspace surface만 확장한다.
 
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-17-subdomain-web-definition-design.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-18-subdomain-shell-role-split-design.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-18-subdomain-shell-visual-refinement-design.md`
+- `docs/superpowers/specs/2026-04-17-subdomain-web-definition-design.md`
+- `docs/superpowers/specs/2026-04-18-subdomain-shell-role-split-design.md`
+- `docs/superpowers/specs/2026-04-18-subdomain-shell-visual-refinement-design.md`
 
 기존 카드/런처/global header/정산 detached sidebar 계약은 그대로 유지한다.
 

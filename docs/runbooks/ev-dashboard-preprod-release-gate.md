@@ -141,7 +141,7 @@ pre-prod gate가 통과했다고 부를 수 있으려면 아래가 필요하다.
 
 ## Linked Runbooks
 
-- deploy 전 로컬 gate: [ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md)
-- deploy 중 판단: [ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
-- deploy 후 close-out: [ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
-- 설계 정본: [../superpowers/specs/2026-04-14-ev-dashboard-preprod-gate-design.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-14-ev-dashboard-preprod-gate-design.md)
+- deploy 전 로컬 gate: [ev-dashboard-ecs-preflight-gate.md](ev-dashboard-ecs-preflight-gate.md)
+- deploy 중 판단: [ev-dashboard-ecs-deploy-operator-loop.md](ev-dashboard-ecs-deploy-operator-loop.md)
+- deploy 후 close-out: [ev-dashboard-ui-smoke-and-decommission.md](ev-dashboard-ui-smoke-and-decommission.md)
+- 설계 정본: [../superpowers/specs/2026-04-14-ev-dashboard-preprod-gate-design.md](../superpowers/specs/2026-04-14-ev-dashboard-preprod-gate-design.md)

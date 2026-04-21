@@ -16,10 +16,11 @@
 
 이 runbook는 아래 문서를 전제로 한다.
 
-- 플랫폼 루트 원칙: [WORKSPACE.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md)
-- repo 역할: [repo-map.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md)
-- 현재 runtime inventory: [current-runtime-inventory.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md)
-- local integration shell 안내: [development/integration-local-stack/README.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/README.md)
+- 플랫폼 루트 원칙: [WORKSPACE.md](../../WORKSPACE.md)
+- repo 역할: [repo-map.md](../../repo-map.md)
+- 현재 runtime inventory: [current-runtime-inventory.md](../mappings/current-runtime-inventory.md)
+- local integration shell 정책: [13-account-driver-settlement-compose-simulation.md](../rollout/13-account-driver-settlement-compose-simulation.md)
+- local integration repo reference: `development/integration-local-stack/README.md` (`development/` whitelist 바깥의 out-of-band integration repo)
 
 ## URL Meaning
 
@@ -80,7 +81,7 @@
 실데이터 remote target:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run dev
 ```
 
@@ -93,7 +94,7 @@ VITE_DEV_PROXY_TARGET=https://ev-dashboard.com
 더 안전한 test target:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 cp .env.local-test.example .env.local-test
 npm run dev:local-test
 ```
@@ -153,7 +154,7 @@ VITE_DEV_PROXY_TARGET=https://<dev-or-staging-gateway-domain>
 작업 디렉토리:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack
+cd development/integration-local-stack
 ```
 
 권장 기동:
@@ -206,7 +207,7 @@ docker compose -f docker-compose.account-driver-settlement.yml down -v
 작업 디렉토리:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack
+cd development/integration-local-stack
 ```
 
 infra only:
@@ -219,14 +220,14 @@ infra only:
 프런트:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run dev
 ```
 
 필요 service만 host에서 실행:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack
+cd development/integration-local-stack
 ./scripts/run_host_django_service.sh ../service-account-access ./infra/env/host/account-auth.env.example
 ./scripts/run_host_django_service.sh ../service-organization-registry ./infra/env/host/organization-master.env.example
 ./scripts/run_host_django_service.sh ../service-driver-profile ./infra/env/host/driver-profile.env.example
@@ -240,7 +241,7 @@ cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-p
 중지:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack
+cd development/integration-local-stack
 ./scripts/down_dev_gateway.sh
 ./scripts/down_dev_infra.sh
 ```
@@ -390,7 +391,7 @@ curl -i http://127.0.0.1:8080/healthz
 조치:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack
+cd development/integration-local-stack
 docker compose -f docker-compose.account-driver-settlement.yml up -d gateway
 ```
 
@@ -515,7 +516,7 @@ curl -i http://127.0.0.1:5174/api/org/companies/public/
 권장 종료:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack
+cd development/integration-local-stack
 docker compose -f docker-compose.account-driver-settlement.yml down
 ```
 

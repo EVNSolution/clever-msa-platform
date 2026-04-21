@@ -55,7 +55,6 @@
 예시:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 python3 scripts/deploy/compute-targets.py \
   --base-sha "$GITHUB_BASE_SHA" \
   --head-sha "$GITHUB_SHA" \

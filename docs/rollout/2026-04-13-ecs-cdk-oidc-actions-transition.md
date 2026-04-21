@@ -247,11 +247,11 @@ ECS 기반 증명 기록은 historical evidence로 남기되, 새 operator/curre
 
 backend slice migration record는 닫혔다. 이제 `ev-dashboard` 에서 남은 운영 작업은 migration plan이 아니라 runbook 기준으로 본다.
 
-- prod 전 temporary lane release gate: [../runbooks/ev-dashboard-preprod-release-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-preprod-release-gate.md)
-- deploy 전 검수 gate: [../runbooks/ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md)
-- deploy 중 operator loop: [../runbooks/ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
-- authenticated UI smoke와 decommission close-out: [../runbooks/ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
-- detailed execution record: [../superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md)
+- prod 전 temporary lane release gate: [../runbooks/ev-dashboard-preprod-release-gate.md](../runbooks/ev-dashboard-preprod-release-gate.md)
+- deploy 전 검수 gate: [../runbooks/ev-dashboard-ecs-preflight-gate.md](../runbooks/ev-dashboard-ecs-preflight-gate.md)
+- deploy 중 operator loop: [../runbooks/ev-dashboard-ecs-deploy-operator-loop.md](../runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
+- authenticated UI smoke와 decommission close-out: [../runbooks/ev-dashboard-ui-smoke-and-decommission.md](../runbooks/ev-dashboard-ui-smoke-and-decommission.md)
+- detailed execution record: [../superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md](../superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md)
 
 current release default:
 

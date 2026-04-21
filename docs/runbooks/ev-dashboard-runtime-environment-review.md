@@ -22,7 +22,7 @@
 
 참조 기준:
 
-- [2026-04-15-ev-dashboard-full-runtime-shutdown-design.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-15-ev-dashboard-full-runtime-shutdown-design.md)
+- [2026-04-15-ev-dashboard-full-runtime-shutdown-design.md](../superpowers/specs/2026-04-15-ev-dashboard-full-runtime-shutdown-design.md)
 
 ## When to use this runbook
 
@@ -89,7 +89,7 @@ desired count 정책도 여기서 함께 본다. 예를 들어 destroy 또는 co
 
 자세한 실행 순서는 아래 runbook 을 따른다.
 
-- [company-cockpit-onboarding.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/company-cockpit-onboarding.md)
+- [company-cockpit-onboarding.md](company-cockpit-onboarding.md)
 
 ## Runtime policy check
 
@@ -115,13 +115,13 @@ desired count 정책도 여기서 함께 본다. 예를 들어 destroy 또는 co
 검토 결과에 따라 다음 문서를 즉시 선택한다.
 
 - `destroy`
-  - [2026-04-15-ev-dashboard-full-runtime-shutdown-design.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-15-ev-dashboard-full-runtime-shutdown-design.md)
+  - [2026-04-15-ev-dashboard-full-runtime-shutdown-design.md](../superpowers/specs/2026-04-15-ev-dashboard-full-runtime-shutdown-design.md)
 - `cold rebuild`
-  - [ev-dashboard-cold-start-rebuild.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-cold-start-rebuild.md)
+  - [ev-dashboard-cold-start-rebuild.md](ev-dashboard-cold-start-rebuild.md)
 - `routine deploy`
-  - [ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md)
+  - [ev-dashboard-ecs-preflight-gate.md](ev-dashboard-ecs-preflight-gate.md)
 - `post-deploy validation`
-  - [ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
+  - [ev-dashboard-ui-smoke-and-decommission.md](ev-dashboard-ui-smoke-and-decommission.md)
 
 분기는 모호하게 두지 않는다. operator 는 한 번에 하나의 경로만 선택한다.
 
@@ -136,8 +136,8 @@ desired count 정책도 여기서 함께 본다. 예를 들어 destroy 또는 co
 
 관련 문서:
 
-- [2026-04-15-ev-dashboard-full-runtime-shutdown-design.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-15-ev-dashboard-full-runtime-shutdown-design.md)
-- [company-cockpit-onboarding.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/company-cockpit-onboarding.md)
-- [ev-dashboard-cold-start-rebuild.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-cold-start-rebuild.md)
-- [ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md)
-- [ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
+- [2026-04-15-ev-dashboard-full-runtime-shutdown-design.md](../superpowers/specs/2026-04-15-ev-dashboard-full-runtime-shutdown-design.md)
+- [company-cockpit-onboarding.md](company-cockpit-onboarding.md)
+- [ev-dashboard-cold-start-rebuild.md](ev-dashboard-cold-start-rebuild.md)
+- [ev-dashboard-ecs-preflight-gate.md](ev-dashboard-ecs-preflight-gate.md)
+- [ev-dashboard-ui-smoke-and-decommission.md](ev-dashboard-ui-smoke-and-decommission.md)

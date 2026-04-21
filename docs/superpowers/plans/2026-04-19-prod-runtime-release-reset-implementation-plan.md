@@ -238,17 +238,17 @@ Interpretation rules:
 
 ### Platform docs and repo visibility
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-19-prod-runtime-release-reset-design.md`
+- Modify: `WORKSPACE.md`
+- Modify: `repo-map.md`
+- Modify: `docs/mappings/current-runtime-inventory.md`
+- Modify: `docs/superpowers/specs/2026-04-19-prod-runtime-release-reset-design.md`
 
 ### Prod platform inventory contract
 
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/runtime-prod-platform/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/runtime-prod-platform/release/prod-runtime-inventory.json`
-- Create or modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/runtime-prod-platform/scripts/export-runtime-inventory.*`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/runtime-prod-platform/test/*inventory*.test.*`
+- Create: `development/runtime-prod-platform/README.md`
+- Create: `development/runtime-prod-platform/release/prod-runtime-inventory.json`
+- Create or modify: `development/runtime-prod-platform/scripts/export-runtime-inventory.*`
+- Test: `development/runtime-prod-platform/test/*inventory*.test.*`
 
 Only `runtime-prod-platform` owns the canonical inventory.
 
@@ -267,13 +267,13 @@ The first canonical inventory shape is intentionally minimal:
 ### App repo rollout removal and workload metadata
 
 - Phase A representative repos:
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/.github/workflows/*`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/.github/workflows/*`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-account-access/.github/workflows/*`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/.github/workflows/*`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-operations-view/.github/workflows/*`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll/.github/workflows/*`
-  - `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-operations-view/.github/workflows/*`
+  - `development/front-web-console/.github/workflows/*`
+  - `development/edge-api-gateway/.github/workflows/*`
+  - `development/service-account-access/.github/workflows/*`
+  - `development/service-dispatch-registry/.github/workflows/*`
+  - `development/service-dispatch-operations-view/.github/workflows/*`
+  - `development/service-settlement-payroll/.github/workflows/*`
+  - `development/service-settlement-operations-view/.github/workflows/*`
 - Create per-repo metadata files:
   - `release/workload-metadata.json`
 - Modify repo READMEs to state build/test/publish-only prod contract
@@ -747,10 +747,10 @@ Verify:
 ### Task 10: Wire Docs, Workspace Map, and Acceptance Evidence
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-19-prod-runtime-release-reset-design.md`
+- Modify: `WORKSPACE.md`
+- Modify: `repo-map.md`
+- Modify: `docs/mappings/current-runtime-inventory.md`
+- Modify: `docs/superpowers/specs/2026-04-19-prod-runtime-release-reset-design.md`
 - Add docs in `development/runtime-prod-release/README.md`
 
 - [x] **Step 1: Document the final operating rule**
@@ -779,7 +779,7 @@ Search for stale references to:
 - [x] **Step 4: Commit**
 
 ```bash
-git add /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-19-prod-runtime-release-reset-design.md development/runtime-prod-release/README.md
+git add WORKSPACE.md repo-map.md docs/mappings/current-runtime-inventory.md docs/superpowers/specs/2026-04-19-prod-runtime-release-reset-design.md development/runtime-prod-release/README.md
 git commit -m "docs: record prod runtime release operating model"
 ```
 

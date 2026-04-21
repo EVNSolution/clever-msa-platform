@@ -15,42 +15,42 @@
 The implementation should use this file ownership model.
 
 - Root docs:
-  - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
-  - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
-  - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md`
-  - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md`
-  - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
+  - Modify: `docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
+  - Modify: `docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
+  - Modify: `WORKSPACE.md`
+  - Modify: `repo-map.md`
+  - Modify: `lesson.md`
 - New infra repo:
-  - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/README.md`
-  - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/package.json`
-  - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/package-lock.json`
-  - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/tsconfig.json`
-  - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/cdk.json`
-  - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/bin/ev-dashboard-platform.ts`
-  - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
-  - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/config.ts`
-  - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
-  - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/.github/workflows/deploy-ecs.yml`
-  - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lesson.md`
+  - Create: `development/infra-ev-dashboard-platform/README.md`
+  - Create: `development/infra-ev-dashboard-platform/package.json`
+  - Create: `development/infra-ev-dashboard-platform/package-lock.json`
+  - Create: `development/infra-ev-dashboard-platform/tsconfig.json`
+  - Create: `development/infra-ev-dashboard-platform/cdk.json`
+  - Create: `development/infra-ev-dashboard-platform/bin/ev-dashboard-platform.ts`
+  - Create: `development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+  - Create: `development/infra-ev-dashboard-platform/lib/config.ts`
+  - Create: `development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
+  - Create: `development/infra-ev-dashboard-platform/.github/workflows/deploy-ecs.yml`
+  - Create: `development/infra-ev-dashboard-platform/lesson.md`
 - App repos:
-  - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/.github/workflows/build-image.yml`
-  - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/README.md`
-  - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/lesson.md`
-  - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/.github/workflows/build-image.yml`
-  - Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/.github/workflows/build-image.yml`
-  - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/README.md`
-  - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/lesson.md`
-  - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-account-access/.github/workflows/build-image.yml`
-  - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-account-access/README.md`
-  - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-account-access/lesson.md`
+  - Modify: `development/front-web-console/.github/workflows/build-image.yml`
+  - Modify: `development/front-web-console/README.md`
+  - Modify: `development/front-web-console/lesson.md`
+  - Create: `development/front-web-console/.github/workflows/build-image.yml`
+  - Create: `development/edge-api-gateway/.github/workflows/build-image.yml`
+  - Modify: `development/edge-api-gateway/README.md`
+  - Modify: `development/edge-api-gateway/lesson.md`
+  - Modify: `development/service-account-access/.github/workflows/build-image.yml`
+  - Modify: `development/service-account-access/README.md`
+  - Modify: `development/service-account-access/lesson.md`
 
 ## Task 1: Lock The Migration Boundary In Docs
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md`
+- Modify: `docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
+- Modify: `docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
+- Modify: `WORKSPACE.md`
+- Modify: `repo-map.md`
 
 - [ ] **Step 1: Write the failing documentation check**
 
@@ -89,14 +89,14 @@ git commit -m "docs: lock ev-dashboard ECS migration boundary"
 ## Task 2: Create The Dedicated ECS/CDK Infra Repo
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/package.json`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/tsconfig.json`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/cdk.json`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/bin/ev-dashboard-platform.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/config.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
+- Create: `development/infra-ev-dashboard-platform/README.md`
+- Create: `development/infra-ev-dashboard-platform/package.json`
+- Create: `development/infra-ev-dashboard-platform/tsconfig.json`
+- Create: `development/infra-ev-dashboard-platform/cdk.json`
+- Create: `development/infra-ev-dashboard-platform/bin/ev-dashboard-platform.ts`
+- Create: `development/infra-ev-dashboard-platform/lib/config.ts`
+- Create: `development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Test: `development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
 
 - [ ] **Step 1: Write the failing CDK synth test**
 
@@ -160,10 +160,10 @@ git commit -m "feat: scaffold ev-dashboard ECS CDK platform stack"
 ## Task 3: Add Image Build Pipelines For Front And Gateway
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/.github/workflows/build-image.yml`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/.github/workflows/build-image.yml`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/README.md`
+- Create: `development/front-web-console/.github/workflows/build-image.yml`
+- Create: `development/edge-api-gateway/.github/workflows/build-image.yml`
+- Modify: `development/front-web-console/README.md`
+- Modify: `development/edge-api-gateway/README.md`
 
 - [ ] **Step 1: Write failing workflow validation checks**
 
@@ -210,10 +210,10 @@ git commit -m "feat: add ECR image build workflows for front and gateway"
 ## Task 4: Align service-account-access For ECS Runtime Use
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-account-access/.github/workflows/build-image.yml`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-account-access/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-account-access/lesson.md`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-account-access/accounts/tests/test_admin_and_schema_urls.py`
+- Modify: `development/service-account-access/.github/workflows/build-image.yml`
+- Modify: `development/service-account-access/README.md`
+- Modify: `development/service-account-access/lesson.md`
+- Test: `development/service-account-access/accounts/tests/test_admin_and_schema_urls.py`
 
 - [ ] **Step 1: Write the failing ECS-alignment check**
 
@@ -248,9 +248,9 @@ git commit -m "docs: align account access for ECS runtime contract"
 ## Task 5: Create The Infra Deploy Workflow
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/.github/workflows/deploy-ecs.yml`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/README.md`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
+- Create: `development/infra-ev-dashboard-platform/.github/workflows/deploy-ecs.yml`
+- Modify: `development/infra-ev-dashboard-platform/README.md`
+- Test: `development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
 
 - [ ] **Step 1: Write the failing workflow contract note**
 
@@ -295,9 +295,9 @@ git commit -m "feat: add ev-dashboard ECS deploy workflow"
 ## Task 6: Execute The First Dev Cutover Rehearsal
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lesson.md`
+- Modify: `docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
+- Modify: `lesson.md`
+- Modify: `development/infra-ev-dashboard-platform/lesson.md`
 
 - [ ] **Step 1: Build all three images from their repos**
 
@@ -342,9 +342,9 @@ git commit -m "docs: record ev-dashboard ECS rehearsal lessons"
 ## Task 7: Promote To Production Cutover
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lesson.md`
+- Modify: `docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
+- Modify: `lesson.md`
+- Modify: `development/infra-ev-dashboard-platform/lesson.md`
 
 - [ ] **Step 1: Re-read all lesson files before the production cutover**
 

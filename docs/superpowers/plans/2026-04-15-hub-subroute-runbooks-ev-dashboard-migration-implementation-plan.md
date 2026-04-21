@@ -13,16 +13,15 @@
 ### Task 1: Lock The Migration Scope
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-15-hub-subroute-runbooks-ev-dashboard-migration-implementation-plan.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md`
+- Create: `docs/superpowers/plans/2026-04-15-hub-subroute-runbooks-ev-dashboard-migration-implementation-plan.md`
+- Modify: `docs/runbooks/README.md`
+- Modify: `docs/mappings/current-runtime-inventory.md`
 
 - [x] **Step 1: Confirm which live runbooks still surface `hub` as a current target**
 
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 rg -n "hub\\.evnlogistics\\.com|hub\\b" docs/runbooks docs/mappings lesson.md AGENTS.md development/front-web-console/README.md --glob '*.md'
 ```
 
@@ -54,9 +53,9 @@ Expected: no whitespace or patch-format errors.
 ### Task 2: Migrate The Current Operator Runbook And Proxy Defaults
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/local-dispatch-settlement-stack.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/AGENTS.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/README.md`
+- Modify: `docs/runbooks/local-dispatch-settlement-stack.md`
+- Modify: `AGENTS.md`
+- Modify: `development/front-web-console/README.md`
 
 - [x] **Step 1: Update the local dispatch/settlement runbook**
 
@@ -88,7 +87,7 @@ Expected: no formatting problems.
 ### Task 3: Capture The Canonical Truth In Lessons
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
+- Modify: `lesson.md`
 
 - [x] **Step 1: Add a global lesson about legacy hub references**
 
@@ -103,7 +102,6 @@ If an older lesson mentions `hub`, rewrite the wording so it is clearly historic
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 rg -n "hub\\.evnlogistics\\.com|current real proxy target is `https://hub\\.evnlogistics\\.com`" \
   docs/runbooks AGENTS.md development/front-web-console/README.md lesson.md docs/mappings/current-runtime-inventory.md
 ```
@@ -115,7 +113,6 @@ Expected: any remaining matches are clearly labeled as legacy or historical brid
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 git diff --check
 ```
 

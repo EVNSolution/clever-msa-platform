@@ -86,7 +86,7 @@ Add assertions that `배차 데이터`, `정산 처리`, and shell-only pages re
 
 Run:
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- --run src/cockpit/SubdomainAccordionNav.test.tsx src/cockpit/cheonha/CheonhaSettlementHomePage.test.tsx src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx src/cockpit/cheonha/CheonhaSettlementProcessPage.test.tsx src/cockpit/cheonha/CheonhaDispatchDataPage.test.tsx src/App.cockpit.test.tsx
 ```
 Expected: FAIL because the current settlement sidebar and home page still use the older compact layout.
@@ -138,7 +138,7 @@ Keep the detached sidebar family and shell ownership intact.
 
 Run:
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- --run src/cockpit/SubdomainAccordionNav.test.tsx
 ```
 Expected: PASS.
@@ -191,7 +191,7 @@ Do not invent new KPI labels.
 
 Run:
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- --run src/cockpit/cheonha/CheonhaSettlementHomePage.test.tsx
 ```
 Expected: PASS.
@@ -242,7 +242,7 @@ Do not regress upload flow, auto-detection, or settlement handoff. Only reframe 
 
 Run:
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- --run src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx src/cockpit/cheonha/CheonhaSettlementProcessPage.test.tsx src/cockpit/cheonha/CheonhaDispatchDataPage.test.tsx src/cockpit/cheonha/CheonhaRuleShellPanel.test.tsx src/App.cockpit.test.tsx
 ```
 Expected: PASS.
@@ -273,13 +273,13 @@ git commit -m "feat: unify settlement workspace presentation"
 - [ ] **Step 1: Re-read the spec and check the implementation against it line by line**
 
 Spec:
-`/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-18-subdomain-settlement-cheonha-visual-adaptation-design.md`
+`docs/superpowers/specs/2026-04-18-subdomain-settlement-cheonha-visual-adaptation-design.md`
 
 - [ ] **Step 2: Run the full frontend test suite**
 
 Run:
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- --run
 ```
 Expected: PASS with zero failing files.
@@ -288,7 +288,7 @@ Expected: PASS with zero failing files.
 
 Run:
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run build
 ```
 Expected: PASS. Chunk-size warnings are acceptable unless they become errors.
@@ -297,7 +297,7 @@ Expected: PASS. Chunk-size warnings are acceptable unless they become errors.
 
 Start:
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run dev:local-sandbox
 ```
 Manual checks:

@@ -6,8 +6,8 @@ This inventory records how each first-level repo under `development/` is current
 
 It is the Phase 1 inventory artifact for:
 
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-09-development-linked-child-repos-governance-design.md`
-- `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-09-development-linked-child-repos-migration-plan.md`
+- `docs/superpowers/specs/2026-04-09-development-linked-child-repos-governance-design.md`
+- `docs/superpowers/plans/2026-04-09-development-linked-child-repos-migration-plan.md`
 
 ## Summary
 

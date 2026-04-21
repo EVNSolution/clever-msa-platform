@@ -12,18 +12,18 @@
 
 Every remaining slice starts with the same preflight order. Do not skip directly to deploy.
 
-1. Read root [lesson.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md) and the target repo `lesson.md`.
+1. Read root [lesson.md](../../../lesson.md) and the target repo `lesson.md`.
 2. Run the infra repo preflight gate:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm run preflight
 npm test -- --runInBand
 npx cdk synth
 ```
 
 3. Only after that run the deploy workflow.
-4. During deploy, use [ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md) instead of constant fast polling.
+4. During deploy, use [ev-dashboard-ecs-deploy-operator-loop.md](../../runbooks/ev-dashboard-ecs-deploy-operator-loop.md) instead of constant fast polling.
 
 ## Current Status
 
@@ -38,9 +38,9 @@ npx cdk synth
 - `Task 9` runtime/API proof for the terminal-and-telemetry `7a` slice is complete on production ECS.
 - authenticated read-only browser smoke is complete with dedicated manager-role smoke accounts kept in a local gitignored operator note.
 - day-to-day operator guidance after the migration now lives in:
-  - [../../runbooks/ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md)
-  - [../../runbooks/ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
-  - [../../runbooks/ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
+  - [../../runbooks/ev-dashboard-ecs-preflight-gate.md](../../runbooks/ev-dashboard-ecs-preflight-gate.md)
+  - [../../runbooks/ev-dashboard-ecs-deploy-operator-loop.md](../../runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
+  - [../../runbooks/ev-dashboard-ui-smoke-and-decommission.md](../../runbooks/ev-dashboard-ui-smoke-and-decommission.md)
 - Verified public and protected read paths:
   - `https://api.ev-dashboard.com/api/org/companies/public/` -> `200`
   - `https://api.ev-dashboard.com/api/org/companies/` -> `200` with admin JWT
@@ -59,10 +59,10 @@ npx cdk synth
 ### Task 1: Lock The Slice Roadmap In Docs
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-14-ev-dashboard-backend-slices-design.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
+- Create: `docs/superpowers/specs/2026-04-14-ev-dashboard-backend-slices-design.md`
+- Create: `docs/superpowers/plans/2026-04-14-ev-dashboard-backend-slices-implementation-plan.md`
+- Modify: `docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
+- Modify: `docs/archive/historical/rollout/2026-04-13-ev-dashboard-domain-ecs-cutover-plan.md`
 
 - [ ] Write the sequencing design and record the evidence for why `Company Governance` comes next.
 - [ ] Add a short pointer in the rollout docs that the remaining backend order is now fixed by the new spec/plan pair.
@@ -80,11 +80,11 @@ git commit -m "docs: define ev-dashboard backend slice roadmap"
 ### Task 2: Prepare The Shared Infra For Additional Backend Services
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/config.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/config.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/README.md`
+- Modify: `development/infra-ev-dashboard-platform/lib/config.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/config.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/README.md`
 
 - [ ] Write failing tests for generic backend service slots that preserve service-connect DNS names and desired-count gating.
 - [ ] Add config inputs for additional service image URIs and desired counts only for the next slice, not for the whole platform at once.
@@ -92,7 +92,7 @@ git commit -m "docs: define ev-dashboard backend slice roadmap"
 - [ ] Re-run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand
 npx cdk synth
 ```
@@ -107,12 +107,12 @@ git commit -m "feat: add organization slice runtime slot"
 ### Task 3: Execute Slice 1 Company Governance
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-organization-registry/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-organization-registry/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/nginx.conf`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/tests/test_nginx_docs_routes.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
+- Modify: `development/service-organization-registry/README.md`
+- Create: `development/service-organization-registry/lesson.md`
+- Modify: `development/edge-api-gateway/nginx.conf`
+- Modify: `development/edge-api-gateway/tests/test_nginx_docs_routes.py`
+- Modify: `development/infra-ev-dashboard-platform/lesson.md`
+- Modify: `lesson.md`
 
 - [ ] Confirm `service-organization-registry` can answer the exact current prefixes: `/api/org/companies/`, `/api/org/fleets/`, `/api/org/companies/public/`.
 - [ ] Add or adjust gateway routing so `/api/org/*` uses the same direct-or-stable upstream rules that worked for account access.
@@ -139,17 +139,17 @@ curl -sk https://api.ev-dashboard.com/api/org/fleets/
 ### Task 4: Execute Slice 2 People And Assets
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-profile/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-personnel-document-registry/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-personnel-document-registry/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-registry/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-registry/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-assignment/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-assignment/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/nginx.conf`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/config.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Modify: `development/service-driver-profile/README.md`
+- Create: `development/service-driver-profile/lesson.md`
+- Modify: `development/service-personnel-document-registry/README.md`
+- Create: `development/service-personnel-document-registry/lesson.md`
+- Modify: `development/service-vehicle-registry/README.md`
+- Create: `development/service-vehicle-registry/lesson.md`
+- Modify: `development/service-vehicle-assignment/README.md`
+- Create: `development/service-vehicle-assignment/lesson.md`
+- Modify: `development/edge-api-gateway/nginx.conf`
+- Modify: `development/infra-ev-dashboard-platform/lib/config.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
 
 **Execution notes locked before implementation:**
 - `service-personnel-document-registry` must receive `DRIVER_PROFILE_BASE_URL=http://driver-profile-api:8000`.
@@ -195,15 +195,15 @@ curl -sk https://api.ev-dashboard.com/api/org/fleets/
 ### Task 5: Execute Slice 3 Dispatch Inputs
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-registry/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-delivery-record/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/nginx.conf`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/config.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Modify: `development/service-dispatch-registry/README.md`
+- Create: `development/service-dispatch-registry/lesson.md`
+- Modify: `development/service-delivery-record/README.md`
+- Create: `development/service-delivery-record/lesson.md`
+- Modify: `development/service-attendance-registry/README.md`
+- Create: `development/service-attendance-registry/lesson.md`
+- Modify: `development/edge-api-gateway/nginx.conf`
+- Modify: `development/infra-ev-dashboard-platform/lib/config.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
 
 **Execution notes locked before implementation:**
 - `service-attendance-registry` should be treated as the independent seed inside this slice.
@@ -252,18 +252,18 @@ curl -sk https://api.ev-dashboard.com/api/org/fleets/
 ### Task 6: Execute Slice 4 Dispatch Read Models
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-operations-view/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-operations-view/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-operations-view/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-operations-view/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-operations-view/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-vehicle-operations-view/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/nginx.conf`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/config.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/config.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/.github/workflows/deploy-ecs.yml`
+- Modify: `development/service-dispatch-operations-view/README.md`
+- Create: `development/service-dispatch-operations-view/lesson.md`
+- Modify: `development/service-driver-operations-view/README.md`
+- Create: `development/service-driver-operations-view/lesson.md`
+- Modify: `development/service-vehicle-operations-view/README.md`
+- Create: `development/service-vehicle-operations-view/lesson.md`
+- Modify: `development/edge-api-gateway/nginx.conf`
+- Modify: `development/infra-ev-dashboard-platform/lib/config.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/config.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/test/ev-dashboard-platform-stack.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/.github/workflows/deploy-ecs.yml`
 
 - [ ] Write failing tests first for:
   - three new stateless runtime slots
@@ -317,15 +317,15 @@ curl -sk https://api.ev-dashboard.com/api/org/fleets/
 ### Task 7: Execute Slice 5 Settlement
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-registry/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-payroll/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-operations-view/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-settlement-operations-view/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/nginx.conf`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/config.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Modify: `development/service-settlement-registry/README.md`
+- Create: `development/service-settlement-registry/lesson.md`
+- Modify: `development/service-settlement-payroll/README.md`
+- Create: `development/service-settlement-payroll/lesson.md`
+- Modify: `development/service-settlement-operations-view/README.md`
+- Create: `development/service-settlement-operations-view/lesson.md`
+- Modify: `development/edge-api-gateway/nginx.conf`
+- Modify: `development/infra-ev-dashboard-platform/lib/config.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
 
 - [ ] Add settlement runtime slots and failing infra tests.
 - [ ] Deploy and smoke-check:
@@ -359,19 +359,19 @@ curl -sk https://api.ev-dashboard.com/api/org/fleets/
 ### Task 8: Execute Slice 6 Support Surface
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-region-registry/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-region-registry/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-region-analytics/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-region-analytics/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-announcement-registry/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-announcement-registry/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-support-registry/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-support-registry/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-notification-hub/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-notification-hub/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/nginx.conf`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/config.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Modify: `development/service-region-registry/README.md`
+- Create: `development/service-region-registry/lesson.md`
+- Modify: `development/service-region-analytics/README.md`
+- Create: `development/service-region-analytics/lesson.md`
+- Modify: `development/service-announcement-registry/README.md`
+- Create: `development/service-announcement-registry/lesson.md`
+- Modify: `development/service-support-registry/README.md`
+- Create: `development/service-support-registry/lesson.md`
+- Modify: `development/service-notification-hub/README.md`
+- Create: `development/service-notification-hub/lesson.md`
+- Modify: `development/edge-api-gateway/nginx.conf`
+- Modify: `development/infra-ev-dashboard-platform/lib/config.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
 
 - [ ] Add runtime slots and deploy the support-surface services.
 - [ ] Smoke-check:
@@ -409,14 +409,14 @@ curl -sk https://api.ev-dashboard.com/api/org/fleets/
 ### Task 9: Execute Slice 7 Terminal And Telemetry
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-terminal-registry/lesson.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-hub/lesson.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-dead-letter/lesson.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-telemetry-listener/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/nginx.conf`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/config.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/preflight.ts`
+- Create: `development/service-terminal-registry/lesson.md`
+- Create: `development/service-telemetry-hub/lesson.md`
+- Create: `development/service-telemetry-dead-letter/lesson.md`
+- Create: `development/service-telemetry-listener/lesson.md`
+- Modify: `development/edge-api-gateway/nginx.conf`
+- Modify: `development/infra-ev-dashboard-platform/lib/config.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/ev-dashboard-platform-stack.ts`
+- Modify: `development/infra-ev-dashboard-platform/lib/preflight.ts`
 
 - [x] Add terminal and telemetry runtime slots, keeping `service-telemetry-listener` internal-only.
 - [x] Split execution into:
@@ -449,9 +449,9 @@ Completion evidence:
 ### Task 10: Close The Migration Record
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md`
+- Modify: `lesson.md`
+- Modify: `docs/rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md`
+- Modify: `docs/mappings/current-runtime-inventory.md`
 
 - [x] After slice 7 succeeds, update the root lesson with the final migration rules that actually held true.
 - [x] Update the rollout truth to show which prefixes have fully left the EC2 path.
@@ -473,6 +473,6 @@ git commit -m "docs: close ev-dashboard backend ecs migration record"
 **Post-task note:**
 - This plan is now an execution record.
 - Remaining operator guidance is tracked in:
-  - [../../runbooks/ev-dashboard-ecs-preflight-gate.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md)
-  - [../../runbooks/ev-dashboard-ecs-deploy-operator-loop.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
-  - [../../runbooks/ev-dashboard-ui-smoke-and-decommission.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ui-smoke-and-decommission.md)
+  - [../../runbooks/ev-dashboard-ecs-preflight-gate.md](../../runbooks/ev-dashboard-ecs-preflight-gate.md)
+  - [../../runbooks/ev-dashboard-ecs-deploy-operator-loop.md](../../runbooks/ev-dashboard-ecs-deploy-operator-loop.md)
+  - [../../runbooks/ev-dashboard-ui-smoke-and-decommission.md](../../runbooks/ev-dashboard-ui-smoke-and-decommission.md)

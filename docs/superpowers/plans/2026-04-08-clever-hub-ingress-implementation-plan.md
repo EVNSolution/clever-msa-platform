@@ -14,11 +14,11 @@
 
 ### Platform docs repo
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/nginx.conf`
+- Modify: `development/edge-api-gateway/nginx.conf`
   - Add a gateway-owned health endpoint and finalize canonical forwarded-header behavior for ALB traffic.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/docker-compose.account-driver-settlement.yml`
+- Modify: `development/integration-local-stack/docker-compose.account-driver-settlement.yml`
   - Add a container-level healthcheck for the gateway service so local/dev behavior matches ALB expectations.
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/compose/README.md`
+- Modify: `development/integration-local-stack/compose/README.md`
   - Document the new gateway health path, public ingress assumptions, and post-cutover runtime expectations.
 
 ### Deploy control repo
@@ -39,9 +39,9 @@
 ## Task 1: Make the gateway ALB-ready
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/nginx.conf`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/docker-compose.account-driver-settlement.yml`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/compose/README.md`
+- Modify: `development/edge-api-gateway/nginx.conf`
+- Modify: `development/integration-local-stack/docker-compose.account-driver-settlement.yml`
+- Modify: `development/integration-local-stack/compose/README.md`
 
 - [ ] **Step 1: Define the gateway health contract in config**
 
@@ -66,7 +66,7 @@ proxy_set_header X-Real-IP $remote_addr;
 - [ ] **Step 2: Add a compose healthcheck for the gateway**
 
 Add a gateway service healthcheck in:
-`/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/docker-compose.account-driver-settlement.yml`
+`development/integration-local-stack/docker-compose.account-driver-settlement.yml`
 
 Example:
 
@@ -81,7 +81,7 @@ healthcheck:
 - [ ] **Step 3: Document the new canonical health path**
 
 Update:
-`/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/compose/README.md`
+`development/integration-local-stack/compose/README.md`
 
 Document:
 - gateway health path: `/healthz`
@@ -93,7 +93,7 @@ Document:
 Run:
 
 ```bash
-docker run --rm -v /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/nginx.conf:/etc/nginx/nginx.conf:ro nginx:stable nginx -t
+docker run --rm -v development/edge-api-gateway/nginx.conf:/etc/nginx/nginx.conf:ro nginx:stable nginx -t
 ```
 
 Expected:
@@ -105,7 +105,7 @@ Expected:
 Run:
 
 ```bash
-docker compose -f /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/docker-compose.account-driver-settlement.yml config >/tmp/clever-compose.out
+docker compose -f development/integration-local-stack/docker-compose.account-driver-settlement.yml config >/tmp/clever-compose.out
 ```
 
 Expected:
@@ -115,11 +115,11 @@ Expected:
 - [ ] **Step 6: Commit**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform add \
+git -C . add \
   development/edge-api-gateway/nginx.conf \
   development/integration-local-stack/docker-compose.account-driver-settlement.yml \
   development/integration-local-stack/compose/README.md
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform commit -m "feat: add gateway ingress health contract"
+git -C . commit -m "feat: add gateway ingress health contract"
 ```
 
 ## Task 2: Add an idempotent ingress provisioning workflow
@@ -403,7 +403,7 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-c
 
 **Files:**
 - Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/docs/runbooks/2026-04-07-prod-cutover-checklist.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-08-production-cutover-design.md`
+- Modify: `docs/superpowers/specs/2026-04-08-production-cutover-design.md`
 
 - [ ] **Step 1: Replace temporary ingress assumptions in the prod checklist**
 
@@ -419,7 +419,7 @@ Make the checklist explicitly require:
 - [ ] **Step 2: Link the production cutover design back to the implemented ingress path**
 
 Update:
-`/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-08-production-cutover-design.md`
+`docs/superpowers/specs/2026-04-08-production-cutover-design.md`
 
 Add references to:
 - the ingress workflow
@@ -433,7 +433,7 @@ Run:
 ```bash
 rg -n "Provision Public Ingress|public-ingress-runbook|8080" \
   /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-control/docs/runbooks \
-  /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs
+  docs/superpowers/specs
 ```
 
 Expected:
@@ -447,6 +447,6 @@ git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/clever-deploy-c
 ```
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform add docs/superpowers/specs/2026-04-08-production-cutover-design.md
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform commit -m "docs: link production cutover to ingress implementation"
+git -C . add docs/superpowers/specs/2026-04-08-production-cutover-design.md
+git -C . commit -m "docs: link production cutover to ingress implementation"
 ```

@@ -68,60 +68,60 @@ This plan does **not** include:
 
 The implementation should use the following file responsibilities.
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/package.json`
+- Modify: `development/front-web-console/package.json`
   - add the new `dev:local-sandbox` script without changing existing scripts
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/vite.config.ts`
+- Modify: `development/front-web-console/vite.config.ts`
   - keep existing proxy behavior for normal modes, but make the new mode explicit and easy to verify
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/main.tsx`
+- Modify: `development/front-web-console/src/main.tsx`
   - bootstrap sandbox-only runtime hooks before React renders when `local-sandbox` is active
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.tsx`
+- Modify: `development/front-web-console/src/App.tsx`
   - expose `/__dev__/session` only in `local-sandbox`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/sessionPersistence.ts`
+- Modify: `development/front-web-console/src/sessionPersistence.ts`
   - reuse existing storage contract; add helpers only if reset needs them
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/mode.ts`
+- Create: `development/front-web-console/src/devSandbox/mode.ts`
   - single source of truth for `local-sandbox` activation checks
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/mode.test.ts`
+- Create: `development/front-web-console/src/devSandbox/mode.test.ts`
   - mode guard tests
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/sessionPresets.ts`
+- Create: `development/front-web-console/src/devSandbox/sessionPresets.ts`
   - host-aware preset definitions for `system_admin` and `cheonha_manager`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/sessionPresets.test.ts`
+- Create: `development/front-web-console/src/devSandbox/sessionPresets.test.ts`
   - host/preset exposure tests
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/mockState.ts`
+- Create: `development/front-web-console/src/devSandbox/mockState.ts`
   - in-memory dataset and reset helpers
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/bootstrap.ts`
+- Create: `development/front-web-console/src/devSandbox/bootstrap.ts`
   - sandbox-only runtime bootstrap that keeps `dev` and `local-test` untouched
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/bootstrap.test.ts`
+- Create: `development/front-web-console/src/devSandbox/bootstrap.test.ts`
   - regression tests that `local-test` never activates the sandbox path
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/installFetchMock.ts`
+- Create: `development/front-web-console/src/devSandbox/installFetchMock.ts`
   - browser-side `fetch` interception for every `/api` request
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/installFetchMock.test.ts`
+- Create: `development/front-web-console/src/devSandbox/installFetchMock.test.ts`
   - prove `/api` never falls through and non-API requests still can
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/localSandboxSettlementRuns.test.tsx`
+- Create: `development/front-web-console/src/devSandbox/localSandboxSettlementRuns.test.tsx`
   - representative create/update/delete proof through real page code and sandbox fetch
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DevSessionPage.tsx`
+- Create: `development/front-web-console/src/pages/DevSessionPage.tsx`
   - minimal current-host + inject/reset UI
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DevSessionPage.test.tsx`
+- Create: `development/front-web-console/src/pages/DevSessionPage.test.tsx`
   - route/page behavior tests
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.test.tsx`
+- Modify: `development/front-web-console/src/App.test.tsx`
   - route visibility tests for main-domain app shell
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.cockpit.test.tsx`
+- Modify: `development/front-web-console/src/App.cockpit.test.tsx`
   - subdomain `local-sandbox` shell + preset route assertions if needed
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
+- Modify: `development/front-web-console/src/styles.css`
   - minimal styling for the dev session page only if needed
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/README.md`
+- Modify: `development/front-web-console/README.md`
   - document `dev`, `dev:local-test`, `dev:local-sandbox`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/lesson.md`
+- Modify: `development/front-web-console/lesson.md`
   - record the sandbox/manual-test contract and safety rules
 
 ## Task 1: Lock the New `local-sandbox` Mode Contract
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/package.json`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/vite.config.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/mode.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/mode.test.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/bootstrap.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/bootstrap.test.ts`
+- Modify: `development/front-web-console/package.json`
+- Modify: `development/front-web-console/vite.config.ts`
+- Create: `development/front-web-console/src/devSandbox/mode.ts`
+- Create: `development/front-web-console/src/devSandbox/mode.test.ts`
+- Create: `development/front-web-console/src/devSandbox/bootstrap.ts`
+- Create: `development/front-web-console/src/devSandbox/bootstrap.test.ts`
 
 - [ ] **Step 1: Write the failing mode-contract tests**
 
@@ -159,7 +159,7 @@ describe('sandbox bootstrap gate', () => {
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/devSandbox/mode.test.ts
 npm run test -- src/devSandbox/bootstrap.test.ts
 ```
@@ -194,7 +194,7 @@ export function isLocalSandboxMode(mode = import.meta.env.MODE): boolean {
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/devSandbox/mode.test.ts
 npm run test -- src/devSandbox/bootstrap.test.ts
 ```
@@ -205,7 +205,7 @@ Expected:
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add package.json vite.config.ts src/devSandbox/mode.ts src/devSandbox/mode.test.ts src/devSandbox/bootstrap.ts src/devSandbox/bootstrap.test.ts
 git commit -m "feat: add local sandbox mode contract"
 ```
@@ -213,14 +213,14 @@ git commit -m "feat: add local sandbox mode contract"
 ## Task 2: Add the Dev Session Route and Host-Aware Presets
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.test.tsx`
-- Optional Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.cockpit.test.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/sessionPresets.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/sessionPresets.test.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DevSessionPage.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DevSessionPage.test.tsx`
-- Optional Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
+- Modify: `development/front-web-console/src/App.tsx`
+- Modify: `development/front-web-console/src/App.test.tsx`
+- Optional Modify: `development/front-web-console/src/App.cockpit.test.tsx`
+- Create: `development/front-web-console/src/devSandbox/sessionPresets.ts`
+- Create: `development/front-web-console/src/devSandbox/sessionPresets.test.ts`
+- Create: `development/front-web-console/src/pages/DevSessionPage.tsx`
+- Create: `development/front-web-console/src/pages/DevSessionPage.test.tsx`
+- Optional Modify: `development/front-web-console/src/styles.css`
 
 - [ ] **Step 1: Write the failing preset-model tests**
 
@@ -244,7 +244,7 @@ Create `src/pages/DevSessionPage.test.tsx` and extend `src/App.test.tsx` so they
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/devSandbox/sessionPresets.test.ts src/pages/DevSessionPage.test.tsx src/App.test.tsx
 ```
 
@@ -275,7 +275,7 @@ export type DevSessionPresetKey = 'system_admin' | 'cheonha_manager';
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/devSandbox/sessionPresets.test.ts src/pages/DevSessionPage.test.tsx src/App.test.tsx
 ```
 
@@ -285,7 +285,7 @@ Expected:
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/App.tsx src/App.test.tsx src/devSandbox/sessionPresets.ts src/devSandbox/sessionPresets.test.ts src/pages/DevSessionPage.tsx src/pages/DevSessionPage.test.tsx src/styles.css
 git commit -m "feat: add local sandbox session route"
 ```
@@ -293,13 +293,13 @@ git commit -m "feat: add local sandbox session route"
 ## Task 3: Install the Full Browser-Side `/api` Mock Layer
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/main.tsx`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/mockState.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/bootstrap.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/installFetchMock.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/installFetchMock.test.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/devSandbox/localSandboxSettlementRuns.test.tsx`
-- Optional Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/test/setup.ts`
+- Modify: `development/front-web-console/src/main.tsx`
+- Create: `development/front-web-console/src/devSandbox/mockState.ts`
+- Create: `development/front-web-console/src/devSandbox/bootstrap.ts`
+- Create: `development/front-web-console/src/devSandbox/installFetchMock.ts`
+- Create: `development/front-web-console/src/devSandbox/installFetchMock.test.ts`
+- Create: `development/front-web-console/src/devSandbox/localSandboxSettlementRuns.test.tsx`
+- Optional Modify: `development/front-web-console/src/test/setup.ts`
 
 - [ ] **Step 1: Write the failing mock-layer tests**
 
@@ -334,7 +334,7 @@ it('creates a settlement run through real page code using sandbox fetch only', a
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/devSandbox/installFetchMock.test.ts
 npm run test -- src/devSandbox/localSandboxSettlementRuns.test.tsx
 ```
@@ -369,7 +369,7 @@ Minimum first dataset:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/devSandbox/installFetchMock.test.ts src/pages/DevSessionPage.test.tsx src/App.cockpit.test.tsx
 npm run test -- src/devSandbox/localSandboxSettlementRuns.test.tsx
 ```
@@ -380,7 +380,7 @@ Expected:
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/main.tsx src/devSandbox/mockState.ts src/devSandbox/bootstrap.ts src/devSandbox/installFetchMock.ts src/devSandbox/installFetchMock.test.ts src/devSandbox/localSandboxSettlementRuns.test.tsx src/pages/DevSessionPage.test.tsx src/App.cockpit.test.tsx
 git commit -m "feat: add local sandbox api mock layer"
 ```
@@ -388,10 +388,10 @@ git commit -m "feat: add local sandbox api mock layer"
 ## Task 4: Document the Mode and Close the Verification Gate
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/lesson.md`
-- Optional Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.test.tsx`
-- Optional Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.cockpit.test.tsx`
+- Modify: `development/front-web-console/README.md`
+- Modify: `development/front-web-console/lesson.md`
+- Optional Modify: `development/front-web-console/src/App.test.tsx`
+- Optional Modify: `development/front-web-console/src/App.cockpit.test.tsx`
 
 - [ ] **Step 1: Write the failing doc/assertion checks**
 
@@ -415,7 +415,7 @@ Document in `README.md` and `lesson.md`:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test
 npm run build
 rg -n "__dev__/session|local-sandbox" dist
@@ -431,7 +431,7 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run dev:local-sandbox
 ```
 
@@ -444,7 +444,7 @@ Then confirm manually:
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add README.md lesson.md
 git commit -m "docs: record local sandbox web test mode"
 ```

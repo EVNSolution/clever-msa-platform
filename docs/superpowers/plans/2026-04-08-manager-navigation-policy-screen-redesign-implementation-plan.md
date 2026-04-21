@@ -13,31 +13,31 @@
 ## File Map
 
 ### Frontend: `development/front-web-console/`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/ManagerNavigationPolicyPage.tsx`
+- Modify: `development/front-web-console/src/pages/ManagerNavigationPolicyPage.tsx`
   - 화면 구조를 3영역 워크벤치로 재작성
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/navigation.ts`
+- Modify: `development/front-web-console/src/navigation.ts`
   - 미리보기용 사이드바 데이터 재사용
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/authScopes.ts`
+- Modify: `development/front-web-console/src/authScopes.ts`
   - 기본 정책/역할 라벨 helper가 화면 정보 구조와 맞는지 조정
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
+- Modify: `development/front-web-console/src/styles.css`
   - 새 레이아웃, 정책 카드, 미리보기 패널 스타일 추가
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/api/navigationPolicy.ts`
+- Modify: `development/front-web-console/src/api/navigationPolicy.ts`
   - 현재 역할 단위 저장에 맞는 helper 보강 필요 시 수정
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/ManagerNavigationPolicyPage.test.tsx`
+- Test: `development/front-web-console/src/pages/ManagerNavigationPolicyPage.test.tsx`
   - 역할 전환, 편집, 미리보기, 저장 흐름 테스트 갱신
 
 ### Docs
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/manager-navigation-policy.md`
+- Modify: `docs/runbooks/manager-navigation-policy.md`
   - 새 화면 구조 기준 운영 절차 반영
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-08-manager-navigation-policy-abac-design.md`
+- Modify: `docs/superpowers/specs/2026-04-08-manager-navigation-policy-abac-design.md`
   - 필요 시 화면 구조 변경 사항 연결
 
 ## Task 1: 역할 레일과 정책 메타데이터 구조 추가
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/ManagerNavigationPolicyPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/authScopes.ts`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/ManagerNavigationPolicyPage.test.tsx`
+- Modify: `development/front-web-console/src/pages/ManagerNavigationPolicyPage.tsx`
+- Modify: `development/front-web-console/src/authScopes.ts`
+- Test: `development/front-web-console/src/pages/ManagerNavigationPolicyPage.test.tsx`
 
 - [ ] **Step 1: 정책 화면 메타데이터 상수 정의**
 - 역할별 설명, 메뉴 설명, 그룹, 메타 메뉴 제외 규칙을 한 곳에 모은다.
@@ -55,16 +55,16 @@
 - [ ] **Step 4: Commit**
 
 ```bash
-git add /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/ManagerNavigationPolicyPage.tsx /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/authScopes.ts /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/ManagerNavigationPolicyPage.test.tsx
+git add development/front-web-console/src/pages/ManagerNavigationPolicyPage.tsx development/front-web-console/src/authScopes.ts development/front-web-console/src/pages/ManagerNavigationPolicyPage.test.tsx
 git commit -m "refactor: redesign manager policy role selection"
 ```
 
 ## Task 2: 정책 편집 패널을 설명형 카드 구조로 재작성
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/ManagerNavigationPolicyPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/ManagerNavigationPolicyPage.test.tsx`
+- Modify: `development/front-web-console/src/pages/ManagerNavigationPolicyPage.tsx`
+- Modify: `development/front-web-console/src/styles.css`
+- Test: `development/front-web-console/src/pages/ManagerNavigationPolicyPage.test.tsx`
 
 - [ ] **Step 1: 메뉴 항목 카드 컴포넌트 구조를 추가한다**
 - 각 항목에 이름, 설명, key, 상태 배지, 체크 토글을 표시한다.
@@ -80,17 +80,17 @@ git commit -m "refactor: redesign manager policy role selection"
 - [ ] **Step 4: Commit**
 
 ```bash
-git add /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/ManagerNavigationPolicyPage.tsx /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/ManagerNavigationPolicyPage.test.tsx
+git add development/front-web-console/src/pages/ManagerNavigationPolicyPage.tsx development/front-web-console/src/styles.css development/front-web-console/src/pages/ManagerNavigationPolicyPage.test.tsx
 git commit -m "feat: add descriptive policy item cards"
 ```
 
 ## Task 3: 실시간 사이드바 미리보기 추가
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/ManagerNavigationPolicyPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/navigation.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/ManagerNavigationPolicyPage.test.tsx`
+- Modify: `development/front-web-console/src/pages/ManagerNavigationPolicyPage.tsx`
+- Modify: `development/front-web-console/src/navigation.ts`
+- Modify: `development/front-web-console/src/styles.css`
+- Test: `development/front-web-console/src/pages/ManagerNavigationPolicyPage.test.tsx`
 
 - [ ] **Step 1: 선택 역할 + draft policy를 기준으로 미리보기용 허용 메뉴 집합을 계산한다**
 - 저장 전 draft도 반영된다.
@@ -104,16 +104,16 @@ git commit -m "feat: add descriptive policy item cards"
 - [ ] **Step 4: Commit**
 
 ```bash
-git add /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/ManagerNavigationPolicyPage.tsx /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/navigation.ts /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/ManagerNavigationPolicyPage.test.tsx
+git add development/front-web-console/src/pages/ManagerNavigationPolicyPage.tsx development/front-web-console/src/navigation.ts development/front-web-console/src/styles.css development/front-web-console/src/pages/ManagerNavigationPolicyPage.test.tsx
 git commit -m "feat: add sidebar preview to manager policy screen"
 ```
 
 ## Task 4: 저장 UX를 역할 단위로 단순화
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/ManagerNavigationPolicyPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/api/navigationPolicy.ts`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/ManagerNavigationPolicyPage.test.tsx`
+- Modify: `development/front-web-console/src/pages/ManagerNavigationPolicyPage.tsx`
+- Modify: `development/front-web-console/src/api/navigationPolicy.ts`
+- Test: `development/front-web-console/src/pages/ManagerNavigationPolicyPage.test.tsx`
 
 - [ ] **Step 1: 현재 역할 draft만 저장하는 UX 문구와 payload 구성을 정리한다**
 - 백엔드가 전체 정책 응답을 유지해도 프론트는 현재 역할 중심으로 동작한다.
@@ -127,16 +127,16 @@ git commit -m "feat: add sidebar preview to manager policy screen"
 - [ ] **Step 4: Commit**
 
 ```bash
-git add /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/ManagerNavigationPolicyPage.tsx /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/api/navigationPolicy.ts /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/ManagerNavigationPolicyPage.test.tsx
+git add development/front-web-console/src/pages/ManagerNavigationPolicyPage.tsx development/front-web-console/src/api/navigationPolicy.ts development/front-web-console/src/pages/ManagerNavigationPolicyPage.test.tsx
 git commit -m "refactor: simplify manager policy save flow"
 ```
 
 ## Task 5: 문서와 운영 절차 갱신
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/manager-navigation-policy.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-08-manager-navigation-policy-abac-design.md`
-- Create or reference: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-08-manager-navigation-policy-screen-redesign-design.md`
+- Modify: `docs/runbooks/manager-navigation-policy.md`
+- Modify: `docs/superpowers/specs/2026-04-08-manager-navigation-policy-abac-design.md`
+- Create or reference: `docs/superpowers/specs/2026-04-08-manager-navigation-policy-screen-redesign-design.md`
 
 - [ ] **Step 1: runbook를 새 화면 구조 기준으로 갱신한다**
 - 역할 레일
@@ -150,7 +150,7 @@ git commit -m "refactor: simplify manager policy save flow"
 - [ ] **Step 3: Commit**
 
 ```bash
-git add /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/manager-navigation-policy.md /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-08-manager-navigation-policy-abac-design.md /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-08-manager-navigation-policy-screen-redesign-design.md
+git add docs/runbooks/manager-navigation-policy.md docs/superpowers/specs/2026-04-08-manager-navigation-policy-abac-design.md docs/superpowers/specs/2026-04-08-manager-navigation-policy-screen-redesign-design.md
 git commit -m "docs: redesign manager navigation policy screen"
 ```
 
@@ -162,7 +162,7 @@ git commit -m "docs: redesign manager navigation policy screen"
 - [ ] **Step 1: `front-web-console` main push**
 
 ```bash
-git -C /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console push origin main
+git -C development/front-web-console push origin main
 ```
 
 - [ ] **Step 2: 중앙배포 실행**

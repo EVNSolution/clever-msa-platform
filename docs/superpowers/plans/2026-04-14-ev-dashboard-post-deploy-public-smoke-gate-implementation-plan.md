@@ -13,10 +13,10 @@
 ### Task 1: Add A Testable Post-Deploy Smoke Module
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lib/postDeploySmoke.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/bin/postDeploySmoke.ts`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/test/postDeploySmoke.test.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/package.json`
+- Create: `development/infra-ev-dashboard-platform/lib/postDeploySmoke.ts`
+- Create: `development/infra-ev-dashboard-platform/bin/postDeploySmoke.ts`
+- Create: `development/infra-ev-dashboard-platform/test/postDeploySmoke.test.ts`
+- Modify: `development/infra-ev-dashboard-platform/package.json`
 
 - [ ] Step 1: Write failing Jest tests for the smoke target selection and status validation.
 - [ ] Step 2: Run the new smoke test file and verify it fails for missing implementation.
@@ -31,12 +31,12 @@
 ### Task 2: Enforce The Smoke Gate In Workflow And Docs
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/.github/workflows/deploy-ecs.yml`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-ecs-preflight-gate.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform/lesson.md`
+- Modify: `development/infra-ev-dashboard-platform/.github/workflows/deploy-ecs.yml`
+- Modify: `development/infra-ev-dashboard-platform/README.md`
+- Modify: `docs/runbooks/ev-dashboard-ecs-deploy-operator-loop.md`
+- Modify: `docs/runbooks/ev-dashboard-ecs-preflight-gate.md`
+- Modify: `lesson.md`
+- Modify: `development/infra-ev-dashboard-platform/lesson.md`
 
 - [ ] Step 1: Add a workflow step after `cdk deploy` that runs `npm run smoke:postdeploy`.
 - [ ] Step 2: Update the GitHub step summary so operators know public smoke is now part of the deploy gate.
@@ -48,7 +48,7 @@
 - [ ] Step 4: Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/infra-ev-dashboard-platform
+cd development/infra-ev-dashboard-platform
 npm test -- --runInBand
 ```
 

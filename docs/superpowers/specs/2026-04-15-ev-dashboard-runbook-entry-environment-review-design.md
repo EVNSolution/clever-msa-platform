@@ -17,7 +17,7 @@
 1. runtime 을 다 내린 뒤 다시 올리는 cold start
 2. operator 가 지금 무엇이 남아 있어야 하는지부터 확인해야 하는 shutdown/rebuild 전환 시점
 
-현재 [docs/runbooks/README.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/README.md)는 `preprod release gate -> preflight -> deploy loop -> UI smoke/decommission` 순서로 시작한다.
+현재 [docs/runbooks/README.md](../../runbooks/README.md)는 `preprod release gate -> preflight -> deploy loop -> UI smoke/decommission` 순서로 시작한다.
 
 이 순서는 “이미 ECS 경로가 살아 있고 deploy를 반복하는 운영”에는 맞지만, 아래 질문의 entry gate 역할은 부족하다.
 
@@ -50,7 +50,7 @@ runbook 인덱스의 맨 앞에 `환경 검토` 단계를 추가한다.
 
 ### 1. Runbook Index Update
 
-[docs/runbooks/README.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/README.md) 의 `Start Here` 와 `Runtime And Deploy` 섹션을 아래 구조로 바꾼다.
+[docs/runbooks/README.md](../../runbooks/README.md) 의 `Start Here` 와 `Runtime And Deploy` 섹션을 아래 구조로 바꾼다.
 
 - `0. 환경 검토`
 - `1. cold start rebuild`
@@ -204,10 +204,10 @@ environment review
 이번 문서 체계 개편에서 바뀌는 파일은 아래로 제한한다.
 
 - Modify:
-  - [docs/runbooks/README.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/README.md)
+  - [docs/runbooks/README.md](../../runbooks/README.md)
 - Create:
-  - [docs/runbooks/ev-dashboard-runtime-environment-review.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-runtime-environment-review.md)
-  - [docs/runbooks/ev-dashboard-cold-start-rebuild.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/ev-dashboard-cold-start-rebuild.md)
+  - [docs/runbooks/ev-dashboard-runtime-environment-review.md](../../runbooks/ev-dashboard-runtime-environment-review.md)
+  - [docs/runbooks/ev-dashboard-cold-start-rebuild.md](../../runbooks/ev-dashboard-cold-start-rebuild.md)
 
 기존 문서는 링크 관계만 조정하고, 핵심 책임은 유지한다.
 

@@ -13,7 +13,7 @@
 ### Task 1: 테스트로 새 스타일 계약을 고정
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DriversPage.test.tsx`
+- Modify: `development/front-web-console/src/pages/DriversPage.test.tsx`
 
 - [ ] **Step 1: 상단 필터와 하단 페이지네이션의 새 구조를 검증하는 failing test를 추가한다**
 
@@ -53,14 +53,14 @@ it('supports the all page-size option', async () => {
 
 - [ ] **Step 3: 테스트를 실행해 실패를 확인한다**
 
-Run: `cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && npm test -- src/pages/DriversPage.test.tsx --run`
+Run: `cd development/front-web-console && npm test -- src/pages/DriversPage.test.tsx --run`
 
 Expected: 새 구조 관련 테스트 FAIL
 
 - [ ] **Step 4: 테스트 파일만 커밋한다**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/pages/DriversPage.test.tsx
 git commit -m "test: cover simplified driver list layout"
 ```
@@ -68,7 +68,7 @@ git commit -m "test: cover simplified driver list layout"
 ### Task 2: DriversPage 마크업을 표 중심 workbench로 정리
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DriversPage.tsx`
+- Modify: `development/front-web-console/src/pages/DriversPage.tsx`
 
 - [ ] **Step 1: 상단 필터를 컨테이너 없는 평평한 제어부로 바꾼다**
 
@@ -123,14 +123,14 @@ const filters = (
 
 - [ ] **Step 5: 테스트를 실행해 마크업 요구가 통과하는지 확인한다**
 
-Run: `cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && npm test -- src/pages/DriversPage.test.tsx --run`
+Run: `cd development/front-web-console && npm test -- src/pages/DriversPage.test.tsx --run`
 
 Expected: 새 구조 관련 테스트 PASS, 스타일 관련 검증은 아직 일부 미정
 
 - [ ] **Step 6: 페이지 컴포넌트 변경을 커밋한다**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/pages/DriversPage.tsx src/pages/DriversPage.test.tsx
 git commit -m "feat: simplify driver list workbench structure"
 ```
@@ -138,7 +138,7 @@ git commit -m "feat: simplify driver list workbench structure"
 ### Task 3: CSS를 기준 화면 스타일에 맞게 재정렬
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
+- Modify: `development/front-web-console/src/styles.css`
 
 - [ ] **Step 1: 툴바 외피, 요약칩, 연녹색 강조 스타일을 제거한다**
 
@@ -231,14 +231,14 @@ git commit -m "feat: simplify driver list workbench structure"
 
 - [ ] **Step 7: 스타일과 페이지를 함께 검증한다**
 
-Run: `cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && npm test -- src/pages/DriversPage.test.tsx src/pages/DriverDetailPage.test.tsx --run`
+Run: `cd development/front-web-console && npm test -- src/pages/DriversPage.test.tsx src/pages/DriverDetailPage.test.tsx --run`
 
 Expected: PASS
 
 - [ ] **Step 8: 스타일 변경을 커밋한다**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/styles.css src/pages/DriversPage.tsx src/pages/DriversPage.test.tsx
 git commit -m "style: align driver list with operations workbench"
 ```
@@ -246,31 +246,31 @@ git commit -m "style: align driver list with operations workbench"
 ### Task 4: 최종 검증과 정리
 
 **Files:**
-- Verify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/pages/DriversPage.tsx`
-- Verify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
+- Verify: `development/front-web-console/src/pages/DriversPage.tsx`
+- Verify: `development/front-web-console/src/styles.css`
 
 - [ ] **Step 1: 관련 테스트를 최종 실행한다**
 
-Run: `cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && npm test -- src/pages/DriversPage.test.tsx src/pages/DriverDetailPage.test.tsx --run`
+Run: `cd development/front-web-console && npm test -- src/pages/DriversPage.test.tsx src/pages/DriverDetailPage.test.tsx --run`
 
 Expected: PASS
 
 - [ ] **Step 2: 빌드를 실행한다**
 
-Run: `cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && npm run build`
+Run: `cd development/front-web-console && npm run build`
 
 Expected: build succeeds; existing chunk-size warning only if unchanged
 
 - [ ] **Step 3: 변경 파일만 검토한다**
 
-Run: `cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console && git diff -- src/pages/DriversPage.tsx src/pages/DriversPage.test.tsx src/styles.css`
+Run: `cd development/front-web-console && git diff -- src/pages/DriversPage.tsx src/pages/DriversPage.test.tsx src/styles.css`
 
 Expected: only approved UI simplification changes
 
 - [ ] **Step 4: 최종 커밋한다**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/pages/DriversPage.tsx src/pages/DriversPage.test.tsx src/styles.css
 git commit -m "feat: restyle driver list as operations table"
 ```

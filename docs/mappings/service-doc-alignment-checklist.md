@@ -4,14 +4,14 @@
 
 Canonical truth:
 
-- [WORKSPACE.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/.worktrees/service-docs-runtime-alignment/WORKSPACE.md)
-- [repo-map.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/.worktrees/service-docs-runtime-alignment/repo-map.md)
-- [current-runtime-inventory.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/.worktrees/service-docs-runtime-alignment/docs/mappings/current-runtime-inventory.md)
-- relevant boundary docs under [docs/boundaries](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/.worktrees/service-docs-runtime-alignment/docs/boundaries)
-- relevant contract docs under [docs/contracts](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/.worktrees/service-docs-runtime-alignment/docs/contracts)
+- [WORKSPACE.md](../../WORKSPACE.md)
+- [repo-map.md](../../repo-map.md)
+- [current-runtime-inventory.md](current-runtime-inventory.md)
+- relevant boundary docs under [docs/boundaries/README.md](../boundaries/README.md)
+- relevant contract docs under [docs/contracts/README.md](../contracts/README.md)
 - runtime reset docs:
-  - [2026-04-19-prod-runtime-release-reset-design.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/.worktrees/service-docs-runtime-alignment/docs/superpowers/specs/2026-04-19-prod-runtime-release-reset-design.md)
-  - [2026-04-19-prod-runtime-release-reset-implementation-plan.md](/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/.worktrees/service-docs-runtime-alignment/docs/superpowers/plans/2026-04-19-prod-runtime-release-reset-implementation-plan.md)
+  - [2026-04-19-prod-runtime-release-reset-design.md](../superpowers/specs/2026-04-19-prod-runtime-release-reset-design.md)
+  - [2026-04-19-prod-runtime-release-reset-implementation-plan.md](../superpowers/plans/2026-04-19-prod-runtime-release-reset-implementation-plan.md)
 
 ## Drift Categories
 

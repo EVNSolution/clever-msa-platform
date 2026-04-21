@@ -69,28 +69,28 @@ This plan does **not** include:
 
 The implementation should use the following file responsibilities.
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/CockpitShell.tsx`
+- Modify: `development/front-web-console/src/cockpit/CockpitShell.tsx`
   - route-aware shell composition for dashboard vs settlement
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainAccordionNav.tsx`
+- Modify: `development/front-web-console/src/cockpit/SubdomainAccordionNav.tsx`
   - split current mixed navigation into brand card area + top-level expansion menu + settlement-only sidebar rendering
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainAccordionNav.test.tsx`
+- Modify: `development/front-web-console/src/cockpit/SubdomainAccordionNav.test.tsx`
   - unit tests for top-level expansion and settlement-only sidebar behavior
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaDashboardPage.tsx`
+- Modify: `development/front-web-console/src/cockpit/cheonha/CheonhaDashboardPage.tsx`
   - strip dashboard content to an empty landing body
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementWorkspace.tsx`
+- Modify: `development/front-web-console/src/cockpit/cheonha/CheonhaSettlementWorkspace.tsx`
   - remove internal tab strip so settlement navigation is owned by the shell
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx`
+- Modify: `development/front-web-console/src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx`
   - assert redirect behavior survives without in-content tab strip assumptions
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.cockpit.test.tsx`
+- Modify: `development/front-web-console/src/App.cockpit.test.tsx`
   - integration tests for dashboard-without-sidebar and settlement-with-sidebar shell behavior
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
+- Modify: `development/front-web-console/src/styles.css`
   - shell layout, square card block, detached settlement sidebar, empty dashboard body
 ## Task 1: Lock the Dashboard-First Shell Contract in Tests
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainAccordionNav.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.cockpit.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx`
+- Modify: `development/front-web-console/src/cockpit/SubdomainAccordionNav.test.tsx`
+- Modify: `development/front-web-console/src/App.cockpit.test.tsx`
+- Modify: `development/front-web-console/src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx`
 
 - [ ] **Step 1: Write the failing nav unit tests**
 
@@ -120,7 +120,7 @@ Update `CheonhaSettlementWorkspace.test.tsx` so it no longer requires an in-cont
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/cockpit/SubdomainAccordionNav.test.tsx src/App.cockpit.test.tsx src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx
 ```
 
@@ -130,7 +130,7 @@ Expected:
 - [ ] **Step 5: Commit the red test harness**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/cockpit/SubdomainAccordionNav.test.tsx src/App.cockpit.test.tsx src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx
 git commit -m "test: lock role-split subdomain shell contract"
 ```
@@ -138,9 +138,9 @@ git commit -m "test: lock role-split subdomain shell contract"
 ## Task 2: Split the Brand Card and Top-Level Menu
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainAccordionNav.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/CockpitShell.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
+- Modify: `development/front-web-console/src/cockpit/SubdomainAccordionNav.tsx`
+- Modify: `development/front-web-console/src/cockpit/CockpitShell.tsx`
+- Modify: `development/front-web-console/src/styles.css`
 
 - [ ] **Step 1: Implement the smallest route-aware nav API**
 
@@ -171,7 +171,7 @@ Update `styles.css` with only the styles required for:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/cockpit/SubdomainAccordionNav.test.tsx src/App.cockpit.test.tsx
 ```
 
@@ -181,7 +181,7 @@ Expected:
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/cockpit/SubdomainAccordionNav.tsx src/cockpit/CockpitShell.tsx src/styles.css src/cockpit/SubdomainAccordionNav.test.tsx src/App.cockpit.test.tsx
 git commit -m "feat: split subdomain brand card and top menu"
 ```
@@ -189,9 +189,9 @@ git commit -m "feat: split subdomain brand card and top menu"
 ## Task 3: Strip Dashboard to an Empty Landing Surface
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaDashboardPage.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.cockpit.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
+- Modify: `development/front-web-console/src/cockpit/cheonha/CheonhaDashboardPage.tsx`
+- Modify: `development/front-web-console/src/App.cockpit.test.tsx`
+- Modify: `development/front-web-console/src/styles.css`
 
 - [ ] **Step 1: Write the failing empty-dashboard assertion**
 
@@ -214,7 +214,7 @@ Remove the now-unused dashboard summary/hero layout hooks from `styles.css` only
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/App.cockpit.test.tsx
 ```
 
@@ -224,7 +224,7 @@ Expected:
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/cockpit/cheonha/CheonhaDashboardPage.tsx src/App.cockpit.test.tsx src/styles.css
 git commit -m "feat: collapse subdomain dashboard to empty shell"
 ```
@@ -232,10 +232,10 @@ git commit -m "feat: collapse subdomain dashboard to empty shell"
 ## Task 4: Move Settlement Navigation Ownership Fully Into the Shell
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementWorkspace.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/cockpit/SubdomainAccordionNav.test.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/styles.css`
+- Modify: `development/front-web-console/src/cockpit/cheonha/CheonhaSettlementWorkspace.tsx`
+- Modify: `development/front-web-console/src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx`
+- Modify: `development/front-web-console/src/cockpit/SubdomainAccordionNav.test.tsx`
+- Modify: `development/front-web-console/src/styles.css`
 
 - [ ] **Step 1: Write the failing “sidebar only” workspace test**
 
@@ -268,7 +268,7 @@ Use `SubdomainAccordionNav.test.tsx` to keep the complete settlement item list l
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/App.cockpit.test.tsx src/cockpit/SubdomainAccordionNav.test.tsx src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx src/cockpit/cheonha/CheonhaSettlementHomePage.test.tsx src/cockpit/cheonha/CheonhaDispatchDataPage.test.tsx src/cockpit/cheonha/CheonhaSettlementProcessPage.test.tsx src/cockpit/cheonha/CheonhaRuleShellPanel.test.tsx
 ```
 
@@ -278,7 +278,7 @@ Expected:
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/cockpit/cheonha/CheonhaSettlementWorkspace.tsx src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx src/cockpit/SubdomainAccordionNav.test.tsx src/styles.css
 git commit -m "refactor: keep settlement navigation in the shell"
 ```
@@ -293,7 +293,7 @@ git commit -m "refactor: keep settlement navigation in the shell"
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test
 ```
 
@@ -305,7 +305,7 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run build
 ```
 
@@ -317,7 +317,7 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/App.cockpit.test.tsx src/cockpit/SubdomainAccordionNav.test.tsx src/cockpit/cheonha/CheonhaSettlementWorkspace.test.tsx
 ```
 
@@ -327,7 +327,7 @@ Expected:
 - [ ] **Step 4: Commit any regression fix only if needed**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add <regression-fix-files>
 git commit -m "fix: close role-split shell regressions"
 ```
@@ -338,8 +338,8 @@ Skip this step if Task 5 required no code changes.
 
 If the implemented shell behavior makes the local child-repo docs inaccurate, do this as a separate post-implementation cleanup:
 
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/lesson.md`
+- Modify: `development/front-web-console/README.md`
+- Modify: `development/front-web-console/lesson.md`
 
 Only document:
 - dashboard no longer owns a persistent left rail

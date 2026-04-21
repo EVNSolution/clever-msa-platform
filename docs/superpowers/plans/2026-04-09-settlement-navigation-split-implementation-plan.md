@@ -13,33 +13,33 @@
 ## File Map
 
 ### Frontend: `development/front-web-console/`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/navigation.ts`
+- Modify: `development/front-web-console/src/navigation.ts`
   - 좌측 메인 네비게이션을 `정산 조회` / `정산 처리` 2개 링크로 분리
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/Layout.test.tsx`
+- Modify: `development/front-web-console/src/components/Layout.test.tsx`
   - 좌측 링크 분리와 권한별 노출 기대값 갱신
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.tsx`
+- Modify: `development/front-web-console/src/App.tsx`
   - `overview`와 `process` route tree 분리
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.test.tsx`
+- Modify: `development/front-web-console/src/App.test.tsx`
   - `/settlements/overview`, `/settlements/criteria`, `/settlements` redirect 계약 테스트 추가
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/SettlementSectionLayout.tsx`
+- Modify: `development/front-web-console/src/components/SettlementSectionLayout.tsx`
   - `정산 처리` 전용 레이아웃으로 정리, 탭을 `기준 > 입력 > 실행 > 결과`만 유지
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/SettlementSectionLayout.test.tsx`
+- Modify: `development/front-web-console/src/components/SettlementSectionLayout.test.tsx`
   - process-only 탭 및 문맥 유지 테스트로 갱신
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/e2e/settlement-navigation.spec.ts`
+- Modify: `development/front-web-console/e2e/settlement-navigation.spec.ts`
   - 좌측 `정산 조회` / `정산 처리` 진입과 process 탭 노출 검증
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/e2e/ops-fixture-console.spec.ts`
+- Modify: `development/front-web-console/e2e/ops-fixture-console.spec.ts`
   - 기존 `정산` 링크 클릭을 `정산 조회` 또는 `정산 처리` 기준으로 갱신
 
 ### Docs
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/contracts/18-single-web-console-screen-map.md`
+- Modify: `docs/contracts/18-single-web-console-screen-map.md`
   - settlement route entry가 `조회`와 `처리`로 분리됐음을 반영
 
 ## Task 0: Preflight And Guardrails
 
 **Files:**
-- Read only: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/navigation.ts`
-- Read only: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.tsx`
-- Read only: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/SettlementSectionLayout.tsx`
+- Read only: `development/front-web-console/src/navigation.ts`
+- Read only: `development/front-web-console/src/App.tsx`
+- Read only: `development/front-web-console/src/components/SettlementSectionLayout.tsx`
 
 - [ ] **Step 1: 영향 범위와 호출 지점을 먼저 점검한다**
 - `navigation.ts`, `App.tsx`, `SettlementSectionLayout.tsx`를 기준으로 어떤 화면과 테스트가 직접 영향을 받는지 정리한다.
@@ -73,8 +73,8 @@ Expected:
 ## Task 1: Sidebar Split For Settlement Overview And Process
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/navigation.ts`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/Layout.test.tsx`
+- Modify: `development/front-web-console/src/navigation.ts`
+- Test: `development/front-web-console/src/components/Layout.test.tsx`
 
 - [ ] **Step 1: 좌측 정산 링크 분리 테스트를 먼저 추가한다**
 - `company_super_admin`, `settlement_manager`, `fleet_manager` 케이스에서 `정산 조회`와 `정산 처리`가 둘 다 보인다고 적는다.
@@ -115,17 +115,17 @@ Expected:
 - [ ] **Step 5: Commit**
 
 ```bash
-git add /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/navigation.ts /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/Layout.test.tsx
+git add development/front-web-console/src/navigation.ts development/front-web-console/src/components/Layout.test.tsx
 git commit -m "feat: split settlement sidebar navigation"
 ```
 
 ## Task 2: Split Overview Route From Process Layout
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.tsx`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/SettlementSectionLayout.tsx`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.test.tsx`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/SettlementSectionLayout.test.tsx`
+- Modify: `development/front-web-console/src/App.tsx`
+- Modify: `development/front-web-console/src/components/SettlementSectionLayout.tsx`
+- Test: `development/front-web-console/src/App.test.tsx`
+- Test: `development/front-web-console/src/components/SettlementSectionLayout.test.tsx`
 
 - [ ] **Step 1: overview와 process layout 분리 테스트를 먼저 추가한다**
 - `/settlements/overview` route test를 추가한다.
@@ -178,15 +178,15 @@ Expected:
 - [ ] **Step 6: Commit**
 
 ```bash
-git add /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.tsx /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/SettlementSectionLayout.tsx /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/App.test.tsx /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/src/components/SettlementSectionLayout.test.tsx
+git add development/front-web-console/src/App.tsx development/front-web-console/src/components/SettlementSectionLayout.tsx development/front-web-console/src/App.test.tsx development/front-web-console/src/components/SettlementSectionLayout.test.tsx
 git commit -m "refactor: separate settlement overview from process layout"
 ```
 
 ## Task 3: Update Local Browser And Playwright Flows
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/e2e/settlement-navigation.spec.ts`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/e2e/ops-fixture-console.spec.ts`
+- Modify: `development/front-web-console/e2e/settlement-navigation.spec.ts`
+- Modify: `development/front-web-console/e2e/ops-fixture-console.spec.ts`
 
 - [ ] **Step 1: e2e expectations를 새 정보 구조 기준으로 먼저 갱신한다**
 - `settlement-navigation.spec.ts`
@@ -229,15 +229,15 @@ Expected:
 - [ ] **Step 5: Commit**
 
 ```bash
-git add /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/e2e/settlement-navigation.spec.ts /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console/e2e/ops-fixture-console.spec.ts
+git add development/front-web-console/e2e/settlement-navigation.spec.ts development/front-web-console/e2e/ops-fixture-console.spec.ts
 git commit -m "test: update settlement navigation e2e flows"
 ```
 
 ## Task 4: Contract Doc Sync And Final Verification
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/contracts/18-single-web-console-screen-map.md`
-- Read for verification: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/specs/2026-04-09-settlement-navigation-split-design.md`
+- Modify: `docs/contracts/18-single-web-console-screen-map.md`
+- Read for verification: `docs/superpowers/specs/2026-04-09-settlement-navigation-split-design.md`
 
 - [ ] **Step 1: single web screen map 문구를 새 구조에 맞게 수정한다**
 - `SettlementsPage` 설명에서 `정산 조회`는 shared read entry, `정산 처리`는 process tabs entry라고 적는다.
@@ -269,7 +269,7 @@ Expected:
 - [ ] **Step 5: Commit**
 
 ```bash
-git add /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/contracts/18-single-web-console-screen-map.md
+git add docs/contracts/18-single-web-console-screen-map.md
 git commit -m "docs: sync settlement navigation split contract"
 ```
 

@@ -27,7 +27,7 @@ GitHub main
 
 정본 기준 문서:
 
-- [../../../development/infra-ev-dashboard-platform/README.md](../../../development/infra-ev-dashboard-platform/README.md)
+- `development/infra-ev-dashboard-platform/README.md` (out-of-band infra repo reference)
 - [../../mappings/current-runtime-inventory.md](../../mappings/current-runtime-inventory.md)
 - [../../rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md](../../rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md)
 - [../../boundaries/ev-dashboard-aws-runtime-boundary-and-cost-estimate.md](../../boundaries/ev-dashboard-aws-runtime-boundary-and-cost-estimate.md)

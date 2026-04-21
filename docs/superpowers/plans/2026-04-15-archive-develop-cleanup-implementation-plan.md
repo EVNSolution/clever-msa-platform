@@ -13,18 +13,17 @@
 ### Task 1: Audit Active Plan Folders Against Current Truth
 
 **Files:**
-- Inspect: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/plans/`
-- Inspect: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/`
-- Inspect: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/decisions/specs/2026-03-24-docs-archive-governance-and-current-truth-design.md`
-- Inspect: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/README.md`
-- Inspect: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/README.md`
+- Inspect: `docs/rollout/plans/`
+- Inspect: `docs/superpowers/plans/`
+- Inspect: `docs/decisions/specs/2026-03-24-docs-archive-governance-and-current-truth-design.md`
+- Inspect: `docs/README.md`
+- Inspect: `docs/rollout/README.md`
 
 - [x] **Step 1: List active rollout plans that are likely already historical**
 
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 ls -1 docs/rollout/plans
 ```
 
@@ -67,18 +66,17 @@ Document that these should stay active until separately closed:
 ### Task 2: Remove Develop-Era Guidance From Active Operator Paths
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md`
+- Modify: `docs/README.md`
+- Modify: `docs/rollout/README.md`
+- Modify: `docs/runbooks/README.md`
+- Modify: `WORKSPACE.md`
+- Modify: `repo-map.md`
 
 - [x] **Step 1: Search for active docs that still imply archived/develop content is a live operator path**
 
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 rg -n "archive/|develop" docs WORKSPACE.md repo-map.md --glob '!docs/archive/**'
 ```
 
@@ -104,9 +102,9 @@ Current result:
 ### Task 3: Execute The First Cleanup Batch Safely
 
 **Files:**
-- Move: archive candidates from `docs/rollout/plans/` to `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/archive/historical/rollout/`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/README.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/README.md`
+- Move: archive candidates from `docs/rollout/plans/` to `docs/archive/historical/rollout/`
+- Modify: `docs/rollout/README.md`
+- Modify: `docs/README.md`
 
 - [x] **Step 1: Move only the files confirmed as completed execution records**
 
@@ -144,7 +142,6 @@ After moving files, fix any links in:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 git diff --check
 rg -n "docs/rollout/plans/.*implementation-plan" docs --glob '!docs/archive/**'
 ```
@@ -154,12 +151,12 @@ Expected: active docs no longer point to moved implementation plans as current t
 ### Task 5: Remove Remaining Stale Active Rollout Plans And Runtime Names
 
 **Files:**
-- Move: stale active plans from `docs/rollout/plans/` to `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/archive/historical/rollout/`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/13-account-driver-settlement-compose-simulation.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/15-ui-first-working-mode.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/16-web-first-platform-delivery-order.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/2026-04-07-central-deploy-reference.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/edge-api-gateway/AGENTS.md`
+- Move: stale active plans from `docs/rollout/plans/` to `docs/archive/historical/rollout/`
+- Modify: `docs/rollout/13-account-driver-settlement-compose-simulation.md`
+- Modify: `docs/rollout/15-ui-first-working-mode.md`
+- Modify: `docs/rollout/16-web-first-platform-delivery-order.md`
+- Modify: `docs/rollout/2026-04-07-central-deploy-reference.md`
+- Modify: `development/edge-api-gateway/AGENTS.md`
 
 - [x] **Step 1: Move completed or superseded active rollout plans**
 
@@ -186,7 +183,6 @@ Current operator docs now use:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 ls -1 docs/rollout/plans
 rg -n "front-admin-console|front-operator-console|admin-front" docs development/edge-api-gateway/AGENTS.md --glob '!docs/archive/**' --glob '!docs/superpowers/**'
 git diff --check
@@ -201,8 +197,8 @@ Expected:
 ### Task 4: Record The Cleanup Outcome
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/lesson.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-15-platform-next-development-and-deploy-scenarios-plan.md`
+- Modify: `lesson.md`
+- Modify: `docs/superpowers/plans/2026-04-15-platform-next-development-and-deploy-scenarios-plan.md`
 
 - [x] **Step 1: Add the lesson**
 

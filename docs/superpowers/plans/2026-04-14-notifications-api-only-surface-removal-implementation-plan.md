@@ -12,8 +12,8 @@
 
 ## Working Repos
 
-- Platform docs repo: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform`
-- Frontend repo: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console`
+- Platform docs repo: `.`
+- Frontend repo: `development/front-web-console`
 - If a dedicated `front-web-console` worktree already exists, use that checkout for code tasks instead of the child repo path, but keep the same file list and commands.
 
 ## Execution Guardrails
@@ -56,7 +56,6 @@ Apply these edits:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 rg -n "/notifications|notifications|알림함" \
   docs/contracts/17-admin-communication-pages.md \
   docs/contracts/18-single-web-console-screen-map.md \
@@ -76,7 +75,6 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 git add \
   docs/contracts/17-admin-communication-pages.md \
   docs/contracts/18-single-web-console-screen-map.md \
@@ -132,7 +130,7 @@ expect(
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/App.test.tsx src/pages/SupportPage.test.tsx
 ```
 
@@ -164,7 +162,7 @@ Apply these code changes:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/App.test.tsx src/pages/SupportPage.test.tsx
 ```
 
@@ -178,7 +176,7 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add src/App.tsx src/App.test.tsx src/pages/SupportPage.tsx src/pages/SupportPage.test.tsx src/types.ts
 git rm src/pages/NotificationsPage.tsx src/pages/NotificationsPage.test.tsx src/api/notifications.ts
 git commit -m "refactor: remove notifications console surface"
@@ -213,7 +211,7 @@ Make these test-first edits:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/components/Layout.test.tsx src/pages/ManagerNavigationPolicyPage.test.tsx src/pages/CompanyNavigationPolicyPage.test.tsx
 ```
 
@@ -242,7 +240,7 @@ Apply these code changes:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- src/components/Layout.test.tsx src/pages/ManagerNavigationPolicyPage.test.tsx src/pages/CompanyNavigationPolicyPage.test.tsx
 ```
 
@@ -257,7 +255,7 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add \
   src/authScopes.ts \
   src/navigation.ts \
@@ -284,7 +282,6 @@ git commit -m "refactor: remove notifications nav policy key"
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 rg -n "/notifications|notifications|알림함" \
   development/front-web-console/src \
   docs/contracts/17-admin-communication-pages.md \
@@ -304,7 +301,7 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 npm run test -- \
   src/App.test.tsx \
   src/components/Layout.test.tsx \
@@ -326,10 +323,9 @@ Expected:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 git diff --check
 
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git diff --check
 ```
 
@@ -342,7 +338,7 @@ Expected:
 Run only when Step 2 or Step 3 required follow-up edits:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-web-console
+cd development/front-web-console
 git add -A
 git commit -m "test: finish notifications surface removal verification"
 ```

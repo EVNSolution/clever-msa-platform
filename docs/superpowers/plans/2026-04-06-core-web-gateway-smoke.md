@@ -13,9 +13,9 @@
 ### Task 1: Define the route verification matrix
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/superpowers/plans/2026-04-06-core-web-gateway-smoke.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/scripts/verify_core_gateway_routes.py`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/tests/test_verify_core_gateway_routes.py`
+- Create: `docs/superpowers/plans/2026-04-06-core-web-gateway-smoke.md`
+- Modify: `development/integration-local-stack/scripts/verify_core_gateway_routes.py`
+- Test: `development/integration-local-stack/tests/test_verify_core_gateway_routes.py`
 
 - [ ] **Step 1: Write the failing test for the expected route matrix**
 - [ ] **Step 2: Run the unit test to verify it fails for the missing script/module**
@@ -26,8 +26,8 @@
 ### Task 2: Implement the live fetch runner
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/scripts/verify_core_gateway_routes.py`
-- Test: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/tests/test_verify_core_gateway_routes.py`
+- Modify: `development/integration-local-stack/scripts/verify_core_gateway_routes.py`
+- Test: `development/integration-local-stack/tests/test_verify_core_gateway_routes.py`
 
 - [ ] **Step 1: Write the failing test for live fetch normalization and mismatch errors**
 - [ ] **Step 2: Run the unit test to verify it fails**
@@ -38,8 +38,8 @@
 ### Task 3: Wire the smoke artifact into rollout docs
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/rollout/16-web-first-platform-delivery-order.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/integration-local-stack/README.md`
+- Modify: `docs/rollout/16-web-first-platform-delivery-order.md`
+- Modify: `development/integration-local-stack/README.md`
 
 - [ ] **Step 1: Update rollout/docs to reference the new gateway smoke verifier**
 - [ ] **Step 2: Run `git diff --check` and targeted tests**

@@ -13,11 +13,11 @@
 ### Task 1: Register the New Driver App Repo in Root Docs and Workspace Inventory
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/WORKSPACE.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/repo-map.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-to-target-repo-map.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/current-runtime-inventory.md`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/mappings/repo-responsibility-matrix.md`
+- Modify: `WORKSPACE.md`
+- Modify: `repo-map.md`
+- Modify: `docs/mappings/current-to-target-repo-map.md`
+- Modify: `docs/mappings/current-runtime-inventory.md`
+- Modify: `docs/mappings/repo-responsibility-matrix.md`
 - Test: doc consistency review in the same files
 
 - [ ] **Step 1: Add the planned child repo to root workspace docs**
@@ -47,7 +47,6 @@ Check that no root doc implies:
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 git add WORKSPACE.md repo-map.md docs/mappings/current-to-target-repo-map.md docs/mappings/current-runtime-inventory.md docs/mappings/repo-responsibility-matrix.md
 git commit -m "docs: register driver app repo in workspace inventory"
 ```
@@ -55,7 +54,7 @@ git commit -m "docs: register driver app repo in workspace inventory"
 ### Task 2: Prepare the Local Flutter Toolchain on This Mac
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/docs/runbooks/front-driver-app-local-setup.md`
+- Create: `docs/runbooks/front-driver-app-local-setup.md`
 - Test: local toolchain commands only, no repo code yet
 
 - [ ] **Step 1: Install Flutter SDK**
@@ -157,7 +156,6 @@ Document:
 - [ ] **Step 8: Commit**
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform
 git add docs/runbooks/front-driver-app-local-setup.md
 git commit -m "docs: add driver app local setup runbook"
 ```
@@ -165,11 +163,11 @@ git commit -m "docs: add driver app local setup runbook"
 ### Task 3: Bootstrap the New Flutter Repo and Pin the SDK Version
 
 **Files:**
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-driver-app/`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-driver-app/.fvmrc`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-driver-app/README.md`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-driver-app/pubspec.yaml`
-- Create: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-driver-app/lib/main.dart`
+- Create: `development/front-driver-app/`
+- Create: `development/front-driver-app/.fvmrc`
+- Create: `development/front-driver-app/README.md`
+- Create: `development/front-driver-app/pubspec.yaml`
+- Create: `development/front-driver-app/lib/main.dart`
 - Test: `flutter test`, `flutter run` on one simulator
 
 - [ ] **Step 1: Create the new child repo**
@@ -197,7 +195,7 @@ Example:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development
+cd development
 flutter create front-driver-app --platforms=android,ios
 ```
 
@@ -219,7 +217,7 @@ The README should state:
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-driver-app
+cd development/front-driver-app
 flutter test
 ```
 
@@ -237,7 +235,7 @@ git commit -m "chore: bootstrap front driver app repo"
 ### Task 4: Add Core App Shell, Flavors, Routing, and Shared Infrastructure
 
 **Files:**
-- Modify/Create under `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-driver-app/`
+- Modify/Create under `development/front-driver-app/`
 - Create: `lib/app/`
 - Create: `lib/core/auth/`
 - Create: `lib/core/env/`
@@ -494,13 +492,13 @@ git commit -m "feat: add driver communication and self-service features"
 ### Task 7: Add Thin Self-Scoped Backend Read Contracts for Driver App
 
 **Files:**
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-operations-view/driver360/urls.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-operations-view/driver360/views.py`
+- Modify: `development/service-driver-operations-view/driver360/urls.py`
+- Modify: `development/service-driver-operations-view/driver360/views.py`
 - Create/Modify: relevant service / serializer / source-client files in `service-driver-operations-view`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/urls.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry/attendanceregistry/views.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-operations-view/dispatchops/urls.py`
-- Modify: `/Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-operations-view/dispatchops/views.py`
+- Modify: `development/service-attendance-registry/attendanceregistry/urls.py`
+- Modify: `development/service-attendance-registry/attendanceregistry/views.py`
+- Modify: `development/service-dispatch-operations-view/dispatchops/urls.py`
+- Modify: `development/service-dispatch-operations-view/dispatchops/views.py`
 - Test: Django tests in each touched service repo
 
 - [ ] **Step 1: Write failing tests for `GET /api/driver-ops/me/home/`**
@@ -556,10 +554,10 @@ Modify `service-announcement-registry` so driver users can read driver-targeted 
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-driver-operations-view && python manage.py test -v 2
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-attendance-registry && python manage.py test -v 2
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-dispatch-operations-view && python manage.py test -v 2
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/service-announcement-registry && python manage.py test -v 2
+cd development/service-driver-operations-view && python manage.py test -v 2
+cd development/service-attendance-registry && python manage.py test -v 2
+cd development/service-dispatch-operations-view && python manage.py test -v 2
+cd development/service-announcement-registry && python manage.py test -v 2
 ```
 
 Expected:
@@ -731,7 +729,7 @@ git commit -m "feat: add beta release plumbing for driver app"
 Run:
 
 ```bash
-cd /Users/jiin/Documents/Files/02_EVnSolution/00_Source_code/CLEVER/clever-msa-platform/development/front-driver-app
+cd development/front-driver-app
 flutter test
 ```
 
