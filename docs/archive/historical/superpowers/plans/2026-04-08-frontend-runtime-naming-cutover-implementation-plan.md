@@ -1,5 +1,7 @@
 # Frontend Runtime Naming Cutover Implementation Plan
 
+> Historical status: 이 구현 계획은 `hub.evnlogistics.com`이 public endpoint로 남아 있던 시점의 cutover snapshot이다. 현재 canonical public surface는 `ev-dashboard.com` / `api.ev-dashboard.com`이며, current truth는 [../../../mappings/current-runtime-inventory.md](../../../mappings/current-runtime-inventory.md) 와 [../../../rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md](../../../rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md)를 따른다.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Align the surviving frontend runtime with the canonical `front-web-console` name across repo, local path, deploy-control metadata, and runtime naming without breaking the current dev deployment.

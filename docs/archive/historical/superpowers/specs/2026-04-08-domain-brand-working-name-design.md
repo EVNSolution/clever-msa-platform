@@ -1,5 +1,7 @@
 # CLEVER Domain and Brand Working Name
 
+> Historical status: 이 문서는 `hub.evnlogistics.com`을 working domain으로 잡았던 초기 naming 결정 snapshot이다. 현재 canonical public surface는 `ev-dashboard.com` / `api.ev-dashboard.com`이며, current truth는 [../../../mappings/current-runtime-inventory.md](../../../mappings/current-runtime-inventory.md) 와 [../../../rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md](../../../rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md)를 따른다.
+
 ## Purpose
 
 이 문서는 `CLEVER` 관리/운영 웹의 1차 working brand와 현재 사용 중인 public domain을 고정한다.

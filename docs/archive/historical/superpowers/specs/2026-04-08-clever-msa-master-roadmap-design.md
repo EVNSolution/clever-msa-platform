@@ -1,5 +1,7 @@
 # CLEVER MSA Master Roadmap
 
+> Historical status: 이 문서는 `hub.evnlogistics.com`을 공개 기준으로 두던 초기 시점의 로드맵 snapshot이다. 현재 canonical public surface는 `ev-dashboard.com` / `api.ev-dashboard.com`이며, current truth는 [../../../mappings/current-runtime-inventory.md](../../../mappings/current-runtime-inventory.md) 와 [../../../rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md](../../../rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md)를 따른다.
+
 ## Purpose
 
 이 문서는 현재 `CLEVER` MSA 전환 작업의 큰 축을 기억하기 위한 마스터 로드맵이다.

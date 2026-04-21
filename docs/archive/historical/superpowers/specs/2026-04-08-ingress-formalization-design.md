@@ -1,5 +1,7 @@
 # CLEVER Hub Ingress Formalization
 
+> Historical status: 이 문서는 `hub.evnlogistics.com -> ALB -> edge-api-gateway`를 current ingress로 보던 초기 formalization snapshot이다. 현재 canonical public surface는 `ev-dashboard.com` / `api.ev-dashboard.com`이며, current truth는 [../../../mappings/current-runtime-inventory.md](../../../mappings/current-runtime-inventory.md) 와 [../../../rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md](../../../rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md)를 따른다.
+
 ## Purpose
 
 이 문서는 현재 dev에서 사용 중인 정식 공개 경로를 기준으로 ingress 구조를 고정한다.

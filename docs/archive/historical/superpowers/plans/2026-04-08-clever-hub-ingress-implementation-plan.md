@@ -1,5 +1,7 @@
 # CLEVER Hub Ingress Implementation Plan
 
+> Historical status: 이 구현 계획은 `hub.evnlogistics.com` cutover를 목표로 작성된 당시 실행 계획이다. 현재 canonical public surface는 `ev-dashboard.com` / `api.ev-dashboard.com`이며, current truth는 [../../../mappings/current-runtime-inventory.md](../../../mappings/current-runtime-inventory.md) 와 [../../../rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md](../../../rollout/2026-04-13-ecs-cdk-oidc-actions-transition.md)를 따른다.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace the temporary dev public-IP access path with a formal `hub.evnlogistics.com -> ALB -> edge-api-gateway` ingress path, while preserving the existing dev deployment flow.
