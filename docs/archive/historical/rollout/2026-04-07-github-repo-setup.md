@@ -1,4 +1,4 @@
-# GitHub 저장소 설정 기준
+# GitHub 저장소 설정 기준 (Historical)
 
 중앙 배포 레이어가 동작하려면 코드만 있는 것으로는 부족하다. GitHub repository 쪽 설정도 같이 완료되어야 한다.
 
