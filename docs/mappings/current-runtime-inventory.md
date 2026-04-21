@@ -15,7 +15,7 @@
 | --- | --- | --- | --- | --- |
 | `edge-api-gateway` | `gateway` | external entrypoint | `active runtime` | front와 backend API를 하나의 edge에서 라우팅한다 |
 | `front-web-console` | `web-console` | `/` | `active runtime` | 권한 기반 단일 웹 콘솔 |
-| `front-driver-app` | `n/a (mobile app)` | `n/a` | `active child repo, empty shell` | 실제 Android/iOS 배송원 앱을 위한 child repo. 현재는 framework 미선정 상태의 empty shell이며 compose-hosted runtime service는 아니다 |
+| `front-driver-app` | `n/a (mobile app)` | `n/a` | `active child repo, empty shell` | React Native + Expo 기반 실제 Android/iOS 배송원 앱을 위한 child repo. 운영 원칙은 `native-only`이며 compose-hosted runtime service는 아니다 |
 | `service-account-access` | `account-auth-api` | `/api/auth/` | `active runtime` | 계정, 로그인, 토큰, 접근 제어 |
 | `service-organization-registry` | `organization-master-api` | `/api/org/` | `active runtime` | 회사와 플릿 마스터 |
 | `service-driver-profile` | `driver-profile-api` | `/api/drivers/` | `active runtime` | 기사 기본 프로필 정본 |

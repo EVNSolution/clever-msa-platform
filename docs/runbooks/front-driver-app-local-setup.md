@@ -2,10 +2,10 @@
 
 ## Purpose
 
-This runbook records the current macOS baseline for `front-driver-app` before native mobile bootstrap begins.
+This runbook records the current macOS baseline for `front-driver-app` before React Native + Expo bootstrap begins.
 
-The current goal is not to validate a framework-specific scaffold.
-The goal is to confirm that this machine can support a real Android/iOS app workflow once the native framework decision is fixed in docs.
+The goal is to confirm that this machine can support a real Android/iOS app workflow under the chosen operating rule:
+`React Native + Expo`, but `native-only`.
 
 ## Current Repo State
 
@@ -15,7 +15,7 @@ The goal is to confirm that this machine can support a real Android/iOS app work
 - current implementation state: empty shell
 
 Do not treat this repo as bootstrapped.
-Do not reintroduce Expo, Flutter, or web-preview assumptions until a native framework decision is documented first.
+Do not treat web preview or Expo Go as the primary development or acceptance path.
 
 ## Current Machine Baseline
 
@@ -32,16 +32,16 @@ Do not reintroduce Expo, Flutter, or web-preview assumptions until a native fram
 - available iOS runtime: `iOS 26.4`
 - Android AVD: `pixel_8_api_35`
 
-Node is recorded because some cross-platform native stacks may use it, but it is not by itself a framework decision.
+Node is recorded because the approved stack is `React Native + Expo`.
 
 ## Missing or Not Yet Verified
 
-- approved native app framework and bootstrap command
-- framework-specific package manager and CLI workflow
-- app scaffold execution inside `development/front-driver-app/`
+- clean Expo app scaffold execution inside `development/front-driver-app/`
+- local native compile from the child repo
 - app launch from the repo on iOS simulator
 - app launch from the repo on Android emulator
-- beta delivery tooling chosen for the selected framework
+- local or CI native build path verification
+- optional EAS adoption decision
 
 ## Verified Commands
 
@@ -57,7 +57,7 @@ Latest verification result:
 
 - available iOS devices include current iOS 26.4 simulators
 - available Android AVD includes `pixel_8_api_35`
-- this machine is ready for framework selection and native bootstrap planning
+- this machine is ready for React Native + Expo native bootstrap planning
 
 ## iOS Readiness Check
 
@@ -74,7 +74,7 @@ xcrun simctl list devices available
 ```
 
 Do not treat simulator availability alone as app bootstrap success.
-The actual gate is whether the selected framework launches from `development/front-driver-app/`.
+The actual gate is whether the React Native + Expo app launches from `development/front-driver-app/`.
 
 ## Android Readiness Check
 
@@ -91,7 +91,7 @@ open -a "Android Studio"
 ```
 
 Do not treat emulator boot alone as app bootstrap success.
-The actual gate is whether the selected framework launches from `development/front-driver-app/`.
+The actual gate is whether the React Native + Expo app launches from `development/front-driver-app/`.
 
 ## Operational Guidance for This Machine
 
@@ -110,16 +110,18 @@ Treat this machine as ready to start native bootstrap only when all of the follo
 1. `development/front-driver-app/` exists and points at the official GitHub repo.
 2. one iOS simulator target is available locally.
 3. one Android emulator target is available locally.
-4. the native framework decision is fixed in canonical docs.
-5. the framework-specific bootstrap command is documented before scaffold execution.
+4. the canonical docs fix the stack as `React Native + Expo, native-only`.
+5. the bootstrap and local native run commands are documented before scaffold execution.
 
 ## Current Next Step
 
 Proceed in this order:
 
-1. fix the native framework decision in canonical docs
-2. create the framework-specific bootstrap plan
-3. scaffold the app in `development/front-driver-app/`
+1. scaffold the app in `development/front-driver-app/`
+2. verify local native compile using:
+   - `npx expo run:ios`
+   - `npx expo run:android`
+3. keep Expo Go as non-target
 4. verify launch on:
    - one iOS simulator
    - one Android target

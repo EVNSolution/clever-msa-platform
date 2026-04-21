@@ -29,6 +29,18 @@
 3. 로그인 식별자 규칙
 4. 관리자 모드 처리 방식
 
+## Current Technical Decision
+
+현재 앱 bootstrap과 운영 기준은 아래처럼 고정한다.
+
+1. framework는 `React Native + Expo`다.
+2. 제품 정의는 `실제 Android/iOS 네이티브 앱`이다.
+3. 운영 원칙은 `native-only`다.
+4. web은 target이 아니다.
+5. `Expo Go`는 학습/실험 도구일 뿐, 현재 1차 개발 기준으로 의존하지 않는다.
+6. local native run 기준 명령은 `npx expo run:ios`, `npx expo run:android`다.
+7. 초기 배포는 local/CI native build를 우선 보고, `EAS`는 필요 시 후속 채택으로 본다.
+
 ## Scope
 
 이번 문서는 아래만 다룬다.
