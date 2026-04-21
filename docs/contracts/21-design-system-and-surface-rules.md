@@ -13,7 +13,7 @@
 ## 적용 범위
 
 - active runtime web: `development/front-web-console/`
-- mobile appendix and native app guidance: `docs/superpowers/specs/2026-04-13-driver-app-mvp-design.md`
+- mobile appendix and native app guidance: `docs/superpowers/specs/2026-04-21-cheonha-driver-app-minimum-design.md`
 - 관련 contract: `docs/contracts/10-front-ui-rules.md`, `docs/contracts/18-single-web-console-screen-map.md`
 
 이 문서는 마케팅 사이트 규칙이나 외부 브랜딩 가이드를 다루지 않는다.
@@ -29,7 +29,7 @@
 ### 2. driver app은 active child repo이지만 아직 empty-shell surface다
 
 - `front-driver-app`은 active child repo로 등록되었지만, 현재 child repo 자체는 empty shell 상태다.
-- mobile appendix는 [2026-04-13-driver-app-mvp-design.md](../superpowers/specs/2026-04-13-driver-app-mvp-design.md)를 기준으로 한 native app target guidance다.
+- mobile appendix는 [2026-04-21-cheonha-driver-app-minimum-design.md](../superpowers/specs/2026-04-21-cheonha-driver-app-minimum-design.md)를 기준으로 한 current native app guidance다.
 - framework와 native bootstrap 방식이 아직 확정되지 않았으므로, 구현이 아직 없는 부분은 `확인 필요` 또는 `TBD`로 남긴다.
 
 ## Mission
@@ -316,7 +316,7 @@ UI 문구와 문서 톤은 아래를 따른다.
 - 현재 상태: active child repo, empty shell
 - 기술 방향: 실제 Android/iOS native app
 - framework 상태: `TBD`
-- 앱 범위: `auth`, `announcements`, `notifications`, `support`, `account`, `attendance`, `dispatch`
+- 앱 범위: `auth`, `signup`, `work-logs`, `my`, `admin-empty`
 
 ### 웹과 공유해야 하는 foundation
 
@@ -336,7 +336,7 @@ UI 문구와 문서 톤은 아래를 따른다.
 
 - native app font 설정 방식
 - mobile semantic token export 방식
-- notification, attendance, dispatch self-scoped endpoint 실제 구현 시점
+- work-logs contract와 account link status contract 실제 앱 연결 시점
 
 ## Quality Gates
 
@@ -355,4 +355,4 @@ UI 문구와 문서 톤은 아래를 따른다.
 - [17-admin-communication-pages.md](17-admin-communication-pages.md)
 - [18-single-web-console-screen-map.md](18-single-web-console-screen-map.md)
 - [../decisions/specs/2026-04-06-single-web-console-cutover-design.md](../decisions/specs/2026-04-06-single-web-console-cutover-design.md)
-- [../superpowers/specs/2026-04-13-driver-app-mvp-design.md](../superpowers/specs/2026-04-13-driver-app-mvp-design.md)
+- [../superpowers/specs/2026-04-21-cheonha-driver-app-minimum-design.md](../superpowers/specs/2026-04-21-cheonha-driver-app-minimum-design.md)

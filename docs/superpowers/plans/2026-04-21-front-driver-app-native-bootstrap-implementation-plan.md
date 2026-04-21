@@ -34,7 +34,7 @@ Updated documents:
 - `docs/mappings/current-runtime-inventory.md`
 - `docs/contracts/21-design-system-and-surface-rules.md`
 - `docs/runbooks/front-driver-app-local-setup.md`
-- `docs/superpowers/specs/2026-04-13-driver-app-mvp-design.md`
+- `docs/superpowers/specs/2026-04-21-cheonha-driver-app-minimum-design.md`
 
 Result:
 
@@ -91,7 +91,7 @@ rg -n "front-driver-app|Expo|expo|Flutter|flutter" \
   docs/mappings/current-runtime-inventory.md \
   docs/contracts/21-design-system-and-surface-rules.md \
   docs/runbooks/front-driver-app-local-setup.md \
-  docs/superpowers/specs/2026-04-13-driver-app-mvp-design.md \
+  docs/superpowers/specs/2026-04-21-cheonha-driver-app-minimum-design.md \
   docs/superpowers/plans
 ```
 

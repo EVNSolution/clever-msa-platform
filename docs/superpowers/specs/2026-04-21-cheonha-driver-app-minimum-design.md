@@ -15,14 +15,14 @@
 
 이 설계는 아래 current truth 위에서 읽는다.
 
-- `docs/superpowers/specs/2026-04-13-driver-app-mvp-design.md`
+- `docs/superpowers/plans/2026-04-21-front-driver-app-native-bootstrap-implementation-plan.md`
 - `docs/contracts/15-auth-api-scenario-map.md`
 - `docs/decisions/specs/2026-04-03-identity-account-auth-design.md`
 - `docs/mappings/current-runtime-inventory.md`
 - `docs/mappings/repo-responsibility-matrix.md`
 
-현재 기존 배송원 앱 MVP 설계는 `공지/알림/문의/내 근태/내 배차`까지 포함한 넓은 MVP다.
-하지만 이번 1차 목표는 천하운수 전용 최소 앱이므로, 이 문서는 기존 MVP 설계 중 아래를 **phase-1 override**로 덮어쓴다.
+현재 active 앱 방향은 native bootstrap plan과 이 minimum design을 함께 본다.
+이 문서는 천하운수 1차 범위를 아래 항목으로 고정한다.
 
 1. 1차 앱 화면 범위
 2. 회원가입 입력 항목
