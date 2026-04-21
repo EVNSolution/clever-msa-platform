@@ -27,6 +27,40 @@
 - New root-visible `development/*` repos must be registered from the root as linked child repos immediately.
 - Non-whitelisted support or legacy repos must stay out of the root `development/` tree.
 
+## Branch Naming Rules
+
+- New branches created from this root or any linked child repo must use a semantic prefix, not a tool/user prefix.
+- Do not use `codex/` as the branch prefix for new work.
+- Choose exactly one primary prefix based on the dominant change:
+  - `feat/`
+    - new user-facing capability, new API surface, new workflow, new runtime slice
+  - `fix/`
+    - bug fix, regression fix, data correction, broken contract repair
+  - `refactoring/`
+    - internal structure cleanup without intended behavior change
+  - `docs/`
+    - documentation-only updates
+  - `chore/`
+    - maintenance, dependency/config/script cleanup, non-feature operational work
+  - `test/`
+    - test-only additions or test harness changes
+  - `hotfix/`
+    - urgent production fix that should read as an emergency patch
+- Use a short kebab-case slug after the prefix that describes the actual task.
+- Preferred shape is `<prefix>/<scope>-<summary>`.
+- Keep the slug business-readable. Do not encode agent names, usernames, timestamps, or local machine context into the branch name.
+- If the task spans multiple child repos, keep the same semantic prefix and as similar a slug as practical across the related repos.
+- If behavior changes and refactoring happen together, name the branch for the user-visible outcome, not the incidental internal cleanup.
+
+Examples:
+
+- `feat/public-openapi-edge-ownership`
+- `fix/edge-readback-command`
+- `refactoring/workspace-relative-links`
+- `docs/branch-naming-policy`
+- `chore/release-evidence-cleanup`
+- `test/driver-work-log-coverage`
+
 ## Boundary Rules
 
 - Do not import one service repo directly from another service repo.
