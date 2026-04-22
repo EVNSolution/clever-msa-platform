@@ -45,6 +45,16 @@ That was enough to prove the lane. `smoke`, `rollback`, and persistent evidence 
 
 When that next wave starts, keep `smoke` thin. Do not turn it into release-by-release handwritten test code. The right model is impact-scoped probes derived from the resolved release plan.
 
+## First Service Introduction Must Prove Host-Pullable Architecture
+
+`runtime-prod-platform` inventory, `service-manifest`, and `runtime-prod-release` intent were all correct for `service-settlement-inquiry`, but the first real dispatch still failed because the candidate service and companion edge digests were not pullable on the prod `amd64` host. The honest first gate for a brand-new runtime service is not just "image exists in ECR". It is "the prod host can `docker pull` that exact immutable digest".
+
+For first introduction on the current `evdash-msa` host:
+
+- verify `linux/amd64` pullability from the actual host before dispatch
+- if the backend already serves `/api/...` prefixed URLs, do not reuse the usual gateway rewrite pattern
+- close the proof with `resolved == runtime == actual` plus public `200/401` probes
+
 ## Start With One Boundary
 
 Cross-repo runtime patches go wrong when several repos move at once and no one remembers which layer really changed behavior. The safer pattern is small and repeatable: one repo at a time, one focused test, one minimal change, one verification pass, one recorded lesson. If the rule matters beyond a single repo, copy it back to this root file.
@@ -217,6 +227,16 @@ If a debug path is routinely skipped in successful runs, remove it and keep the 
 
 - `service-organization-registry` public tenant resolve
 - `service-account-access` workspace bootstrap against `organization-master-api`
+
+## Driver Settlement Read Needs One Amount Owner
+
+The safer Track A pattern for the driver app was:
+
+- `service-settlement-payroll` owns day-level amount truth
+- `service-settlement-operations-view` only enriches with snapshot refs
+- `service-driver-operations-view` only wraps that payload under `me`
+
+Once a read-model service starts recalculating money from raw source records, the app can drift from payroll truth on the next rule change. Keep the amount formula in payroll and let the downstream services stay read-only.
 
 For `ev-dashboard`, the first cockpit-ready EC2 verification scope is therefore `front/gateway/auth/organization`, not pure shell/auth. The verification lane has to include organization DB bootstrap, `organization-master-api` on the app host, `/api/org/*` on the verification gateway, and cockpit hosts inside CSRF trusted origins before deploy proof means anything.
 
