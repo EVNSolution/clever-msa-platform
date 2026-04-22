@@ -52,6 +52,7 @@
 | `service-delivery-record` | service | 배송 원천 기록과 일별 집계 입력 snapshot runtime | 배송원별 원천 기록과 집계 입력 | `development/service-delivery-record/` | `migrated-target` |
 | `service-settlement-payroll` | service | 정산 write owner runtime, `SettlementRun` / `SettlementItem` write | 정산 결과 write owner, `deduction` / `incentive` / `payout_status` 정본 | `development/service-settlement-payroll/` | `migrated-target` |
 | `service-settlement-operations-view` | service | 정산 read-only operations-view runtime | 정산 결과와 운영 조회용 read model | `development/service-settlement-operations-view/` | `migrated-target` |
+| `service-settlement-inquiry` | service | 배송원 정산 문의 thread/message runtime | 배송원-운영자 정산 문의 workflow, thread, message, snapshot attachment reference 정본 | `development/service-settlement-inquiry/` | `migrated-target` |
 | `service-dispatch-registry` | service | `dispatch_plan`, `vehicle_schedule`, `dispatch_assignment` 1차 runtime 구현 완료 | 배차 정본, 물량 계획, 회차/플릿 기준 배차 입력 | `development/service-dispatch-registry/` | `migrated-target` |
 | `service-dispatch-operations-view` | service | 배차 운영 조회 read model runtime | 배차 운영 조회와 계획 상황판 | `development/service-dispatch-operations-view/` | `migrated-target` |
 | `service-personnel-document-registry` | service | 기사 인사문서 메타데이터 runtime, admin CRUD와 seed 구현 완료 | 계약/증빙/계좌/사업자/소속 문서 메타데이터 정본 | `development/service-personnel-document-registry/` | `migrated-target` |
@@ -102,12 +103,14 @@
 - append-only 저장, internal write, admin read만 가진다.
 - 자동 replay/status workflow는 아직 들이지 않는다.
 
-### settlement 4축
+### settlement 4축 + inquiry
 - `service-attendance-registry`는 settlement 바깥의 upstream truth다.
 - `service-settlement-registry`는 규칙과 기준만 소유한다.
 - `service-delivery-record`는 source input만 소유한다.
 - `service-settlement-payroll`는 result write owner다.
 - `service-settlement-operations-view`는 read-only view다.
+- `service-settlement-inquiry`는 배송원 정산 문의 thread/message와 snapshot attachment reference write owner다.
+- `service-support-registry` generic ticket과 notification inbox는 inquiry 정본이 아니다.
 - 하나의 settlement repo 이름으로 다시 합치지 않는다.
 
 ## Docs Of Truth

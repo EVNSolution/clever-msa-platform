@@ -125,6 +125,7 @@ clever-msa-platform/
 - `service-settlement-registry`
 - `service-settlement-payroll`
 - `service-settlement-operations-view`
+- `service-settlement-inquiry`
 
 아래 repo들은 root `development/` whitelist 바깥으로 둔다.
 

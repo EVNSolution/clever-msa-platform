@@ -25,6 +25,7 @@
 | `service-settlement-payroll` | `settlement-payroll-api` | `/api/settlements/` | `active runtime` | 정산 결과 write owner |
 | `service-settlement-registry` | `settlement-registry-api` | `/api/settlement-registry/` | `active runtime` | 전역 정산 설정, 회사·플릿 단가표, 남아 있는 정책 호환 surface |
 | `service-settlement-operations-view` | `settlement-ops-api` | `/api/settlement-ops/` | `active runtime` | 정산 read-only operations view |
+| `service-settlement-inquiry` | `settlement-inquiry-api` | `/api/settlement-inquiries/` | `active child repo, runtime not enabled` | 배송원 정산 문의 thread/message와 snapshot attachment reference write owner |
 | `service-driver-operations-view` | `driver-ops-api` | `/api/driver-ops/` | `active runtime` | 기사 운영 summary query |
 | `service-vehicle-registry` | `vehicle-asset-api` | `/api/vehicles/` | `active runtime` | 차량 자산 정본 |
 | `service-vehicle-assignment` | `driver-vehicle-assignment-api` | `/api/driver-vehicle-assignments/` | `active runtime` | 기사-차량 배정 정본 |
@@ -73,3 +74,4 @@
    - deploy 후: [../runbooks/ev-dashboard-ui-smoke-and-decommission.md](../runbooks/ev-dashboard-ui-smoke-and-decommission.md)
 6. prod runtime reset target은 `runtime-prod-platform -> EVDash-msa(/data) -> runtime-prod-release` 이다. 기존 bridge/legacy deploy lane은 이 reset의 canonical source가 아니다.
 7. legacy bridge reference는 historical evidence only 로 취급한다.
+8. root whitelist 노출이나 `runtime-prod-platform` inventory 등록만으로 host enablement가 되지는 않는다. 실제 prod host enablement는 `service-manifest` secret, public exposure는 gateway profile이 결정한다.

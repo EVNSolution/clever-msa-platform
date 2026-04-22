@@ -85,3 +85,6 @@
 [submodule "development/front-driver-app"]
 	path = development/front-driver-app
 	url = https://github.com/EVNSolution/front-driver-app
+[submodule "development/service-settlement-inquiry"]
+	path = development/service-settlement-inquiry
+	url = https://github.com/EVNSolution/service-settlement-inquiry
