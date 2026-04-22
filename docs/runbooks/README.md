@@ -6,12 +6,13 @@
 
 `ev-dashboard` current runtime를 다룰 때는 아래 순서로 본다.
 
-0. 환경 검토: [ev-dashboard-runtime-environment-review.md](ev-dashboard-runtime-environment-review.md)
-1. cold start rebuild: [ev-dashboard-cold-start-rebuild.md](ev-dashboard-cold-start-rebuild.md)
-2. deploy 전 검수 gate: [ev-dashboard-ecs-preflight-gate.md](ev-dashboard-ecs-preflight-gate.md)
-3. deploy 중 wait signal과 time budget: [ev-dashboard-ecs-deploy-operator-loop.md](ev-dashboard-ecs-deploy-operator-loop.md)
-4. cutover 이후 UI smoke와 decommission: [ev-dashboard-ui-smoke-and-decommission.md](ev-dashboard-ui-smoke-and-decommission.md)
-5. current runtime truth: [../mappings/current-runtime-inventory.md](../mappings/current-runtime-inventory.md)
+0. deployment repo truth: [../rollout/current-deployment-source-of-truth.md](../rollout/current-deployment-source-of-truth.md)
+1. 환경 검토: [ev-dashboard-runtime-environment-review.md](ev-dashboard-runtime-environment-review.md)
+2. cold start rebuild: [ev-dashboard-cold-start-rebuild.md](ev-dashboard-cold-start-rebuild.md)
+3. deploy 전 검수 gate: [ev-dashboard-ecs-preflight-gate.md](ev-dashboard-ecs-preflight-gate.md)
+4. deploy 중 wait signal과 time budget: [ev-dashboard-ecs-deploy-operator-loop.md](ev-dashboard-ecs-deploy-operator-loop.md)
+5. cutover 이후 UI smoke와 decommission: [ev-dashboard-ui-smoke-and-decommission.md](ev-dashboard-ui-smoke-and-decommission.md)
+6. current runtime truth: [../mappings/current-runtime-inventory.md](../mappings/current-runtime-inventory.md)
 
 ## Runtime And Deploy
 

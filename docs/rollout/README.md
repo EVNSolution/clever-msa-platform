@@ -22,6 +22,7 @@
 
 ## Start Here
 
+- current deployment repo truth: [current-deployment-source-of-truth.md](current-deployment-source-of-truth.md)
 - 현재 runtime/service/prefix inventory: [../mappings/current-runtime-inventory.md](../mappings/current-runtime-inventory.md)
 - prod runtime/deploy 구조 다이어그램: [../mappings/prod-runtime-deployment-diagram.md](../mappings/prod-runtime-deployment-diagram.md)
 - runtime/deploy runbook index: [../runbooks/README.md](../runbooks/README.md)
@@ -53,4 +54,4 @@
 
 backend slice migration 자체는 완료됐고, 남은 것은 operational close-out이다.
 
-current operator/current truth는 root workflow나 `clever-deploy-control`이 아니라 `runtime-prod-platform -> EVDash-msa(/data) -> runtime-prod-release` 기준으로 읽는다. old central-deploy/root-workflow 문서는 [../archive/historical/rollout/](../archive/historical/rollout/) 아래 historical reference로만 남긴다.
+current operator/current truth는 root workflow나 `clever-deploy-control`이 아니라 [current-deployment-source-of-truth.md](current-deployment-source-of-truth.md) -> `runtime-prod-platform -> EVDash-msa(/data) -> runtime-prod-release` 기준으로 읽는다. old central-deploy/root-workflow 문서는 [../archive/historical/rollout/](../archive/historical/rollout/) 아래 historical reference로만 남긴다.
