@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CLEVER Public API</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css"
+    />
+    <style>
+      :root {
+        --chrome-bg: linear-gradient(135deg, #f3efe4 0%, #f6f8fb 52%, #edf5f7 100%);
+        --chrome-border: rgba(31, 41, 55, 0.1);
+        --chip-bg: rgba(255, 255, 255, 0.82);
+        --chip-active-bg: #0f4c5c;
+        --chip-active-text: #f7fafc;
+        --chip-text: #22333b;
+        --muted: #5b6670;
+        --panel-bg: rgba(255, 255, 255, 0.7);
+        --shadow: 0 18px 60px rgba(15, 76, 92, 0.12);
+      }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at top right, rgba(15, 76, 92, 0.08), transparent 28%),
+          linear-gradient(180deg, #f4f1ea 0%, #ffffff 36%);
+        color: #16212b;
+        font-family: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
+      }
+
+      .swagger-shell {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 24px 20px 48px;
+      }
+
+      .swagger-chrome {
+        border: 1px solid var(--chrome-border);
+        background: var(--chrome-bg);
+        box-shadow: var(--shadow);
+        border-radius: 24px;
+        padding: 24px;
+        margin-bottom: 24px;
+      }
+
+      .swagger-eyebrow {
+        margin: 0 0 8px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #0f4c5c;
+      }
+
+      .swagger-title-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .swagger-title-row h1 {
+        margin: 0;
+        font-size: clamp(32px, 4vw, 48px);
+        line-height: 1;
+        letter-spacing: -0.04em;
+      }
+
+      .swagger-summary {
+        border: 1px solid rgba(15, 76, 92, 0.08);
+        background: var(--panel-bg);
+        border-radius: 18px;
+        padding: 16px 18px;
+        backdrop-filter: blur(8px);
+      }
+
+      .swagger-summary h2 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
+
+      .swagger-summary p {
+        margin: 0;
+        line-height: 1.5;
+        color: var(--muted);
+      }
+
+      .swagger-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .swagger-meta span {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.84);
+        color: #27414a;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+
+      .service-filter-label {
+        margin: 0 0 10px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #36505a;
+      }
+
+      #service-filter {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .service-chip {
+        border: 1px solid rgba(31, 41, 55, 0.08);
+        border-radius: 16px;
+        background: var(--chip-bg);
+        color: var(--chip-text);
+        cursor: pointer;
+        padding: 12px 14px;
+        min-width: 170px;
+        text-align: left;
+        transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+      }
+
+      .service-chip:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 30px rgba(15, 76, 92, 0.08);
+      }
+
+      .service-chip.active {
+        background: var(--chip-active-bg);
+        color: var(--chip-active-text);
+      }
+
+      .service-chip-name {
+        display: block;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .service-chip-meta {
+        display: block;
+        margin-top: 4px;
+        font-size: 12px;
+        opacity: 0.84;
+      }
+
+      #swagger-ui .information-container {
+        padding-bottom: 24px;
+      }
+
+      #swagger-ui .opblock-tag-section {
+        border: 1px solid rgba(31, 41, 55, 0.08);
+        border-radius: 18px;
+        margin-bottom: 18px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(15, 76, 92, 0.05);
+      }
+
+      #swagger-ui .opblock-tag {
+        background: rgba(248, 249, 250, 0.9);
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      #swagger-ui .opblock-tag small {
+        color: #51616d;
+      }
+
+      @media (max-width: 900px) {
+        .swagger-title-row {
+          flex-direction: column;
+        }
+
+        .service-chip {
+          min-width: calc(50% - 10px);
+        }
+      }
+
+      @media (max-width: 640px) {
+        .swagger-shell {
+          padding: 16px 12px 32px;
+        }
+
+        .swagger-chrome {
+          padding: 18px;
+          border-radius: 20px;
+        }
+
+        .service-chip {
+          min-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="swagger-shell">
+      <section class="swagger-chrome">
+        <p class="swagger-eyebrow">CLEVER Public API</p>
+        <div class="swagger-title-row">
+          <h1>Service-Oriented Swagger</h1>
+          <div class="swagger-summary" id="service-summary"></div>
+        </div>
+        <p class="service-filter-label">Filter the document by service owner.</p>
+        <div id="service-filter"></div>
+      </section>
+      <div id="swagger-ui"></div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4/dist/js-yaml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+    <script>
+      const HTTP_METHODS = new Set([
+        "get",
+        "put",
+        "post",
+        "delete",
+        "options",
+        "head",
+        "patch",
+        "trace",
+      ]);
+
+      let rawSpec = null;
+      let currentTag = null;
+      let swaggerUi = null;
+
+      function clone(value) {
+        return JSON.parse(JSON.stringify(value));
+      }
+
+      function isTagOperation(operation, tagName) {
+        return Array.isArray(operation.tags) && operation.tags.includes(tagName);
+      }
+
+      function countOperationsForTag(spec, tagName) {
+        let count = 0;
+        for (const pathItem of Object.values(spec.paths || {})) {
+          for (const [method, operation] of Object.entries(pathItem || {})) {
+            if (!HTTP_METHODS.has(method) || !operation || typeof operation !== "object") {
+              continue;
+            }
+            if (isTagOperation(operation, tagName)) {
+              count += 1;
+            }
+          }
+        }
+        return count;
+      }
+
+      function buildServices(spec) {
+        return (spec.tags || []).map((tag) => ({
+          name: tag.name,
+          displayName: tag["x-displayName"] || tag.name,
+          description: tag.description || "No service summary available.",
+          gatewayPrefix: tag["x-gatewayPrefix"] || "",
+          operationCount: countOperationsForTag(spec, tag.name),
+        }));
+      }
+
+      function filterSpecByTag(spec, tagName) {
+        if (!tagName) {
+          return clone(spec);
+        }
+
+        const filtered = clone(spec);
+        const filteredPaths = {};
+
+        for (const [path, pathItem] of Object.entries(spec.paths || {})) {
+          const nextPathItem = {};
+          let hasOperation = false;
+
+          for (const [method, value] of Object.entries(pathItem || {})) {
+            if (!HTTP_METHODS.has(method)) {
+              nextPathItem[method] = clone(value);
+              continue;
+            }
+
+            if (value && typeof value === "object" && isTagOperation(value, tagName)) {
+              nextPathItem[method] = clone(value);
+              hasOperation = true;
+            }
+          }
+
+          if (hasOperation) {
+            filteredPaths[path] = nextPathItem;
+          }
+        }
+
+        filtered.paths = filteredPaths;
+        filtered.tags = (spec.tags || []).filter((tag) => tag.name === tagName);
+        return filtered;
+      }
+
+      function updateQueryParam(tagName) {
+        const url = new URL(window.location.href);
+        if (tagName) {
+          url.searchParams.set("service", tagName);
+        } else {
+          url.searchParams.delete("service");
+        }
+        history.replaceState({}, "", url);
+      }
+
+      function renderServiceSummary(services, selectedTag) {
+        const summary = document.getElementById("service-summary");
+        const totalOperations = services.reduce(
+          (accumulator, service) => accumulator + service.operationCount,
+          0,
+        );
+
+        if (!selectedTag) {
+          summary.innerHTML = `
+            <h2>All Services</h2>
+            <p>Browse the full public API surface grouped by service ownership. Start collapsed, then narrow to one service when you want a cleaner view.</p>
+            <div class="swagger-meta">
+              <span>${services.length} services</span>
+              <span>${totalOperations} operations</span>
+              <span>Default view: collapsed</span>
+            </div>
+          `;
+          return;
+        }
+
+        const service = services.find((entry) => entry.name === selectedTag);
+        if (!service) {
+          summary.innerHTML = "";
+          return;
+        }
+
+        summary.innerHTML = `
+          <h2>${service.displayName}</h2>
+          <p>${service.description}</p>
+          <div class="swagger-meta">
+            <span>${service.gatewayPrefix || "No prefix"}</span>
+            <span>${service.operationCount} operations</span>
+            <span>${service.name}</span>
+          </div>
+        `;
+      }
+
+      function renderServiceFilter(services, selectedTag) {
+        const container = document.getElementById("service-filter");
+        container.innerHTML = "";
+
+        const allChip = document.createElement("button");
+        allChip.type = "button";
+        allChip.className = `service-chip${selectedTag ? "" : " active"}`;
+        allChip.innerHTML = `
+          <span class="service-chip-name">All Services</span>
+          <span class="service-chip-meta">${services.length} service sections</span>
+        `;
+        allChip.addEventListener("click", () => selectService(null));
+        container.appendChild(allChip);
+
+        for (const service of services) {
+          const chip = document.createElement("button");
+          chip.type = "button";
+          chip.className = `service-chip${service.name === selectedTag ? " active" : ""}`;
+          chip.innerHTML = `
+            <span class="service-chip-name">${service.displayName}</span>
+            <span class="service-chip-meta">${service.gatewayPrefix} · ${service.operationCount} ops</span>
+          `;
+          chip.title = service.description;
+          chip.addEventListener("click", () => selectService(service.name));
+          container.appendChild(chip);
+        }
+      }
+
+      function renderSwagger(spec, selectedTag) {
+        const filteredSpec = filterSpecByTag(spec, selectedTag);
+        if (swaggerUi) {
+          swaggerUi.destroy();
+        }
+
+        swaggerUi = SwaggerUIBundle({
+          spec: filteredSpec,
+          dom_id: "#swagger-ui",
+          deepLinking: true,
+          docExpansion: "none",
+          defaultModelsExpandDepth: -1,
+          displayOperationId: true,
+          presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+          layout: "BaseLayout",
+        });
+      }
+
+      function selectService(tagName) {
+        currentTag = tagName;
+        const services = buildServices(rawSpec);
+        updateQueryParam(tagName);
+        renderServiceFilter(services, tagName);
+        renderServiceSummary(services, tagName);
+        renderSwagger(rawSpec, tagName);
+      }
+
+      async function loadOpenApiSpec() {
+        const response = await fetch("/openapi.yaml", { credentials: "same-origin" });
+        if (!response.ok) {
+          throw new Error(`Failed to load OpenAPI document: ${response.status}`);
+        }
+        return jsyaml.load(await response.text());
+      }
+
+      async function boot() {
+        rawSpec = await loadOpenApiSpec();
+        const services = buildServices(rawSpec);
+        const params = new URLSearchParams(window.location.search);
+        const requestedService = params.get("service");
+        currentTag = services.some((service) => service.name === requestedService)
+          ? requestedService
+          : null;
+        renderServiceFilter(services, currentTag);
+        renderServiceSummary(services, currentTag);
+        renderSwagger(rawSpec, currentTag);
+      }
+
+      boot().catch((error) => {
+        document.getElementById("service-summary").innerHTML = `
+          <h2>Swagger failed to load</h2>
+          <p>${String(error.message || error)}</p>
+        `;
+      });
+    </script>
+  </body>
+</html>

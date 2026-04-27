@@ -17,6 +17,7 @@
 ## Runtime And Deploy
 
 - `ev-dashboard` 환경 검토: [ev-dashboard-runtime-environment-review.md](ev-dashboard-runtime-environment-review.md)
+- `ev-dashboard` 신규 service runtime onboarding: [ev-dashboard-runtime-service-onboarding.md](ev-dashboard-runtime-service-onboarding.md)
 - `ev-dashboard` cold start rebuild: [ev-dashboard-cold-start-rebuild.md](ev-dashboard-cold-start-rebuild.md)
 - `ev-dashboard` deploy preflight gate: [ev-dashboard-ecs-preflight-gate.md](ev-dashboard-ecs-preflight-gate.md)
 - `ev-dashboard` deploy operator loop: [ev-dashboard-ecs-deploy-operator-loop.md](ev-dashboard-ecs-deploy-operator-loop.md)

@@ -1,0 +1,194 @@
+{
+  "version": 1,
+  "public_api_info": {
+    "title": "CLEVER Public API",
+    "version": "1.0.0",
+    "description": "Aggregated public OpenAPI served by edge-api-gateway for active CLEVER MSA service prefixes."
+  },
+  "services": [
+    {
+      "service_id": "service-account-access",
+      "repo": "service-account-access",
+      "gateway_prefix": "/api/auth/",
+      "display_name": "Account Access",
+      "summary": "Identity, login, signup, and workspace access APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-organization-registry",
+      "repo": "service-organization-registry",
+      "gateway_prefix": "/api/org/",
+      "display_name": "Organization Registry",
+      "summary": "Organization, fleet, branch, and company directory APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-driver-profile",
+      "repo": "service-driver-profile",
+      "gateway_prefix": "/api/drivers/",
+      "display_name": "Driver Profile",
+      "summary": "Driver profile, account linkage, and profile preference APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-personnel-document-registry",
+      "repo": "service-personnel-document-registry",
+      "gateway_prefix": "/api/personnel-documents/",
+      "display_name": "Personnel Documents",
+      "summary": "Personnel document upload, review, and compliance APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-attendance-registry",
+      "repo": "service-attendance-registry",
+      "gateway_prefix": "/api/attendance/",
+      "display_name": "Attendance Registry",
+      "summary": "Attendance, shifts, and daily work status APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-delivery-record",
+      "repo": "service-delivery-record",
+      "gateway_prefix": "/api/delivery-record/",
+      "display_name": "Delivery Record",
+      "summary": "Delivery source records and daily input snapshot APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-settlement-payroll",
+      "repo": "service-settlement-payroll",
+      "gateway_prefix": "/api/settlements/",
+      "display_name": "Settlement Payroll",
+      "summary": "Payroll-facing settlement calculation and payout APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-settlement-registry",
+      "repo": "service-settlement-registry",
+      "gateway_prefix": "/api/settlement-registry/",
+      "display_name": "Settlement Registry",
+      "summary": "Settlement policy, pricing tables, and configuration APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-settlement-operations-view",
+      "repo": "service-settlement-operations-view",
+      "gateway_prefix": "/api/settlement-ops/",
+      "display_name": "Settlement Operations",
+      "summary": "Settlement read-model and operational summary APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-driver-operations-view",
+      "repo": "service-driver-operations-view",
+      "gateway_prefix": "/api/driver-ops/",
+      "display_name": "Driver Operations",
+      "summary": "Driver operations read-model and dashboard APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-vehicle-registry",
+      "repo": "service-vehicle-registry",
+      "gateway_prefix": "/api/vehicles/",
+      "display_name": "Vehicle Registry",
+      "summary": "Vehicle master and operator access management APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-vehicle-assignment",
+      "repo": "service-vehicle-assignment",
+      "gateway_prefix": "/api/driver-vehicle-assignments/",
+      "display_name": "Vehicle Assignment",
+      "summary": "Driver-to-vehicle assignment lifecycle APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-vehicle-operations-view",
+      "repo": "service-vehicle-operations-view",
+      "gateway_prefix": "/api/vehicle-ops/",
+      "display_name": "Vehicle Operations",
+      "summary": "Vehicle operations read-model and status APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-dispatch-registry",
+      "repo": "service-dispatch-registry",
+      "gateway_prefix": "/api/dispatch/",
+      "display_name": "Dispatch Registry",
+      "summary": "Dispatch plans, assignments, schedules, and work rules APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-dispatch-operations-view",
+      "repo": "service-dispatch-operations-view",
+      "gateway_prefix": "/api/dispatch-ops/",
+      "display_name": "Dispatch Operations",
+      "summary": "Dispatch board and operational summary APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-region-registry",
+      "repo": "service-region-registry",
+      "gateway_prefix": "/api/regions/",
+      "display_name": "Region Registry",
+      "summary": "Region master and coverage management APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-region-analytics",
+      "repo": "service-region-analytics",
+      "gateway_prefix": "/api/region-analytics/",
+      "display_name": "Region Analytics",
+      "summary": "Region performance and daily analytics APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-announcement-registry",
+      "repo": "service-announcement-registry",
+      "gateway_prefix": "/api/announcements/",
+      "display_name": "Announcements",
+      "summary": "Announcement publishing and audience delivery APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-support-registry",
+      "repo": "service-support-registry",
+      "gateway_prefix": "/api/ticket/",
+      "display_name": "Support Registry",
+      "summary": "Support ticket and response management APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-notification-hub",
+      "repo": "service-notification-hub",
+      "gateway_prefix": "/api/notifications/",
+      "display_name": "Notification Hub",
+      "summary": "Notification templates, sends, and token management APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-terminal-registry",
+      "repo": "service-terminal-registry",
+      "gateway_prefix": "/api/terminals/",
+      "display_name": "Terminal Registry",
+      "summary": "Vehicle terminal inventory and installation APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-telemetry-hub",
+      "repo": "service-telemetry-hub",
+      "gateway_prefix": "/api/telemetry/",
+      "display_name": "Telemetry Hub",
+      "summary": "Telemetry ingest and latest vehicle and terminal state APIs.",
+      "export_kind": "django_spectacular"
+    },
+    {
+      "service_id": "service-telemetry-dead-letter",
+      "repo": "service-telemetry-dead-letter",
+      "gateway_prefix": "/api/telemetry-dead-letters/",
+      "display_name": "Telemetry Dead Letter",
+      "summary": "Telemetry dead-letter intake and replay APIs.",
+      "export_kind": "django_spectacular"
+    }
+  ]
+}

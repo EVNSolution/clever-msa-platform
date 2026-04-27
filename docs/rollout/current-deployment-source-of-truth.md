@@ -62,10 +62,18 @@
   `evdash/prod/runtime/entry/service-manifest`
 - Secrets Manager:
   `evdash/prod/runtime/entry/service-secret-map`
+- app host gateway exposure env:
+  `GATEWAY_PROFILE` and, when `partial`, `GATEWAY_ROUTE_GROUPS`
 - SSM Parameter:
   `/EvDashboardPlatformStack/runtime/images`
 - app host runtime:
   `EVDash-msa` host group의 running container state
+
+중요한 구분은 아래다.
+
+- `runtime-prod-platform` inventory 등록 = workload catalog truth
+- `service-manifest` secret 반영 = host runtime enablement truth
+- `GATEWAY_PROFILE` / `GATEWAY_ROUTE_GROUPS` = public domain exposure truth
 
 즉 production 질문에 대해 정본 우선순위는 아래다.
 
