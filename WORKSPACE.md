@@ -4,9 +4,9 @@
 
 목적은 두 가지다.
 - 설계와 매핑의 정본을 `docs/`에 고정한다.
-- 실제 구현은 `development/` 아래의 독립 repo들로 분리한다.
+- 실제 구현은 `development/` 아래의 root-tracked source slice로 통합 관리한다.
 
-이 루트는 플랫폼 안내판이다. 서비스 구현 코드를 직접 두는 곳이 아니다.
+이 루트는 플랫폼 monorepo umbrella다. 서비스 구현 코드는 `development/*` 아래에서 root repo가 직접 추적한다.
 
 `AGENTS.md`와 각 repo의 `README.md`는 운영 안내 문서다. 정본은 `docs/`와 root mapping 문서에만 둔다.
 
@@ -53,20 +53,20 @@ clever-msa-platform/
 
 ## What `development/` Owns
 
-`development/` 아래는 실제 구현 repo 묶음이다.
+`development/` 아래는 실제 구현 source slice 묶음이다.
 
 원칙:
-- 각 디렉토리는 독립 repo 전제다.
-- 루트에서는 whitelist에 포함된 `development/*`만 linked child repo로 노출한다.
+- 각 디렉토리는 독립 배포/소유 경계를 가진 source slice다.
+- root repo가 whitelist에 포함된 `development/*` 파일을 직접 추적한다.
 - 서비스는 다른 서비스 내부 구현을 import하지 않는다.
 - 공유 코드는 기본 금지다.
 - cross-service 연결은 계약 문서와 API 기준으로만 관리한다.
 
 로컬 clone/update 규칙:
-- 루트를 새로 clone한 뒤에는 `git submodule update --init --recursive`를 실행한다.
-- root pull 이후 child repo 포인터가 바뀌면 다시 `git submodule update --init --recursive`를 실행한다.
-- 첫 `git submodule update --init --recursive`는 private child repo를 순차 clone하므로 시간이 걸릴 수 있다. 실패로 보기 전에 먼저 진행 중인지 확인한다.
-- 구현 코드는 child repo에서 수정하고, root는 umbrella visibility와 platform docs를 관리한다.
+- 루트를 새로 clone하면 `development/*` 구현 코드가 root checkout에 같이 포함된다.
+- root pull 이후 별도 `git submodule update` 절차는 없다.
+- 구현 코드는 root worktree의 해당 `development/*` slice에서 수정한다.
+- root는 platform docs와 runtime source를 함께 추적하지만, 서비스 경계는 docs/contracts 기준으로 유지한다.
 
 현재 목표 repo 이름 규칙:
 - `integration-*`
@@ -92,9 +92,9 @@ clever-msa-platform/
 - `listener`
 - `dead-letter`
 
-## Root Development Whitelist
+## Root Development Slice Whitelist
 
-현재 root GitHub view와 `development/` tree 에서 유지하는 필수 repo는 아래와 같다.
+현재 root monorepo와 `development/` tree에서 유지하는 필수 source slice는 아래와 같다.
 
 - `runtime-prod-release`
 - `runtime-prod-platform`
@@ -147,7 +147,7 @@ clever-msa-platform/
   - release intent, rollout plan, SSM dispatch, smoke, rollback evidence owner
 - `runtime-prod-platform`
   - production EC2 runtime shape and canonical inventory owner
-- plain 폴더가 아니라 linked child repo로 등록된 대상
+- plain root-tracked source slice로 등록된 대상
 
 ## Repo Retention Rule
 
@@ -156,44 +156,45 @@ root `development/` whitelist 변경은 아래 두 문서에서 먼저 정본을
 - `repo-map.md`
 - `docs/mappings/current-runtime-inventory.md`
 
-`WORKSPACE.md`의 부분 목록만 보고 repo를 지우지 않는다. root visibility 는 whitelist 기준으로만 유지하고, support/legacy repo는 root 바깥으로 둔다.
+`WORKSPACE.md`의 부분 목록만 보고 source slice를 지우지 않는다. root source visibility는 whitelist 기준으로만 유지하고, support/legacy repo는 root 바깥으로 둔다.
 
 ## Working Rules
 
 1. 새로운 서비스나 구조 변경은 먼저 `docs/`에 반영한다.
-2. `development/` repo 안의 README는 repo 사용법과 운영 메모만 담고, 아키텍처/경계/런타임 정본은 `docs/`를 가리킨다.
+2. `development/` slice 안의 README는 slice 사용법과 운영 메모만 담고, 아키텍처/경계/런타임 정본은 `docs/`를 가리킨다.
 3. 로컬 통합 실행 자산은 root `development/` whitelist 바깥의 별도 integration repo가 소유한다.
 4. `settlement`처럼 아직 덜 분해된 영역은 기존 폴더를 그대로 승격하지 않는다.
 5. 현재 runtime naming, compose service, gateway prefix는 `docs/mappings/current-runtime-inventory.md`를 먼저 본다.
 6. `docs/rollout/plans/`는 active plan only다. 완료된 rollout artifact는 `docs/archive/historical/rollout/`로 이동한다.
 7. archive는 문서 전용이다. 코드와 runtime 자산은 archive로 보내지 않는다.
-8. repo-local `AGENTS.md`는 예외 규칙이 많은 repo에만 둔다. 현재 허용 범위는 플랫폼 루트와 `development/edge-api-gateway/`까지다.
-9. `development/infra-*` repo는 platform-specific runtime infra만 소유한다. app code, shared library, cross-domain catch-all infra repo로 키우지 않는다.
+8. slice-local `AGENTS.md`는 예외 규칙이 많은 slice에만 둔다. 현재 허용 범위는 플랫폼 루트와 `development/edge-api-gateway/`까지다.
+9. `development/infra-*` slice는 platform-specific runtime infra만 소유한다. app code, shared library, cross-domain catch-all infra slice로 키우지 않는다.
 
 ## Current Workspace State
 
-현재 시점은 `development whitelist linked child repo migration completed` 상태다.
+현재 시점은 `true monorepo umbrella migration in progress` 상태다.
 
 - `docs/`는 platform source of truth다.
-- root whitelist에 포함된 `development/*` repo는 모두 independent child repo다.
-- 루트는 whitelist 대상 child repo만 linked child repo로 노출한다.
-- active child repo에 대한 root-tracked implementation snapshot은 더 이상 남아 있지 않다.
+- root whitelist에 포함된 `development/*` slice는 root-tracked source로 전환한다.
+- 루트는 whitelist 대상 source slice를 직접 추적한다.
+- active implementation source는 root monorepo 안의 `development/*`다.
 - old `MSA-Server/services`에는 direct runtime source가 더 이상 남아 있지 않다.
 
 ## Out Of Scope For This Root
 
 이 루트는 아래를 직접 소유하지 않는다.
 
-- 서비스 런타임 코드
 - 공용 라이브러리
-- 실행용 compose 파일
+- root `development/` whitelist 밖 support/legacy runtime
 - build artifact
 - node_modules, venv, generated runtime output
 
 ## Workspace Governance Update (2026-04-09)
 
-- The active `clever-msa-platform` root is the umbrella workspace for platform docs, contracts, rollout, and the whitelisted `development/*` repo visibility.
-- Runtime implementation code under `development/` remains owned by each independent child repo.
-- The root GitHub view must expose only the approved whitelist: `front-web-console`, `front-driver-app`, `edge-api-gateway`, `runtime-prod-release`, `runtime-prod-platform`, and active `service-*` repos.
-- Child repo implementation ownership stays in the child repo even when the root workspace also exposes that repo for umbrella visibility.
-- New root-visible `development/*` repos must be added to the whitelist and registered as linked child repos from day one.
+## Workspace Governance Update (2026-04-27)
+
+- The active `clever-msa-platform` root is the true monorepo umbrella for platform docs, contracts, rollout, and the whitelisted `development/*` source slices.
+- Runtime implementation code under `development/` is owned and tracked by the root repo.
+- The root GitHub view must expose only the approved whitelist: `front-web-console`, `front-driver-app`, `edge-api-gateway`, `runtime-prod-release`, `runtime-prod-platform`, and active `service-*` slices.
+- Slice implementation ownership stays with the slice boundary even though Git ownership is now root-level.
+- New root-visible `development/*` source slices must be added to the whitelist and tracked by the root repo from day one.

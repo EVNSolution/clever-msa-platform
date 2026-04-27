@@ -5,9 +5,9 @@
 - This directory is the active platform root for CLEVER MSA work.
 - Treat `docs/` as the source of truth for architecture, boundaries, mappings, contracts, and rollout decisions.
 - `AGENTS.md` and every `README.md` in this workspace are operational guidance only. They are not canonical truth.
-- Treat `development/` as a whitelist of independent implementation repos exposed from the root.
+- Treat `development/` as a whitelist of root-tracked implementation source slices.
 - The current root whitelist is `front-web-console`, `edge-api-gateway`, `runtime-prod-release`, `runtime-prod-platform`, and the active `service-*` repos.
-- Do not treat this root as a shared runtime codebase.
+- Treat this root as the single Git source of truth, but do not treat service slices as a shared runtime codebase.
 - Start from [WORKSPACE.md](WORKSPACE.md) and [repo-map.md](repo-map.md) before moving files or changing repo boundaries.
 
 ## Repo Selection Rules
@@ -18,18 +18,17 @@
 - If the task is operator UI or admin UI behavior, work in the matching `front-*` repo only.
 - If the task is backend behavior, work in the matching `service-*` repo only.
 
-## Linked Child Repo Rules
+## Monorepo Source Slice Rules
 
-- If a freshly cloned root workspace is missing child repo contents, run `git submodule update --init --recursive`.
-- After pulling root changes that move child repo pointers, run `git submodule update --init --recursive` again.
-- The first recursive submodule init can take noticeable time because it clones many private child repos in sequence.
-- Do not reintroduce root-tracked implementation snapshots for active `development/*` repos.
-- New root-visible `development/*` repos must be registered from the root as linked child repos immediately.
+- Fresh root clones include active `development/*` source contents directly.
+- Do not run `git submodule update --init --recursive` as the normal workspace bootstrap path.
+- Do not reintroduce active `development/*` slices as submodules or root gitlinks.
+- New root-visible `development/*` source slices must be tracked directly by the root repo immediately.
 - Non-whitelisted support or legacy repos must stay out of the root `development/` tree.
 
 ## Branch Naming Rules
 
-- New branches created from this root or any linked child repo must use a semantic prefix, not a tool/user prefix.
+- New branches created from this root must use a semantic prefix, not a tool/user prefix.
 - Do not use `codex/` as the branch prefix for new work.
 - Choose exactly one primary prefix based on the dominant change:
   - `feat/`
@@ -49,7 +48,7 @@
 - Use a short kebab-case slug after the prefix that describes the actual task.
 - Preferred shape is `<prefix>/<scope>-<summary>`.
 - Keep the slug business-readable. Do not encode agent names, usernames, timestamps, or local machine context into the branch name.
-- If the task spans multiple child repos, keep the same semantic prefix and as similar a slug as practical across the related repos.
+- If the task spans multiple source slices, name the branch for the dominant outcome across those slices.
 - If behavior changes and refactoring happen together, name the branch for the user-visible outcome, not the incidental internal cleanup.
 
 Examples:
@@ -63,19 +62,19 @@ Examples:
 
 ## Boundary Rules
 
-- Do not import one service repo directly from another service repo.
-- Do not introduce shared base packages across service repos unless an approved design changes that rule.
-- Do not place compose, env, seed-runner, or cross-repo glue inside service repos.
-- Do not treat read-model services as masters. `*-operations-view` repos are read services, not sources of truth.
+- Do not import one service slice directly from another service slice.
+- Do not introduce shared base packages across service slices unless an approved design changes that rule.
+- Do not place compose, env, seed-runner, or cross-slice glue inside service slices.
+- Do not treat read-model services as masters. `*-operations-view` slices are read services, not sources of truth.
 - Archive is document-only. Do not move runtime code into `docs/archive/`.
 
 ## Current Domain Notes
 
 - `service-vehicle-registry` currently owns `vehicle_master + vehicle_operator_access` together.
 - `service-settlement-operations-view` temporarily holds the current placeholder settlement runtime.
-- `service-settlement-registry` is an active runtime repo for global settlement config, company/fleet pricing tables, and any remaining settlement policy compatibility surface.
-- `service-delivery-record` is an active runtime repo for delivery source records and daily input snapshots only.
-- `service-terminal-registry` and `service-telemetry-hub` are active runtime repos and must stay within their approved boundary specs.
+- `service-settlement-registry` is an active runtime slice for global settlement config, company/fleet pricing tables, and any remaining settlement policy compatibility surface.
+- `service-delivery-record` is an active runtime slice for delivery source records and daily input snapshots only.
+- `service-terminal-registry` and `service-telemetry-hub` are active runtime slices and must stay within their approved boundary specs.
 
 ## Local Verification
 

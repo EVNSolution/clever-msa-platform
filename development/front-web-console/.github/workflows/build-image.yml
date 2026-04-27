@@ -1,0 +1,71 @@
+name: Build front-web-console image
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      vite_api_base_url:
+        type: string
+        description: Optional full API base URL baked into the static bundle, including /api
+        required: false
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  AWS_ACCOUNT_ID: 902837199612
+  ECR_REPOSITORY: front-web-console
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.1.0
+        with:
+          role-to-assume: ${{ vars.ECR_BUILD_AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          allowed-account-ids: ${{ env.AWS_ACCOUNT_ID }}
+          role-session-name: front-web-console-ecr-build
+          mask-aws-account-id: true
+          unset-current-credentials: true
+          retry-max-attempts: 4
+          action-timeout-s: 120
+
+      - name: Resolve image tags
+        id: meta
+        run: |
+          echo "sha_tag=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          echo "image_uri=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region "$AWS_REGION" | \
+            docker login --username AWS --password-stdin \
+            "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+
+      - name: Build image
+        env:
+          VITE_API_BASE_URL: ${{ github.event.inputs.vite_api_base_url }}
+        run: |
+          build_args=()
+
+          if [ -n "${VITE_API_BASE_URL:-}" ]; then
+            echo "Building image with VITE_API_BASE_URL=${VITE_API_BASE_URL}"
+            build_args+=(--build-arg "VITE_API_BASE_URL=${VITE_API_BASE_URL}")
+          else
+            echo "Building image with default same-host /api contract"
+          fi
+
+          docker build "${build_args[@]}" -t "${{ steps.meta.outputs.image_uri }}" .
+
+      - name: Push image
+        run: |
+          docker push "${{ steps.meta.outputs.image_uri }}"

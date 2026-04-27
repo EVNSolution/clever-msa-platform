@@ -1,0 +1,27 @@
+name: Prod rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      workload_id:
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.1.0
+        with:
+          role-to-assume: ${{ vars.PROD_AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - name: Placeholder rollback dispatch
+        run: echo "rollback ${{ inputs.workload_id }}"

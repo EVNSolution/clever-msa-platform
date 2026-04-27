@@ -1,0 +1,14 @@
+[
+  {
+    "workload_id": "service-settlement-inquiry",
+    "repo": "service-settlement-inquiry",
+    "image_digest": "902837199612.dkr.ecr.ap-northeast-2.amazonaws.com/service-settlement-inquiry@sha256:380f28614fc27d8399bfd258d8764c0b9a7e3c742df032da5090cc793f5572aa",
+    "release_reason": "service-settlement-inquiry-prod-onboarding"
+  },
+  {
+    "workload_id": "edge-api-gateway",
+    "repo": "edge-api-gateway",
+    "image_digest": "902837199612.dkr.ecr.ap-northeast-2.amazonaws.com/edge-api-gateway@sha256:35858d0f9e84fab0be3b869eaf3965c320370f8793920304c76d8eb52e444f0a",
+    "release_reason": "service-settlement-inquiry-prod-onboarding"
+  }
+]

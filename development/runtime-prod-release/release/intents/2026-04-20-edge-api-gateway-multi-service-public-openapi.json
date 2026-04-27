@@ -1,0 +1,8 @@
+[
+  {
+    "workload_id": "edge-api-gateway",
+    "repo": "edge-api-gateway",
+    "image_digest": "902837199612.dkr.ecr.ap-northeast-2.amazonaws.com/edge-api-gateway@sha256:8c1878eaa9c76eaa752f333b9d51574ab6a2556faa2762090b38d5ef46221a2a",
+    "release_reason": "multi-service-public-openapi"
+  }
+]

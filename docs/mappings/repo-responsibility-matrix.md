@@ -1,14 +1,14 @@
 # Repo Responsibility Matrix
 
-이 문서는 `development/` 아래 target repo가 무엇을 소유하고, 무엇을 소유하지 않는지 빠르게 확인하기 위한 매트릭스다.
+이 문서는 `development/` 아래 target source slice가 무엇을 소유하고, 무엇을 소유하지 않는지 빠르게 확인하기 위한 매트릭스다.
 
 규칙:
-- repo 이름만으로 부족한 경계를 여기서 보강한다.
-- 구현 세부는 각 repo README에 둘 수 있지만, 경계 정본은 이 문서가 우선이다.
+- slice 이름만으로 부족한 경계를 여기서 보강한다.
+- 구현 세부는 각 slice README에 둘 수 있지만, 경계 정본은 이 문서가 우선이다.
 
 ## Matrix
 
-| Target repo | Owns | Does not own | Depends on |
+| Target slice | Owns | Does not own | Depends on |
 | --- | --- | --- | --- |
 | `integration-local-stack` | compose, local env examples, smoke scripts, seed orchestration | 도메인 모델, 서비스 내부 로직, 중앙 문서 정본 | 모든 runtime repo |
 | `edge-api-gateway` | routing, reverse proxy, auth forwarding, edge profile | token 발급, 도메인 비즈니스 로직, front code | front repos, service repos |
@@ -45,7 +45,7 @@
 - if sharing becomes unavoidable, contract first, extraction later
 
 ### Cross-Service Imports
-- one repo must not import another repo's application code
+- one source slice must not import another source slice's application code
 - integration happens through HTTP or future event contracts only
 
 ### Docs Ownership
@@ -58,13 +58,13 @@
 
 ## Immediate Practical Meaning
 
-- 새 repo를 만들 때 먼저 이 문서에 한 줄을 추가한다.
-- 한 repo가 다른 repo 역할까지 먹기 시작하면, 이 문서를 먼저 수정하고 나서 설계를 다시 본다.
+- 새 source slice를 만들 때 먼저 이 문서에 한 줄을 추가한다.
+- 한 slice가 다른 slice 역할까지 먹기 시작하면, 이 문서를 먼저 수정하고 나서 설계를 다시 본다.
 - `settlement`는 이 문서에서도 4축으로 유지한다.
 
 ## Review Checklist
 
-- repo 이름만 보고도 category가 드러나는가
+- slice 이름만 보고도 category가 드러나는가
 - `owns`와 `does not own`가 겹치지 않는가
 - read model repo가 write responsibility를 갖지 않는가
 - `settlement`가 4축으로 분리되어 있는가

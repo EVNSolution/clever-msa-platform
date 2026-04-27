@@ -1,0 +1,8 @@
+[
+  {
+    "workload_id": "front-web-console",
+    "repo": "front-web-console",
+    "image_digest": "902837199612.dkr.ecr.ap-northeast-2.amazonaws.com/front-web-console@sha256:083b725371b234353053e00841b5d919d0b9ed49f94dc639d868289fce564994",
+    "release_reason": "path-tenant-login-entry-fix"
+  }
+]

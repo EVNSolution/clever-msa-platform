@@ -1,0 +1,11 @@
+name: Prod smoke
+
+on:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder smoke gate
+        run: echo "prod smoke placeholder"

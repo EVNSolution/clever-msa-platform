@@ -1,0 +1,102 @@
+name: Build service-settlement-inquiry image
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  AWS_ACCOUNT_ID: 902837199612
+  ECR_REPOSITORY: service-settlement-inquiry
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.1.0
+        with:
+          role-to-assume: ${{ vars.ECR_BUILD_AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          allowed-account-ids: ${{ env.AWS_ACCOUNT_ID }}
+          role-session-name: service-settlement-inquiry-ecr-build
+          mask-aws-account-id: true
+          unset-current-credentials: true
+          retry-max-attempts: 4
+          action-timeout-s: 120
+
+      - name: Resolve image tags
+        id: meta
+        run: |
+          echo "sha_tag=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          echo "image_uri=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region "$AWS_REGION" | \
+            docker login --username AWS --password-stdin \
+            "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+
+      - name: Build image
+        run: |
+          docker build -t "${{ steps.meta.outputs.image_uri }}" .
+
+      - name: Push image
+        run: |
+          docker push "${{ steps.meta.outputs.image_uri }}"
+
+      - name: Capture immutable image evidence
+        id: evidence
+        run: |
+          image_digest="$(
+            aws ecr describe-images \
+              --repository-name "$ECR_REPOSITORY" \
+              --image-ids imageTag="${{ steps.meta.outputs.sha_tag }}" \
+              --query 'imageDetails[0].imageDigest' \
+              --output text
+          )"
+          test -n "$image_digest"
+          test "$image_digest" != "None"
+
+          immutable_image_uri="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}@${image_digest}"
+
+          {
+            echo "image_digest=${image_digest}"
+            echo "immutable_image_uri=${immutable_image_uri}"
+          } >> "$GITHUB_OUTPUT"
+
+          cat > build-image-evidence.json <<EOF
+          {
+            "repo": "${ECR_REPOSITORY}",
+            "git_sha": "${GITHUB_SHA}",
+            "sha_tag": "${{ steps.meta.outputs.sha_tag }}",
+            "tagged_image_uri": "${{ steps.meta.outputs.image_uri }}",
+            "image_digest": "${image_digest}",
+            "immutable_image_uri": "${immutable_image_uri}"
+          }
+          EOF
+
+      - name: Summarize immutable image reference
+        run: |
+          {
+            echo "## Build image evidence"
+            echo ""
+            echo "- tagged image: \`${{ steps.meta.outputs.image_uri }}\`"
+            echo "- immutable image: \`${{ steps.evidence.outputs.immutable_image_uri }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload immutable image evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-image-evidence-${{ github.sha }}
+          if-no-files-found: error
+          path: build-image-evidence.json

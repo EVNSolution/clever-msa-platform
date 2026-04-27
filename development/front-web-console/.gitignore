@@ -1,0 +1,16 @@
+playwright-report/
+test-results/
+node_modules/
+.worktrees/
+.env.local
+.env.local-test
+
+# Public repo hygiene
+dist/
+coverage/
+.vite/
+.env
+.env.*.local
+*.log
+.vscode/
+.idea/

@@ -1,0 +1,8 @@
+[
+  {
+    "workload_id": "edge-api-gateway",
+    "repo": "edge-api-gateway",
+    "image_digest": "902837199612.dkr.ecr.ap-northeast-2.amazonaws.com/edge-api-gateway@sha256:e6a6764ec0b3966f71e12519d8a061e4e0263b594ee34886f4b4321e67d2f8e3",
+    "release_reason": "swagger-service-sections"
+  }
+]

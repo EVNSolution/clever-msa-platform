@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ResolvedReleasePlanItem",
+  "type": "object",
+  "required": [
+    "workload_id",
+    "repo",
+    "image_digest",
+    "target_host_group",
+    "deploy_method",
+    "healthcheck",
+    "rollback_target"
+  ],
+  "properties": {
+    "workload_id": {
+      "type": "string"
+    },
+    "repo": {
+      "type": "string"
+    },
+    "image_digest": {
+      "type": "string"
+    },
+    "target_host_group": {
+      "type": "string"
+    },
+    "deploy_method": {
+      "type": "string"
+    },
+    "healthcheck": {
+      "type": "object"
+    },
+    "rollback_target": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,21 +1,21 @@
 # Current Runtime Inventory
 
-이 문서는 현재 active runtime repo, compose service, gateway prefix를 한 번에 보는 living inventory다.
+이 문서는 현재 active runtime source slice, compose service, gateway prefix를 한 번에 보는 living inventory다.
 
 질문이 아래와 같다면 historical rollout plan보다 이 문서를 먼저 본다.
 
-1. 지금 실제로 떠 있는 service repo는 무엇인가
+1. 지금 실제로 떠 있는 service slice는 무엇인가
 2. compose service 이름은 무엇인가
 3. gateway prefix는 무엇인가
-4. 아직 empty shell인 repo는 무엇인가
+4. 아직 empty shell인 slice는 무엇인가
 
-## Active Runtime Repos
+## Active Runtime Source Slices
 
-| Target repo | Compose service | Gateway prefix | Status | Role summary |
+| Target slice | Compose service | Gateway prefix | Status | Role summary |
 | --- | --- | --- | --- | --- |
 | `edge-api-gateway` | `gateway` | external entrypoint | `active runtime` | front와 backend API를 하나의 edge에서 라우팅한다 |
 | `front-web-console` | `web-console` | `/` | `active runtime` | 권한 기반 단일 웹 콘솔 |
-| `front-driver-app` | `n/a (mobile app)` | `n/a` | `active child repo, empty shell` | React Native + Expo 기반 실제 Android/iOS 배송원 앱을 위한 child repo. 운영 원칙은 `native-only`이며 compose-hosted runtime service는 아니다 |
+| `front-driver-app` | `n/a (mobile app)` | `n/a` | `active source slice, empty shell` | React Native + Expo 기반 실제 Android/iOS 배송원 앱을 위한 source slice. 운영 원칙은 `native-only`이며 compose-hosted runtime service는 아니다 |
 | `service-account-access` | `account-auth-api` | `/api/auth/` | `active runtime` | 계정, 로그인, 토큰, 접근 제어 |
 | `service-organization-registry` | `organization-master-api` | `/api/org/` | `active runtime` | 회사와 플릿 마스터 |
 | `service-driver-profile` | `driver-profile-api` | `/api/drivers/` | `active runtime` | 기사 기본 프로필 정본 |
@@ -42,7 +42,7 @@
 | `service-telemetry-dead-letter` | `telemetry-dead-letter-api` | `/api/telemetry-dead-letters/` | `active runtime` | 실패 텔레메트리 append-only 저장과 admin read |
 | `service-telemetry-listener` | `telemetry-listener` | internal-only | `runtime-ready, desired=0` | MQTT subscribe와 hub forward만 담당하는 worker. broker 확정 전까지 prod 비활성 |
 
-## Active Runtime Control Plane Repos
+## Active Runtime Control Plane Slices
 
 - `runtime-prod-release`
   - active prod runtime rollout control plane
@@ -63,9 +63,9 @@
 
 ## Notes
 
-1. runtime naming truth는 repo 이름이 아니라 현재 compose service와 gateway prefix까지 같이 본다.
+1. runtime naming truth는 slice 이름이 아니라 현재 compose service와 gateway prefix까지 같이 본다.
 2. naming drift나 route 변경이 생기면 historical rollout plan을 소급 수정하는 대신 이 문서와 current living docs를 먼저 갱신한다.
-3. seed-runner, broker helper, DB 컨테이너 같은 local support component는 root `development/` whitelist 바깥에서 관리한다. 위 표의 target repo inventory에는 넣지 않는다.
+3. seed-runner, broker helper, DB 컨테이너 같은 local support component는 root `development/` whitelist 바깥에서 관리한다. 위 표의 target slice inventory에는 넣지 않는다.
 4. public entry slice는 planned slices 기준의 external production proof를 마쳤다. 예외는 internal worker `service-telemetry-listener` 뿐이며, 이 서비스는 broker 확인 전까지 `desired=0` 으로 유지한다.
 5. 운영 절차는 rollout note보다 runbook 기준으로 본다.
    - prod 전 gate: [../runbooks/ev-dashboard-preprod-release-gate.md](../runbooks/ev-dashboard-preprod-release-gate.md)

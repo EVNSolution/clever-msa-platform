@@ -1,0 +1,252 @@
+{
+  "version": 1,
+  "workloads": {
+    "front-web-console": {
+      "workload_class": "entry",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/health",
+        "expect_status": 200
+      }
+    },
+    "edge-api-gateway": {
+      "workload_class": "entry",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/health",
+        "expect_status": 200
+      }
+    },
+    "service-account-access": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-organization-registry": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-driver-profile": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-personnel-document-registry": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-vehicle-registry": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-vehicle-assignment": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-vehicle-operations-view": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-driver-operations-view": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-terminal-registry": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-telemetry-hub": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-telemetry-listener": {
+      "workload_class": "worker",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "command",
+        "command": [
+          "systemctl",
+          "is-active",
+          "service-telemetry-listener"
+        ],
+        "expect_exit_code": 0
+      }
+    },
+    "service-telemetry-dead-letter": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-settlement-registry": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-attendance-registry": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-delivery-record": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-settlement-payroll": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-settlement-operations-view": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-settlement-inquiry": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-dispatch-registry": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-dispatch-operations-view": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-region-registry": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-region-analytics": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-announcement-registry": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-support-registry": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    },
+    "service-notification-hub": {
+      "workload_class": "core-api",
+      "target_host_group": "evdash-msa",
+      "healthcheck": {
+        "kind": "http",
+        "path": "/internal/health",
+        "expect_status": 200
+      }
+    }
+  }
+}

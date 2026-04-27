@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ReleaseEvidenceItem",
+  "type": "object",
+  "required": [
+    "workload_id",
+    "target_host_group",
+    "image_digest",
+    "runtime_image_digest",
+    "actual_image_digest",
+    "manifest_id",
+    "approver",
+    "ssm_command_id",
+    "applied_config_revision",
+    "smoke_result",
+    "image_consistency",
+    "timestamp"
+  ],
+  "properties": {
+    "workload_id": {
+      "type": "string"
+    },
+    "target_host_group": {
+      "type": "string"
+    },
+    "image_digest": {
+      "type": "string"
+    },
+    "runtime_image_digest": {
+      "type": "string"
+    },
+    "actual_image_digest": {
+      "type": "string"
+    },
+    "manifest_id": {
+      "type": "string"
+    },
+    "approver": {
+      "type": "string"
+    },
+    "ssm_command_id": {
+      "type": "string"
+    },
+    "applied_config_revision": {
+      "type": "string"
+    },
+    "api_docs_revision": {
+      "type": "object",
+      "required": [
+        "edge_commit_sha",
+        "openapi_sha256",
+        "service_export_manifest_sha"
+      ],
+      "properties": {
+        "edge_commit_sha": {
+          "type": "string"
+        },
+        "openapi_sha256": {
+          "type": "string"
+        },
+        "service_export_manifest_sha": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "smoke_result": {
+      "type": "string"
+    },
+    "image_consistency": {
+      "type": "object",
+      "required": [
+        "resolved_equals_runtime",
+        "runtime_equals_actual",
+        "resolved_equals_actual",
+        "passed"
+      ],
+      "properties": {
+        "resolved_equals_runtime": {
+          "type": "boolean"
+        },
+        "runtime_equals_actual": {
+          "type": "boolean"
+        },
+        "resolved_equals_actual": {
+          "type": "boolean"
+        },
+        "passed": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "timestamp": {
+      "type": "string"
+    }
+  },
+  "if": {
+    "properties": {
+      "workload_id": {
+        "const": "edge-api-gateway"
+      }
+    },
+    "required": [
+      "workload_id"
+    ]
+  },
+  "then": {
+    "required": [
+      "api_docs_revision"
+    ]
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,57 @@
+try:
+    from drf_spectacular.utils import extend_schema
+except ModuleNotFoundError:
+    def extend_schema(*args, **kwargs):
+        def decorator(target):
+            return target
+
+        return decorator
+
+from rest_framework import permissions, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from vehicleops.permissions_navigation import require_nav_access
+from vehicleops.permissions import AuthenticatedReadOnly
+from vehicleops.serializers import (
+    HealthSerializer,
+    VehicleOpsSummarySerializer,
+    VehicleOpsVehiclePathSerializer,
+)
+from vehicleops.services.vehicle_summary_service import VehicleSummaryService
+
+
+class HealthView(APIView):
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+
+    @extend_schema(responses={200: HealthSerializer})
+    def get(self, request):
+        return Response({"status": "ok"}, status=status.HTTP_200_OK)
+
+
+class VehicleListView(APIView):
+    permission_classes = [AuthenticatedReadOnly]
+
+    @extend_schema(responses={200: VehicleOpsSummarySerializer(many=True)})
+    def get(self, request):
+        require_nav_access(request, "vehicles")
+        summaries = VehicleSummaryService().list_summaries(authorization=request.META.get("HTTP_AUTHORIZATION", ""))
+        serializer = VehicleOpsSummarySerializer(summaries, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class VehicleDetailView(APIView):
+    permission_classes = [AuthenticatedReadOnly]
+
+    @extend_schema(responses={200: VehicleOpsSummarySerializer})
+    def get(self, request, vehicle_ref):
+        require_nav_access(request, "vehicles")
+        path_serializer = VehicleOpsVehiclePathSerializer(data={"vehicle_ref": vehicle_ref})
+        path_serializer.is_valid(raise_exception=True)
+        summary = VehicleSummaryService().build_summary(
+            vehicle_ref=str(vehicle_ref),
+            authorization=request.META.get("HTTP_AUTHORIZATION", ""),
+        )
+        serializer = VehicleOpsSummarySerializer(summary)
+        return Response(serializer.data, status=status.HTTP_200_OK)
