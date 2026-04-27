@@ -1,0 +1,8 @@
+[
+  {
+    "workload_id": "front-web-console",
+    "repo": "front-web-console",
+    "image_digest": "902837199612.dkr.ecr.ap-northeast-2.amazonaws.com/front-web-console@sha256:9943bff19adda24f67bf142c0a3a50dfa0e769bfc10be1993c778127f98485fb",
+    "release_reason": "transport-ops-cockpit"
+  }
+]

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WorkloadMetadata",
+  "type": "object",
+  "required": [
+    "workload_id",
+    "workload_class",
+    "entry_impact",
+    "public_api_contract_impact",
+    "read_model_impact",
+    "async_event_impact",
+    "runtime_config_gate",
+    "depends_on_workloads",
+    "expands_to_workloads"
+  ],
+  "properties": {
+    "workload_id": {
+      "type": "string"
+    },
+    "workload_class": {
+      "type": "string"
+    },
+    "entry_impact": {
+      "type": "boolean"
+    },
+    "public_api_contract_impact": {
+      "type": "boolean"
+    },
+    "read_model_impact": {
+      "type": "boolean"
+    },
+    "async_event_impact": {
+      "type": "boolean"
+    },
+    "runtime_config_gate": {
+      "type": "boolean"
+    },
+    "depends_on_workloads": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "expands_to_workloads": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

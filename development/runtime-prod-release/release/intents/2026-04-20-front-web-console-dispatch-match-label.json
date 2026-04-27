@@ -1,0 +1,8 @@
+[
+  {
+    "workload_id": "front-web-console",
+    "repo": "front-web-console",
+    "image_digest": "902837199612.dkr.ecr.ap-northeast-2.amazonaws.com/front-web-console@sha256:202a47689d0ce4e424c09a5e27506058db78311ef5344117c892a56760a9349a",
+    "release_reason": "dispatch-match-label"
+  }
+]

@@ -1,0 +1,224 @@
+name: Build development images
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build-development-images.yml"
+      - "development/**"
+      - "scripts/github/resolve-image-build-matrix.py"
+  workflow_dispatch:
+    inputs:
+      slice:
+        type: string
+        required: false
+        description: Optional development slice name. Blank builds every Dockerfile-backed slice.
+      vite_api_base_url:
+        type: string
+        required: false
+        description: Optional API base URL for front-web-console builds, including /api.
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION || 'ap-northeast-2' }}
+  AWS_ACCOUNT_ID: 902837199612
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+        with:
+          fetch-depth: 2
+
+      - name: Resolve build matrix
+        id: matrix
+        run: |
+          matrix="$(
+            python3 scripts/github/resolve-image-build-matrix.py \
+              --event-name "${{ github.event_name }}" \
+              --before "${{ github.event.before }}" \
+              --sha "${{ github.sha }}" \
+              --slice "${{ github.event.inputs.slice || '' }}"
+          )"
+          echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"
+          echo "${matrix}" >> "$GITHUB_STEP_SUMMARY"
+
+  build:
+    needs: detect
+    if: ${{ needs.detect.outputs.matrix != '{"include":[]}' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.detect.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+
+      - name: Set up Python for edge public docs
+        if: ${{ matrix.kind == 'edge' }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install edge public OpenAPI dependencies
+        if: ${{ matrix.kind == 'edge' }}
+        working-directory: ${{ matrix.path }}
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-public-openapi.txt
+
+      - name: Prepare edge public OpenAPI sources
+        if: ${{ matrix.kind == 'edge' }}
+        working-directory: ${{ matrix.path }}
+        env:
+          GH_REPO_READ_TOKEN: ${{ secrets.GH_ACTIONS_REPO_READ_TOKEN != '' && secrets.GH_ACTIONS_REPO_READ_TOKEN || secrets.GH_ACTIONS_CLEVER_PLATFORM_READ_TOKEN != '' && secrets.GH_ACTIONS_CLEVER_PLATFORM_READ_TOKEN || github.token }}
+        run: |
+          python scripts/prepare_public_openapi_sources.py
+
+      - name: Install edge public OpenAPI source requirements
+        if: ${{ matrix.kind == 'edge' }}
+        working-directory: ${{ matrix.path }}
+        run: |
+          python scripts/install_public_openapi_source_requirements.py
+
+      - name: Build edge public OpenAPI docs
+        if: ${{ matrix.kind == 'edge' }}
+        working-directory: ${{ matrix.path }}
+        run: |
+          export EDGE_COMMIT_SHA="${GITHUB_SHA}"
+          python scripts/build_public_openapi.py
+
+      - name: Check edge public OpenAPI parity
+        if: ${{ matrix.kind == 'edge' }}
+        working-directory: ${{ matrix.path }}
+        run: |
+          export EDGE_COMMIT_SHA="${GITHUB_SHA}"
+          python scripts/check_public_openapi_parity.py
+
+      - name: Run edge public docs tests
+        if: ${{ matrix.kind == 'edge' }}
+        working-directory: ${{ matrix.path }}
+        run: |
+          python -m unittest tests.test_nginx_docs_routes tests.test_nginx_bootstrap_proof_routes tests.test_nginx_partial_docs_routes tests.test_public_openapi_build tests.test_public_openapi_parity
+
+      - name: Validate edge public OpenAPI artifacts
+        if: ${{ matrix.kind == 'edge' }}
+        working-directory: ${{ matrix.path }}
+        run: |
+          test -f public-api-docs/openapi.yaml
+          test -f public-api-docs/revision.json
+          test -f public-api-docs/service-export-manifest.json
+          test -f public-api-docs/parity-report.json
+
+      - name: Upload edge public OpenAPI artifacts
+        if: ${{ matrix.kind == 'edge' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-api-docs-${{ github.sha }}
+          if-no-files-found: error
+          path: |
+            ${{ matrix.path }}/public-api-docs/openapi.yaml
+            ${{ matrix.path }}/public-api-docs/revision.json
+            ${{ matrix.path }}/public-api-docs/service-export-manifest.json
+            ${{ matrix.path }}/public-api-docs/parity-report.json
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.1.0
+        with:
+          role-to-assume: ${{ vars.ECR_BUILD_AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          allowed-account-ids: ${{ env.AWS_ACCOUNT_ID }}
+          role-session-name: ${{ matrix.slice }}-ecr-build
+          mask-aws-account-id: true
+          unset-current-credentials: true
+          retry-max-attempts: 4
+          action-timeout-s: 120
+
+      - name: Resolve image tags
+        id: meta
+        run: |
+          image_uri="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${{ matrix.ecr_repository }}:${GITHUB_SHA}"
+          {
+            echo "sha_tag=${GITHUB_SHA}"
+            echo "image_uri=${image_uri}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region "$AWS_REGION" | \
+            docker login --username AWS --password-stdin \
+            "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+
+      - name: Build image
+        env:
+          VITE_API_BASE_URL: ${{ github.event.inputs.vite_api_base_url || '' }}
+        run: |
+          build_args=()
+          if [ "${{ matrix.kind }}" = "front-web" ] && [ -n "${VITE_API_BASE_URL:-}" ]; then
+            build_args+=(--build-arg "VITE_API_BASE_URL=${VITE_API_BASE_URL}")
+          fi
+
+          docker build "${build_args[@]}" \
+            -t "${{ steps.meta.outputs.image_uri }}" \
+            "${{ matrix.path }}"
+
+      - name: Push image
+        run: |
+          docker push "${{ steps.meta.outputs.image_uri }}"
+
+      - name: Capture immutable image evidence
+        id: evidence
+        run: |
+          image_digest="$(
+            aws ecr describe-images \
+              --repository-name "${{ matrix.ecr_repository }}" \
+              --image-ids imageTag="${{ steps.meta.outputs.sha_tag }}" \
+              --query 'imageDetails[0].imageDigest' \
+              --output text
+          )"
+          test -n "$image_digest"
+          test "$image_digest" != "None"
+
+          immutable_image_uri="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${{ matrix.ecr_repository }}@${image_digest}"
+
+          {
+            echo "image_digest=${image_digest}"
+            echo "immutable_image_uri=${immutable_image_uri}"
+          } >> "$GITHUB_OUTPUT"
+
+          cat > build-image-evidence.json <<EOF
+          {
+            "repo": "${{ matrix.ecr_repository }}",
+            "slice": "${{ matrix.slice }}",
+            "git_sha": "${GITHUB_SHA}",
+            "sha_tag": "${{ steps.meta.outputs.sha_tag }}",
+            "tagged_image_uri": "${{ steps.meta.outputs.image_uri }}",
+            "image_digest": "${image_digest}",
+            "immutable_image_uri": "${immutable_image_uri}"
+          }
+          EOF
+
+      - name: Summarize immutable image reference
+        run: |
+          {
+            echo "## Build image evidence"
+            echo ""
+            echo "- slice: \`${{ matrix.slice }}\`"
+            echo "- tagged image: \`${{ steps.meta.outputs.image_uri }}\`"
+            echo "- immutable image: \`${{ steps.evidence.outputs.immutable_image_uri }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload immutable image evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-image-evidence-${{ matrix.slice }}-${{ github.sha }}
+          if-no-files-found: error
+          path: build-image-evidence.json

@@ -1,0 +1,8 @@
+[
+  {
+    "workload_id": "front-web-console",
+    "repo": "front-web-console",
+    "image_digest": "902837199612.dkr.ecr.ap-northeast-2.amazonaws.com/front-web-console@sha256:e8c6840285a469967327b6ca10c7bb4a1270a8a37df5b69ff18bed01302a53ba",
+    "release_reason": "system-admin-tenant-access"
+  }
+]

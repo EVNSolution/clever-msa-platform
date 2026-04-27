@@ -1,0 +1,16 @@
+{
+  "workload_id": "edge-api-gateway",
+  "workload_class": "entry",
+  "entry_impact": false,
+  "public_api_contract_impact": true,
+  "read_model_impact": false,
+  "async_event_impact": false,
+  "runtime_config_gate": false,
+  "depends_on_workloads": [
+    "service-account-access"
+  ],
+  "expands_to_workloads": [
+    "front-web-console",
+    "service-account-access"
+  ]
+}

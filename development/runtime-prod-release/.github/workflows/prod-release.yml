@@ -1,0 +1,85 @@
+name: Prod release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_intent_path:
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: prod-runtime-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Checkout runtime-prod-platform
+        uses: actions/checkout@v6
+        with:
+          repository: EVNSolution/runtime-prod-platform
+          path: runtime-prod-platform
+          token: ${{ secrets.GH_ACTIONS_REPO_READ_TOKEN != '' && secrets.GH_ACTIONS_REPO_READ_TOKEN || secrets.GH_ACTIONS_CLEVER_PLATFORM_READ_TOKEN != '' && secrets.GH_ACTIONS_CLEVER_PLATFORM_READ_TOKEN || github.token }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.1.0
+        with:
+          role-to-assume: ${{ vars.PROD_AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - name: Resolve release plan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_ACTIONS_REPO_READ_TOKEN != '' && secrets.GH_ACTIONS_REPO_READ_TOKEN || secrets.GH_ACTIONS_CLEVER_PLATFORM_READ_TOKEN != '' && secrets.GH_ACTIONS_CLEVER_PLATFORM_READ_TOKEN || github.token }}
+          PYTHONPATH: .
+        run: |
+          python release/resolve_release.py \
+            "${{ inputs.release_intent_path }}" \
+            --inventory-path runtime-prod-platform/release/prod-runtime-inventory.json \
+            > resolved-release-plan.json
+      - name: Dispatch runtime rollout
+        env:
+          PYTHONPATH: .
+        run: |
+          python release/dispatch_ssm.py resolved-release-plan.json --mode dispatch > dispatch-results.json
+      - name: Read edge api docs revision
+        env:
+          PYTHONPATH: .
+        run: |
+          python release/dispatch_ssm.py resolved-release-plan.json --mode edge-readback > edge-api-docs-revision.json
+          if [ "$(tr -d '[:space:]' < edge-api-docs-revision.json)" = "null" ]; then
+            rm edge-api-docs-revision.json
+          fi
+      - name: Read post-release runtime state
+        env:
+          PYTHONPATH: .
+        run: |
+          python release/dispatch_ssm.py resolved-release-plan.json --mode post-release-state > post-release-state.json
+      - name: Build release evidence
+        env:
+          PYTHONPATH: .
+        run: |
+          python release/evidence.py resolved-release-plan.json dispatch-results.json post-release-state.json \
+            --approver "${GITHUB_ACTOR}" \
+            --edge-api-docs-revision-path edge-api-docs-revision.json \
+            --output-path release-evidence.json
+      - name: Validate release evidence artifacts
+        run: |
+          test -f dispatch-results.json
+          test -f post-release-state.json
+          test -f release-evidence.json
+      - name: Upload release evidence artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod-release-artifacts-${{ github.run_id }}
+          if-no-files-found: ignore
+          path: |
+            dispatch-results.json
+            post-release-state.json
+            release-evidence.json
+            edge-api-docs-revision.json

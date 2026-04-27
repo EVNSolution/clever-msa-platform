@@ -1,0 +1,26 @@
+__pycache__/
+*.py[cod]
+db.sqlite3
+.venv312
+.DS_Store
+.venv*
+
+# Public repo hygiene
+.env
+.env.local
+.env.*.local
+!.env.example
+node_modules/
+dist/
+build/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage/
+htmlcov/
+*.sqlite3
+*.log
+.vscode/
+.idea/

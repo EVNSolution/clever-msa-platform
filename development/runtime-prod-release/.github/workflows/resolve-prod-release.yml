@@ -1,0 +1,20 @@
+name: Resolve prod release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_intent_path:
+        required: true
+        type: string
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Resolve release intent only
+        env:
+          PYTHONPATH: .
+        run: |
+          python release/resolve_release.py "${{ inputs.release_intent_path }}"

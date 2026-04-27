@@ -1,0 +1,107 @@
+name: Build edge-api-gateway image
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ap-northeast-2
+  AWS_ACCOUNT_ID: 902837199612
+  ECR_REPOSITORY: edge-api-gateway
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install public OpenAPI dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-public-openapi.txt
+
+      - name: Prepare public OpenAPI source repos
+        env:
+          GH_REPO_READ_TOKEN: ${{ secrets.GH_ACTIONS_REPO_READ_TOKEN != '' && secrets.GH_ACTIONS_REPO_READ_TOKEN || secrets.GH_ACTIONS_CLEVER_PLATFORM_READ_TOKEN != '' && secrets.GH_ACTIONS_CLEVER_PLATFORM_READ_TOKEN || github.token }}
+        run: |
+          python scripts/prepare_public_openapi_sources.py
+
+      - name: Install public OpenAPI source requirements
+        run: |
+          python scripts/install_public_openapi_source_requirements.py
+
+      - name: Build public OpenAPI docs
+        run: |
+          export EDGE_COMMIT_SHA=${GITHUB_SHA}
+          python scripts/build_public_openapi.py
+
+      - name: Check public OpenAPI parity
+        run: |
+          export EDGE_COMMIT_SHA=${GITHUB_SHA}
+          python scripts/check_public_openapi_parity.py
+
+      - name: Run public docs tests
+        run: |
+          python -m unittest tests.test_nginx_docs_routes tests.test_nginx_bootstrap_proof_routes tests.test_nginx_partial_docs_routes tests.test_public_openapi_build tests.test_public_openapi_parity
+
+      - name: Validate public OpenAPI artifacts
+        run: |
+          test -f public-api-docs/openapi.yaml
+          test -f public-api-docs/revision.json
+          test -f public-api-docs/service-export-manifest.json
+          test -f public-api-docs/parity-report.json
+
+      - name: Upload public OpenAPI artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-api-docs-${{ github.sha }}
+          if-no-files-found: error
+          path: |
+            public-api-docs/openapi.yaml
+            public-api-docs/revision.json
+            public-api-docs/service-export-manifest.json
+            public-api-docs/parity-report.json
+
+      - name: Resolve image tags
+        id: meta
+        run: |
+          echo "sha_tag=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          echo "image_uri=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.1.0
+        with:
+          role-to-assume: ${{ vars.ECR_BUILD_AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          allowed-account-ids: ${{ env.AWS_ACCOUNT_ID }}
+          role-session-name: edge-api-gateway-ecr-build
+          mask-aws-account-id: true
+          unset-current-credentials: true
+          retry-max-attempts: 4
+          action-timeout-s: 120
+
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region "$AWS_REGION" | \
+            docker login --username AWS --password-stdin \
+            "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+
+      - name: Build image
+        run: |
+          docker build -t "${{ steps.meta.outputs.image_uri }}" .
+
+      - name: Push image
+        run: |
+          docker push "${{ steps.meta.outputs.image_uri }}"

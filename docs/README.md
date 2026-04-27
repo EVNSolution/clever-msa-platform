@@ -9,7 +9,7 @@
 - 플랫폼 전체 구조와 작업 원칙: [../WORKSPACE.md](../WORKSPACE.md)
 - current deployment repo truth: [rollout/current-deployment-source-of-truth.md](rollout/current-deployment-source-of-truth.md)
 - 상위 목표 문서 index: [goals/README.md](goals/README.md)
-- target repo와 migration 상태: [../repo-map.md](../repo-map.md)
+- target source slice와 migration 상태: [../repo-map.md](../repo-map.md)
 - 현재 runtime repo / compose service / gateway prefix inventory: [mappings/current-runtime-inventory.md](mappings/current-runtime-inventory.md)
 - 현재 코드에서 target repo로 가는 이동표: [mappings/current-to-target-repo-map.md](mappings/current-to-target-repo-map.md)
 - repo별 책임 경계: [mappings/repo-responsibility-matrix.md](mappings/repo-responsibility-matrix.md)
@@ -23,8 +23,8 @@
 - 문서 정본 정렬 계획: [superpowers/plans/2026-04-15-platform-docs-canonical-truth-alignment-implementation-plan.md](superpowers/plans/2026-04-15-platform-docs-canonical-truth-alignment-implementation-plan.md)
 - 다음 개발/배포 시나리오 계획: [superpowers/plans/2026-04-15-platform-next-development-and-deploy-scenarios-plan.md](superpowers/plans/2026-04-15-platform-next-development-and-deploy-scenarios-plan.md)
 - `archive/develop` cleanup 계획: [superpowers/plans/2026-04-15-archive-develop-cleanup-implementation-plan.md](superpowers/plans/2026-04-15-archive-develop-cleanup-implementation-plan.md)
-- 서비스 repo template baseline: [superpowers/specs/2026-04-15-service-repo-template-baseline-design.md](superpowers/specs/2026-04-15-service-repo-template-baseline-design.md)
-- 서비스 repo template rollout 계획: [superpowers/plans/2026-04-15-service-repo-template-rollout-implementation-plan.md](superpowers/plans/2026-04-15-service-repo-template-rollout-implementation-plan.md)
+- 서비스 source slice template baseline: [superpowers/specs/2026-04-15-service-repo-template-baseline-design.md](superpowers/specs/2026-04-15-service-repo-template-baseline-design.md)
+- 서비스 source slice template rollout 계획: [superpowers/plans/2026-04-15-service-repo-template-rollout-implementation-plan.md](superpowers/plans/2026-04-15-service-repo-template-rollout-implementation-plan.md)
 - 서비스 repo template audit matrix: [mappings/service-repo-template-audit-matrix.md](mappings/service-repo-template-audit-matrix.md)
 
 - `goals/`: 플랫폼의 목표 상태와 상위 방향
@@ -37,6 +37,6 @@
 
 실행 코드, compose, env, seed script는 이 폴더에 두지 않는다.
 
-현재 runtime naming, compose service, gateway prefix 같은 질문은 historical rollout plan이 아니라 `mappings/current-runtime-inventory.md`를 먼저 본다. 배포 repo ownership과 current deploy truth는 `rollout/current-deployment-source-of-truth.md`를 먼저 본다. 운영 절차 질문은 `runbooks/README.md`부터 보고, prod 런타임 정본은 `runtime-prod-platform -> EVDash-msa(/data) -> runtime-prod-release` 기준으로 읽는다. `infra-ev-dashboard-platform`, `clever-deploy-control` 관련 문서는 bridge lane이나 legacy reference가 필요할 때만 본다.
+현재 runtime naming, compose service, gateway prefix 같은 질문은 historical rollout plan이 아니라 `mappings/current-runtime-inventory.md`를 먼저 본다. 배포 slice ownership과 current deploy truth는 `rollout/current-deployment-source-of-truth.md`를 먼저 본다. 운영 절차 질문은 `runbooks/README.md`부터 보고, prod 런타임 정본은 `runtime-prod-platform -> EVDash-msa(/data) -> runtime-prod-release` 기준으로 읽는다. `infra-ev-dashboard-platform`, `clever-deploy-control` 관련 문서는 bridge lane이나 legacy reference가 필요할 때만 본다.
 
 `goals/`는 상위 목표와 north-star를 보관하는 폴더다. current runtime truth나 operator 절차를 찾을 때는 `goals/`부터 읽지 않는다.
