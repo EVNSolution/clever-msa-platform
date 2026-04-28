@@ -14,6 +14,7 @@
 
 - active runtime web: `development/front-web-console/`
 - mobile appendix and native app guidance: `docs/superpowers/specs/2026-04-21-cheonha-driver-app-minimum-design.md`
+- driver app settlement read contract: `docs/contracts/22-driver-app-settlement-read-contract.md`
 - 관련 contract: `docs/contracts/10-front-ui-rules.md`, `docs/contracts/18-single-web-console-screen-map.md`
 
 이 문서는 마케팅 사이트 규칙이나 외부 브랜딩 가이드를 다루지 않는다.
@@ -30,6 +31,7 @@
 
 - `front-driver-app`은 active child repo로 등록되었지만, 현재 child repo 자체는 empty shell 상태다.
 - mobile appendix는 [2026-04-21-cheonha-driver-app-minimum-design.md](../superpowers/specs/2026-04-21-cheonha-driver-app-minimum-design.md)를 기준으로 한 current native app guidance다.
+- 정산 조회 payload와 금액 의미는 [22-driver-app-settlement-read-contract.md](./22-driver-app-settlement-read-contract.md)를 기준으로 고정한다.
 - framework는 `React Native + Expo`로 확정되었고, native bootstrap 세부만 후속 구현에서 닫는다.
 
 ## Mission

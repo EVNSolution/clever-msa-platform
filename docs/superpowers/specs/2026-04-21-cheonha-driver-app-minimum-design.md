@@ -16,6 +16,7 @@
 이 설계는 아래 current truth 위에서 읽는다.
 
 - `docs/superpowers/plans/2026-04-21-front-driver-app-native-bootstrap-implementation-plan.md`
+- `docs/contracts/22-driver-app-settlement-read-contract.md`
 - `docs/contracts/15-auth-api-scenario-map.md`
 - `docs/decisions/specs/2026-04-03-identity-account-auth-design.md`
 - `docs/mappings/current-runtime-inventory.md`
@@ -48,9 +49,10 @@
 1. 천하운수 1차 앱 제품 경계
 2. 회원가입 / 로그인 / 자동 로그인
 3. 배송원 업무기록 화면
-4. 배송원 MY페이지
-5. system admin 빈 화면 처리
-6. 필요한 최소 backend API
+4. 정산 문의 날짜 선택 / 채팅 화면
+5. 배송원 MY페이지
+6. system admin 빈 화면 처리
+7. 필요한 최소 backend API
 
 이번 문서는 아래를 다루지 않는다.
 
@@ -68,9 +70,10 @@
 천하운수 1차 앱은 `clever-driver` 공용 앱 코어를 전제로 하더라도, 실제 동작 범위는 아래처럼 고정한다.
 
 1. 회사 문맥은 `천하운수`로 고정한다.
-2. 화면은 `업무기록`과 `MY`만 둔다.
-3. 배송원 사용자는 웹에서 업로드된 일자별 `근태 + 배송이력` 박스를 앱에서 읽기 전용으로 확인한다.
-4. system admin은 앱 진입은 허용하되, 전용 화면 본문은 비워 둔다.
+2. 배송원 기본 화면은 `업무기록`과 `MY`다.
+3. `업무기록` 하단에는 `정산 문의하기` 진입을 둔다.
+4. 정산 문의는 `날짜 선택 -> 단일 누적 채팅방` 흐름으로 닫는다.
+5. system admin은 앱 진입은 허용하되, 전용 화면 본문은 비워 둔다.
 
 즉 이번 1차 앱은 `운영앱`이 아니라 `최소 self-service 기록 확인 앱`이다.
 
@@ -109,13 +112,16 @@
 
 ### 1. Driver mode
 
-배송원 모드는 아래 두 화면만 가진다.
+배송원 모드는 아래 surface만 가진다.
 
 1. `업무기록`
 2. `MY`
+3. `정산 문의 날짜 선택`
+4. `정산 문의 채팅`
 
-하단 navigation을 둔다면 이 두 항목만 둔다.
-상단 타이틀, 필터, 정산 워크스페이스, 공지/문의 메뉴는 두지 않는다.
+하단 navigation을 둔다면 기본 탭은 `업무기록`, `MY`만 둔다.
+`정산 문의`는 탭이 아니라 `업무기록` 하단 CTA로 진입한다.
+상단 타이틀, 공지/문의 메뉴, 관리자용 툴바는 두지 않는다.
 
 ### 2. System admin mode
 
@@ -132,31 +138,74 @@ system admin은 별도 운영 화면을 두지 않는다.
 
 ### 1. 업무기록
 
-`업무기록`은 날짜 리스트 화면 하나로 고정한다.
+`업무기록`은 `tight monthly grid` 화면 하나로 고정한다.
 
 구성:
 
-1. 날짜 내림차순 카드 리스트
-2. 카드 1개 = 날짜 1개
-3. 카드 안에 `근태`, `배송이력` 두 블록만 표시
+1. 월 선택 바
+2. `7열` 월간 그리드
+3. 우상단 `일반(초록) / 특근(주황)` 작은 네온 마커와 legend
+4. 하단 `금월 실적` 3카드
+5. 뷰포트 최하단 `정산 문의하기`
 
-각 날짜 카드에서 보여주는 최소 정보:
+각 날짜 셀에서 보여주는 최소 정보:
 
 - `date`
-- `attendance.final_status`
 - `delivery_history.delivery_count`
-- `delivery_history.source_record_count`
-- `delivery_history.status`
+- 일일 정산 금액
+- 일반/특근 상태 마커
 
 원칙:
 
 1. 읽기 전용이다.
 2. 수정, 승인, 업로드, 예외처리 CTA를 두지 않는다.
-3. 상세 drill-down도 1차에서는 두지 않는다.
-4. 데이터가 없으면 빈 상태만 보여준다.
-5. **연동 누락 UX:** `needs_link` 상태일 경우, 화면 전체에 흐린 배경(Blur)을 적용하고 "배송원 연동이 필요합니다" 안내 문구와 가이드를 중앙에 노출한다.
+3. 셀은 서로 붙고, 경계는 매우 얇고 흐리게 둔다.
+4. 데이터가 없으면 어두운 비활성 셀 또는 빈 상태만 보여준다.
+5. **연동 누락 UX:** `needs_link` 상태일 경우, 화면 전체에 흐린 배경(Blur)을 적용하고 "배송원 연동이 필요합니다" 안내 문구를 노출한다.
+6. `needs_link` 화면 안 액션은 카드 내부 최하단의 큰 `계정 연동 요청` 버튼으로 둔다.
+7. 로딩/오류/빈 상태는 승인된 별도 state surface를 사용한다.
+8. 일일 정산 금액은 `docs/contracts/22-driver-app-settlement-read-contract.md`의 `total_amount`를 그대로 사용한다.
 
-### 2. MY
+### 2. 정산 문의 날짜 선택
+
+`정산 문의 날짜 선택`은 업무기록과 같은 월간 그리드 언어를 재사용한다.
+
+구성:
+
+1. 월 선택 바
+2. `7열` 날짜 선택 그리드
+3. 선택 날짜 요약
+4. `이 날짜로 적용` CTA
+
+원칙:
+
+1. 날짜 1개만 선택한다.
+2. 선택된 날짜는 달력 안에서 더 강한 강조로 보인다.
+3. 요약에는 `정산 타입`, `박스 수`, `박스당 단가`, `총 정산액`을 표시한다.
+4. `총 정산액`은 `박스 수 * 박스당 단가` 규칙을 따른다.
+5. 적용 시 문의 채팅의 첨부 미리보기로 값을 전달한다.
+
+이 화면의 settlement summary field 의미는 `docs/contracts/22-driver-app-settlement-read-contract.md`를 따른다.
+
+### 3. 정산 문의 채팅
+
+정산 문의는 별도 이력 화면을 두지 않고 단일 누적 채팅방으로 고정한다.
+
+구성:
+
+1. 기존 대화 스레드
+2. `정산 기준 첨부` 토글
+3. `첨부 미리보기`
+4. 텍스트 입력
+5. `전송`
+
+전송 규칙:
+
+1. 첨부 ON이면 `채팅 + 선택한 정산 기준 메타데이터`를 함께 보낸다.
+2. 첨부 OFF이면 일반 채팅만 보낸다.
+3. 메타데이터는 같은 방 안에 카드처럼 누적되어 보여도, 서버 계약은 `message + snapshot reference`를 우선한다.
+
+### 4. MY
 
 `MY`는 배송원 self-service 최소 화면으로 고정한다.
 
@@ -177,7 +226,7 @@ system admin은 별도 운영 화면을 두지 않는다.
 3. 누르면 앱 내부 디버깅 로그만 남긴다.
 4. backend write API는 호출하지 않는다.
 
-### 3. 관리자 빈 화면
+### 5. 관리자 빈 화면
 
 system admin 메인 화면은 아래만 가진다.
 
@@ -318,6 +367,13 @@ owner:
 1. 앱이 `attendance`와 `delivery-record`를 직접 조합하지 않아도 된다.
 2. 앱은 카드 렌더링만 담당하면 된다.
 3. 최소 개발 범위에 맞다.
+
+중요 제약:
+
+1. 현재 `work-logs` 계약은 `박스 수`, `attendance status`, `source record count`까지만 정본으로 본다.
+2. `정산 금액`, `일반/특근`, `금월 실적 요약`은 아직 이 endpoint의 정본 필드가 아니다.
+3. 1차 앱 구현에서는 위 정산 표현을 `work-logs`에서 끌어오지 않고 `docs/contracts/22-driver-app-settlement-read-contract.md` 기준 Track A settlement read 계약으로 바인딩한다.
+4. `work-logs` 응답을 억지로 settlement 의미로 재해석해서 역할을 섞지 않고, `me/settlement-calendar`를 별도 settlement surface로 유지한다.
 
 ### 3. My page
 
