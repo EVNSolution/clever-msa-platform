@@ -252,7 +252,18 @@ def test_missing_workload_metadata_defaults_to_neutral_no_expansion(
     }
 
 
-def test_resolve_only_output_rollout_order_differs_from_storage_order() -> None:
+def test_resolve_only_output_rollout_order_differs_from_storage_order(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "release.resolve_release.resolve_latest_successful_main_image_digest",
+        lambda repo: f"sha256:latest-for-{repo}",
+    )
+    monkeypatch.setattr(
+        "release.resolve_release.resolve_current_runtime_image_digest",
+        lambda workload_id: f"sha256:runtime-for-{workload_id}",
+    )
+
     output = build_resolve_only_output(
         [
             {
