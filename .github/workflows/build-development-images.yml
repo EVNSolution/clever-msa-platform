@@ -51,6 +51,24 @@ jobs:
           echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"
           echo "${matrix}" >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Validate ECR build role configuration
+        env:
+          BUILD_MATRIX: ${{ steps.matrix.outputs.matrix }}
+          ECR_BUILD_AWS_ROLE_ARN: ${{ vars.ECR_BUILD_AWS_ROLE_ARN }}
+        run: |
+          if [ "${BUILD_MATRIX}" = '{"include":[]}' ]; then
+            echo "No Dockerfile-backed development slices selected; skipping ECR role validation."
+            exit 0
+          fi
+
+          if [ -z "${ECR_BUILD_AWS_ROLE_ARN:-}" ]; then
+            {
+              echo "::error title=Missing ECR build role::Set repository or organization variable ECR_BUILD_AWS_ROLE_ARN to the AWS IAM role ARN used for ECR image builds."
+              echo "Selected build matrix: ${BUILD_MATRIX}"
+            }
+            exit 1
+          fi
+
   build:
     needs: detect
     if: ${{ needs.detect.outputs.matrix != '{"include":[]}' }}
