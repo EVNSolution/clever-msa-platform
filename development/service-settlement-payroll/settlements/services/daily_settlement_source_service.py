@@ -35,6 +35,7 @@ from settlements.services.source_clients import (
 
 _SPECIAL_KINDS = {"special", "holiday", "weekend", "extra"}
 _REGULAR_PRICE_KEYS = (
+    "box_purchase_unit_price",
     "regular_unit_price",
     "box_unit_price",
     "base_unit_price",
@@ -246,7 +247,12 @@ class DailySettlementSourceService:
             days = self._clients.bulk_lookup_attendance_days(
                 keys=keys, authorization=authorization
             )
-        except SourceNotFoundError:
+        except (SourceNotFoundError, SourceServiceError):
+            # attendance is an optional refinement source; falling back to
+            # default "regular" for every snapshot is preferable to failing
+            # the whole settlement run when attendance-registry is
+            # unreachable, returns malformed payload, or has no internal
+            # bulk-lookup endpoint wired yet.
             return {}
 
         kind_map: dict[tuple[str, str, str, str], str] = {}
