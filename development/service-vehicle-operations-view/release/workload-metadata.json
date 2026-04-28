@@ -1,0 +1,16 @@
+{
+  "workload_id": "service-vehicle-operations-view",
+  "workload_class": "core-api",
+  "entry_impact": false,
+  "public_api_contract_impact": false,
+  "read_model_impact": false,
+  "async_event_impact": false,
+  "runtime_config_gate": false,
+  "depends_on_workloads": [
+    "service-vehicle-registry",
+    "service-vehicle-assignment",
+    "service-terminal-registry",
+    "service-telemetry-hub"
+  ],
+  "expands_to_workloads": []
+}

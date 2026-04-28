@@ -1,0 +1,17 @@
+{
+  "workload_id": "service-telemetry-listener",
+  "workload_class": "worker",
+  "entry_impact": false,
+  "public_api_contract_impact": false,
+  "read_model_impact": false,
+  "async_event_impact": true,
+  "runtime_config_gate": true,
+  "depends_on_workloads": [
+    "service-telemetry-hub",
+    "service-telemetry-dead-letter"
+  ],
+  "expands_to_workloads": [
+    "service-telemetry-hub",
+    "service-telemetry-dead-letter"
+  ]
+}
