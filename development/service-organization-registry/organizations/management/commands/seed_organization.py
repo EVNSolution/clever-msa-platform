@@ -18,6 +18,22 @@ class Command(BaseCommand):
             defaults={
                 "name": "천하운수",
                 "tenant_code": "cheonha",
+                "workflow_profile": "cheonha_ops_v1",
+                "enabled_features": ["settlement", "vehicle"],
+                "home_dashboard_preset": {
+                    "cards": ["settlement", "vehicle", "placeholder", "placeholder"],
+                },
+                "workspace_presets": {
+                    "settlement": {
+                        "tabs": [
+                            "dispatch-data",
+                            "driver-management",
+                            "operations-status",
+                            "settlement-processing",
+                            "team-management",
+                        ],
+                    },
+                },
             },
         )
         Fleet.objects.update_or_create(
